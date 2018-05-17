@@ -1,0 +1,30 @@
+#section1{
+    background-color: #4D4D4D;
+    height: 500px;
+    text-align: center;
+    position: relative;
+}
+
+#ov_info{
+    color: #ffffff;
+}
+#ov_img{
+    max-width: 50%;
+    margin: auto;
+}
+
+#room_card{
+    position: absolute;
+    max-width: 60%;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    min-width: 40%;
+    margin: auto;
+    background-color: #eeeeee;
+}
+
+#room_card mat-form-field{
+    margin: auto;
+    padding: 0px 5px;
+}

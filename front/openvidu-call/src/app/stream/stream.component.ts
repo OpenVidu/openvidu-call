@@ -1,0 +1,44 @@
+import { Component, Input, Output, AfterViewInit, DoCheck, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Stream } from 'openvidu-browser';
+
+@Component({
+  selector: 'stream-component',
+  styleUrls: ['./stream.component.css' ],
+  templateUrl: './stream.component.html',
+})
+export class StreamComponent implements AfterViewInit, DoCheck {
+  @ViewChild('videoElement') elementRef: ElementRef;
+
+  videoElement: HTMLVideoElement;
+
+  @Input() stream: Stream;
+
+  @Input() isMuted: boolean;
+
+  @Output() mainVideoStream = new EventEmitter();
+
+  constructor() {}
+
+  ngAfterViewInit() {
+    // Get HTMLVideoElement from the view
+    this.videoElement = this.elementRef.nativeElement;
+  }
+
+  ngDoCheck() {
+    // Detect any change in 'stream' property (specifically in its 'srcObject' property)
+    if (this.videoElement && this.videoElement.srcObject !== this.stream.getMediaStream()) {
+      this.videoElement.srcObject = this.stream.getMediaStream();
+    }
+  }
+
+  getNicknameTag() {
+    // Gets the nickName of the user
+    return JSON.parse(this.stream.connection.data).clientData;
+  }
+
+  videoClicked() {
+    // Triggers event for the parent component to update its main video display
+    this.mainVideoStream.next(this.stream);
+  }
+
+}

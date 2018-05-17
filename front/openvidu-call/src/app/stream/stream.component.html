@@ -1,0 +1,7 @@
+<div>
+  <video #videoElement [id]="'native-video-' + this.stream.connection.connectionId + '_webcam'" (click)="this.videoClicked()"
+    autoplay="true" [muted]="this.isMuted"></video>
+  <div [id]="'data-' + this.stream.connection.connectionId">
+    <p>{{this.getNicknameTag()}}</p>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<div id="section1">
+
+  <div id="ov_info">
+    <img id="ov_img" alt="OpenVidu Logo" src="../assets/images/openvidu_vert_white_bg_trans_cropped.png">
+    <p>The easiest app to create videoconferences in your web or app</p>
+  </div>
+
+  <mat-card id="room_card">
+    <h3>Create a OpenVidu videoconference</h3>
+
+    <form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
+      <mat-form-field appearance="outline">
+        <mat-label>Insert your room name</mat-label>
+        <input matInput formControlName="roomName" placeholder="Openvidu_call_room">
+      </mat-form-field>
+      <div>
+        <button mat-stroked-button color="primary" type="submit">Create Room</button>
+      </div>
+    </form>
+  </mat-card>
+
+</div>
