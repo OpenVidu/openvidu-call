@@ -2,4 +2,15 @@
 
 body{
     margin: 0;
+    font-family: "Open Sans", sans-serif;
 }
+
+#header {
+    background-color: #4d4d4d;
+    color: #ffffff;
+  }
+  #header_img {
+    max-width: 200px;
+    margin-right: 10px;
+    margin-top: 10px;
+  }

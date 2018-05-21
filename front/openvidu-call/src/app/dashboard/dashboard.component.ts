@@ -20,8 +20,8 @@ export class DashboardComponent implements OnInit {
 
   public goToVideoCall() {
     if (this.roomForm.valid) {
-      const data = this.roomForm.value;
-      this.router.navigate(['/', data.roomName]);
+      const roomName = this.roomForm.value.roomName.replace(/ /g, '-');//replace white spaces by -
+      this.router.navigate(['/', roomName]);
     }
   }
 }

@@ -1,6 +1,19 @@
+#header {
+    background-color: transparent;
+    color: #ffffff;
+  }
+  #header_img {
+    max-width: 200px;
+    margin-right: 10px;
+    margin-top: 10px;
+  }
+
 #section1{
-    background-color: #4D4D4D;
-    height: 500px;
+    background-image: url("/assets/images/land2_bg.jpg");
+    background-size: cover;
+
+    //background-color: #4D4D4D;
+    height: 600px;
     text-align: center;
     position: relative;
 }
@@ -15,13 +28,13 @@
 
 #room_card{
     position: absolute;
-    max-width: 60%;
+    max-width: 40%;
     left: 0;
     right: 0;
-    bottom: 60px;
+    bottom: 80px;
     min-width: 40%;
     margin: auto;
-    background-color: #eeeeee;
+    background-color: #f0f0f0f3;
 }
 
 #room_card mat-form-field{
