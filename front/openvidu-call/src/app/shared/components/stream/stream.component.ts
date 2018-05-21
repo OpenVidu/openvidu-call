@@ -3,7 +3,7 @@ import { Stream } from 'openvidu-browser';
 
 @Component({
   selector: 'stream-component',
-  styleUrls: ['./stream.component.css' ],
+  styleUrls: ['./stream.component.css'],
   templateUrl: './stream.component.html',
 })
 export class StreamComponent implements AfterViewInit, DoCheck {
@@ -13,7 +13,9 @@ export class StreamComponent implements AfterViewInit, DoCheck {
 
   @Input() stream: Stream;
 
-  @Input() isMuted: boolean;
+  @Input() isAudioMuted: boolean;
+
+  @Input() isVideoMuted: boolean;
 
   @Output() mainVideoStream = new EventEmitter();
 
@@ -38,7 +40,7 @@ export class StreamComponent implements AfterViewInit, DoCheck {
 
   videoClicked() {
     // Triggers event for the parent component to update its main video display
+
     this.mainVideoStream.next(this.stream);
   }
-
 }

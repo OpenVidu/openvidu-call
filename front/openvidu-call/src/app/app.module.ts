@@ -5,23 +5,24 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
   MatCardModule,
-  MatMenuModule,
   MatToolbarModule,
   MatIconModule,
-  MatAutocompleteModule,
   MatInputModule,
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatSnackBarModule,
+  MatButtonToggleModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { VideoRoomComponent } from './video-room/video-room.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { OpenViduService } from './shared/services/open-vidu.service';
+import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
-import { StreamComponent } from './stream/stream.component';
+import { PublisherComponent } from './shared/components/publisher/publisher.component';
 
 @NgModule({
-  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent],
+  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, PublisherComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -29,16 +30,17 @@ import { StreamComponent } from './stream/stream.component';
     BrowserAnimationsModule,
     MatButtonModule,
     MatCardModule,
-    MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatAutocompleteModule,
     MatInputModule,
     MatFormFieldModule,
+    MatSnackBarModule,
+    MatButtonToggleModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [ OpenViduService ],
+  entryComponents: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent],
+  providers: [OpenViduService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
