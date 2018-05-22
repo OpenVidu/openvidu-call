@@ -1,5 +1,7 @@
 import { Component, Input, Output, AfterViewInit, DoCheck, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { Stream } from 'openvidu-browser';
+import { Stream, Publisher, StreamEvent } from 'openvidu-browser';
+import { UserModel } from '../../models/user-model';
+import { VideoRoomComponent } from '../../../video-room/video-room.component';
 
 @Component({
   selector: 'stream-component',
@@ -11,13 +13,11 @@ export class StreamComponent implements AfterViewInit, DoCheck {
 
   videoElement: HTMLVideoElement;
 
-  @Input() stream: Stream;
-
-  @Input() isAudioMuted: boolean;
-
-  @Input() isVideoMuted: boolean;
+  @Input() user: UserModel;
 
   @Output() mainVideoStream = new EventEmitter();
+
+  @Input() model: VideoRoomComponent;
 
   constructor() {}
 
@@ -28,19 +28,21 @@ export class StreamComponent implements AfterViewInit, DoCheck {
 
   ngDoCheck() {
     // Detect any change in 'stream' property (specifically in its 'srcObject' property)
-    if (this.videoElement && this.videoElement.srcObject !== this.stream.getMediaStream()) {
-      this.videoElement.srcObject = this.stream.getMediaStream();
+    if (this.videoElement && this.videoElement.srcObject !== this.user.stream.getMediaStream()) {
+      this.videoElement.srcObject = this.user.stream.getMediaStream();
     }
   }
 
-  getNicknameTag() {
-    // Gets the nickName of the user
-    return JSON.parse(this.stream.connection.data).clientData;
-  }
 
   videoClicked() {
     // Triggers event for the parent component to update its main video display
+    this.mainVideoStream.next(this.user.stream);
+  }
 
-    this.mainVideoStream.next(this.stream);
+  changedNickname() {
+    if (this.model) {
+      this.model.nicknameClicked(this.user.getConnectionId());
+    }
   }
 }
+

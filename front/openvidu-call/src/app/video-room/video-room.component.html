@@ -1,5 +1,3 @@
-
-
 <mat-toolbar id="header">
   <a [routerLink]="['']">
     <img id="header_img" alt="OpenVidu Logo" src="../assets/images/openvidu_globe_bg_transp_cropped.png">
@@ -7,39 +5,40 @@
   <span id="session-title">{{mySessionId}}</span>
 
   <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
-
 </mat-toolbar>
 
 <div *ngIf="session" id="session">
 
   <div *ngIf="this.mainVideoStream" id="main-video" class="col-md-6">
-    <publisher-component [publisher]="this.publisher" [isAudioMuted]="isAudioMuted" [isVideoMuted]="isVideoMuted"></publisher-component>
+    <stream-component [user]="this.localUser"  [model]="this" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
+
   </div>
   <div id="video-container" class="col-md-6">
     <div *ngIf="this.localStream" class="stream-container col-md-6 col-xs-6">
-        <publisher-component [publisher]="this.publisher" [isAudioMuted]="isAudioMuted" [isVideoMuted]="isVideoMuted"></publisher-component>
+        <stream-component [user]="this.localUser" [model]="this" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
+
     </div>
-    <div *ngFor="let s of this.remoteStreams" class="stream-container col-md-6 col-xs-6">
-      <stream-component [stream]="s" [isAudioMuted]="false" [isVideoMuted]="false" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
+    <div *ngFor="let user of this.remoteUsers" class="stream-container col-md-6 col-xs-6">
+      <stream-component [user]="user" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
     </div>
   </div>
 </div>
 <mat-toolbar id="footer">
 
   <mat-button-toggle-group id="buttonsGroup">
-    <mat-button-toggle (click)="changeMicStatus()">
-      <mat-icon *ngIf="isAudioMuted" color="warn">mic_off</mat-icon>
-      <div *ngIf="isAudioMuted">Mic off</div>
-      <mat-icon *ngIf="!isAudioMuted">mic</mat-icon>
-      <div *ngIf="!isAudioMuted">Mic on</div>
+    <mat-button-toggle (click)="micStatusChanged()">
+      <mat-icon *ngIf="localUser.isAudioMuted()" color="warn">mic_off</mat-icon>
+      <div *ngIf="localUser.isAudioMuted()">Mic off</div>
+      <mat-icon *ngIf="!localUser.isAudioMuted()">mic</mat-icon>
+      <div *ngIf="!localUser.isAudioMuted()">Mic on</div>
 
     </mat-button-toggle>
-    <mat-button-toggle (click)="changeCamStatus()">
+    <mat-button-toggle (click)="camStatusChanged()">
         
-      <mat-icon *ngIf="isVideoMuted" color="warn">videocam_off</mat-icon>
-      <div *ngIf="isVideoMuted">Cam off</div>
-      <mat-icon *ngIf="!isVideoMuted">videocam</mat-icon>
-      <div *ngIf="!isVideoMuted">Cam on</div>
+      <mat-icon *ngIf="localUser.isVideoMuted()" color="warn">videocam_off</mat-icon>
+      <div *ngIf="localUser.isVideoMuted()">Cam off</div>
+      <mat-icon *ngIf="!localUser.isVideoMuted()">videocam</mat-icon>
+      <div *ngIf="!localUser.isVideoMuted()">Cam on</div>
     </mat-button-toggle>
     <mat-button-toggle (click)="leaveSession()" value="Leave session">
       <mat-icon color="warn">exit_to_app</mat-icon>

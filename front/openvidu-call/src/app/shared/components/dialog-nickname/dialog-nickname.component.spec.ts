@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PublisherComponent } from './publisher.component';
+import { DialogNicknameComponent } from './dialog-nickname.component';
 
-describe('PublisherComponent', () => {
-  let component: PublisherComponent;
-  let fixture: ComponentFixture<PublisherComponent>;
+describe('DialogNicknameComponent', () => {
+  let component: DialogNicknameComponent;
+  let fixture: ComponentFixture<DialogNicknameComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PublisherComponent ]
+      declarations: [ DialogNicknameComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PublisherComponent);
+    fixture = TestBed.createComponent(DialogNicknameComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

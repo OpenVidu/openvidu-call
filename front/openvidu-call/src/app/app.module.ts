@@ -11,6 +11,7 @@ import {
   MatFormFieldModule,
   MatSnackBarModule,
   MatButtonToggleModule,
+  MatDialogModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -19,10 +20,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { OpenViduService } from './shared/services/open-vidu.service';
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
-import { PublisherComponent } from './shared/components/publisher/publisher.component';
+import { DialogNicknameComponent } from './shared/components/dialog-nickname/dialog-nickname.component';
 
 @NgModule({
-  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, PublisherComponent],
+  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -36,10 +37,11 @@ import { PublisherComponent } from './shared/components/publisher/publisher.comp
     MatFormFieldModule,
     MatSnackBarModule,
     MatButtonToggleModule,
+    MatDialogModule,
     AppRoutingModule,
     HttpClientModule,
   ],
-  entryComponents: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent],
+  entryComponents: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent],
   providers: [OpenViduService],
   bootstrap: [AppComponent],
 })

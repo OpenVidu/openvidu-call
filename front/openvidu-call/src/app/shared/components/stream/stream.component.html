@@ -1,13 +1,13 @@
 <div>
-  <video #videoElement [id]="'native-video-' + this.stream.connection.connectionId + '_webcam'" (click)="this.videoClicked()"
+  <video #videoElement [id]="'native-video-' + this.user.stream.connection.connectionId + '_webcam'" (click)="this.videoClicked()"
     autoplay="true"></video>
 
-  <div [id]="'data-' + this.stream.connection.connectionId">
-    <p>{{this.getNicknameTag()}}</p>
+  <div [id]="'data-' + this.user.stream.connection.connectionId">
+    <p (click)="changedNickname()">{{this.user.nickname}}</p>
   </div>
   <div id="statusIcons">
-    <mat-icon *ngIf="this.isAudioMuted">mic_off</mat-icon>
-    <mat-icon *ngIf="this.isVideoMuted">videocam_off</mat-icon>
+    <mat-icon *ngIf="this.user.audioMuted">mic_off</mat-icon>
+    <mat-icon *ngIf="this.user.videoMuted">videocam_off</mat-icon>
 
   </div>
 </div>
