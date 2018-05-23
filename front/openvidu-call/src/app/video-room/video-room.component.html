@@ -1,50 +1,39 @@
-<mat-toolbar id="header">
-  <a [routerLink]="['']">
-    <img id="header_img" alt="OpenVidu Logo" src="../assets/images/openvidu_globe_bg_transp_cropped.png">
-  </a>
-  <span id="session-title">{{mySessionId}}</span>
+<div class="">
+  <mat-toolbar id="header">
 
-  <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
-</mat-toolbar>
+    <div id="navSessionInfo">
+      <a [routerLink]="['']">
+        <img id="header_img" alt="OpenVidu Logo" src="../assets/images/openvidu_vert_white_bg_trans.png">
+      </a>
+      <span id="session-title">{{mySessionId}}</span>
+    </div>
+    <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
+    <div id="navButtons">
+      <button mat-icon-button (click)="micStatusChanged()">
+        <mat-icon *ngIf="localUser.isAudioMuted()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
+        <mat-icon *ngIf="!localUser.isAudioMuted()" matTooltip="Unpublish your audio">mic</mat-icon>
+      </button>
+      <button mat-icon-button (click)="camStatusChanged()">
+        <mat-icon *ngIf="localUser.isVideoMuted()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
+        <mat-icon *ngIf="!localUser.isVideoMuted()" matTooltip="Unpublish your cam">videocam</mat-icon>
+      </button>
+      <button mat-icon-button (click)="leaveSession()">
+        <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+</div>
 
-<div *ngIf="session" id="session">
+<div id="layout" class="bounds">
 
-  <div *ngIf="this.mainVideoStream" id="main-video" class="col-md-6">
-    <stream-component [user]="this.localUser"  [model]="this" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
-
+  <div *ngIf="this.localStream" class="OT_root OT_publisher custom-class">
+    <div class="nickname pointer" (click)="openDialogNickname()">
+      <span>{{this.localUser.getNickname()}} (edit)</span>
+    </div>
+    <stream-component #videoStream [user]="this.localUser"></stream-component>
   </div>
-  <div id="video-container" class="col-md-6">
-    <div *ngIf="this.localStream" class="stream-container col-md-6 col-xs-6">
-        <stream-component [user]="this.localUser" [model]="this" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
-
-    </div>
-    <div *ngFor="let user of this.remoteUsers" class="stream-container col-md-6 col-xs-6">
-      <stream-component [user]="user" (mainVideoStream)="getMainVideoStream($event)"></stream-component>
-    </div>
+  <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher OV_big custom-class">
+    <span class="nickname">{{user.getNickname()}}</span>
+    <stream-component #videoStream [user]="user"></stream-component>
   </div>
 </div>
-<mat-toolbar id="footer">
-
-  <mat-button-toggle-group id="buttonsGroup">
-    <mat-button-toggle (click)="micStatusChanged()">
-      <mat-icon *ngIf="localUser.isAudioMuted()" color="warn">mic_off</mat-icon>
-      <div *ngIf="localUser.isAudioMuted()">Mic off</div>
-      <mat-icon *ngIf="!localUser.isAudioMuted()">mic</mat-icon>
-      <div *ngIf="!localUser.isAudioMuted()">Mic on</div>
-
-    </mat-button-toggle>
-    <mat-button-toggle (click)="camStatusChanged()">
-        
-      <mat-icon *ngIf="localUser.isVideoMuted()" color="warn">videocam_off</mat-icon>
-      <div *ngIf="localUser.isVideoMuted()">Cam off</div>
-      <mat-icon *ngIf="!localUser.isVideoMuted()">videocam</mat-icon>
-      <div *ngIf="!localUser.isVideoMuted()">Cam on</div>
-    </mat-button-toggle>
-    <mat-button-toggle (click)="leaveSession()" value="Leave session">
-      <mat-icon color="warn">exit_to_app</mat-icon>
-
-      <div>Leave</div>
-    </mat-button-toggle>
-
-  </mat-button-toggle-group>
-</mat-toolbar>

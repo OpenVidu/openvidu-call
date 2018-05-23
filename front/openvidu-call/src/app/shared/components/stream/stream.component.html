@@ -1,13 +1,8 @@
-<div>
-  <video #videoElement [id]="'native-video-' + this.user.stream.connection.connectionId + '_webcam'" (click)="this.videoClicked()"
-    autoplay="true"></video>
-
-  <div [id]="'data-' + this.user.stream.connection.connectionId">
-    <p (click)="changedNickname()">{{this.user.nickname}}</p>
-  </div>
-  <div id="statusIcons">
-    <mat-icon *ngIf="this.user.audioMuted">mic_off</mat-icon>
-    <mat-icon *ngIf="this.user.videoMuted">videocam_off</mat-icon>
-
-  </div>
+<div class="OT_widget-container">
+    <video [id]="'native-video-' + this.user.stream.streamId" autoplay="true" [srcObject]="this.user.stream.getMediaStream()"
+        (playing)="onVideoPlaying($event)"></video>
+    <div id="statusIcons">
+        <mat-icon *ngIf="this.user.audioMuted">mic_off</mat-icon>
+        <mat-icon *ngIf="this.user.videoMuted">videocam_off</mat-icon>
+    </div>
 </div>

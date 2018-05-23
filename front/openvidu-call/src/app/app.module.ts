@@ -9,9 +9,8 @@ import {
   MatIconModule,
   MatInputModule,
   MatFormFieldModule,
-  MatSnackBarModule,
-  MatButtonToggleModule,
   MatDialogModule,
+  MatTooltipModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -35,9 +34,8 @@ import { DialogNicknameComponent } from './shared/components/dialog-nickname/dia
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatSnackBarModule,
-    MatButtonToggleModule,
     MatDialogModule,
+    MatTooltipModule,
     AppRoutingModule,
     HttpClientModule,
   ],

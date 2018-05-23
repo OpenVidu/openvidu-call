@@ -1,10 +1,12 @@
-import { Component, OnInit, OnDestroy, Input, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild } from '@angular/core';
 import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions } from 'openvidu-browser';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserModel } from '../shared/models/user-model';
 import { MatDialog } from '@angular/material';
 import { DialogNicknameComponent } from '../shared/components/dialog-nickname/dialog-nickname.component';
+import { StreamComponent } from '../shared/components/stream/stream.component';
+import { OpenViduLayout } from '../shared/layout/openvidu-layout';
 
 @Component({
   selector: 'app-video-room',
@@ -15,6 +17,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel = new UserModel();
   publisher: Publisher;
   remoteUsers: UserModel[] = [];
+  resizeTimeout;
+  @ViewChild('videoStream') private videoStream: StreamComponent;
 
   // OpenVidu objects
   OV: OpenVidu;
@@ -27,7 +31,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   mySessionId: string;
   myUserName: string;
 
-  @Input() mainVideoStream: Stream;
 
   constructor(
     private openViduSrv: OpenViduService,
@@ -57,32 +60,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.subscribeToUserChanged();
     this.subscribeToStreamCreated();
     this.subscribedToStreamDestroyed();
-
-    this.openViduSrv.getToken(this.mySessionId).then((token) => {
-      this.session
-        .connect(token, { clientData: this.myUserName })
-        .then(() => {
-          this.publisher = this.OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: '640x480', // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          this.localUser.setNickname(this.myUserName);
-          this.localUser.setConnectionId(this.session.connection.connectionId);
-          this.localUser.setStream(this.publisher.stream);
-          this.localStream = this.publisher.stream;
-          this.mainVideoStream = this.localStream;
-          this.session.publish(this.publisher);
-        })
-        .catch((error) => {
-          console.log('There was an error connecting to the session:', error.code, error.message);
-        });
-    });
+    this.connectToSession();
   }
 
   leaveSession() {
@@ -111,22 +89,19 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   nicknameChanged(nickname: string): void {
     this.localUser.setNickname(nickname);
-    console.log(nickname);
     this.sendSignalUserChanged({ nickname: this.localUser.getNickname() });
   }
 
-  nicknameClicked(connectionId: string) {
-    if (connectionId === this.session.connection.connectionId) {
-      const dialogRef = this.dialog.open(DialogNicknameComponent, {
-        width: '250px',
-        data: { nickname: this.localUser.getNickname() },
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result !== undefined) {
-          this.nicknameChanged(result);
-        }
-      });
-    }
+  openDialogNickname() {
+    const dialogRef = this.dialog.open(DialogNicknameComponent, {
+      width: '250px',
+      data: { nickname: this.localUser.getNickname() },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.nicknameChanged(result);
+      }
+    });
   }
 
   private generateParticipantInfo() {
@@ -143,10 +118,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     if (index > -1) {
       this.remoteUsers.splice(index, 1);
     }
-  }
-
-  private getMainVideoStream(stream: Stream) {
-    this.mainVideoStream = stream;
   }
 
   private subscribeToUserChanged() {
@@ -180,7 +151,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         isVideoMuted: this.localUser.isVideoMuted(),
         nickname: this.localUser.getNickname(),
       });
-
       this.session.subscribe(event.stream, undefined);
     });
   }
@@ -188,6 +158,37 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private subscribedToStreamDestroyed() {
     this.session.on('streamDestroyed', (event: StreamEvent) => {
       this.deleteRemoteStream(event.stream);
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        this.videoStream.openviduLayout.updateLayout();
+      }, 20);
+    });
+  }
+
+  private connectToSession(): void {
+    this.openViduSrv.getToken(this.mySessionId).then((token) => {
+      this.session
+        .connect(token, { clientData: this.myUserName })
+        .then(() => {
+          this.publisher = this.OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            resolution: '640x480', // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          });
+          this.localUser.setNickname(this.myUserName);
+          this.localUser.setConnectionId(this.session.connection.connectionId);
+          this.localUser.setStream(this.publisher.stream);
+          this.localStream = this.publisher.stream;
+          this.session.publish(this.publisher);
+        })
+        .catch((error) => {
+          console.log('There was an error connecting to the session:', error.code, error.message);
+        });
     });
   }
 

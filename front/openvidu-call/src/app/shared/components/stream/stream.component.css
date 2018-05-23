@@ -1,24 +1,36 @@
- video {
-  width: 100%;
-  height: auto;
-  float: left;
-  cursor: pointer;
-}
- div div {
+video {
+  -o-object-fit: cover;
+  object-fit: cover;
+  display: block;
   position: absolute;
-  background: #f8f8f8;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #777777;
-  font-weight: bold;
-  border-bottom-right-radius: 4px;
-}
- p {
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
   margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-#statusIcons{
+#statusIcons {
   bottom: 0;
   background: #c71100;
+  width: 40px;
+  height: fit-content;
+  position: absolute;
   color: #ffffff;
+}
+
+#statusIcons mat-icon {
+  padding: 8px;
+}
+
+/* Contains the video element, used to fix video letter-boxing */
+.OT_widget-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: #000000;
+  overflow: hidden;
 }
