@@ -1,0 +1,21 @@
+<div *ngIf="messageUnread" id="point"></div>
+
+<div id="chatComponent" [@toggleChat]="visibility">
+    <div class="message-wrap" #chatScroll>
+        <div *ngFor="let data of messageList" class="message" [class.right]="data.connectionId === user.connectionId " [class.left]=" data.connectionId !== user.connectionId ">
+            <div class="msg-detail">
+                <div class="msg-info">
+                    <p> {{data.nickname}}</p>
+                </div>
+                <div class="msg-content">
+                    <span class="triangle"></span>
+                    <p class="text">{{data.message}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="messageInput">
+        <input placeholder="Send a messge" (keypress)="eventKeyPress($event)" [(ngModel)]="message" />
+    </div>
+</div>

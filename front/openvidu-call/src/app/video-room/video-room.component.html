@@ -20,9 +20,14 @@
       <button mat-icon-button (click)="leaveSession()">
         <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
       </button>
+      <button mat-icon-button id="chatButton" (click)="toggleChat()">
+        <mat-icon matTooltip="Chat" >chat</mat-icon>
+      </button>
     </div>
   </mat-toolbar>
 </div>
+
+<chat-component #chatNavbar *ngIf="this.localStream" [user]="this.localUser"></chat-component>
 
 <div id="layout" class="bounds">
 

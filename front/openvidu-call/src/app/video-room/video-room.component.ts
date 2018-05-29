@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material';
 import { DialogNicknameComponent } from '../shared/components/dialog-nickname/dialog-nickname.component';
 import { StreamComponent } from '../shared/components/stream/stream.component';
 import { OpenViduLayout } from '../shared/layout/openvidu-layout';
+import { ChatComponent } from '../shared/components/chat/chat.component';
 
 @Component({
   selector: 'app-video-room',
@@ -19,6 +20,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   remoteUsers: UserModel[] = [];
   resizeTimeout;
   @ViewChild('videoStream') private videoStream: StreamComponent;
+  @ViewChild('chatNavbar') public chat: ChatComponent;
 
   // OpenVidu objects
   OV: OpenVidu;
@@ -30,7 +32,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   // Join form
   mySessionId: string;
   myUserName: string;
-
 
   constructor(
     private openViduSrv: OpenViduService,
@@ -51,6 +52,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.leaveSession();
+  }
+
+  toggleChat() {
+    this.chat.toggle();
   }
 
   joinSession() {

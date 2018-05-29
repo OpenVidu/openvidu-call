@@ -19,7 +19,7 @@
     <form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
       <mat-form-field appearance="outline">
         <mat-label>Insert your room name</mat-label>
-        <input matInput formControlName="roomName" placeholder="Openvidu_call_room">
+        <input matInput formControlName="roomName" placeholder="Openvidu_call_room" autocomplete="off">
       </mat-form-field>
       <div>
         <button mat-stroked-button color="primary" type="submit">Create Room</button>

@@ -1,0 +1,131 @@
+#chatComponent {
+  position: absolute;
+  background-color: #818181c5;
+  z-index: 99999;
+  right: 0;
+  height: calc(100% - 40px);
+  width: 20%;
+  border-left: solid 1px #3f3f3f;
+}
+
+#point{
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 20px;
+  right: 13px;
+  border-radius: 50%;
+  background-color: #ffa600;
+  border: 1px solid #000;
+  z-index: 99999;
+}
+
+.message-wrap {
+  padding: 0 10px;
+  height: 90%;
+  overflow: auto;
+}
+
+.message {
+  position: relative;
+  padding: 7px 0;
+}
+
+.msg-detail {
+  width: 100%;
+  display: inline-block;
+}
+
+.msg-detail p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.msg-info p {
+  font-size: 0.8em;
+  color: #ffffff;
+  font-style: italic;
+}
+.msg-content {
+  position: relative;
+  margin-top: 5px;
+  border-radius: 5px;
+  padding: 8px;
+  color: #000000;
+  width: auto;
+  max-width: 80%;
+}
+
+span.triangle {
+  border-radius: 2px;
+  height: 8px;
+  width: 8px;
+  top: 12px;
+  display: block;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  position: absolute;
+}
+
+
+/* Start message from other user */
+
+.message.left .msg-detail .msg-info {
+  text-align: left;
+}
+.message.left .msg-detail .user-img {
+  left: 0;
+}
+
+.message.left .msg-detail .msg-content {
+  background-color: #ffcbcb;
+  float: left;
+}
+.message.left .msg-detail .msg-content span.triangle {
+  background-color: #ffcbcb;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  left: -5px;
+}
+
+/* End message from other user */
+
+/* Start my messages */
+
+.message.right .msg-detail .msg-info {
+  text-align: right;
+}
+.message.right .msg-detail .user-img {
+  right: 0;
+}
+
+.message.right .msg-detail .msg-content {
+  background-color: #e0f9ff;
+  float: right;
+}
+.message.right .msg-detail .msg-content span.triangle {
+  background-color: #e0f9ff;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  right: -5px;
+}
+
+/* End my messages */
+
+#messageInput {
+  position: absolute;
+  bottom: 2px;
+  width: 100%;
+  background-color: #ffffff;
+  text-align: center;
+  padding: 10px 0px;
+  height: 5%;
+}
+#messageInput input {
+  width: 97%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+
+}

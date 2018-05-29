@@ -20,9 +20,10 @@ import { OpenViduService } from './shared/services/open-vidu.service';
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DialogNicknameComponent } from './shared/components/dialog-nickname/dialog-nickname.component';
+import { ChatComponent } from './shared/components/chat/chat.component';
 
 @NgModule({
-  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent],
+  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent, ChatComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,
