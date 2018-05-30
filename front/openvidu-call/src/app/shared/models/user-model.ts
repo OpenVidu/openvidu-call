@@ -4,6 +4,7 @@ export class UserModel {
   connectionId: string;
   audioMuted: boolean;
   videoMuted: boolean;
+  screenShared: boolean;
   nickname: string;
   stream: Stream;
 
@@ -11,6 +12,7 @@ export class UserModel {
     this.connectionId = '';
     this.audioMuted = false;
     this.videoMuted = false;
+    this.screenShared = false;
     this.nickname = '';
     this.stream = null;
   }
@@ -21,6 +23,10 @@ export class UserModel {
 
   public isVideoMuted(): boolean {
     return this.videoMuted;
+  }
+
+  public isScreenShared(): boolean {
+    return this.screenShared;
   }
 
   public getConnectionId(): string {
@@ -36,6 +42,9 @@ export class UserModel {
   }
   public setVideoMuted(isVideoMuted: boolean) {
     this.videoMuted = isVideoMuted;
+  }
+  public setScreenShared(isScreenShared: boolean) {
+    this.screenShared = isScreenShared;
   }
   public setStream(stream: Stream) {
     this.stream = stream;

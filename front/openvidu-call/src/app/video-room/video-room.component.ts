@@ -8,6 +8,7 @@ import { DialogNicknameComponent } from '../shared/components/dialog-nickname/di
 import { StreamComponent } from '../shared/components/stream/stream.component';
 import { OpenViduLayout } from '../shared/layout/openvidu-layout';
 import { ChatComponent } from '../shared/components/chat/chat.component';
+import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 
 @Component({
   selector: 'app-video-room',
@@ -97,9 +98,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.sendSignalUserChanged({ nickname: this.localUser.getNickname() });
   }
 
+  screenShareDisabled(): void {
+    this.session.unpublish(this.publisher);
+    this.connectWebCam();
+  }
+
   openDialogNickname() {
     const dialogRef = this.dialog.open(DialogNicknameComponent, {
-      width: '250px',
+      width: '350px',
       data: { nickname: this.localUser.getNickname() },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -107,6 +113,37 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         this.nicknameChanged(result);
       }
     });
+  }
+  openDialogExtension() {
+    const dialogRef = this.dialog.open(DialogExtensionComponent, {
+      width: '450px',
+      data: { nickname: this.localUser.getNickname() },
+    });
+  }
+
+  screenShare() {
+    const publisher = this.OV.initPublisher(undefined, {
+        videoSource: 'screen',
+        publishAudio: !this.localUser.isAudioMuted(),
+        publishVideo: !this.localUser.isVideoMuted()
+      }, (error) => {
+        if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
+          this.openDialogExtension();
+        } else if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
+          alert('Your browser does not support screen sharing');
+        } else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
+          alert('You need to enable screen sharing extension');
+        } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
+          alert('You need to choose a window or application to share');
+        } else if (error === undefined) {
+          this.session.unpublish(this.publisher);
+          this.localUser.setScreenShared(true);
+          this.publisher = publisher;
+          this.localUser.setStream(publisher.stream);
+          this.session.publish(this.publisher);
+        }
+      },
+    );
   }
 
   private generateParticipantInfo() {
@@ -167,6 +204,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.resizeTimeout = setTimeout(() => {
         this.videoStream.openviduLayout.updateLayout();
       }, 20);
+      event.preventDefault();
     });
   }
 
@@ -175,26 +213,31 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.session
         .connect(token, { clientData: this.myUserName })
         .then(() => {
-          this.publisher = this.OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: '640x480', // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          this.localUser.setNickname(this.myUserName);
-          this.localUser.setConnectionId(this.session.connection.connectionId);
-          this.localUser.setStream(this.publisher.stream);
-          this.localStream = this.publisher.stream;
-          this.session.publish(this.publisher);
+          this.connectWebCam();
         })
         .catch((error) => {
           console.log('There was an error connecting to the session:', error.code, error.message);
         });
     });
+  }
+
+  private connectWebCam(): void {
+    this.publisher = this.OV.initPublisher(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: !this.localUser.isAudioMuted(),
+      publishVideo: !this.localUser.isVideoMuted(),
+      resolution: '640x480',
+      frameRate: 30,
+      insertMode: 'APPEND',
+      mirror: false,
+    });
+    this.localUser.setNickname(this.myUserName);
+    this.localUser.setConnectionId(this.session.connection.connectionId);
+    this.localUser.setStream(this.publisher.stream);
+    this.localUser.setScreenShared(false);
+    this.localStream = this.publisher.stream;
+    this.session.publish(this.publisher);
   }
 
   private sendSignalUserChanged(data: any): void {

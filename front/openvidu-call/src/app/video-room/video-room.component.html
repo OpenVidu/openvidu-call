@@ -8,7 +8,7 @@
       <span id="session-title">{{mySessionId}}</span>
     </div>
     <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
-    <div id="navButtons">
+    <div id="navButtons" align="center">
       <button mat-icon-button (click)="micStatusChanged()">
         <mat-icon *ngIf="localUser.isAudioMuted()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
         <mat-icon *ngIf="!localUser.isAudioMuted()" matTooltip="Unpublish your audio">mic</mat-icon>
@@ -17,11 +17,18 @@
         <mat-icon *ngIf="localUser.isVideoMuted()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
         <mat-icon *ngIf="!localUser.isVideoMuted()" matTooltip="Unpublish your cam">videocam</mat-icon>
       </button>
+      <button mat-icon-button (click)="screenShare()">
+        <mat-icon matTooltip="Choose screen" *ngIf="localUser.isScreenShared()">picture_in_picture</mat-icon>
+        <mat-icon matTooltip="Screen share" *ngIf="!localUser.isScreenShared()">screen_share</mat-icon>
+      </button>
+      <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser.isScreenShared()">
+        <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
+      </button>
       <button mat-icon-button (click)="leaveSession()">
         <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
       </button>
       <button mat-icon-button id="chatButton" (click)="toggleChat()">
-        <mat-icon matTooltip="Chat" >chat</mat-icon>
+        <mat-icon matTooltip="Chat">question_answer</mat-icon>
       </button>
     </div>
   </mat-toolbar>

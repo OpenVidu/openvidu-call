@@ -53,13 +53,12 @@
   text-align: center;
 }
 
-#buttonsGroup {
-  width: 100%;
+#navButtons {
+  position: absolute;
+  left: 0;
+  right: 0;
 }
-#buttonsGroup mat-button-toggle {
-  margin: auto;
-  width: 100%;
-}
+
 
 .bounds {
   background-color: #494949;

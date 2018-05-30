@@ -10,7 +10,7 @@ import {
   MatInputModule,
   MatFormFieldModule,
   MatDialogModule,
-  MatTooltipModule
+  MatTooltipModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -21,9 +21,18 @@ import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DialogNicknameComponent } from './shared/components/dialog-nickname/dialog-nickname.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
+import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 
 @NgModule({
-  declarations: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent, ChatComponent],
+  declarations: [
+    AppComponent,
+    VideoRoomComponent,
+    DashboardComponent,
+    StreamComponent,
+    DialogNicknameComponent,
+    ChatComponent,
+    DialogExtensionComponent,
+  ],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -40,7 +49,14 @@ import { ChatComponent } from './shared/components/chat/chat.component';
     AppRoutingModule,
     HttpClientModule,
   ],
-  entryComponents: [AppComponent, VideoRoomComponent, DashboardComponent, StreamComponent, DialogNicknameComponent],
+  entryComponents: [
+    AppComponent,
+    VideoRoomComponent,
+    DashboardComponent,
+    StreamComponent,
+    DialogNicknameComponent,
+    DialogExtensionComponent,
+  ],
   providers: [OpenViduService],
   bootstrap: [AppComponent],
 })

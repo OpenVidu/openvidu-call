@@ -1,0 +1,11 @@
+<div>
+  
+  <h1 mat-dialog-title>Hello {{data.nickname}}</h1>
+  <div mat-dialog-content>
+    <p>You need install this chrome extension and refresh the browser for can share your screen.</p>    
+  </div>
+  <div mat-dialog-actions align="center">
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="" (click)="goToChromePage()" cdkFocusInitial>Install</button>
+  </div>
+</div>

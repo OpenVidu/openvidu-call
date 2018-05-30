@@ -6,7 +6,7 @@
       <input matInput [(ngModel)]="data.nickname">
     </mat-form-field>
   </div>
-  <div mat-dialog-actions>
+  <div mat-dialog-actions align="center">
     <button mat-button (click)="onNoClick()">Cancel</button>
     <button mat-button [mat-dialog-close]="data.nickname" cdkFocusInitial>Ok</button>
   </div>
