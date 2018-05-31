@@ -1,8 +1,11 @@
-<div class="OT_widget-container">
+<div class="OT_widget-container" [id]="'container-' + this.user.stream.streamId">
     <video [id]="'native-video-' + this.user.stream.streamId" autoplay="true" [srcObject]="this.user.stream.getMediaStream()"
         (playing)="onVideoPlaying($event)"></video>
     <div id="statusIcons">
         <mat-icon *ngIf="this.user.audioMuted">mic_off</mat-icon>
         <mat-icon *ngIf="this.user.videoMuted">videocam_off</mat-icon>
     </div>
+    <button mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
+        <mat-icon>{{this.fullscreenIcon}}</mat-icon>
+      </button>
 </div>

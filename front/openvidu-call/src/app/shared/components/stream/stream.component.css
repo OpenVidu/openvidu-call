@@ -34,3 +34,10 @@ video {
   background-color: #000000;
   overflow: hidden;
 }
+
+#fullscreenButton{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 99999;
+}
