@@ -6,6 +6,8 @@
   </div>
   <div mat-dialog-actions align="center">
     <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button [mat-dialog-close]="" (click)="goToChromePage()" cdkFocusInitial>Install</button>
+    <button mat-button  (click)="goToChromePage()" cdkFocusInitial>Install</button>
+    <button mat-button [mat-dialog-close]="" *ngIf="this.isInstalled" (click)="refreshBrowser()" cdkFocusInitial>Refresh</button>
+    
   </div>
 </div>

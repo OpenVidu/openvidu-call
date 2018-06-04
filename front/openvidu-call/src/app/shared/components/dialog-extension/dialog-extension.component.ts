@@ -8,6 +8,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class DialogExtensionComponent implements OnInit {
 
+  isInstalled: boolean;
+
   constructor(public dialogRef: MatDialogRef<DialogExtensionComponent>,  @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
@@ -19,6 +21,11 @@ export class DialogExtensionComponent implements OnInit {
 
   goToChromePage(): void {
     window.open('https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk');
+    this.isInstalled = true;
+  }
+
+  refreshBrowser(): void {
+    window.location.reload();
   }
 
 }
