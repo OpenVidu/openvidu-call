@@ -187,6 +187,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       newUser.setStream(event.stream);
       newUser.setConnectionId(event.stream.connection.connectionId);
       newUser.setNickname(JSON.parse(event.stream.connection.data).clientData);
+      newUser.setType('remote');
       this.remoteUsers.push(newUser);
       this.sendSignalUserChanged({
         isAudioMuted: this.localUser.isAudioMuted(),

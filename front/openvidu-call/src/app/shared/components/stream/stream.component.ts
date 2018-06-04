@@ -13,6 +13,7 @@ export class StreamComponent implements OnInit {
   openviduLayout: OpenViduLayout;
   resizeTimeout;
   fullscreenIcon = 'fullscreen';
+  mutedSound = false;
 
   @Input() user: UserModel;
 
@@ -83,5 +84,9 @@ export class StreamComponent implements OnInit {
         document.webkitExitFullscreen();
       }
     }
+  }
+
+  toggleSound(){
+    this.mutedSound = !this.mutedSound;
   }
 }

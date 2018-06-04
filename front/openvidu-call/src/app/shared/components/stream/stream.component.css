@@ -37,7 +37,15 @@ video {
 
 #fullscreenButton{
   position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 99999;
+  bottom: 1px;
+  right: 1px;
+  z-index: 1000;
+  background-color: #000000c4;
+}
+#volumeButton{
+  background-color: #000000c4;
+  position: absolute;
+  bottom: 45px;
+  right: 1px;
+  z-index: 1000;
 }

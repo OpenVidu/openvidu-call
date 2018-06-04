@@ -7,6 +7,7 @@ export class UserModel {
   screenShared: boolean;
   nickname: string;
   stream: Stream;
+  type: 'local' | 'remote';
 
   constructor() {
     this.connectionId = '';
@@ -15,6 +16,7 @@ export class UserModel {
     this.screenShared = false;
     this.nickname = '';
     this.stream = null;
+    this.type = 'local';
   }
 
   public isAudioMuted(): boolean {
@@ -37,6 +39,10 @@ export class UserModel {
     return this.nickname;
   }
 
+  public getType(): string {
+    return this.type;
+  }
+
   public setAudioMuted(isAudioMuted: boolean) {
     this.audioMuted = isAudioMuted;
   }
@@ -55,5 +61,8 @@ export class UserModel {
   }
   public setNickname(nickname: string) {
     this.nickname = nickname;
+  }
+  public setType(type: 'local' | 'remote') {
+    this.type = type;
   }
 }
