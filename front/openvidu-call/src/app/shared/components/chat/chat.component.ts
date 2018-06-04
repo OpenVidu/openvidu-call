@@ -22,8 +22,7 @@ import { UserModel } from '../../models/user-model';
           opacity: '1',
         }),
       ),
-      transition('hidden => shown', animate('100ms ease-in')),
-      transition('shown => hidden', animate('100ms ease-out')),
+      transition('* => *', animate('100ms ease-in')),
     ]),
   ],
 })
