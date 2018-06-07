@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, HostListener } from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenViduLayout } from '../../layout/openvidu-layout';
 

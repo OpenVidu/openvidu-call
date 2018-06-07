@@ -6,7 +6,6 @@ import { UserModel } from '../shared/models/user-model';
 import { MatDialog } from '@angular/material';
 import { DialogNicknameComponent } from '../shared/components/dialog-nickname/dialog-nickname.component';
 import { StreamComponent } from '../shared/components/stream/stream.component';
-import { OpenViduLayout } from '../shared/layout/openvidu-layout';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 

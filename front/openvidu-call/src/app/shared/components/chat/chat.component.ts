@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { trigger, style, transition, animate, group, state } from '@angular/animations';
+import { trigger, style, transition, animate, state } from '@angular/animations';
 import { UserModel } from '../../models/user-model';
 
 @Component({
