@@ -2,8 +2,8 @@
     <video [id]="'native-video-' + this.user.stream.streamId" autoplay="true" [srcObject]="this.user.stream.getMediaStream()"
         (playing)="onVideoPlaying($event)" [muted]="mutedSound"></video>
     <div id="statusIcons">
-        <mat-icon *ngIf="this.user.audioMuted">mic_off</mat-icon>
-        <mat-icon *ngIf="this.user.videoMuted">videocam_off</mat-icon>
+        <mat-icon *ngIf="this.user.audioMuted" id="statusMic">mic_off</mat-icon>
+        <mat-icon *ngIf="this.user.videoMuted" id="statusCam">videocam_off</mat-icon>
     </div>
     <button mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
         <mat-icon>{{this.fullscreenIcon}}</mat-icon>

@@ -1,7 +1,5 @@
-import { Component, Input, Output, EventEmitter, ElementRef, OnInit, HostListener } from '@angular/core';
-import { Stream, Publisher, StreamEvent } from 'openvidu-browser';
+import { Component, Input, Output, OnInit, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
-import { VideoRoomComponent } from '../../../video-room/video-room.component';
 import { OpenViduLayout } from '../../layout/openvidu-layout';
 
 @Component({
@@ -86,7 +84,7 @@ export class StreamComponent implements OnInit {
     }
   }
 
-  toggleSound(){
+  toggleSound(): void {
     this.mutedSound = !this.mutedSound;
   }
 }

@@ -9,25 +9,25 @@
     </div>
     <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
     <div id="navButtons" align="center">
-      <button mat-icon-button (click)="micStatusChanged()">
+      <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
         <mat-icon *ngIf="localUser.isAudioMuted()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
         <mat-icon *ngIf="!localUser.isAudioMuted()" matTooltip="Unpublish your audio">mic</mat-icon>
       </button>
-      <button mat-icon-button (click)="camStatusChanged()">
+      <button mat-icon-button (click)="camStatusChanged()" id="navCamButton">
         <mat-icon *ngIf="localUser.isVideoMuted()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
         <mat-icon *ngIf="!localUser.isVideoMuted()" matTooltip="Unpublish your cam">videocam</mat-icon>
       </button>
-      <button mat-icon-button (click)="screenShare()">
+      <button mat-icon-button (click)="screenShare()" id="navScreenButton">
         <mat-icon matTooltip="Choose screen" *ngIf="localUser.isScreenShared()">picture_in_picture</mat-icon>
         <mat-icon matTooltip="Screen share" *ngIf="!localUser.isScreenShared()">screen_share</mat-icon>
       </button>
       <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser.isScreenShared()">
         <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
       </button>
-      <button mat-icon-button (click)="leaveSession()">
+      <button mat-icon-button (click)="leaveSession()" id="navLeaveButton">
         <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
       </button>
-      <button mat-icon-button id="chatButton" (click)="toggleChat()">
+      <button mat-icon-button id="navChatButton" (click)="toggleChat()">
         <mat-icon matTooltip="Chat">question_answer</mat-icon>
       </button>
     </div>
@@ -39,13 +39,13 @@
 <div id="layout" class="bounds">
 
   <div *ngIf="this.localStream" class="OT_root OT_publisher custom-class">
-    <div class="nickname pointer" (click)="openDialogNickname()">
+    <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
       <span>{{this.localUser.getNickname()}} (edit)</span>
     </div>
     <stream-component #videoStream [user]="this.localUser"></stream-component>
   </div>
   <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher OV_big custom-class">
-    <span class="nickname">{{user.getNickname()}}</span>
+    <span class="nickname" id="remoteNickname">{{user.getNickname()}}</span>
     <stream-component #videoStream [user]="user"></stream-component>
   </div>
 </div>

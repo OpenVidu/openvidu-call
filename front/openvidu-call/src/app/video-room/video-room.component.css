@@ -9,7 +9,7 @@
   height: 100%;
   display: inline-flex;
 }
-#chatButton {
+#navChatButton {
   position: absolute;
   right: 10px;
   top: none;
