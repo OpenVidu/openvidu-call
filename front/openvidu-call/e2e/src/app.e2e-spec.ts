@@ -102,15 +102,6 @@ describe('Chat component', () => {
     return browser.get('/codeURJC');
   });
 
-  it('should show the chat component', () => {
-    const chatButton = OVC.getChatButton(browser);
-    const chatContent = OVC.getChatContent(browser);
-
-    browser.wait(EC.elementToBeClickable(chatButton), 5000);
-    chatButton.click();
-    expect(chatContent.isDisplayed()).toBeTruthy();
-  });
-
   it('should send a message', () => {
     const chatButton = OVC.getChatButton(browser);
     const chatInput = OVC.getChatInput(browser);
