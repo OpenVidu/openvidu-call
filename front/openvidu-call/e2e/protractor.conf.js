@@ -12,8 +12,9 @@ exports.config = {
       args: ['use-fake-ui-for-media-stream', 'use-fake-device-for-media-stream'],
     },
   },
-  directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  directConnect: !process.env.SELENIUM_URL,
+  seleniumAddress: process.env.SELENIUM_URL,
+  baseUrl: (process.env.APP_URL || 'http://localhost:4200/'),
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
