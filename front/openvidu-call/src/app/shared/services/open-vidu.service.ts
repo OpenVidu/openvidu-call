@@ -8,6 +8,7 @@ import { map, catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class OpenViduService {
+  URL_OV = 'https://' + location.hostname ;
 
   constructor(private http: HttpClient) { }
 
@@ -28,7 +29,7 @@ export class OpenViduService {
           'Content-Type': 'application/json',
         })
        };
-      return this.http.post<any>('https://' + location.hostname + ':4443/api/sessions', body, options)
+      return this.http.post<any>(this.URL_OV + '/api/sessions', body, options)
         .pipe(
           catchError(error => {
             error.status === 409 ? resolve(sessionId) : reject(error);
@@ -52,7 +53,7 @@ export class OpenViduService {
           'Content-Type': 'application/json',
         })
       };
-      return this.http.post<any>('https://' + location.hostname + ':4443/api/tokens', body, options)
+      return this.http.post<any>(this.URL_OV + '/api/tokens', body, options)
         .pipe(
           catchError(error => {
             reject(error);
