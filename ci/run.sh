@@ -6,6 +6,8 @@ sleep 2
 
 sleep 30
 
+chmod -R 777 /workdir
+
 python /home/ubuntu/run-test.py
 
 cat /workdir/results.txt
