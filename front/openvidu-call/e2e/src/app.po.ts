@@ -1,90 +1,89 @@
 'use strict';
 
-import { by, element, protractor } from 'protractor';
+import { by, element, protractor, ElementFinder, ProtractorBrowser } from 'protractor';
 
 export class OpenViduCall {
-
   constructor() {}
 
   getInputDashboard(browser) {
-    return browser.element(by.css('app-dashboard input'));
+    return browser.element(by.css('#room_card input'));
   }
 
-  getRoomButton(browser) {
-    return browser.element(by.css('button'));
+  getRoomButton(browser): ElementFinder {
+    return browser.element(by.css('#room_card button'));
   }
-  getShareScreenButton(browser) {
+  getShareScreenButton(browser): ElementFinder {
     return browser.element(by.css('#navScreenButton'));
   }
 
-  getDialogExtension(browser) {
+  getDialogExtension(browser): ElementFinder {
     return browser.element(by.css('#dialogExtension'));
   }
 
-  getFullscreenButton(browser){
+  getFullscreenButton(browser): ElementFinder {
     return browser.element(by.css('#fullscreenButton'));
   }
 
-  openNewBrowserInTheSameRoom(browser) {
+  openNewBrowserInTheSameRoom(browser): ProtractorBrowser {
     return browser.forkNewDriverInstance(true);
   }
 
-  getLocalNickname(browser) {
+  getLocalNickname(browser): ElementFinder {
     return browser.element(by.css('#localNickname'));
   }
-  getRemoteNickname(browser) {
+  getRemoteNickname(browser): ElementFinder {
     return browser.element(by.css('#remoteNickname'));
   }
 
-  getDialogNickname(browser) {
-    return browser.element(by.css('app-dialog-nickname #dialogNickname'));
+  getDialogNickname(browser): ElementFinder {
+    return browser.element(by.css('#dialogNickname'));
   }
 
-  getCamButton(browser) {
+  getCamButton(browser): ElementFinder {
     return browser.element(by.css('#navCamButton'));
   }
 
-  getCamIcon(browser) {
+  getCamIcon(browser): ElementFinder {
     return browser.element(by.css('#statusCam'));
   }
 
-  getMicButton(browser) {
+  getMicButton(browser): ElementFinder {
     return browser.element(by.css('#navMicButton'));
   }
 
-  getMicIcon(browser) {
+  getMicIcon(browser): ElementFinder {
     return browser.element(by.css('#statusMic'));
   }
 
-  getLeaveButton(browser) {
+  getLeaveButton(browser): ElementFinder {
     return browser.element(by.css('#navLeaveButton'));
   }
 
-  getChatButton(browser) {
+  getChatButton(browser): ElementFinder {
     return browser.element(by.css('#navChatButton'));
   }
 
-  getVideo(browser) {
-    return browser.element(by.css('.OT_widget-container'));
+  getVideo(browser): ElementFinder {
+    return this.getChatContent(browser).element(by.css('.OT_widget-container'));
   }
 
-  getVideoList(browser) {
+  getVideoList(browser): ElementFinder {
     return browser.element.all(by.css('.OT_widget-container'));
   }
 
-  getRemoteVideoList(browser) {
+  getRemoteVideoList(browser): ElementFinder {
     return browser.element.all(by.css('.OV_big video'));
   }
 
-  getChatContent(browser) {
+  getChatContent(browser): ElementFinder {
     return browser.element(by.css('#chatComponent'));
   }
 
-  getChatInput(browser) {
-    return browser.element(by.css('input'));
+  getChatInput(browser): ElementFinder {
+    return browser.element(by.css('#messageInput input'));
   }
 
-  getNewMessagePoint(browser) {
+  getNewMessagePoint(browser): ElementFinder {
     return browser.element(by.css('#point'));
   }
 
@@ -96,7 +95,7 @@ export class OpenViduCall {
   }
 
   getMessageList(browser) {
-    return browser.element.all(by.css('.msg-detail'));
+    return browser.element.all(by.css('#chatComponent .message-wrap .message .msg-detail'));
   }
 
   closeSession(browser) {
@@ -107,6 +106,5 @@ export class OpenViduCall {
 
   typeWithDelay(input, keys: string) {
     keys.split('').forEach((c) => input.sendKeys(c));
-
   }
 }
