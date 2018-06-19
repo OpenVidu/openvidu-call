@@ -22,6 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { DialogNicknameComponent } from './shared/components/dialog-nickname/dialog-nickname.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
+import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { DialogExtensionComponent } from './shared/components/dialog-extension/d
     DialogNicknameComponent,
     ChatComponent,
     DialogExtensionComponent,
+    OpenViduVideoComponent
   ],
   imports: [
     FormsModule,

@@ -1,4 +1,4 @@
-import { Stream } from 'openvidu-browser';
+import { Stream, StreamManager } from 'openvidu-browser';
 
 export class UserModel {
   connectionId: string;
@@ -6,7 +6,7 @@ export class UserModel {
   videoMuted: boolean;
   screenShared: boolean;
   nickname: string;
-  stream: Stream;
+  streamManager: StreamManager;
   type: 'local' | 'remote';
 
   constructor() {
@@ -15,7 +15,7 @@ export class UserModel {
     this.videoMuted = false;
     this.screenShared = false;
     this.nickname = '';
-    this.stream = null;
+    this.streamManager = null;
     this.type = 'local';
   }
 
@@ -52,8 +52,8 @@ export class UserModel {
   public setScreenShared(isScreenShared: boolean) {
     this.screenShared = isScreenShared;
   }
-  public setStream(stream: Stream) {
-    this.stream = stream;
+  public setStreamManager(streamManager: StreamManager) {
+    this.streamManager = streamManager;
   }
 
   public setConnectionId(conecctionId: string) {

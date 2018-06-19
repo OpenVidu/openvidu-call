@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, ViewChild } from '@angular/core';
-import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions } from 'openvidu-browser';
+import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions, StreamManagerEvent } from 'openvidu-browser';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserModel } from '../shared/models/user-model';
@@ -8,6 +8,7 @@ import { DialogNicknameComponent } from '../shared/components/dialog-nickname/di
 import { StreamComponent } from '../shared/components/stream/stream.component';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
+import { OpenViduLayout } from '../shared/layout/openvidu-layout';
 
 @Component({
   selector: 'app-video-room',
@@ -16,7 +17,6 @@ import { DialogExtensionComponent } from '../shared/components/dialog-extension/
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel = new UserModel();
-  publisher: Publisher;
   remoteUsers: UserModel[] = [];
   resizeTimeout;
   @ViewChild('videoStream') private videoStream: StreamComponent;
@@ -25,9 +25,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   // OpenVidu objects
   OV: OpenVidu;
   session: Session;
+  openviduLayout: OpenViduLayout;
 
   // Streams to feed StreamComponent's
-  localStream: Stream;
 
   // Join form
   mySessionId: string;
@@ -45,9 +45,32 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.leaveSession();
   }
 
+  @HostListener('window:resize', ['$event'])
+  sizeChange(event) {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.openviduLayout.updateLayout();
+    }, 20);
+  }
+
   ngOnInit() {
     this.generateParticipantInfo();
     this.joinSession();
+
+    this.openviduLayout = new OpenViduLayout();
+    this.openviduLayout.initLayoutContainer(document.getElementById('layout'), {
+      maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
+      minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
+      fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
+      and minRatio and maxRatio are ignored (default false) */,
+      bigClass: 'OV_big', // The class to add to elements that should be sized bigger
+      bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
+      bigFixedRatio: false, // fixedRatio for the big ones
+      bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
+      bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
+      bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
+      animate: true, // Whether you want to animate the transitions
+    });
   }
 
   ngOnDestroy() {
@@ -73,8 +96,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.session.disconnect();
     }
     this.remoteUsers = [];
-    this.localStream = null;
     this.session = null;
+    this.localUser = null;
     this.OV = null;
     this.generateParticipantInfo();
     this.router.navigate(['']);
@@ -82,13 +105,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   micStatusChanged(): void {
     this.localUser.setAudioMuted(!this.localUser.isAudioMuted());
-    this.publisher.publishAudio(!this.localUser.isAudioMuted());
+    (<Publisher>this.localUser.streamManager).publishAudio(!this.localUser.isAudioMuted());
     this.sendSignalUserChanged({ isAudioMuted: this.localUser.isAudioMuted() });
   }
 
   camStatusChanged(): void {
     this.localUser.setVideoMuted(!this.localUser.isVideoMuted());
-    this.publisher.publishVideo(!this.localUser.isVideoMuted());
+    (<Publisher>this.localUser.streamManager).publishVideo(!this.localUser.isVideoMuted());
     this.sendSignalUserChanged({ isVideoMuted: this.localUser.isVideoMuted() });
   }
 
@@ -98,7 +121,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   screenShareDisabled(): void {
-    this.session.unpublish(this.publisher);
+    this.session.unpublish((<Publisher>this.localUser.streamManager));
     this.connectWebCam();
   }
 
@@ -135,14 +158,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
           alert('You need to choose a window or application to share');
         } else if (error === undefined) {
-          this.session.unpublish(this.publisher);
+          this.session.unpublish((<Publisher>this.localUser.streamManager));
           this.localUser.setScreenShared(true);
-          this.publisher = publisher;
-          this.localUser.setStream(publisher.stream);
-          this.session.publish(this.publisher);
+          this.localUser.setStreamManager(publisher);
+          this.session.publish((<Publisher>this.localUser.streamManager));
         }
       },
     );
+    publisher.on('streamPlaying', () => {
+      this.openviduLayout.updateLayout();
+      (<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
+    });
   }
 
   private generateParticipantInfo() {
@@ -154,7 +180,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private deleteRemoteStream(stream: Stream): void {
-    const userStream = this.remoteUsers.filter((user: UserModel) => user.stream === stream)[0];
+    const userStream = this.remoteUsers.filter((user: UserModel) => user.streamManager.stream === stream)[0];
     const index = this.remoteUsers.indexOf(userStream, 0);
     if (index > -1) {
       this.remoteUsers.splice(index, 1);
@@ -182,8 +208,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   private subscribeToStreamCreated() {
     this.session.on('streamCreated', (event: StreamEvent) => {
+      const subscriber = this.session.subscribe(event.stream, undefined);
+      subscriber.on('streamPlaying', ((e: StreamManagerEvent) => {
+        this.openviduLayout.updateLayout();
+        (<HTMLElement>subscriber.videos[0].video).parentElement.classList.remove('custom-class');
+      }));
       const newUser = new UserModel();
-      newUser.setStream(event.stream);
+      newUser.setStreamManager(subscriber);
       newUser.setConnectionId(event.stream.connection.connectionId);
       newUser.setNickname(JSON.parse(event.stream.connection.data).clientData);
       newUser.setType('remote');
@@ -193,7 +224,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         isVideoMuted: this.localUser.isVideoMuted(),
         nickname: this.localUser.getNickname(),
       });
-      this.session.subscribe(event.stream, undefined);
     });
   }
 
@@ -202,7 +232,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.deleteRemoteStream(event.stream);
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = setTimeout(() => {
-        this.videoStream.openviduLayout.updateLayout();
+         this.openviduLayout.updateLayout();
       }, 20);
       event.preventDefault();
     });
@@ -222,7 +252,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private connectWebCam(): void {
-    this.publisher = this.OV.initPublisher(undefined, {
+    this.localUser.streamManager = this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: undefined,
       publishAudio: !this.localUser.isAudioMuted(),
@@ -232,12 +262,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       insertMode: 'APPEND',
       mirror: false,
     });
+    this.localUser.streamManager.on('streamPlaying', () => {
+      this.openviduLayout.updateLayout();
+      (<HTMLElement>this.localUser.streamManager.videos[0].video).parentElement.classList.remove('custom-class');
+    });
     this.localUser.setNickname(this.myUserName);
     this.localUser.setConnectionId(this.session.connection.connectionId);
-    this.localUser.setStream(this.publisher.stream);
     this.localUser.setScreenShared(false);
-    this.localStream = this.publisher.stream;
-    this.session.publish(this.publisher);
+    this.session.publish(<Publisher>this.localUser.streamManager);
   }
 
   private sendSignalUserChanged(data: any): void {

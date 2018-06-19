@@ -1,4 +1,4 @@
-<div class="">
+<div class="" id="videoRoomNavBar">
   <mat-toolbar id="header">
 
     <div id="navSessionInfo">
@@ -34,11 +34,11 @@
   </mat-toolbar>
 </div>
 
-<chat-component #chatNavbar *ngIf="this.localStream" [user]="this.localUser"></chat-component>
+<chat-component #chatNavbar *ngIf="this.localUser.streamManager" [user]="this.localUser"></chat-component>
 
 <div id="layout" class="bounds">
 
-  <div *ngIf="this.localStream" class="OT_root OT_publisher custom-class">
+  <div *ngIf="this.localUser.streamManager" class="OT_root OT_publisher custom-class">
     <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
       <span>{{this.localUser.getNickname()}} (edit)</span>
     </div>
