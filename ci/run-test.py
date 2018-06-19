@@ -13,20 +13,10 @@ for k in "su - ubuntu":
 client.keyPress('enter')
 time.sleep(1)
 
-for k in "git clone https://github.com/openvidu/openvidu-call.git":
-  client.keyPress(k)
-client.keyPress('enter')
-time.sleep(30)
-
 for k in "cd openvidu-call/front/openvidu-call/":
   client.keyPress(k)
 client.keyPress('enter')
 time.sleep(1)
-
-for k in "npm install":
-  client.keyPress(k)
-client.keyPress('enter')
-time.sleep(60)
 
 for k in "./node_modules/":
   client.keyPress(k)

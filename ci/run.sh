@@ -7,7 +7,11 @@ sleep 2
 sleep 30
 
 chmod -R 777 /workdir
-
+cd /home/ubuntu
+git clone https://github.com/openvidu/openvidu-call.git
+cd openvidu-call/front/openvidu-call/
+npm install
+chown -R ubuntu.ubuntu /home/ubuntu/*
 python /home/ubuntu/run-test.py
 
 cat /workdir/results.txt
