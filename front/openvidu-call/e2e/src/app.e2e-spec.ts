@@ -27,14 +27,18 @@ describe('Test room ', () => {
   });
 
   it('should set disabled the webcam and show the icon', () => {
+    browser.sleep(3000);
     browser.wait(EC.elementToBeClickable(OVC.getCamButton(browser)), 5000);
     OVC.getCamButton(browser).click();
+    browser.wait(EC.visibilityOf(OVC.getCamIcon(browser)), 5000);
     expect(OVC.getCamIcon(browser).isDisplayed()).toBeTruthy();
   });
 
   it('should set disabled the microphone and show the icon', () => {
+    browser.sleep(3000);
     browser.wait(EC.elementToBeClickable(OVC.getMicButton(browser)), 5000);
     OVC.getMicButton(browser).click();
+    browser.wait(EC.visibilityOf(OVC.getMicIcon(browser)), 5000);
     expect(OVC.getMicIcon(browser).isDisplayed()).toBeTruthy();
   });
 
