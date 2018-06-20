@@ -30,5 +30,6 @@ COPY kms.sh /kms.sh
 COPY openvidu-server.jar /openvidu-server.jar
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY run-test.py /home/ubuntu/run-test.py
+COPY startvnc.sh /usr/local/bin
 
 ENTRYPOINT ["/run.sh"]
