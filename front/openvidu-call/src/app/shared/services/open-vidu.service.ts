@@ -2,15 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { throwError as observableThrowError, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class OpenViduService {
-  URL_OV = 'https://' + location.hostname ;
+  URL_OV: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+    this.URL_OV = environment.name === 'docker' ? 'https://' + location.hostname : 'https://' + location.hostname + ':4443';
+    console.log('url environment', environment.name +  this.URL_OV);
+  }
 
   getToken(mySessionId: string): Promise<string> {
     return this.createSession(mySessionId).then(
@@ -29,7 +33,7 @@ export class OpenViduService {
           'Content-Type': 'application/json',
         })
        };
-      return this.http.post<any>(this.URL_OV + ':4443/api/sessions', body, options)
+      return this.http.post<any>(this.URL_OV + '/api/sessions', body, options)
         .pipe(
           catchError(error => {
             error.status === 409 ? resolve(sessionId) : reject(error);
@@ -53,7 +57,7 @@ export class OpenViduService {
           'Content-Type': 'application/json',
         })
       };
-      return this.http.post<any>(this.URL_OV + ':4443/api/tokens', body, options)
+      return this.http.post<any>(this.URL_OV + '/api/tokens', body, options)
         .pipe(
           catchError(error => {
             reject(error);
