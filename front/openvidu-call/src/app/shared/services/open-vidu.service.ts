@@ -12,7 +12,13 @@ export class OpenViduService {
   URL_OV: string;
 
   constructor(private http: HttpClient) { 
-    this.URL_OV = environment.production ? 'https://' + location.hostname : 'https://' + location.hostname + ':4443';
+    let url_prod = 'https://' + location.hostname;
+    const url_dev = 'https://' + location.hostname  + ':4443';
+    console.log(environment.production);
+    if (location.port) {
+      url_prod = url_prod + ':' + location.port;
+    }
+    this.URL_OV = environment.production ? url_prod : url_dev;
     console.log('url environment', this.URL_OV);
   }
 
