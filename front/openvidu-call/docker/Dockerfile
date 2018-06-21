@@ -32,6 +32,7 @@ COPY ngrok.yml /home/ngrok/ngrok.yml
 # Configure Supervisor
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord-ngrok.conf /
 RUN apt-get update && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*
 
 # Install OpenVidu Server
@@ -47,5 +48,7 @@ RUN set -x \
 EXPOSE 4040
 EXPOSE 4443
 
+COPY run.sh /run.sh
+
 # Exec supervisord
-CMD ["/usr/bin/supervisord"]
+CMD ["/run.sh"]

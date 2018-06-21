@@ -2,10 +2,9 @@
 cp ../../../openvidu/openvidu-server/target/openvidu-server-"$1".jar ./openvidu-server.jar
 
 # Copy openvidu-insecure-js web files
-cp -a ../web/. ./web/
-
-# Modify OpenVidu Server URL
-sed -i 's/url: "https:\/\/" + location\.hostname + ":4443/url: "https:\/\/" + location\.hostname + "/g' ./web/app.js
+cd ..
+mkdir web
+ng build --prod -o ./web
 
 # Build docker image
 docker build -t openvidu/basic-videoconference-demo .

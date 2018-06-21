@@ -12,8 +12,8 @@ export class OpenViduService {
   URL_OV: string;
 
   constructor(private http: HttpClient) { 
-    this.URL_OV = environment.name === 'docker' ? 'https://' + location.hostname : 'https://' + location.hostname + ':4443';
-    console.log('url environment', environment.name +  this.URL_OV);
+    this.URL_OV = environment.production ? 'https://' + location.hostname : 'https://' + location.hostname + ':4443';
+    console.log('url environment', this.URL_OV);
   }
 
   getToken(mySessionId: string): Promise<string> {
