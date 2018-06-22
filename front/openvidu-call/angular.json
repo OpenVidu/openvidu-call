@@ -25,9 +25,12 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [ 
-              "./node_modules/jquery/dist/jquery.min.js"
-             ]
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.min.js",
+              {
+                "input": "node_modules/document-register-element/build/document-register-element.js"
+              }
+            ]
           },
           "configurations": {
             "production": {

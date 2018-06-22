@@ -10,8 +10,9 @@ import { environment } from '../../../environments/environment';
 })
 export class OpenViduService {
   URL_OV: string;
+  MY_SECRET = 'MY_SECRET';
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient) {
     let url_prod = 'https://' + location.hostname;
     const url_dev = 'https://' + location.hostname  + ':4443';
     console.log(environment.production);
@@ -22,24 +23,24 @@ export class OpenViduService {
     console.log('url environment', this.URL_OV);
   }
 
-  getToken(mySessionId: string): Promise<string> {
-    return this.createSession(mySessionId).then(
-      sessionId => {
-        return this.createToken(sessionId);
+  getToken(mySessionId: string, openviduServerUrl: string = this.URL_OV, openviduSecret: string = this.MY_SECRET): Promise<string> {
+    return this.createSession(mySessionId, openviduServerUrl, openviduSecret).then(
+      (sessionId: string) => {
+        return this.createToken(sessionId, openviduServerUrl, openviduSecret);
       });
   }
 
-  createSession(sessionId) {
+  createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string) {
     return new Promise((resolve, reject) => {
 
       const body = JSON.stringify({ customSessionId: sessionId });
       const options = {
         headers: new HttpHeaders({
-          'Authorization': 'Basic ' + btoa('OPENVIDUAPP:MY_SECRET'),
+          'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
           'Content-Type': 'application/json',
         })
        };
-      return this.http.post<any>(this.URL_OV + '/api/sessions', body, options)
+      return this.http.post<any>(openviduServerUrl + '/api/sessions', body, options)
         .pipe(
           catchError(error => {
             error.status === 409 ? resolve(sessionId) : reject(error);
@@ -53,17 +54,17 @@ export class OpenViduService {
     });
   }
 
-  createToken(sessionId): Promise<string> {
+  createToken(sessionId: string,  openviduServerUrl: string, openviduSecret: string): Promise<string> {
     return new Promise((resolve, reject) => {
 
       const body = JSON.stringify({ session: sessionId });
       const options = {
         headers: new HttpHeaders({
-          'Authorization': 'Basic ' + btoa('OPENVIDUAPP:MY_SECRET'),
+          'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
           'Content-Type': 'application/json',
         })
       };
-      return this.http.post<any>(this.URL_OV + '/api/tokens', body, options)
+      return this.http.post<any>(openviduServerUrl + '/api/tokens', body, options)
         .pipe(
           catchError(error => {
             reject(error);

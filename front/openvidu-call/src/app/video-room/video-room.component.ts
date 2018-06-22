@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ViewEncapsulation, Input } from '@angular/core';
 import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions, StreamManagerEvent } from 'openvidu-browser';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
@@ -9,27 +9,32 @@ import { StreamComponent } from '../shared/components/stream/stream.component';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduLayout } from '../shared/layout/openvidu-layout';
+import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 
 @Component({
   selector: 'app-video-room',
   templateUrl: './video-room.component.html',
   styleUrls: ['./video-room.component.css'],
+  // encapsulation: ViewEncapsulation.Native
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel = new UserModel();
   remoteUsers: UserModel[] = [];
   resizeTimeout;
-  @ViewChild('videoStream') private videoStream: StreamComponent;
+
+  // webComponent's inputs
+  @Input() session_id = 'OpenVidu WC';
+  @Input() user: string;
+  @Input() openvidu_server_url: string;
+  @Input() openvidu_secret: string;
+  @Input() token: string;
+
   @ViewChild('chatNavbar') public chat: ChatComponent;
 
-  // OpenVidu objects
   OV: OpenVidu;
   session: Session;
   openviduLayout: OpenViduLayout;
 
-  // Streams to feed StreamComponent's
-
-  // Join form
   mySessionId: string;
   myUserName: string;
 
@@ -99,7 +104,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.session = null;
     this.localUser = null;
     this.OV = null;
-    this.generateParticipantInfo();
+    // this.generateParticipantInfo();
     this.router.navigate(['']);
   }
 
@@ -121,7 +126,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   screenShareDisabled(): void {
-    this.session.unpublish((<Publisher>this.localUser.streamManager));
+    this.session.unpublish(<Publisher>this.localUser.streamManager);
     this.connectWebCam();
   }
 
@@ -137,7 +142,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     });
   }
   openDialogExtension() {
-    const dialogRef = this.dialog.open(DialogExtensionComponent, {
+    this.dialog.open(DialogExtensionComponent, {
       width: '450px',
       data: { nickname: this.localUser.getNickname() },
     });
@@ -158,10 +163,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
           alert('You need to choose a window or application to share');
         } else if (error === undefined) {
-          this.session.unpublish((<Publisher>this.localUser.streamManager));
+          this.session.unpublish(<Publisher>this.localUser.streamManager);
           this.localUser.setScreenShared(true);
           this.localUser.setStreamManager(publisher);
-          this.session.publish((<Publisher>this.localUser.streamManager));
+          this.session.publish(<Publisher>this.localUser.streamManager);
         }
       },
     );
@@ -172,10 +177,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private generateParticipantInfo() {
-    // Random user nickname
     this.route.params.subscribe((params: Params) => {
-      this.mySessionId = params.roomName;
-      this.myUserName = 'OpenVidu_User' + Math.floor(Math.random() * 100);
+      this.mySessionId = params.roomName !== undefined ? params.roomName : this.session_id;
+      this.myUserName = this.user || 'OpenVidu_User' + Math.floor(Math.random() * 100);
     });
   }
 
@@ -209,10 +213,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private subscribeToStreamCreated() {
     this.session.on('streamCreated', (event: StreamEvent) => {
       const subscriber = this.session.subscribe(event.stream, undefined);
-      subscriber.on('streamPlaying', ((e: StreamManagerEvent) => {
+      subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
         this.openviduLayout.updateLayout();
         (<HTMLElement>subscriber.videos[0].video).parentElement.classList.remove('custom-class');
-      }));
+      });
       const newUser = new UserModel();
       newUser.setStreamManager(subscriber);
       newUser.setConnectionId(event.stream.connection.connectionId);
@@ -239,16 +243,28 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private connectToSession(): void {
-    this.openViduSrv.getToken(this.mySessionId).then((token) => {
-      this.session
-        .connect(token, { clientData: this.myUserName })
+    if (this.token) {
+      console.log('custom user token');
+      this.connect(this.token);
+    } else {
+    this.openViduSrv.getToken(this.mySessionId, this.openvidu_server_url, this.openvidu_secret).then((token) => {
+        this.connect(token);
+      }).catch((error) => {
+        console.log('There was an error getting the token:', error.code, error.message);
+        this.openDialogError('There was an error getting the token:', error.message);
+      });
+    }
+  }
+
+  private connect(token: string): void {
+    this.session.connect(token, { clientData: this.myUserName })
         .then(() => {
           this.connectWebCam();
         })
         .catch((error) => {
           console.log('There was an error connecting to the session:', error.code, error.message);
+          this.openDialogError('There was an error connecting to the session:', error.message);
         });
-    });
   }
 
   private connectWebCam(): void {
@@ -278,5 +294,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       type: 'userChanged',
     };
     this.session.signal(signalOptions);
+  }
+
+  private openDialogError(message, messageError: string) {
+    this.dialog.open(DialogErrorComponent, {
+      width: '450px',
+      data: { message: message, messageError: messageError },
+    });
   }
 }

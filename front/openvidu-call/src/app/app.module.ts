@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -23,6 +23,8 @@ import { DialogNicknameComponent } from './shared/components/dialog-nickname/dia
 import { ChatComponent } from './shared/components/chat/chat.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
+import { createCustomElement } from '@angular/elements';
+import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { OpenViduVideoComponent } from './shared/components/stream/ov-video.comp
     DialogNicknameComponent,
     ChatComponent,
     DialogExtensionComponent,
-    OpenViduVideoComponent
+    OpenViduVideoComponent,
+    DialogErrorComponent
   ],
   imports: [
     FormsModule,
@@ -52,14 +55,19 @@ import { OpenViduVideoComponent } from './shared/components/stream/ov-video.comp
     HttpClientModule,
   ],
   entryComponents: [
-    AppComponent,
-    VideoRoomComponent,
-    DashboardComponent,
-    StreamComponent,
+    DialogErrorComponent,
     DialogNicknameComponent,
     DialogExtensionComponent,
   ],
   providers: [OpenViduService],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+
+  constructor(private injector: Injector) {
+    const element = createCustomElement(VideoRoomComponent, { injector: this.injector });
+    customElements.define('openvidu-session', element);
+  }
+
+  ngDoBootstrap() {}
+}
