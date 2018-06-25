@@ -13,13 +13,17 @@ export class OpenViduService {
   MY_SECRET = 'MY_SECRET';
 
   constructor(private http: HttpClient) {
-    let url_prod = 'https://' + location.hostname;
-    const url_dev = 'https://' + location.hostname  + ':4443';
-    console.log(environment.production);
-    if (location.port) {
-      url_prod = url_prod + ':' + location.port;
+    if (environment.openvidu_url) {
+      this.URL_OV = environment.openvidu_url;
+      this.MY_SECRET = environment.openvidu_secret;
+    } else {
+        let url_prod = 'https://' + location.hostname;
+        if (location.port) {
+          url_prod = url_prod + ':' + location.port;
+        }
+        this.URL_OV = environment.production ? url_prod : 'https://' + location.hostname  + ':4443';
     }
-    this.URL_OV = environment.production ? url_prod : url_dev;
+
     console.log('url environment', this.URL_OV);
   }
 
