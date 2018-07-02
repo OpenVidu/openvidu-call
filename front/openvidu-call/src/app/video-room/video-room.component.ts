@@ -130,6 +130,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   screenShareDisabled(): void {
     this.session.unpublish(<Publisher>this.localUser.streamManager);
+    this.localUser.setScreenShared(false);
     this.connectWebCam();
   }
 
@@ -155,7 +156,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     const publisher = this.OV.initPublisher(undefined, {
         videoSource: 'screen',
         publishAudio: !this.localUser.isAudioMuted(),
-        publishVideo: !this.localUser.isVideoMuted()
+        publishVideo: !this.localUser.isVideoMuted(),
+        mirror: false,
       }, (error) => {
         if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
           this.openDialogExtension();
