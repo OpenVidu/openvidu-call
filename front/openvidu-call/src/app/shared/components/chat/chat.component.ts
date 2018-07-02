@@ -10,16 +10,12 @@ import { UserModel } from '../../models/user-model';
     trigger('toggleChat', [
       state(
         'hidden',
-        style({
-          opacity: '0',
-          overflow: 'hidden',
-          display: 'none',
-        }),
+        style({}),
       ),
       state(
         'shown',
         style({
-          opacity: '1',
+          visibility: 'visible'
         }),
       ),
       transition('* => *', animate('100ms ease-in')),

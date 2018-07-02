@@ -6,6 +6,7 @@
   height: calc(100% - 40px);
   width: 20%;
   border-left: solid 1px #3f3f3f;
+  visibility: hidden;
 }
 
 #point{
