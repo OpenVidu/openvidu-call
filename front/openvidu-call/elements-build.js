@@ -15,7 +15,7 @@ const concat = require('concat');
 
   await fs.copyFile('./dist/openvidu-call/styles.css', 'elements/openvidu-session.css');
 
-  await fs.copy('./dist/openvidu-call/assets/', 'elements/assets/');
+  await fs.copyFile('./dist/openvidu-call/assets/images/openvidu_logo.png', 'elements/assets/images/openvidu_logo.png');
 
 })();
 
@@ -23,7 +23,7 @@ const concat = require('concat');
     
   await fs.ensureDir('elements');
   
-  await fs.ensureFile('./elements/assets/images/openvidu_logo.png');
+  await fs.ensureDir('./elements/assets/images/');
 
   await fs.copy('./elements/assets/images/openvidu_logo.png', '../webComponent/assets/images/openvidu_logo.png');
 
@@ -39,14 +39,5 @@ const concat = require('concat');
   
   await fs.copyFile('./elements/openvidu-session.js', '../webComponent/openvidu-session.js');
 
-})();
-
-
-(async function remove() {
-    
-  fs.ensureDir('./elements');
-
-  fs.remove('./elements');
-  
 })();
 
