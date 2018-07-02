@@ -7,24 +7,23 @@
       </a>
       <span id="session-title">{{mySessionId}}</span>
     </div>
-    <!--<button mat-stroked-button color="primary" (click)="copyLink()" ngxClipboard [cbContent]="roomLink">Copy room link</button>-->
     <div id="navButtons" align="center">
       <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
-        <mat-icon *ngIf="localUser.isAudioMuted()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
-        <mat-icon *ngIf="!localUser.isAudioMuted()" matTooltip="Unpublish your audio">mic</mat-icon>
+        <mat-icon *ngIf="localUser && localUser.isAudioMuted()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
+        <mat-icon *ngIf="localUser && !localUser.isAudioMuted()" matTooltip="Unpublish your audio">mic</mat-icon>
       </button>
       <button mat-icon-button (click)="camStatusChanged()" id="navCamButton">
-        <mat-icon *ngIf="localUser.isVideoMuted()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
-        <mat-icon *ngIf="!localUser.isVideoMuted()" matTooltip="Unpublish your cam">videocam</mat-icon>
+        <mat-icon *ngIf="localUser && localUser.isVideoMuted()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
+        <mat-icon *ngIf="localUser && !localUser.isVideoMuted()" matTooltip="Unpublish your cam">videocam</mat-icon>
       </button>
       <button mat-icon-button (click)="screenShare()" id="navScreenButton">
-        <mat-icon matTooltip="Choose screen" *ngIf="localUser.isScreenShared()">picture_in_picture</mat-icon>
-        <mat-icon matTooltip="Screen share" *ngIf="!localUser.isScreenShared()">screen_share</mat-icon>
+        <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShared()">picture_in_picture</mat-icon>
+        <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShared()">screen_share</mat-icon>
       </button>
-      <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser.isScreenShared()">
+      <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShared()">
         <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
       </button>
-      <button mat-icon-button (click)="leaveSession()" id="navLeaveButton">
+      <button mat-icon-button (click)="exitSession()" id="navLeaveButton">
         <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
       </button>
       <button mat-icon-button id="navChatButton" (click)="toggleChat()">
@@ -34,11 +33,11 @@
   </mat-toolbar>
 </div>
 
-<chat-component #chatNavbar *ngIf="this.localUser.streamManager" [user]="this.localUser"></chat-component>
+<chat-component #chatNavbar *ngIf="localUser && this.localUser.streamManager" [user]="this.localUser"></chat-component>
 
 <div id="layout" class="bounds">
 
-  <div *ngIf="this.localUser.streamManager" class="OT_root OT_publisher custom-class">
+  <div *ngIf="localUser && this.localUser.streamManager" class="OT_root OT_publisher custom-class">
     <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
       <span>{{this.localUser.getNickname()}} (edit)</span>
     </div>

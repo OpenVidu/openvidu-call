@@ -1,0 +1,2 @@
+<app-video-room #videoRoom *ngIf="display" [sessionId]="_sessionId" [user]="_user" [openviduServerUrl]="openviduServerUrl"
+  [openviduSecret]="openviduSecret" [token]="_token" (leaveSession)="emitLeaveSessionEvent($event)" (joinSession)="emitJoinSessionEvent($event)"></app-video-room>

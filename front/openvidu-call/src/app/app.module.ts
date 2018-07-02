@@ -25,6 +25,7 @@ import { DialogExtensionComponent } from './shared/components/dialog-extension/d
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 import { createCustomElement } from '@angular/elements';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
+import { WebComponentComponent } from './web-component/web-component.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
     ChatComponent,
     DialogExtensionComponent,
     OpenViduVideoComponent,
-    DialogErrorComponent
+    DialogErrorComponent,
+    WebComponentComponent
   ],
   imports: [
     FormsModule,
@@ -58,6 +60,7 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
     DialogErrorComponent,
     DialogNicknameComponent,
     DialogExtensionComponent,
+    WebComponentComponent,
   ],
   providers: [OpenViduService],
   bootstrap: [AppComponent],
@@ -65,7 +68,7 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
 export class AppModule {
 
   constructor(private injector: Injector) {
-    const element = createCustomElement(VideoRoomComponent, { injector: this.injector });
+    const element = createCustomElement(WebComponentComponent, { injector: this.injector });
     customElements.define('openvidu-session', element);
   }
 
