@@ -26,6 +26,7 @@ import { OpenViduVideoComponent } from './shared/components/stream/ov-video.comp
 import { createCustomElement } from '@angular/elements';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { WebComponentComponent } from './web-component/web-component.component';
+import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { WebComponentComponent } from './web-component/web-component.component';
 export class AppModule {
 
   constructor(private injector: Injector) {
-    const element = createCustomElement(WebComponentComponent, { injector: this.injector });
+    const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
+    const element = createCustomElement(WebComponentComponent, { injector: this.injector, strategyFactory });
     customElements.define('openvidu-session', element);
   }
 
