@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const concat = require('concat');
 
-(async function build() {
+async function buildElement() {
   const files = [
     './dist/openvidu-call/runtime.js',
     './dist/openvidu-call/polyfills.js',
@@ -9,35 +9,45 @@ const concat = require('concat');
     './dist/openvidu-call/main.js',
   ];
 
-  await fs.ensureDir('elements');
+  try {
+    await fs.ensureDir('elements');
 
-  await concat(files, 'elements/openvidu-session.js');
+    await concat(files, 'elements/openvidu-session.js');
 
-  await fs.copyFile('./dist/openvidu-call/styles.css', 'elements/openvidu-session.css');
+    await fs.copyFile('./dist/openvidu-call/styles.css', 'elements/openvidu-session.css');
 
-  await fs.copyFile('./dist/openvidu-call/assets/images/openvidu_logo.png', 'elements/assets/images/openvidu_logo.png');
+    await fs.copyFile('./dist/openvidu-call/assets/images/openvidu_logo.png', 'elements/assets/images/openvidu_logo.png');
+  } catch (err) {
+    console.error('Error executing build funtion in elements-builds.js', err);
+  }
+}
 
-})();
+async function copyFiles() {
+  const destination = '../webComponent/';
 
-(async function copy() {
-    
-  await fs.ensureDir('elements');
+  try {
+    await fs.ensureDir('elements');
+    await fs.copy('./elements/', destination);
+    await fs.copy(destination + 'assets/images/favicon.ico', destination + 'favicon.ico');
+    await fs.remove(destination + 'assets/images/favicon.ico');
   
-  await fs.ensureDir('./elements/assets/images/');
+  } catch (err) {
+    console.error('Error executing copy function in elements-builds.js', err);
+  }
+}
 
-  await fs.copy('./elements/assets/images/openvidu_logo.png', '../webComponent/assets/images/openvidu_logo.png');
+async function removeElement() {
 
-  await fs.ensureFile('./elements/assets/images/favicon.ico');
-
-  await fs.copyFile('./elements/assets/images/favicon.ico', '../webComponent/favicon.ico');
-
-  await fs.ensureFile('./elements/openvidu-session.css');
-
-  await fs.copyFile('./elements/openvidu-session.css', '../webComponent/openvidu-session.css');
-
-  await fs.ensureFile('./elements/openvidu-session.js');
+  try {
+    await fs.ensureDir('elements');
+    await fs.remove('./elements/');
   
-  await fs.copyFile('./elements/openvidu-session.js', '../webComponent/openvidu-session.js');
-
-})();
-
+  } catch (err) {
+    console.error('Error executing remove function in elements-builds.js', err);
+  }
+}
+buildElement().then(() => {
+  return copyFiles();
+}).then(() => {
+  removeElement();
+})
