@@ -1,11 +1,15 @@
+#videoRoomNavBar{
+  min-width: 400px;
+}
+
 #header {
   color: #ffffff;
   height: 40px;
   background-color: #333333;
+  padding: 0 14px 0 0;
 }
 
 #navSessionInfo {
-  width: calc(50% - 16px);
   height: 100%;
   display: inline-flex;
 }
@@ -15,14 +19,18 @@
   top: none;
 }
 
-#session-title {
+#titleContent{
+  max-width: 100px;
   background-color: #494949;
-  margin: 5px;
+  margin: 5px -18px;
   padding: 0px 15px;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #header_img {
-  max-width: 150px;
+  max-width: 135px;
   margin-right: 10px;
   margin-top: -3px;
 }
@@ -57,6 +65,7 @@
   position: absolute;
   left: 0;
   right: 0;
+  min-width: 400px;
 }
 
 
@@ -66,8 +75,11 @@
   position: absolute;
   left: 0;
   right: 0;
+  top: 40px;
   bottom: 0;
-  height: calc(100% - 40px);
+  height: inherit;
+  min-width: 400px !important;
+  width: inherit;
 }
 
 /*!

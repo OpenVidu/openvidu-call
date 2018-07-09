@@ -8,14 +8,11 @@ import { UserModel } from '../../models/user-model';
   styleUrls: ['./chat.component.css'],
   animations: [
     trigger('toggleChat', [
-      state(
-        'hidden',
-        style({}),
-      ),
+      state('hidden', style({})),
       state(
         'shown',
         style({
-          visibility: 'visible'
+          visibility: 'visible',
         }),
       ),
       transition('* => *', animate('100ms ease-in')),
@@ -50,7 +47,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.visibility = this.visibility === 'hidden' ? 'shown' : 'hidden';
     this.messageUnread = false;
     this.scrollToBottom();
-
   }
 
   eventKeyPress(event) {

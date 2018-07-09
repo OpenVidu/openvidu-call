@@ -1,11 +1,13 @@
-<div class="" id="videoRoomNavBar">
-  <mat-toolbar id="header">
+<div id="videoRoomNavBar">
+  <mat-toolbar id="header" role="heading">
 
     <div id="navSessionInfo">
       <a [routerLink]="['']">
         <img id="header_img" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png">
       </a>
-      <span id="session-title">{{mySessionId}}</span>
+      <div id="titleContent" *ngIf="!compact">
+          <span id="session-title">{{mySessionId}}</span>
+      </div>
     </div>
     <div id="navButtons" align="center">
       <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
@@ -26,25 +28,24 @@
       <button mat-icon-button (click)="exitSession()" id="navLeaveButton">
         <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
       </button>
-      <button mat-icon-button id="navChatButton" (click)="toggleChat()">
+      <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!compact">
         <mat-icon matTooltip="Chat">question_answer</mat-icon>
       </button>
     </div>
   </mat-toolbar>
-</div>
 
-<chat-component #chatNavbar *ngIf="localUser && this.localUser.streamManager" [user]="this.localUser"></chat-component>
+  <chat-component #chatNavbar *ngIf="localUser && this.localUser.streamManager && !compact" [user]="this.localUser"></chat-component>
 
-<div id="layout" class="bounds">
-
-  <div *ngIf="localUser && this.localUser.streamManager" class="OT_root OT_publisher custom-class">
-    <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
-      <span>{{this.localUser.getNickname()}} (edit)</span>
+  <div id="layout" class="bounds">
+    <div *ngIf="localUser && this.localUser.streamManager" class="OT_root OT_publisher custom-class">
+      <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
+        <span>{{this.localUser.getNickname()}} (edit)</span>
+      </div>
+      <stream-component #videoStream [user]="this.localUser"></stream-component>
     </div>
-    <stream-component #videoStream [user]="this.localUser"></stream-component>
-  </div>
-  <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher OV_big custom-class">
-    <span class="nickname" id="remoteNickname">{{user.getNickname()}}</span>
-    <stream-component #videoStream [user]="user"></stream-component>
+    <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher OV_big custom-class">
+      <span class="nickname" id="remoteNickname">{{user.getNickname()}}</span>
+      <stream-component #videoStream [user]="user"></stream-component>
+    </div>
   </div>
 </div>
