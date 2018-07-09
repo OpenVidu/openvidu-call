@@ -19,6 +19,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel;
   remoteUsers: UserModel[] = [];
   resizeTimeout;
+  compact = false;
 
   // webComponent's inputs and outputs
   @Input('sessionId') sessionId: string;
@@ -28,6 +29,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Input('token') token: string;
   @Output('joinSession') joinSession = new EventEmitter<any>();
   @Output('leaveSession') leaveSession = new EventEmitter<any>();
+  @Output('error') error = new EventEmitter<any>();
 
   @ViewChild('chatNavbar') public chat: ChatComponent;
 
@@ -56,12 +58,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.resizeTimeout = setTimeout(() => {
       this.openviduLayout.updateLayout();
     }, 20);
+    this.checkSizeComponent();
   }
 
   ngOnInit() {
     this.generateParticipantInfo();
     this.joinToSession();
-
     this.openviduLayout = new OpenViduLayout();
     this.openviduLayout.initLayoutContainer(document.getElementById('layout'), {
       maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
@@ -76,6 +78,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
       animate: true, // Whether you want to animate the transitions
     });
+
   }
 
   ngOnDestroy() {
@@ -254,6 +257,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.openViduSrv.getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret).then((token) => {
         this.connect(token);
       }).catch((error) => {
+        this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status});
         console.log('There was an error getting the token:', error.code, error.message);
         this.openDialogError('There was an error getting the token:', error.message);
       });
@@ -266,6 +270,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
           this.connectWebCam();
         })
         .catch((error) => {
+          this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status});
           console.log('There was an error connecting to the session:', error.code, error.message);
           this.openDialogError('There was an error connecting to the session:', error.message);
         });
@@ -306,5 +311,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       width: '450px',
       data: { message: message, messageError: messageError },
     });
+  }
+
+  public checkSizeComponent() {
+    if (document.getElementById('layout').offsetWidth <= 700) {
+      console.log(document.getElementById('layout').offsetWidth);
+      this.compact = true;
+    } else {
+      this.compact = false;
+    }
   }
 }

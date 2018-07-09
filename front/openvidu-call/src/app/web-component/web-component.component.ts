@@ -15,16 +15,25 @@ export class WebComponentComponent implements OnInit {
   @Input('openviduSecret') openviduSecret: string;
   @Output('joinSession') joinSession = new EventEmitter<any>();
   @Output('leaveSession') leaveSession = new EventEmitter<any>();
+  @Output('error') error = new EventEmitter<any>();
 
   @ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
-  display = false;
+  public display = false;
 
   constructor() {}
 
   @Input('sessionConfig')
-  set sessionConfig(sessionConfig: ISessionCongif) {
-    console.log('Session config input ', sessionConfig);
+  set sessionConfig(config: any) {
+    let sessionConfig: ISessionCongif;
+    console.log('Session config input ', config);
+    sessionConfig = config;
+    if (typeof config === 'string') {
+      sessionConfig = JSON.parse(config);
+    }
+    if (sessionConfig.sessionId === 'null') {
+      this.videoRoom.exitSession();
+    }
     this._sessionId = sessionConfig.sessionId;
     this._user = sessionConfig.user;
     this._token = sessionConfig.token;
@@ -42,13 +51,17 @@ export class WebComponentComponent implements OnInit {
     return false;
   }
 
-  emitJoinSessionEvent(event) {
+  emitJoinSessionEvent(event): void {
     this.joinSession.emit(event);
-    console.log('event Join session');
+    this.videoRoom.checkSizeComponent();
   }
 
-  emitLeaveSessionEvent(event) {
-    this.leaveSession.emit();
+  emitLeaveSessionEvent(event): void {
+    this.leaveSession.emit(event);
     this.display = false;
+  }
+
+  emitErrorEvent(event): void {
+    setTimeout(() => this.error.emit(event), 20);
   }
 }
