@@ -18,6 +18,8 @@ async function buildElement() {
 
     await fs.copy('./dist/openvidu-call/assets/images/openvidu_logo.png', './elements/assets/images/openvidu_logo.png');
 
+    await fs.copy('./dist/openvidu-call/assets/images/openvidu_logo_grey.png', './elements/assets/images/openvidu_logo_grey.png');
+
     await fs.copy('./dist/openvidu-call/assets/images/favicon.ico', './elements/assets/images/favicon.ico');
 
   } catch (err) {

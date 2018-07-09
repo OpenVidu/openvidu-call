@@ -23,6 +23,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('chatScroll') chatScroll: ElementRef;
 
   @Input() user: UserModel;
+  @Input() lightTheme: boolean;
 
   visibility = 'hidden';
   message: string;

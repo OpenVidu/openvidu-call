@@ -13,6 +13,7 @@ export class WebComponentComponent implements OnInit {
   _token: string;
   @Input('openviduServerUrl') openviduServerUrl: string;
   @Input('openviduSecret') openviduSecret: string;
+  @Input('theme') theme: string;
   @Output('joinSession') joinSession = new EventEmitter<any>();
   @Output('leaveSession') leaveSession = new EventEmitter<any>();
   @Output('error') error = new EventEmitter<any>();

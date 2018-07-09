@@ -9,6 +9,11 @@
   padding: 0 14px 0 0;
 }
 
+.headerLight{
+  color: #706969 !important;
+  background-color: #eeeeee !important;
+}
+
 #navSessionInfo {
   height: 100%;
   display: inline-flex;
@@ -29,6 +34,11 @@
   text-overflow: ellipsis;
 }
 
+.titleContentLight{
+  background-color: #dfdfdf !important; 
+  color: #000;
+}
+
 #header_img {
   max-width: 135px;
   margin-right: 10px;
@@ -41,9 +51,8 @@
 .nickname {
   background: rgba(58, 64, 74, 0.651);
   padding: 5px !important;
-
   position: absolute;
-  z-index: 10000;
+  z-index: 999;
 }
 
 .pointer {
@@ -80,6 +89,10 @@
   height: inherit;
   min-width: 400px !important;
   width: inherit;
+}
+
+.boundsLight{
+  background-color: #dfdfdf !important;
 }
 
 /*!

@@ -1,11 +1,12 @@
 <div id="videoRoomNavBar">
-  <mat-toolbar id="header" role="heading">
+  <mat-toolbar id="header" role="heading" [class.headerLight]="lightTheme">
 
     <div id="navSessionInfo">
       <a [routerLink]="['']">
-        <img id="header_img" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png">
+        <img id="header_img" *ngIf="!lightTheme" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png">
+        <img id="header_img" *ngIf="lightTheme" alt="OpenVidu Logo" src="assets/images/openvidu_logo_grey.png">
       </a>
-      <div id="titleContent" *ngIf="!compact">
+      <div id="titleContent" *ngIf="!compact" [class.titleContentLight]="lightTheme">
           <span id="session-title">{{mySessionId}}</span>
       </div>
     </div>
@@ -34,11 +35,11 @@
     </div>
   </mat-toolbar>
 
-  <chat-component #chatNavbar *ngIf="localUser && this.localUser.streamManager && !compact" [user]="this.localUser"></chat-component>
+  <chat-component #chatNavbar *ngIf="localUser && this.localUser.streamManager && !compact" [user]="this.localUser" [lightTheme]="lightTheme"></chat-component>
 
-  <div id="layout" class="bounds">
+  <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
     <div *ngIf="localUser && this.localUser.streamManager" class="OT_root OT_publisher custom-class">
-      <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname">
+      <div class="nickname pointer" (click)="openDialogNickname()" id="localNickname" >
         <span>{{this.localUser.getNickname()}} (edit)</span>
       </div>
       <stream-component #videoStream [user]="this.localUser"></stream-component>

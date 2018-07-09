@@ -1,10 +1,10 @@
-<div *ngIf="messageUnread" id="point"></div>
+<div *ngIf="messageUnread" id="point" [class.pointLight]="lightTheme"></div>
 
-<div id="chatComponent" [@toggleChat]="visibility">
+<div id="chatComponent" [@toggleChat]="visibility" [class.chatComponentLight]="lightTheme">
     <div class="message-wrap" #chatScroll>
         <div *ngFor="let data of messageList" class="message" [class.right]="data.connectionId === user.connectionId " [class.left]=" data.connectionId !== user.connectionId ">
             <div class="msg-detail">
-                <div class="msg-info">
+                <div class="msg-info" [class.msg-info-light]="lightTheme">
                     <p> {{data.nickname}}</p>
                 </div>
                 <div class="msg-content">

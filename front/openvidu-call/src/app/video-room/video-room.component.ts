@@ -19,7 +19,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel;
   remoteUsers: UserModel[] = [];
   resizeTimeout;
-  compact = false;
 
   // webComponent's inputs and outputs
   @Input('sessionId') sessionId: string;
@@ -27,9 +26,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Input('openviduServerUrl') openviduServerUrl: string;
   @Input('openviduSecret') openviduSecret: string;
   @Input('token') token: string;
+  @Input('theme') theme: string;
   @Output('joinSession') joinSession = new EventEmitter<any>();
   @Output('leaveSession') leaveSession = new EventEmitter<any>();
   @Output('error') error = new EventEmitter<any>();
+
+  compact = false;
+  lightTheme: boolean;
+  
 
   @ViewChild('chatNavbar') public chat: ChatComponent;
 
@@ -63,6 +67,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.generateParticipantInfo();
+    this.checkTheme();
     this.joinToSession();
     this.openviduLayout = new OpenViduLayout();
     this.openviduLayout.initLayoutContainer(document.getElementById('layout'), {
@@ -182,6 +187,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.openviduLayout.updateLayout();
       (<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
     });
+  }
+
+  checkSizeComponent() {
+    if (document.getElementById('layout').offsetWidth <= 700) {
+      this.compact = true;
+    } else {
+      this.compact = false;
+    }
   }
 
   private generateParticipantInfo() {
@@ -313,12 +326,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  public checkSizeComponent() {
-    if (document.getElementById('layout').offsetWidth <= 700) {
-      console.log(document.getElementById('layout').offsetWidth);
-      this.compact = true;
-    } else {
-      this.compact = false;
-    }
+  private checkTheme() {
+      this.lightTheme = this.theme === 'light';
   }
 }
