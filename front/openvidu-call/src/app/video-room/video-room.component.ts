@@ -21,7 +21,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   resizeTimeout;
 
   // webComponent's inputs and outputs
-  @Input('sessionId') sessionId: string;
+  @Input('sessionName') sessionName: string;
   @Input('user') user: string;
   @Input('openviduServerUrl') openviduServerUrl: string;
   @Input('openviduSecret') openviduSecret: string;
@@ -203,7 +203,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   private generateParticipantInfo() {
     this.route.params.subscribe((params: Params) => {
-      this.mySessionId = params.roomName !== undefined ? params.roomName : this.sessionId;
+      this.mySessionId = params.roomName !== undefined ? params.roomName : this.sessionName;
       this.myUserName = this.user || 'OpenVidu_User' + Math.floor(Math.random() * 100);
     });
   }

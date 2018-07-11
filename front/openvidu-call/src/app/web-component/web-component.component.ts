@@ -8,7 +8,7 @@ import { ISessionCongif } from '../shared/models/webcomponent-config';
   styleUrls: ['./web-component.component.css'],
 })
 export class WebComponentComponent implements OnInit {
-  _sessionId: string;
+  _sessionName: string;
   _user: string;
   _token: string;
   @Input('openviduServerUrl') openviduServerUrl: string;
@@ -32,10 +32,10 @@ export class WebComponentComponent implements OnInit {
     if (typeof config === 'string') {
       sessionConfig = JSON.parse(config);
     }
-    if (sessionConfig.sessionId === 'null') {
+    if (sessionConfig.sessionName === 'null') {
       this.videoRoom.exitSession();
     }
-    this._sessionId = sessionConfig.sessionId;
+    this._sessionName = sessionConfig.sessionName;
     this._user = sessionConfig.user;
     this._token = sessionConfig.token;
     if (this.validateParameters()) {
@@ -46,7 +46,7 @@ export class WebComponentComponent implements OnInit {
   ngOnInit() {}
 
   validateParameters(): boolean {
-    if ((this._sessionId && this.openviduServerUrl && this.openviduSecret && this._user) || (this._token && this._user)) {
+    if ((this._sessionName && this.openviduServerUrl && this.openviduSecret && this._user) || (this._token && this._user)) {
       return true;
     }
     return false;

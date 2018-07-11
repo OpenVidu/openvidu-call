@@ -1,5 +1,5 @@
 export interface ISessionCongif {
-    sessionId: string;
+    sessionName: string;
     user: string;
     token: string;
 }
