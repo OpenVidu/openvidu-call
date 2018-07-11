@@ -32,14 +32,15 @@ export class WebComponentComponent implements OnInit {
     if (typeof config === 'string') {
       sessionConfig = JSON.parse(config);
     }
-    if (sessionConfig.sessionName === 'null') {
+    if (sessionConfig) {
+      this._sessionName = sessionConfig.sessionName;
+      this._user = sessionConfig.user;
+      this._token = sessionConfig.token;
+      if (this.validateParameters()) {
+        this.display = true;
+      }
+    } else {
       this.videoRoom.exitSession();
-    }
-    this._sessionName = sessionConfig.sessionName;
-    this._user = sessionConfig.user;
-    this._token = sessionConfig.token;
-    if (this.validateParameters()) {
-      this.display = true;
     }
   }
 
