@@ -249,7 +249,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       const newUser = new UserModel();
       newUser.setStreamManager(subscriber);
       newUser.setConnectionId(event.stream.connection.connectionId);
-      newUser.setNickname(JSON.parse(event.stream.connection.data).clientData);
+      const nickname = (event.stream.connection.data).split('%')[0];
+      newUser.setNickname(JSON.parse(nickname).clientData);
       newUser.setType('remote');
       this.remoteUsers.push(newUser);
       this.sendSignalUserChanged({

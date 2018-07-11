@@ -7,6 +7,7 @@
   width: 25%;
   border-left: solid 1px #3f3f3f;
   visibility: hidden;
+  top: 40px;
 }
 .chatComponentLight{
   background-color: #d8d8d8c5 !important;

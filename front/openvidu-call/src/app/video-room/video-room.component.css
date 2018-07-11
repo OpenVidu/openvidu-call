@@ -1,5 +1,6 @@
 #videoRoomNavBar{
   min-width: 400px;
+  display: contents;
 }
 
 #header {
@@ -7,6 +8,7 @@
   height: 40px;
   background-color: #333333;
   padding: 0 14px 0 0;
+  position: absolute;
 }
 
 .headerLight{
@@ -76,7 +78,6 @@
   right: 0;
   min-width: 400px;
 }
-
 
 .bounds {
   background-color: #494949;

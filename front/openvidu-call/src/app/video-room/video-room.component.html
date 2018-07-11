@@ -3,10 +3,10 @@
 
     <div id="navSessionInfo">
       <a [routerLink]="['']">
-        <img id="header_img" *ngIf="!lightTheme" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png">
-        <img id="header_img" *ngIf="lightTheme" alt="OpenVidu Logo" src="assets/images/openvidu_logo_grey.png">
+        <img id="header_img" *ngIf="!lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png">
+        <img id="header_img" *ngIf="lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png">
       </a>
-      <div id="titleContent" *ngIf="!compact" [class.titleContentLight]="lightTheme">
+      <div id="titleContent" *ngIf="!compact && mySessionId" [class.titleContentLight]="lightTheme">
           <span id="session-title">{{mySessionId}}</span>
       </div>
     </div>

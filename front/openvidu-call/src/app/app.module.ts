@@ -71,7 +71,7 @@ export class AppModule {
   constructor(private injector: Injector) {
     const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
     const element = createCustomElement(WebComponentComponent, { injector: this.injector, strategyFactory });
-    customElements.define('openvidu-session', element);
+    customElements.define('openvidu-webcomponent', element);
   }
 
   ngDoBootstrap() {}

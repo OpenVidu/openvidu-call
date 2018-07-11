@@ -1,21 +1,39 @@
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
-html{
-    height: 100%;
+html {
+  height: 100%;
 }
-body{
-    margin: 0;
-    font-family: "Open Sans", sans-serif;
-    height: 100%;
-}
-
-mat-button-toggle-group{
-    box-shadow: none !important;
-    height: inherit;
-
+body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  height: 100%;
 }
 
+mat-button-toggle-group {
+  box-shadow: none !important;
+  height: inherit;
+}
 
+/* webcomponent */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v38/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
 
-
-
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
