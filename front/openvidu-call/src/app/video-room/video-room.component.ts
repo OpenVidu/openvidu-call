@@ -4,7 +4,6 @@ import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserModel } from '../shared/models/user-model';
 import { MatDialog } from '@angular/material';
-import { DialogNicknameComponent } from '../shared/components/dialog-nickname/dialog-nickname.component';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
@@ -16,20 +15,17 @@ import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-e
   styleUrls: ['./video-room.component.css'],
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
-  localUser: UserModel;
-  remoteUsers: UserModel[] = [];
-  resizeTimeout;
 
   // webComponent's inputs and outputs
-  @Input('sessionName') sessionName: string;
-  @Input('user') user: string;
-  @Input('openviduServerUrl') openviduServerUrl: string;
-  @Input('openviduSecret') openviduSecret: string;
-  @Input('token') token: string;
-  @Input('theme') theme: string;
-  @Output('joinSession') joinSession = new EventEmitter<any>();
-  @Output('leaveSession') leaveSession = new EventEmitter<any>();
-  @Output('error') error = new EventEmitter<any>();
+  @Input() sessionName: string;
+  @Input() user: string;
+  @Input() openviduServerUrl: string;
+  @Input() openviduSecret: string;
+  @Input() token: string;
+  @Input() theme: string;
+  @Output() joinSession = new EventEmitter<any>();
+  @Output() leaveSession = new EventEmitter<any>();
+  @Output() error = new EventEmitter<any>();
 
   compact = false;
   lightTheme: boolean;
@@ -40,9 +36,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   session: Session;
   openviduLayout: OpenViduLayout;
   openviduLayoutOptions: OpenViduLayoutOptions;
-
   mySessionId: string;
   myUserName: string;
+  localUser: UserModel;
+  remoteUsers: UserModel[];
+  resizeTimeout;
 
   constructor(
     private openViduSrv: OpenViduService,
@@ -66,6 +64,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.localUser = new UserModel();
+    this.localUser.setType('local');
+    this.remoteUsers = [];
     this.generateParticipantInfo();
     this.checkTheme();
     this.joinToSession();
@@ -97,8 +98,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   joinToSession() {
     this.OV = new OpenVidu();
     this.session = this.OV.initSession();
-    this.localUser = new UserModel();
-
     this.subscribeToUserChanged();
     this.subscribeToStreamCreated();
     this.subscribedToStreamDestroyed();
@@ -140,17 +139,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.connectWebCam();
   }
 
-  openDialogNickname() {
-    const dialogRef = this.dialog.open(DialogNicknameComponent, {
-      width: '350px',
-      data: { nickname: this.localUser.getNickname() },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result !== undefined) {
-        this.nicknameChanged(result);
-      }
-    });
-  }
   openDialogExtension() {
     this.dialog.open(DialogExtensionComponent, {
       width: '450px',
@@ -312,6 +300,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       insertMode: 'APPEND',
       mirror: false,
     });
+
     this.session.publish(<Publisher>this.localUser.streamManager).then(() => {
       this.joinSession.emit();
     });

@@ -39,10 +39,12 @@ export class UserModel {
     return this.nickname;
   }
 
-  public getType(): string {
-    return this.type;
+  public isLocal(): boolean {
+    return this.type === 'local';
   }
-
+  public isRemote(): boolean {
+    return !this.isLocal();
+  }
   public setAudioMuted(isAudioMuted: boolean) {
     this.audioMuted = isAudioMuted;
   }

@@ -11,12 +11,13 @@ export class WebComponentComponent implements OnInit {
   _sessionName: string;
   _user: string;
   _token: string;
-  @Input('openviduServerUrl') openviduServerUrl: string;
-  @Input('openviduSecret') openviduSecret: string;
-  @Input('theme') theme: string;
-  @Output('joinSession') joinSession = new EventEmitter<any>();
-  @Output('leaveSession') leaveSession = new EventEmitter<any>();
-  @Output('error') error = new EventEmitter<any>();
+
+  @Input() openviduServerUrl: string;
+  @Input() openviduSecret: string;
+  @Input() theme: string;
+  @Output() joinSession = new EventEmitter<any>();
+  @Output() leaveSession = new EventEmitter<any>();
+  @Output() error = new EventEmitter<any>();
 
   @ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 

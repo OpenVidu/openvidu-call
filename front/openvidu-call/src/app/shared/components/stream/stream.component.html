@@ -1,4 +1,26 @@
 <div class="OT_widget-container" [id]="'container-' + this.user.streamManager.stream.streamId">
+    <div class="nickname pointer">
+        <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
+        <span *ngIf="!editNickname && user.isLocal()" (click)="toggleNicknameForm()"> (edit)</span>
+        <div *ngIf="editNickname && user.isLocal()" id="dialogNickname">
+            <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
+                <mat-icon matTooltip="Close">highlight_off</mat-icon>
+            </button>
+            <form id="nicknameForm">
+                <mat-form-field>
+                    <input matInput placeholder="Nick: {{user.getNickname()}}" [formControl]="nicknameFormControl" [errorStateMatcher]="matcher"
+                        (keypress)="eventKeyPress($event)" autocomplete="off">
+                    <mat-error *ngIf="nicknameFormControl.hasError('required')">
+                        Nickname is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
+                            Nickname is <strong>too long!</strong>
+                        </mat-error>
+                </mat-form-field>
+            </form>
+        </div>
+    </div>
+
     <ov-video [streamManager]="user.streamManager" [mutedSound]="mutedSound"></ov-video>
     <div id="statusIcons">
         <mat-icon *ngIf="this.user.audioMuted" id="statusMic">mic_off</mat-icon>
@@ -6,10 +28,9 @@
     </div>
     <button mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
         <mat-icon>{{this.fullscreenIcon}}</mat-icon>
-      </button>
-      <button mat-icon-button id="volumeButton" *ngIf="this.user.getType() === 'remote'" (click)="toggleSound()">
+    </button>
+    <button mat-icon-button id="volumeButton" *ngIf="this.user.isRemote()" (click)="toggleSound()">
         <mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
         <mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
-
-      </button>
+    </button>
 </div>

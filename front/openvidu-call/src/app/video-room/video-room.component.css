@@ -50,17 +50,6 @@
   padding: 0;
 }
 
-.nickname {
-  background: rgba(58, 64, 74, 0.651);
-  padding: 5px !important;
-  position: absolute;
-  z-index: 999;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
 #footer {
   padding: 0;
   width: 40%;

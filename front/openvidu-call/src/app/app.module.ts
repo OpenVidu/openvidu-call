@@ -19,7 +19,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { OpenViduService } from './shared/services/open-vidu.service';
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
-import { DialogNicknameComponent } from './shared/components/dialog-nickname/dialog-nickname.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
@@ -34,7 +33,6 @@ import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
     VideoRoomComponent,
     DashboardComponent,
     StreamComponent,
-    DialogNicknameComponent,
     ChatComponent,
     DialogExtensionComponent,
     OpenViduVideoComponent,
@@ -59,7 +57,6 @@ import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
   ],
   entryComponents: [
     DialogErrorComponent,
-    DialogNicknameComponent,
     DialogExtensionComponent,
     WebComponentComponent,
   ],
