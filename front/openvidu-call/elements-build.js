@@ -12,15 +12,12 @@ async function buildElement() {
   try {
     await fs.ensureDir('elements');
 
-    await concat(files, 'elements/openvidu-session.js');
+    await concat(files, 'elements/openvidu-webcomponent.js');
 
-    await fs.copy('./dist/openvidu-call/styles.css', './elements/openvidu-session.css');
+    await fs.copy('./dist/openvidu-call/styles.css', './elements/openvidu-webcomponent.css');
 
-    await fs.copy('./dist/openvidu-call/assets/images/openvidu_logo.png', './elements/assets/images/openvidu_logo.png');
+    await fs.copy('./dist/openvidu-call/favicon.ico', './elements/favicon.ico');
 
-    await fs.copy('./dist/openvidu-call/assets/images/openvidu_logo_grey.png', './elements/assets/images/openvidu_logo_grey.png');
-
-    await fs.copy('./dist/openvidu-call/assets/images/favicon.ico', './elements/assets/images/favicon.ico');
 
   } catch (err) {
     console.error('Error executing build funtion in elements-builds.js', err);
@@ -28,7 +25,7 @@ async function buildElement() {
 }
 
 async function copyFiles() {
-  const destination = '../../../openvidu-tutorials/openvidu-starter/web';
+  const destination = '../../../openvidu-tutorials/openvidu-webcomponent/web';
 
   try {
 
