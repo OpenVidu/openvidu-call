@@ -29,11 +29,12 @@
 
 
 #room_card{
+    color: #303030;
     position: inherit;
     max-width: 700px;
     width: 75%;
     margin: auto;
-    background-color: #f0f0f0f3;
+    background: rgba(221, 221, 221, 0.856);
 }
 
 #room_card mat-form-field{
