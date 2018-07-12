@@ -77,15 +77,11 @@ describe('Test room ', () => {
     const inputDialog = OVC.getDialogNickname(browser).element(by.css('input'));
     inputDialog.clear();
     OVC.typeWithDelay(inputDialog, 'C');
-    OVC.getDialogNickname(browser)
-      .element(by.css('#acceptButton'))
-      .click();
+    OVC.pressEnter(browser);
     browser.sleep(1000);
     expect(
-      OVC.getLocalNickname(browser)
-        .element(by.css('span'))
-        .getText(),
-    ).toBe('C (edit)');
+      OVC.getLocalNickname(browser).getText(),
+    ).toBe('C');
   });
 
   it('should close the session', () => {
@@ -215,9 +211,7 @@ describe('Two browsers: ', () => {
     inputDialog.click();
     inputDialog.clear();
     OVC.typeWithDelay(inputDialog, 'C');
-    OVC.getDialogNickname(browser)
-      .element(by.css('#acceptButton'))
-      .click();
+    OVC.pressEnter(browser);
     browser.sleep(2000);
     expect(OVC.getRemoteNickname(browser2).getText()).toBe('C');
     OVC.closeSession(browser2);

@@ -29,10 +29,10 @@ export class OpenViduCall {
   }
 
   getLocalNickname(browser): ElementFinder {
-    return browser.element(by.css('#localNickname'));
+    return browser.element(by.css('#localUser #nickname'));
   }
   getRemoteNickname(browser): ElementFinder {
-    return browser.element(by.css('#remoteNickname'));
+    return browser.element(by.css('#remoteUsers #nickname'));
   }
 
   getDialogNickname(browser): ElementFinder {
