@@ -118,15 +118,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   micStatusChanged(): void {
-    this.localUser.setAudioMuted(!this.localUser.isAudioMuted());
-    (<Publisher>this.localUser.streamManager).publishAudio(!this.localUser.isAudioMuted());
-    this.sendSignalUserChanged({ isAudioMuted: this.localUser.isAudioMuted() });
+    this.localUser.setAudioActive(!this.localUser.isAudioActive());
+    (<Publisher>this.localUser.getStreamManager()).publishAudio(this.localUser.isAudioActive());
+    this.sendSignalUserChanged({ isAudioActive: this.localUser.isAudioActive() });
   }
 
   camStatusChanged(): void {
-    this.localUser.setVideoMuted(!this.localUser.isVideoMuted());
-    (<Publisher>this.localUser.streamManager).publishVideo(!this.localUser.isVideoMuted());
-    this.sendSignalUserChanged({ isVideoMuted: this.localUser.isVideoMuted() });
+    this.localUser.setVideoActive(!this.localUser.isVideoActive());
+    (<Publisher>this.localUser.getStreamManager()).publishVideo(this.localUser.isVideoActive());
+    this.sendSignalUserChanged({ isVideoActive: this.localUser.isVideoActive() });
   }
 
   nicknameChanged(nickname: string): void {
@@ -135,7 +135,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   screenShareDisabled(): void {
-    this.session.unpublish(<Publisher>this.localUser.streamManager);
+    this.session.unpublish(<Publisher>this.localUser.getStreamManager());
     this.connectWebCam();
   }
 
@@ -149,8 +149,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   screenShare() {
     const publisher = this.OV.initPublisher(undefined, {
         videoSource: 'screen',
-        publishAudio: !this.localUser.isAudioMuted(),
-        publishVideo: !this.localUser.isVideoMuted(),
+        publishAudio: this.localUser.isAudioActive(),
+        publishVideo: this.localUser.isVideoActive(),
         mirror: false,
       },
       (error) => {
@@ -167,11 +167,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     );
 
     publisher.once('accessAllowed', () => {
-      this.session.unpublish(<Publisher>this.localUser.streamManager);
+      this.session.unpublish(<Publisher>this.localUser.getStreamManager());
       this.localUser.setStreamManager(publisher);
-      this.session.publish(<Publisher>this.localUser.streamManager).then(() => {
-        this.localUser.setScreenShared(true);
-        this.sendSignalUserChanged({ isScreenShared: this.localUser.isScreenShared() });
+      this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
+      this.localUser.setScreenShareActive(true);
+      this.sendSignalUserChanged({ isScreenShareActive: this.localUser.isScreenShareActive() });
       });
     });
 
@@ -197,7 +197,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private deleteRemoteStream(stream: Stream): void {
-    const userStream = this.remoteUsers.filter((user: UserModel) => user.streamManager.stream === stream)[0];
+    const userStream = this.remoteUsers.filter((user: UserModel) => user.getStreamManager().stream === stream)[0];
     const index = this.remoteUsers.indexOf(userStream, 0);
     if (index > -1) {
       this.remoteUsers.splice(index, 1);
@@ -209,17 +209,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.remoteUsers.forEach((user: UserModel) => {
         if (user.getConnectionId() === event.from.connectionId) {
           const data = JSON.parse(event.data);
-          if (data.isAudioMuted !== undefined) {
-            user.setAudioMuted(data.isAudioMuted);
+          if (data.isAudioActive !== undefined) {
+            user.setAudioActive(data.isAudioActive);
           }
-          if (data.isVideoMuted !== undefined) {
-            user.setVideoMuted(data.isVideoMuted);
+          if (data.isVideoActive !== undefined) {
+            user.setVideoActive(data.isVideoActive);
           }
           if (data.nickname !== undefined) {
             user.setNickname(data.nickname);
           }
-          if (data.isScreenShared !== undefined) {
-            user.setScreenShared(data.isScreenShared);
+          if (data.isScreenShareActive !== undefined) {
+            user.setScreenShareActive(data.isScreenShareActive);
           }
         }
       });
@@ -242,9 +242,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       newUser.setType('remote');
       this.remoteUsers.push(newUser);
       this.sendSignalUserChanged({
-        isAudioMuted: this.localUser.isAudioMuted(),
-        isVideoMuted: this.localUser.isVideoMuted(),
-        isScreenShared: this.localUser.isScreenShared(),
+        isAudioActive: this.localUser.isAudioActive(),
+        isVideoActive: this.localUser.isVideoActive(),
+        isScreenShareActive: this.localUser.isScreenShareActive(),
         nickname: this.localUser.getNickname(),
       });
     });
@@ -290,28 +290,28 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private connectWebCam(): void {
-    this.localUser.streamManager = this.OV.initPublisher(undefined, {
+    this.localUser.setStreamManager(this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: undefined,
-      publishAudio: !this.localUser.isAudioMuted(),
-      publishVideo: !this.localUser.isVideoMuted(),
+      publishAudio: this.localUser.isAudioActive(),
+      publishVideo: this.localUser.isVideoActive(),
       resolution: '640x480',
       frameRate: 30,
       insertMode: 'APPEND',
       mirror: false,
-    });
+    }));
 
-    this.session.publish(<Publisher>this.localUser.streamManager).then(() => {
+    this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
       this.joinSession.emit();
     });
     this.localUser.setNickname(this.myUserName);
     this.localUser.setConnectionId(this.session.connection.connectionId);
-    this.localUser.setScreenShared(false);
-    this.sendSignalUserChanged({ isScreenShared: this.localUser.isScreenShared() });
+    this.localUser.setScreenShareActive(false);
+    this.sendSignalUserChanged({ isScreenShareActive: this.localUser.isScreenShareActive() });
 
-    this.localUser.streamManager.on('streamPlaying', () => {
+    this.localUser.getStreamManager().on('streamPlaying', () => {
       this.openviduLayout.updateLayout();
-      (<HTMLElement>this.localUser.streamManager.videos[0].video).parentElement.classList.remove('custom-class');
+      (<HTMLElement>this.localUser.getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
     });
   }
 
@@ -333,7 +333,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private checkSomeoneShareScreen() {
     let isScreenShared: boolean;
     // return true if at least one passes the test
-    isScreenShared = this.remoteUsers.some((user) => user.isScreenShared()) || this.localUser.isScreenShared();
+    isScreenShared = this.remoteUsers.some((user) => user.isScreenShareActive()) || this.localUser.isScreenShareActive();
     this.openviduLayoutOptions.fixedRatio = isScreenShared;
     this.openviduLayoutOptions.bigFixedRatio = isScreenShared;
     this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);

@@ -36,7 +36,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    this.user.streamManager.stream.session.on('signal:chat', (event: any) => {
+    this.user.getStreamManager().stream.session.on('signal:chat', (event: any) => {
       const data = JSON.parse(event.data);
       this.messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
       this.messageUnread = this.visibility === 'hidden';
@@ -60,8 +60,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
     if (this.user && this.message) {
       this.message = this.message.replace(/ +(?= )/g, '');
       if (this.message !== '' && this.message !== ' ') {
-        const data = { message: this.message, nickname: this.user.nickname };
-        this.user.streamManager.stream.session.signal({
+        const data = { message: this.message, nickname: this.user.getNickname() };
+        this.user.getStreamManager().stream.session.signal({
           data: JSON.stringify(data),
           type: 'chat',
         });

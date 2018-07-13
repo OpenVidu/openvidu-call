@@ -1,34 +1,34 @@
 import { Stream, StreamManager } from 'openvidu-browser';
 
 export class UserModel {
-  connectionId: string;
-  audioMuted: boolean;
-  videoMuted: boolean;
-  screenShared: boolean;
-  nickname: string;
-  streamManager: StreamManager;
-  type: 'local' | 'remote';
+  private connectionId: string;
+  private audioActive: boolean;
+  private videoActive: boolean;
+  private screenShareActive: boolean;
+  private nickname: string;
+  private streamManager: StreamManager;
+  private type: 'local' | 'remote';
 
   constructor() {
     this.connectionId = '';
-    this.audioMuted = false;
-    this.videoMuted = false;
-    this.screenShared = false;
+    this.audioActive = true;
+    this.videoActive = true;
+    this.screenShareActive = false;
     this.nickname = '';
     this.streamManager = null;
     this.type = 'local';
   }
 
-  public isAudioMuted(): boolean {
-    return this.audioMuted;
+  public isAudioActive(): boolean {
+    return this.audioActive;
   }
 
-  public isVideoMuted(): boolean {
-    return this.videoMuted;
+  public isVideoActive(): boolean {
+    return this.videoActive;
   }
 
-  public isScreenShared(): boolean {
-    return this.screenShared;
+  public isScreenShareActive(): boolean {
+    return this.screenShareActive;
   }
 
   public getConnectionId(): string {
@@ -39,20 +39,24 @@ export class UserModel {
     return this.nickname;
   }
 
+  public getStreamManager(): StreamManager {
+    return this.streamManager;
+  }
+
   public isLocal(): boolean {
     return this.type === 'local';
   }
   public isRemote(): boolean {
     return !this.isLocal();
   }
-  public setAudioMuted(isAudioMuted: boolean) {
-    this.audioMuted = isAudioMuted;
+  public setAudioActive(isAudioActive: boolean) {
+    this.audioActive = isAudioActive;
   }
-  public setVideoMuted(isVideoMuted: boolean) {
-    this.videoMuted = isVideoMuted;
+  public setVideoActive(isVideoActive: boolean) {
+    this.videoActive = isVideoActive;
   }
-  public setScreenShared(isScreenShared: boolean) {
-    this.screenShared = isScreenShared;
+  public setScreenShareActive(isScreenShareActive: boolean) {
+    this.screenShareActive = isScreenShareActive;
   }
   public setStreamManager(streamManager: StreamManager) {
     this.streamManager = streamManager;

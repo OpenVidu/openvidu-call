@@ -30,7 +30,7 @@ export class StreamComponent implements OnInit {
 
   toggleFullscreen() {
     const document: any = window.document;
-    const fs = document.getElementById('container-' + this.user.streamManager.stream.streamId);
+    const fs = document.getElementById('container-' + this.user.getStreamManager().stream.streamId);
     if (
       !document.fullscreenElement &&
       !document.mozFullScreenElement &&
