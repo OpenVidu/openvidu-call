@@ -348,6 +348,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private checkTheme() {
-      this.lightTheme = true; //this.theme === 'light';
+      this.lightTheme = this.theme === 'light';
   }
 }

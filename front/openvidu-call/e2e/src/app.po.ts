@@ -72,7 +72,7 @@ export class OpenViduCall {
   }
 
   getRemoteVideoList(browser): ElementFinder {
-    return browser.element.all(by.css('.OV_big video'));
+    return browser.element.all(by.css('#remoteUsers video'));
   }
 
   getChatContent(browser): ElementFinder {
