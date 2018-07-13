@@ -43,12 +43,13 @@
     <div *ngIf="localUser && this.localUser.getStreamManager()" class="OT_root OT_publisher custom-class" id="localUser">
         <stream-component #videoStream [user]="this.localUser" (nicknameClicked)="nicknameChanged($event)"></stream-component>
     </div>
-    <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager() && !compact"> 
-        <chat-component #chatNavbar  [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)"></chat-component>
-    </div>
+
     <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher  custom-class" id="remoteUsers">
       <stream-component #videoStream [user]="user"></stream-component>
     </div>
+    <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager() && !compact"> 
+      <chat-component #chatNavbar  [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)"></chat-component>
+  </div>
     
   </div>
 </div>
