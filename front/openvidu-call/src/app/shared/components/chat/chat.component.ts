@@ -1,53 +1,41 @@
-import { Component, OnInit, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { trigger, style, transition, animate, state } from '@angular/animations';
+import { Component, OnInit, Input, Output, AfterViewInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 
 @Component({
   selector: 'chat-component',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
-  animations: [
-    trigger('toggleChat', [
-      state('hidden', style({})),
-      state(
-        'shown',
-        style({
-          visibility: 'visible',
-        }),
-      ),
-      transition('* => *', animate('100ms ease-in')),
-    ]),
-  ],
 })
 export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('chatScroll') chatScroll: ElementRef;
 
   @Input() user: UserModel;
+  _chatDisplay: 'block' | 'none';
   @Input() lightTheme: boolean;
+  @Output() messageReceived = new EventEmitter<any>();
 
-  visibility = 'hidden';
   message: string;
-  messageUnread = false;
-
   messageList: { connectionId: string; nickname: string; message: string }[] = [];
 
   constructor() {}
 
   ngOnInit() {}
 
+  @Input('chatDisplay')
+  set isDisplayed(display: 'block' | 'none') {
+    this._chatDisplay = display;
+    if (this._chatDisplay === 'block') {
+      this.scrollToBottom();
+    }
+  }
+
   ngAfterViewInit() {
     this.user.getStreamManager().stream.session.on('signal:chat', (event: any) => {
       const data = JSON.parse(event.data);
       this.messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
-      this.messageUnread = this.visibility === 'hidden';
+      this.messageReceived.emit();
       this.scrollToBottom();
     });
-  }
-
-  toggle(): void {
-    this.visibility = this.visibility === 'hidden' ? 'shown' : 'hidden';
-    this.messageUnread = false;
-    this.scrollToBottom();
   }
 
   eventKeyPress(event) {

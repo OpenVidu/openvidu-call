@@ -1,31 +1,11 @@
 #chatComponent {
-  position: absolute;
-  background-color: #818181c5;
   z-index: 99999;
   right: 0;
-  height: calc(100% - 40px);
-  width: 25%;
-  border-left: solid 1px #3f3f3f;
-  visibility: hidden;
-  top: 40px;
-}
-.chatComponentLight{
-  background-color: #d8d8d8c5 !important;
+  height: 100%;
 }
 
-#point{
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  top: 12px;
-  right: 42px;
-  border-radius: 50%;
-  background-color: #ffa600;
-  border: 1px solid #000;
-  z-index: 99999;
-}
-.pointLight{
-  border: 1px solid #ffffff !important;
+.chatComponentLight{
+  background-color: #d8d8d8c5 !important;
 }
 
 .message-wrap {
@@ -56,7 +36,6 @@
 }
 .msg-info-light p{
   color: #000000;
-
 } 
 
 .msg-content {
@@ -127,7 +106,7 @@ span.triangle {
 
 #messageInput {
   position: absolute;
-  bottom: 2px;
+  bottom: 0px;
   width: 100%;
   background-color: #ffffff;
   text-align: center;

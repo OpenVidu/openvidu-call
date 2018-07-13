@@ -68,6 +68,21 @@
   min-width: 400px;
 }
 
+#point{
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 12px;
+  right: 33px;
+  border-radius: 50%;
+  background-color: #ffa600;
+  border: 1px solid #000;
+  z-index: 99999;
+}
+.pointLight{
+  border: 1px solid #ffffff !important;
+}
+
 .bounds {
   background-color: #494949;
   overflow: hidden;
@@ -124,20 +139,13 @@
 
 .OT_dialog {
   position: relative;
-
   -webkit-box-sizing: border-box;
-
   box-sizing: border-box;
-  max-width: 576px;
   margin-right: auto;
   margin-left: auto;
-  padding: 36px;
-  text-align: center; /* centers all the inline content */
 
   background-color: #363636;
   color: #fff;
-  -webkit-box-shadow: 2px 4px 6px #999;
-  box-shadow: 2px 4px 6px #999;
   font-family: 'Didact Gothic', sans-serif;
   font-size: 13px;
   line-height: 1.4;

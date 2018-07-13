@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions, StreamManagerEvent } from 'openvidu-browser';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserModel } from '../shared/models/user-model';
 import { MatDialog } from '@angular/material';
-import { ChatComponent } from '../shared/components/chat/chat.component';
 import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
@@ -28,9 +27,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() error = new EventEmitter<any>();
 
   compact = false;
+  messageReceived = false;
   lightTheme: boolean;
-
-  @ViewChild('chatNavbar') public chat: ChatComponent;
+  chatDisplay: 'none' | 'block' = 'none';
 
   OV: OpenVidu;
   session: Session;
@@ -92,7 +91,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   toggleChat() {
-    this.chat.toggle();
+    this.chatDisplay = this.chatDisplay === 'none' ? 'block' : 'none';
+    if (this.chatDisplay === 'block') {
+      this.messageReceived = false;
+    }
+    setTimeout(() => this.openviduLayout.updateLayout(), 20);
+  }
+
+  checkNotification() {
+    this.messageReceived = this.chatDisplay === 'none';
   }
 
   joinToSession() {
@@ -341,6 +348,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private checkTheme() {
-      this.lightTheme = this.theme === 'light';
+      this.lightTheme = true; //this.theme === 'light';
   }
 }
