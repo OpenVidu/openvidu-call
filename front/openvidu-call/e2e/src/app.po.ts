@@ -64,11 +64,11 @@ export class OpenViduCall {
   }
 
   getVideo(browser): ElementFinder {
-    return this.getChatContent(browser).element(by.css('.OT_widget-container'));
+    return this.getChatContent(browser).element(by.css('video'));
   }
 
   getVideoList(browser): ElementFinder {
-    return browser.element.all(by.css('.OT_widget-container'));
+    return browser.element.all(by.css('video'));
   }
 
   getRemoteVideoList(browser): ElementFinder {
@@ -80,7 +80,7 @@ export class OpenViduCall {
   }
 
   getChatInput(browser): ElementFinder {
-    return browser.element(by.css('#messageInput input'));
+    return browser.element(by.id('chatInput'));
   }
 
   getNewMessagePoint(browser): ElementFinder {

@@ -2,8 +2,7 @@ import { OpenViduCall } from './app.po';
 import { browser, by, ProtractorBrowser } from 'protractor';
 import { protractor } from 'protractor/built/ptor';
 
-describe('Connect with a room *Dashboard*', () => {
-  const OVC = new OpenViduCall();
+describe('Connect with a room *Dashboard*', () => { const OVC = new OpenViduCall();
 
   beforeEach(() => {
     browser.waitForAngularEnabled(false);
@@ -103,6 +102,7 @@ describe('Chat component', () => {
   it('should send a message', () => {
     browser.wait(EC.elementToBeClickable(OVC.getChatButton(browser)), 5000);
     OVC.getChatButton(browser).click();
+    browser.sleep(1500);
     OVC.getChatInput(browser).sendKeys('Message 1');
     browser
       .actions()
@@ -116,6 +116,7 @@ describe('Chat component', () => {
 describe('Two browsers: ', () => {
   const OVC = new OpenViduCall();
   const EC = protractor.ExpectedConditions;
+  let browser2: ProtractorBrowser;
 
   beforeEach(() => {
     browser.waitForAngularEnabled(false);
@@ -123,7 +124,8 @@ describe('Two browsers: ', () => {
   });
 
   it('should connect a new user', () => {
-    const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+
     // avoid timeout waiting angular
     browser2.waitForAngularEnabled(false);
 
@@ -133,7 +135,7 @@ describe('Two browsers: ', () => {
   });
 
   it('a user should disconnect his WEBCAM and to be identified by other ', () => {
-    const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
 
     // avoid timeout waiting angular
     browser2.ignoreSynchronization = true;
@@ -145,7 +147,8 @@ describe('Two browsers: ', () => {
   });
 
   it('a user should disconnect his MICROPHONE and to be identified by other ', () => {
-    const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+
     // avoid timeout waiting angular
     browser2.waitForAngularEnabled(false);
 
@@ -157,7 +160,7 @@ describe('Two browsers: ', () => {
   });
 
   it('a user should send a MESSAGE and to be identified by other ', () => {
-    const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
     // avoid timeout waiting angular
     browser2.waitForAngularEnabled(false);
 
@@ -176,36 +179,35 @@ describe('Two browsers: ', () => {
   });
 
   it('both users should can type messages and reveive its', () => {
-    // const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
-    const browser2: ProtractorBrowser = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+
     browser2.waitForAngularEnabled(false);
 
-    // browser.wait(EC.visibilityOf(browser.element(by.css('#navChatButton'))), 10000);
     OVC.getChatButton(browser).click();
-    // browser.wait(EC.visibilityOf(browser.element(by.css('#messageInput input'))), 10000);
-    OVC.getChatInput(browser).click();
-    OVC.getChatInput(browser).sendKeys('New Message User 1');
+    const input = OVC.getChatInput(browser);
+    browser.sleep(2000);
+    input.click();
+    input.sendKeys('New Message User 1');
     OVC.pressEnter(browser);
-    OVC.getChatButton(browser).click();
-    // browser2.driver.wait(EC.elementToBeClickable(browser2.element(by.css('#navChatButton'))), 10000);
+    // OVC.getChatButton(browser).click();
     OVC.getChatButton(browser2).click();
 
     expect(OVC.getMessageList(browser2).count()).toEqual(1);
-    // browser2.wait(EC.visibilityOf(OVC.getChatInput(browser2)), 10000);
-    OVC.getChatInput(browser2).click();
-    OVC.getChatInput(browser2).sendKeys('Message User 2');
+    const input2 = OVC.getChatInput(browser2);
+    browser2.sleep(2000);
+    input2.click();
+    input2.sendKeys('Message User 2');
     OVC.pressEnter(browser2);
-    OVC.getChatInput(browser2).click();
     expect(OVC.getMessageList(browser).count()).toEqual(4);
     OVC.closeSession(browser2);
   });
 
   it('user should can change his nickname and to be checked by other', () => {
-    const browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+    browser2 = OVC.openNewBrowserInTheSameRoom(browser);
+
     browser2.waitForAngularEnabled(false);
     browser.sleep(4000);
     OVC.getLocalNickname(browser).click();
-    //  browser.wait(EC.presenceOf(browser.element(by.css('#dialogNickname'))), 8000);
     expect(OVC.getDialogNickname(browser).isDisplayed()).toBeTruthy();
     const inputDialog = OVC.getDialogNickname(browser).element(by.css('input'));
     inputDialog.click();
