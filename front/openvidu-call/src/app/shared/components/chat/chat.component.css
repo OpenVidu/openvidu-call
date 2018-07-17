@@ -9,8 +9,8 @@
 }
 
 .message-wrap {
-  padding: 0 10px;
-  height: 90%;
+  padding: 0 15px;
+  height: 92%;
   overflow: auto;
 }
 
@@ -58,6 +58,11 @@ span.triangle {
   transform: rotate(45deg);
   position: absolute;
 }
+
+.text{
+  word-break: break-all;
+}
+
 
 
 /* Start message from other user */
