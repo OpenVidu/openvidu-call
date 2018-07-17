@@ -25,6 +25,9 @@
     <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShareActive()">
       <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
     </button>
+    <button mat-icon-button (click)="toggleFullscreen()" *ngIf="localUser">
+      <mat-icon matTooltip="Fullscreen">{{fullscreenIcon}}</mat-icon>
+    </button>
     <button mat-icon-button (click)="exitSession()" id="navLeaveButton">
       <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
     </button>

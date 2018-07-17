@@ -3,6 +3,7 @@ import { UserModel } from '../../models/user-model';
 import { OpenViduLayout } from '../../layout/openvidu-layout';
 import { FormControl, FormGroupDirective, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'stream-component',
@@ -34,7 +35,7 @@ export class StreamComponent implements OnInit {
 
   @ViewChild('videoReference') htmlVideoElement: ElementRef;
 
-  constructor() {}
+  constructor(private apiSrv: ApiService) {}
 
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
@@ -51,38 +52,14 @@ export class StreamComponent implements OnInit {
   ngOnInit() {}
 
   toggleFullscreen() {
-    const document: any = window.document;
-    const fs = document.getElementById('container-' + this.user.getStreamManager().stream.streamId);
-    if (
-      !document.fullscreenElement &&
-      !document.mozFullScreenElement &&
-      !document.webkitFullscreenElement &&
-      !document.msFullscreenElement
-    ) {
+    const state = this.apiSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
+    if (state === 'fullscreen') {
       this.isFullscreen = true;
       this.fullscreenIcon = 'fullscreen_exit';
       this.chatButtonClicked.emit('none');
-      if (fs.requestFullscreen) {
-        fs.requestFullscreen();
-      } else if (fs.msRequestFullscreen) {
-        fs.msRequestFullscreen();
-      } else if (fs.mozRequestFullScreen) {
-        fs.mozRequestFullScreen();
-      } else if (fs.webkitRequestFullscreen) {
-        fs.webkitRequestFullscreen();
-      }
     } else {
       this.isFullscreen = false;
       this.fullscreenIcon = 'fullscreen';
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
     }
   }
 

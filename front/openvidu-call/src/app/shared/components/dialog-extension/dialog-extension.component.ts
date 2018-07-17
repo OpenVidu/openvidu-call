@@ -1,5 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-dialog-extension',
@@ -8,15 +7,18 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class DialogExtensionComponent implements OnInit {
 
+  @Input() nickname = '';
+  @Output() cancel = new EventEmitter<any>();
+
   openviduExtensionUrl = 'https://chrome.google.com/webstore/detail/openvidu-screensharing/lfcgfepafnobdloecchnfaclibenjold';
   isInstalled: boolean;
 
-  constructor(public dialogRef: MatDialogRef<DialogExtensionComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor() {}
 
   ngOnInit() {}
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.cancel.emit();
   }
 
   goToChromePage(): void {

@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -7,6 +8,7 @@ import { UserModel } from '../../models/user-model';
   styleUrls: ['./toolbar.component.css'],
 })
 export class ToolbarComponent implements OnInit {
+  fullscreenIcon = 'fullscreen';
 
   @Input() lightTheme: boolean;
   @Input() mySessionId: boolean;
@@ -21,7 +23,18 @@ export class ToolbarComponent implements OnInit {
   @Output() chatButtonClicked = new EventEmitter<any>();
   @Output() screenShareDisabledClicked = new EventEmitter<any>();
 
-  constructor() {}
+  constructor(private apiSrv: ApiService) {}
+
+  @HostListener('window:resize', ['$event'])
+  sizeChange(event) {
+    const maxHeight = window.screen.height;
+    const maxWidth = window.screen.width;
+    const curHeight = window.innerHeight;
+    const curWidth = window.innerWidth;
+    if (maxWidth !== curWidth && maxHeight !== curHeight) {
+      this.fullscreenIcon = 'fullscreen';
+    }
+  }
 
   ngOnInit() {}
 
@@ -47,5 +60,14 @@ export class ToolbarComponent implements OnInit {
 
   toggleChat() {
     this.chatButtonClicked.emit();
+  }
+
+  toggleFullscreen() {
+    const state = this.apiSrv.toggleFullscreen('videoRoomNavBar');
+    if (state === 'fullscreen') {
+      this.fullscreenIcon = 'fullscreen_exit';
+    } else {
+      this.fullscreenIcon = 'fullscreen';
+    }
   }
 }

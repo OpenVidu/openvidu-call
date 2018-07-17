@@ -4,7 +4,6 @@ import { OpenViduService } from '../shared/services/open-vidu.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserModel } from '../shared/models/user-model';
 import { MatDialog } from '@angular/material';
-import { DialogExtensionComponent } from '../shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 
@@ -30,6 +29,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   messageReceived = false;
   lightTheme: boolean;
   chatDisplay: 'none' | 'block' = 'none';
+  showDialogExtension = false;
 
   OV: OpenVidu;
   session: Session;
@@ -150,11 +150,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.connectWebCam();
   }
 
-  openDialogExtension() {
-    this.dialog.open(DialogExtensionComponent, {
-      width: '450px',
-      data: { nickname: this.localUser.getNickname() },
-    });
+  toggleDialogExtension() {
+    this.showDialogExtension = !this.showDialogExtension;
   }
 
   screenShare() {
@@ -166,7 +163,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       },
       (error) => {
         if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
-          this.openDialogExtension();
+          this.toggleDialogExtension();
         } else if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
           alert('Your browser does not support screen sharing');
         } else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
@@ -174,7 +171,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
           alert('You need to choose a window or application to share');
         }
-      },
+      }
     );
 
     publisher.once('accessAllowed', () => {

@@ -27,6 +27,7 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
 import { WebComponentComponent } from './web-component/web-component.component';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
+import { ApiService } from './shared/services/api.service';
 
 @NgModule({
   declarations: [
@@ -59,10 +60,9 @@ import { ToolbarComponent } from './shared/components/toolbar/toolbar.component'
   ],
   entryComponents: [
     DialogErrorComponent,
-    DialogExtensionComponent,
     WebComponentComponent,
   ],
-  providers: [OpenViduService],
+  providers: [OpenViduService, ApiService],
   bootstrap: [AppComponent],
 })
 export class AppModule {
