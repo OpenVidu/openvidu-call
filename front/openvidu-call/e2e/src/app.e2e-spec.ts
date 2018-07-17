@@ -46,11 +46,14 @@ describe('Test room ', () => {
     OVC.getShareScreenButton(browser).click();
     browser.wait(EC.presenceOf(OVC.getDialogExtension(browser)), 5000);
     expect(OVC.getDialogExtension(browser).isDisplayed()).toBeTruthy();
+    const button = OVC.getDialogCancelButton(browser);
+    button.click();
   });
 
   it('should enter and exit fullscreen', () => {
     browser.wait(EC.elementToBeClickable(OVC.getFullscreenButton(browser)), 5000);
-    OVC.getFullscreenButton(browser).click();
+    const button = OVC.getFullscreenButton(browser);
+    button.click();
     browser.sleep(1000);
     browser.driver
       .manage()
@@ -58,7 +61,7 @@ describe('Test room ', () => {
       .getSize()
       .then((value) => {
         expect(value.width === OVC.getVideo(browser).width && value.height === OVC.getVideo(browser).height);
-        OVC.getFullscreenButton(browser).click();
+        button.click();
         browser.driver
           .manage()
           .window()

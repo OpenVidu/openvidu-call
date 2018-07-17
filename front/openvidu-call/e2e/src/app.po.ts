@@ -20,6 +20,10 @@ export class OpenViduCall {
     return browser.element(by.css('#dialogExtension'));
   }
 
+  getDialogCancelButton(browser): ElementFinder {
+    return browser.element(by.css('#cancelButton'));
+  }
+
   getFullscreenButton(browser): ElementFinder {
     return browser.element(by.css('#fullscreenButton'));
   }
