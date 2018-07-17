@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenViduLayout } from '../../layout/openvidu-layout';
-import {FormControl, FormGroupDirective, Validators} from '@angular/forms';
+import { FormControl, FormGroupDirective, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 
 @Component({
@@ -9,24 +9,46 @@ import { NicknameMatcher } from '../../forms-matchers/nickname';
   styleUrls: ['./stream.component.css'],
   templateUrl: './stream.component.html',
 })
-
 export class StreamComponent implements OnInit {
   openviduLayout: OpenViduLayout;
   fullscreenIcon = 'fullscreen';
   mutedSound: boolean;
   editNickname: boolean;
+  isFullscreen: boolean;
 
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
-  matcher =  new NicknameMatcher();
+  matcher = new NicknameMatcher();
 
   @Input() user: UserModel;
+  @Input() localUser: UserModel;
+  @Input() lightTheme: boolean;
+  @Input() compact: boolean;
+  @Input() showNotification: boolean;
   @Output() nicknameClicked = new EventEmitter<any>();
+  @Output() micButtonClicked = new EventEmitter<any>();
+  @Output() camButtonClicked = new EventEmitter<any>();
+  @Output() screenShareClicked = new EventEmitter<any>();
+  @Output() screenShareDisabledClicked = new EventEmitter<any>();
+  @Output() exitButtonClicked = new EventEmitter<any>();
+  @Output() chatButtonClicked = new EventEmitter<any>();
 
   @ViewChild('videoReference') htmlVideoElement: ElementRef;
 
   constructor() {}
 
-  ngOnInit() { }
+  @HostListener('window:resize', ['$event'])
+  sizeChange(event) {
+    const maxHeight = window.screen.height;
+    const maxWidth = window.screen.width;
+    const curHeight = window.innerHeight;
+    const curWidth = window.innerWidth;
+    if (maxWidth !== curWidth && maxHeight !== curHeight) {
+      this.isFullscreen = false;
+      this.fullscreenIcon = 'fullscreen';
+    }
+  }
+
+  ngOnInit() {}
 
   toggleFullscreen() {
     const document: any = window.document;
@@ -37,8 +59,9 @@ export class StreamComponent implements OnInit {
       !document.webkitFullscreenElement &&
       !document.msFullscreenElement
     ) {
-      console.log('enter FULLSCREEN!');
+      this.isFullscreen = true;
       this.fullscreenIcon = 'fullscreen_exit';
+      this.chatButtonClicked.emit('none');
       if (fs.requestFullscreen) {
         fs.requestFullscreen();
       } else if (fs.msRequestFullscreen) {
@@ -49,7 +72,7 @@ export class StreamComponent implements OnInit {
         fs.webkitRequestFullscreen();
       }
     } else {
-      console.log('exit FULLSCREEN!');
+      this.isFullscreen = false;
       this.fullscreenIcon = 'fullscreen';
       if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -79,5 +102,30 @@ export class StreamComponent implements OnInit {
       this.toggleNicknameForm();
       this.nicknameFormControl.reset();
     }
+  }
+
+  micStatusChanged() {
+    this.micButtonClicked.emit();
+  }
+
+  camStatusChanged() {
+    this.camButtonClicked.emit();
+  }
+
+  screenShare() {
+    this.screenShareClicked.emit();
+  }
+
+  screenShareDisabled() {
+    this.screenShareDisabledClicked.emit();
+  }
+
+  exitSession() {
+    this.exitButtonClicked.emit();
+  }
+
+  toggleChat() {
+    this.toggleFullscreen();
+    this.chatButtonClicked.emit('block');
   }
 }

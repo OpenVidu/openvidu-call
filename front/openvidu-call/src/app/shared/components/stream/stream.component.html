@@ -1,5 +1,10 @@
 <div class="OT_widget-container" [id]="'container-' + this.user.getStreamManager().stream.streamId">
-    <div class="nickname pointer">
+
+    <app-toolbar *ngIf="isFullscreen" [lightTheme]="lightTheme" [showNotification]="showNotification" [mySessionId]="localUser.getStreamManager().stream.session.sessionId"
+        [localUser]="localUser" [compact]="compact" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
+        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></app-toolbar>
+
+    <div class="nickname pointer" [class.fullscreen]="isFullscreen">
         <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
         <span *ngIf="!editNickname && user.isLocal()" (click)="toggleNicknameForm()"> (edit)</span>
         <div *ngIf="editNickname && user.isLocal()" id="dialogNickname">
@@ -14,8 +19,8 @@
                         Nickname is <strong>required</strong>
                     </mat-error>
                     <mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
-                            Nickname is <strong>too long!</strong>
-                        </mat-error>
+                        Nickname is <strong>too long!</strong>
+                    </mat-error>
                 </mat-form-field>
             </form>
         </div>

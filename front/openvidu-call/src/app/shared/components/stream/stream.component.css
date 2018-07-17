@@ -19,6 +19,9 @@
 #nicknameForm{
   padding: 10px;
 }
+.fullscreen{
+  top: 40px;
+}
 
 mat-error{
   text-align: center;

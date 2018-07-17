@@ -90,8 +90,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.exitSession();
   }
 
-  toggleChat() {
-    this.chatDisplay = this.chatDisplay === 'none' ? 'block' : 'none';
+  toggleChat(property: 'none' | 'block') {
+    if (property) {
+      this.chatDisplay = property;
+    } else {
+      this.chatDisplay = this.chatDisplay === 'none' ? 'block' : 'none';
+    }
     if (this.chatDisplay === 'block') {
       this.messageReceived = false;
     }

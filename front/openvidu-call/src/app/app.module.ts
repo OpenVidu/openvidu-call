@@ -26,6 +26,7 @@ import { createCustomElement } from '@angular/elements';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { WebComponentComponent } from './web-component/web-component.component';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
+import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
     DialogExtensionComponent,
     OpenViduVideoComponent,
     DialogErrorComponent,
-    WebComponentComponent
+    WebComponentComponent,
+    ToolbarComponent
   ],
   imports: [
     FormsModule,

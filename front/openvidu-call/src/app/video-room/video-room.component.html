@@ -1,55 +1,27 @@
 <div id="videoRoomNavBar">
-  <mat-toolbar id="header" role="heading" [class.headerLight]="lightTheme">
 
-    <div id="navSessionInfo">
-      <a [routerLink]="['']">
-        <img id="header_img" *ngIf="!lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png">
-        <img id="header_img" *ngIf="lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png">
-      </a>
-      <div id="titleContent" *ngIf="!compact && mySessionId" [class.titleContentLight]="lightTheme">
-          <span id="session-title">{{mySessionId}}</span>
-      </div>
-    </div>
-    <div id="navButtons" align="center">
-      <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
-        <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Publish your audio">mic</mat-icon>
-        <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Unpublish your audio">mic_off</mat-icon>
-      </button>
-      <button mat-icon-button (click)="camStatusChanged()" id="navCamButton">
-        <mat-icon *ngIf="localUser && localUser.isVideoActive()" matTooltip="Publish your cam">videocam</mat-icon>
-        <mat-icon *ngIf="localUser && !localUser.isVideoActive()" color="warn" matTooltip="Unpublish your cam">videocam_off</mat-icon>
-      </button>
-      <button mat-icon-button (click)="screenShare()" id="navScreenButton">
-        <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShareActive()">picture_in_picture</mat-icon>
-        <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()">screen_share</mat-icon>
-      </button>
-      <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShareActive()">
-        <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
-      </button>
-      <button mat-icon-button (click)="exitSession()" id="navLeaveButton">
-        <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
-      </button>
-      <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!compact">
-          <div *ngIf="messageReceived && chatDisplay === 'none'" id="point" [class.pointLight]="lightTheme"></div>
-
-        <mat-icon matTooltip="Chat">question_answer</mat-icon>
-      </button>
-    </div>
-  </mat-toolbar>
+  <app-toolbar [lightTheme]="lightTheme" [showNotification]="messageReceived && chatDisplay === 'none'" [compact]="compact"
+    [localUser]="localUser" [mySessionId]="mySessionId" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
+    (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()" (exitButtonClicked)="exitSession()"
+    (chatButtonClicked)="toggleChat($event)"></app-toolbar>
 
 
   <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
-
     <div *ngIf="localUser && this.localUser.getStreamManager()" class="OT_root OT_publisher custom-class" id="localUser">
-        <stream-component #videoStream [user]="this.localUser" (nicknameClicked)="nicknameChanged($event)"></stream-component>
+      <stream-component #videoStream [user]="localUser" [localUser]="localUser" [lightTheme]="lightTheme" [showNotification]="messageReceived && chatDisplay === 'none'"
+        [compact]="compact" (nicknameClicked)="nicknameChanged($event)" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
+        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
     </div>
 
     <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher  custom-class" id="remoteUsers">
-      <stream-component #videoStream [user]="user"></stream-component>
+      <stream-component #videoStream [user]="user" [localUser]="localUser" [lightTheme]="lightTheme" [showNotification]="messageReceived && chatDisplay === 'none'"
+        [compact]="compact" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()" (exitButtonClicked)="exitSession()"
+        (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
     </div>
-    <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager() && !compact"> 
-      <chat-component #chatNavbar  [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)"></chat-component>
+
+    <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager() && !compact">
+      <chat-component #chatNavbar [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)"></chat-component>
+    </div>
   </div>
-    
-  </div>
+  
 </div>
