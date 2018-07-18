@@ -126,3 +126,15 @@ span.triangle {
   font-size: 14px;
 
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6b6b6b;
+}
+
+.chatComponentLight ::-webkit-scrollbar-thumb {
+  background-color: #eeeeee !important;
+} 

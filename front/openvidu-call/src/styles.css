@@ -24,17 +24,6 @@ mat-button-toggle-group {
   background-color: #d6d6d6d7 !important;
 }
 
-::-webkit-scrollbar {
-  width: 12px;
-}
-::-webkit-scrollbar-track {
-  background-color: #9b9b9b !important;
-} /* the new scrollbar will have a flat appearance with the set background color */
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.24) !important; 
-} /* this will style the thumb, ignoring the track */
-
-
 /* webcomponent */
 @font-face {
   font-family: 'Material Icons';
