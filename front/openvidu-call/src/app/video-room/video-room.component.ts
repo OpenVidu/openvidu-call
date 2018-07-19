@@ -309,9 +309,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       mirror: false,
     }));
 
-    this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
-      this.joinSession.emit();
-    });
+    if (this.session.capabilities.publish) {
+      this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
+        this.joinSession.emit();
+      });
+    }
     this.localUser.setNickname(this.myUserName);
     this.localUser.setConnectionId(this.session.connection.connectionId);
     this.localUser.setScreenShareActive(false);
@@ -343,7 +345,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     // return true if at least one passes the test
     isScreenShared = this.remoteUsers.some((user) => user.isScreenShareActive()) || this.localUser.isScreenShareActive();
     this.openviduLayoutOptions.fixedRatio = isScreenShared;
-    this.openviduLayoutOptions.bigFixedRatio = isScreenShared;
     this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
     this.openviduLayout.updateLayout();
   }
