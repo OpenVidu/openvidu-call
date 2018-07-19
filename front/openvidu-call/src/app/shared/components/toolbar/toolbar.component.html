@@ -11,12 +11,12 @@
   </div>
   <div id="navButtons" align="center">
     <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
-      <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Publish your audio">mic</mat-icon>
-      <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Unpublish your audio">mic_off</mat-icon>
+      <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Unpublish your audio">mic</mat-icon>
+      <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
     </button>
     <button mat-icon-button (click)="camStatusChanged()" id="navCamButton">
-      <mat-icon *ngIf="localUser && localUser.isVideoActive()" matTooltip="Publish your cam">videocam</mat-icon>
-      <mat-icon *ngIf="localUser && !localUser.isVideoActive()" color="warn" matTooltip="Unpublish your cam">videocam_off</mat-icon>
+      <mat-icon *ngIf="localUser && localUser.isVideoActive()" matTooltip="Unpublish your cam">videocam</mat-icon>
+      <mat-icon *ngIf="localUser && !localUser.isVideoActive()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
     </button>
     <button mat-icon-button (click)="screenShare()" id="navScreenButton">
       <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShareActive()">picture_in_picture</mat-icon>

@@ -13,6 +13,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   _chatDisplay: 'block' | 'none';
   @Input() lightTheme: boolean;
   @Output() messageReceived = new EventEmitter<any>();
+  @Output() closeChat = new EventEmitter<any>();
 
   message: string;
   messageList: { connectionId: string; nickname: string; message: string }[] = [];
@@ -64,5 +65,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
         this.chatScroll.nativeElement.scrollTop = this.chatScroll.nativeElement.scrollHeight;
       } catch (err) {}
     }, 20);
+  }
+
+  close() {
+    this.closeChat.emit();
   }
 }
