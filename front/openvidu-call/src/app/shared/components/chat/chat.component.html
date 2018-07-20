@@ -8,7 +8,9 @@
             </button>
         </div>
         <div class="message-wrap" #chatScroll>
-            <div *ngFor="let data of messageList" class="message" [class.right]="data.connectionId === user.getConnectionId() " [class.left]=" data.connectionId !== user.getConnectionId() ">
+            <div *ngFor="let data of messageList; let i = index" class="message" [class.right]="data.connectionId === user.getConnectionId()"
+                [class.left]=" data.connectionId !== user.getConnectionId()">
+                <canvas [id]="'userImg-' + i" width="60" height="60" class="user-img"></canvas>
                 <div class="msg-detail">
                     <div class="msg-info">
                         <p> {{data.nickname}}</p>

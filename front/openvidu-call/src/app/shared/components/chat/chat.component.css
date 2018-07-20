@@ -18,7 +18,7 @@
   color: #ffffff;
 }
 
-#closeButton{
+#closeButton {
   position: absolute;
   right: 0;
   top: -5px;
@@ -48,9 +48,17 @@
   position: relative;
   padding: 7px 0;
 }
+.user-img {
+  position: absolute;
+  border-radius: 45px;
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.36);
+  top: 15px;
+}
 
 .msg-detail {
-  width: 100%;
+  width: calc(100% - 65px);
   display: inline-block;
 }
 
@@ -95,8 +103,13 @@ span.triangle {
 .message.left .msg-detail .msg-info {
   text-align: left;
 }
-.message.left .msg-detail .user-img {
-  left: 0;
+
+.message.left .msg-detail {
+  padding-left: 65px;
+}
+
+.message.left .user-img {
+  left: -5px;
 }
 
 .message.left .msg-detail .msg-content {
@@ -117,8 +130,8 @@ span.triangle {
 .message.right .msg-detail .msg-info {
   text-align: right;
 }
-.message.right .msg-detail .user-img {
-  right: 0;
+.message.right .user-img {
+  right: -5px;
 }
 
 .message.right .msg-detail .msg-content {

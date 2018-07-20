@@ -3,7 +3,7 @@ import { StreamManager } from 'openvidu-browser';
 
 @Component({
     selector: 'ov-video',
-    template: '<video #videoElement [muted]="mutedSound"></video>',
+    template: `<video #videoElement [id]="'video-' + _streamManager.stream.streamId" [muted]="mutedSound"></video>`,
     styleUrls: ['./stream.component.css']
 })
 export class OpenViduVideoComponent implements AfterViewInit {
