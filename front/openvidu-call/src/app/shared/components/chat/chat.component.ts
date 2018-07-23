@@ -40,7 +40,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
         const userImg = <HTMLCanvasElement>document.getElementById('userImg-' + (this.messageList.length - 1));
         const video = <HTMLVideoElement>document.getElementById('video-' + this.user.getStreamManager().stream.streamId);
         const avatar = userImg.getContext('2d');
-        avatar.drawImage(video, 170, 105, 350, 320, 0, 0, 60, 60);
+        avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
       }, 50);
       this.messageReceived.emit();
       this.scrollToBottom();

@@ -53,7 +53,6 @@
   border-radius: 45px;
   width: 60px;
   height: 60px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.36);
   top: 15px;
 }
 
@@ -110,6 +109,7 @@ span.triangle {
 
 .message.left .user-img {
   left: -5px;
+  border: 1px solid #f0f0f094;
 }
 
 .message.left .msg-detail .msg-content {
@@ -132,6 +132,7 @@ span.triangle {
 }
 .message.right .user-img {
   right: -5px;
+  border: 1px solid #c8ffe8ab;
 }
 
 .message.right .msg-detail .msg-content {

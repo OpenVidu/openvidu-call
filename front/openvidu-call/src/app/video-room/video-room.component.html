@@ -14,7 +14,7 @@
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
     </div>
 
-    <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher  custom-class" id="remoteUsers">
+    <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher custom-class" id="remoteUsers">
       <stream-component #videoStream [user]="user" [localUser]="localUser" [lightTheme]="lightTheme" [showNotification]="messageReceived && chatDisplay === 'none'"
         [compact]="compact" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()" (exitButtonClicked)="exitSession()"
         (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
