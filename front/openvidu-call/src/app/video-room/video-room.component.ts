@@ -192,6 +192,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   checkSizeComponent() {
     if (document.getElementById('layout').offsetWidth <= 700) {
       this.compact = true;
+      this.toggleChat('none');
     } else {
       this.compact = false;
     }
