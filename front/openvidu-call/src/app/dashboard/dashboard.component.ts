@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class DashboardComponent implements OnInit {
   public roomForm: FormGroup;
+  public version = require('../../../package.json').version;
 
   constructor(private router: Router, public formBuilder: FormBuilder) {}
 
