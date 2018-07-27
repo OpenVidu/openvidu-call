@@ -102,7 +102,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     setTimeout(() => this.openviduLayout.updateLayout(), 20);
   }
 
-  checkNotification() {
+  checkNotification(event) {
     this.messageReceived = this.chatDisplay === 'none';
   }
 

@@ -21,7 +21,7 @@
     </div>
 
     <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager()">
-      <chat-component [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)" (closeChat)="toggleChat()"></chat-component>
+      <chat-component [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" (messageReceived)="checkNotification($event)" (closeChat)="toggleChat(undefined)"></chat-component>
     </div>
   </div>
 
