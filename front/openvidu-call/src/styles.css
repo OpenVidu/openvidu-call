@@ -9,20 +9,6 @@ body {
   width: 100%;
 }
 
-mat-button-toggle-group {
-  box-shadow: none !important;
-  height: inherit;
-}
-
-
-.mat-form-field-appearance-legacy .mat-form-field-label {
-  color: #ffffff !important;
-}
-
-.mat-form-field-appearance-legacy .mat-form-field-underline{
-  background-color: #d6d6d6d7 !important;
-}
-
 /* webcomponent */
 @font-face {
   font-family: 'Material Icons';

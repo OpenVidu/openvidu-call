@@ -35,7 +35,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
       const data = JSON.parse(event.data);
       this.messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
       const document: any = window.document;
-      console.log(this.messageList.length);
       setTimeout(() => {
         const userImg = <HTMLCanvasElement>document.getElementById('userImg-' + (this.messageList.length - 1));
         const video = <HTMLVideoElement>document.getElementById('video-' + this.user.getStreamManager().stream.streamId);
