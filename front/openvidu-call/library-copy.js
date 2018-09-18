@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 
-const mainComponentDest = './projects/openvidu-session/src/lib/openvidu-session.component.ts';
-const videoRoomDest = './projects/openvidu-session/src/lib/video-room/';
-const routeDest = './projects/openvidu-session/src/lib/app-routing.module.ts';
-const sharedDest = './projects/openvidu-session/src/lib/shared/';
-const environmentDest = './projects/openvidu-session/src/lib/environments/';
+const mainComponentDest = './projects/openvidu-angular/src/lib/openvidu-angular.component.ts';
+const videoRoomDest = './projects/openvidu-angular/src/lib/video-room/';
+const routeDest = './projects/openvidu-angular/src/lib/app-routing.module.ts';
+const sharedDest = './projects/openvidu-angular/src/lib/shared/';
+const environmentDest = './projects/openvidu-angular/src/lib/environments/';
 
 async function copyFiles() {
 

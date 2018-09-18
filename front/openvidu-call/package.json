@@ -54,7 +54,7 @@
   "scripts": {
     "build": "ng build",
     "build:elements": "ng build --prod --output-hashing none && node elements-build.js",
-    "build:library": "node library-copy.js && ng build openvidu-session --prod && cd dist/openvidu-session && npm pack",
+    "build:library": "node library-copy.js && ng build openvidu-angular --prod && cd dist/openvidu-angular && npm pack",
     "e2e": "ng e2e",
     "lint": "ng lint",
     "ng": "ng",

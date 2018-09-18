@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OpenviduSessionComponent } from './openvidu-session.component';
+import { OpenviduSessionComponent } from './openvidu-angular.component';
 
 describe('OpenviduSessionComponent', () => {
   let component: OpenviduSessionComponent;

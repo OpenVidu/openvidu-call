@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { OpenviduSessionComponent } from './openvidu-session.component';
+import { OpenviduSessionComponent } from './openvidu-angular.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 

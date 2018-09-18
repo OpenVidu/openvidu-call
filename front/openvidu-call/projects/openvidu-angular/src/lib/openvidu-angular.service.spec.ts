@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { OpenviduSessionService } from './openvidu-session.service';
+import { OpenviduSessionService } from './openvidu-angular.service';
 
 describe('OpenviduSessionService', () => {
   beforeEach(() => {

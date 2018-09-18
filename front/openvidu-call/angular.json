@@ -141,38 +141,38 @@
         }
       }
     },
-    "openvidu-session": {
-      "root": "projects/openvidu-session",
-      "sourceRoot": "projects/openvidu-session/src",
+    "openvidu-angular": {
+      "root": "projects/openvidu-angular",
+      "sourceRoot": "projects/openvidu-angular/src",
       "projectType": "library",
       "prefix": "opv",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/openvidu-session/tsconfig.lib.json",
-            "project": "projects/openvidu-session/ng-package.json"
+            "tsConfig": "projects/openvidu-angular/tsconfig.lib.json",
+            "project": "projects/openvidu-angular/ng-package.json"
           },
           "configurations": {
             "production": {
-              "project": "projects/openvidu-session/ng-package.prod.json"
+              "project": "projects/openvidu-angular/ng-package.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/openvidu-session/src/test.ts",
-            "tsConfig": "projects/openvidu-session/tsconfig.spec.json",
-            "karmaConfig": "projects/openvidu-session/karma.conf.js"
+            "main": "projects/openvidu-angular/src/test.ts",
+            "tsConfig": "projects/openvidu-angular/tsconfig.spec.json",
+            "karmaConfig": "projects/openvidu-angular/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/openvidu-session/tsconfig.lib.json",
-              "projects/openvidu-session/tsconfig.spec.json"
+              "projects/openvidu-angular/tsconfig.lib.json",
+              "projects/openvidu-angular/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
