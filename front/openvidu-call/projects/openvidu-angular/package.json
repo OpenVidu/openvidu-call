@@ -1,8 +1,15 @@
 {
   "name": "openvidu-angular",
-  "version": "0.0.1",
+  "author": "OpenVidu",
+  "description": "OpenVidu Angular",
+  "license": "Apache-2.0",
+  "version": "2.5.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OpenVidu/openvidu-call"
+  },
   "peerDependencies": {
-    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
-    "@angular/core": "^6.0.0-rc.0 || ^6.0.0"
+    "@angular/common": "6.1.9",
+    "@angular/core": "6.1.9"
   }
 }
