@@ -52,7 +52,7 @@ async function copyFiles() {
       });
     });
   } catch (err) {
-    console.error('Error executing copy function in openvidu-angular-copy.js', err);
+    console.error('Error executing copy function in openvidu-angular-build.js', err);
   }
 }
 
@@ -67,7 +67,7 @@ async function cleanLibrary() {
     await fs.ensureDir(environmentDest);
     await fs.remove(environmentDest);
   } catch (err) {
-    console.error('Error executing clean library function in openvidu-angular-copy.js', err);
+    console.error('Error executing clean library function in openvidu-angular-build.js', err);
   }
 }
 cleanLibrary()
