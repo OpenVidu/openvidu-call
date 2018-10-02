@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit {
 
   public goToVideoCall() {
     if (this.roomForm.valid) {
-      const roomName = this.roomForm.value.roomName.replace(/ /g, '-');//replace white spaces by -
+      const roomName = this.roomForm.value.roomName.replace(/ /g, '-'); // replace white spaces by -
       this.router.navigate(['/', roomName]);
     }
   }

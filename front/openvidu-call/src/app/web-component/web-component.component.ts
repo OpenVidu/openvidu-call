@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { VideoRoomComponent } from '../video-room/video-room.component';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ISessionCongif } from '../shared/models/webcomponent-config';
+import { VideoRoomComponent } from '../video-room/video-room.component';
 
 @Component({
   selector: 'app-web-component',

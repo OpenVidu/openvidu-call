@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, HostListener, Input, Output, EventEmitter } from '@angular/core';
-import { OpenVidu, Session, Stream, StreamEvent, Publisher, SignalOptions, StreamManagerEvent } from 'openvidu-browser';
-import { OpenViduService } from '../shared/services/open-vidu.service';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { UserModel } from '../shared/models/user-model';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
+import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
+import { UserModel } from '../shared/models/user-model';
+import { OpenViduService } from '../shared/services/open-vidu.service';
 
 @Component({
   selector: 'app-video-room',

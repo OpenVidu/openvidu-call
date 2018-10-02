@@ -1,4 +1,4 @@
-import { Stream, StreamManager } from 'openvidu-browser';
+import { StreamManager } from 'openvidu-browser';
 
 export class UserModel {
   private connectionId: string;
