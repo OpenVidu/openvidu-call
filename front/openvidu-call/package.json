@@ -53,12 +53,12 @@
     "private": true,
     "scripts": {
         "build": "ng build",
-        "build:openvidu-webcomponent": "ng build --prod --output-hashing none && node openvidu-webcomponent-build.js",
         "build:openvidu-angular": "node openvidu-angular-build.js && ng build openvidu-angular --prod",
-        "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
+        "build:openvidu-webcomponent": "ng build --prod --output-hashing none && node openvidu-webcomponent-build.js",
         "e2e": "ng e2e",
         "lint": "ng lint",
         "ng": "ng",
+        "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
         "start": "ng serve",
         "test": "ng test"
     },
