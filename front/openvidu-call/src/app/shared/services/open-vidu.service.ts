@@ -17,13 +17,8 @@ export class OpenViduService {
       this.URL_OV = environment.openvidu_url;
       this.MY_SECRET = environment.openvidu_secret;
     } else {
-        let url_prod = 'https://' + location.hostname;
-        if (location.port) {
-          url_prod = url_prod + ':' + location.port;
-        }
-        this.URL_OV = environment.production ? url_prod : 'https://' + location.hostname  + ':4443';
+      this.URL_OV = 'https://' + location.hostname + ':4443';
     }
-
     console.log('url environment', this.URL_OV);
   }
 
@@ -43,7 +38,7 @@ export class OpenViduService {
           'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
           'Content-Type': 'application/json',
         })
-       };
+      };
       return this.http.post<any>(openviduServerUrl + '/api/sessions', body, options)
         .pipe(
           catchError(error => {
@@ -58,7 +53,7 @@ export class OpenViduService {
     });
   }
 
-  createToken(sessionId: string,  openviduServerUrl: string, openviduSecret: string): Promise<string> {
+  createToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
     return new Promise((resolve, reject) => {
 
       const body = JSON.stringify({ session: sessionId });
