@@ -38,7 +38,7 @@ export class ApiService {
       } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
       }
-      return 'fullscreen';
+      return 'fullscreen_exit';
     }
   }
 }
