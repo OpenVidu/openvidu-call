@@ -11,7 +11,6 @@ import { ApiService } from '../../services/api.service';
   templateUrl: './stream.component.html',
 })
 export class StreamComponent implements OnInit {
-  openviduLayout: OpenViduLayout;
   fullscreenIcon = 'fullscreen';
   mutedSound: boolean;
   editNickname: boolean;
