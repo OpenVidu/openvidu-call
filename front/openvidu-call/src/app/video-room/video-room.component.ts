@@ -307,7 +307,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       resolution: '640x480',
       frameRate: 30,
       insertMode: 'APPEND',
-      mirror: false,
     }));
 
     if (this.session.capabilities.publish) {
@@ -351,6 +350,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private checkTheme() {
-      this.lightTheme = this.theme === 'light';
+    this.lightTheme = this.theme === 'light';
   }
 }
