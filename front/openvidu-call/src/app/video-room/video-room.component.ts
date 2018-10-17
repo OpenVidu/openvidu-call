@@ -25,11 +25,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
 
+  // Constants
+  BIG_ELEMENT_CLASS = 'OV_big';
+
+  // Variables
   compact = false;
   messageReceived = false;
   lightTheme: boolean;
   chatDisplay: 'none' | 'block' = 'none';
   showDialogExtension = false;
+  bigElement: HTMLElement;
 
   OV: OpenVidu;
   session: Session;
@@ -75,7 +80,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
       fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
       and minRatio and maxRatio are ignored (default false) */,
-      bigClass: 'OV_big', // The class to add to elements that should be sized bigger
+      bigClass: this.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
       bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
       bigFixedRatio: false, // fixedRatio for the big ones
       bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
@@ -196,6 +201,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     } else {
       this.compact = false;
     }
+  }
+
+  enlargeElement(event) {
+    const element: HTMLElement  = event.path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
+    if (this.bigElement) {
+      this.bigElement.classList.remove(this.BIG_ELEMENT_CLASS);
+    }
+    element.classList.add(this.BIG_ELEMENT_CLASS);
+    this.bigElement = element;
+    this.openviduLayout.updateLayout();
   }
 
   private generateParticipantInfo() {
