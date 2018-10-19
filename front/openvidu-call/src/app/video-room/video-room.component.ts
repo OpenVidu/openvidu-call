@@ -204,12 +204,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   enlargeElement(event) {
-    const element: HTMLElement  = event.path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
+    const element: HTMLElement = event.path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
     if (this.bigElement) {
       this.bigElement.classList.remove(this.BIG_ELEMENT_CLASS);
     }
-    element.classList.add(this.BIG_ELEMENT_CLASS);
-    this.bigElement = element;
+    if (this.bigElement !== element) {
+      element.classList.add(this.BIG_ELEMENT_CLASS);
+      this.bigElement = element;
+    } else {
+      this.bigElement = undefined;
+    }
     this.openviduLayout.updateLayout();
   }
 
