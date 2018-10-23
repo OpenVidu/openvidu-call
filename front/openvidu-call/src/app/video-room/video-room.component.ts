@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
@@ -6,6 +6,7 @@ import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-e
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { OpenViduService } from '../shared/services/open-vidu.service';
+import { ChatComponent } from '../shared/components/chat/chat.component';
 
 @Component({
   selector: 'app-video-room',
@@ -24,6 +25,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() joinSession = new EventEmitter<any>();
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
+
+  @ViewChild('chatComponent') chatComponent: ChatComponent;
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';
@@ -44,6 +47,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   myUserName: string;
   localUser: UserModel;
   remoteUsers: UserModel[];
+  messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
   resizeTimeout;
 
   constructor(
@@ -107,7 +111,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     setTimeout(() => this.openviduLayout.updateLayout(), 20);
   }
 
-  checkNotification(event) {
+  checkNotification() {
     this.messageReceived = this.chatDisplay === 'none';
   }
 
@@ -117,6 +121,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.subscribeToUserChanged();
     this.subscribeToStreamCreated();
     this.subscribedToStreamDestroyed();
+    this.subscribedToChat();
     this.connectToSession();
   }
 
@@ -268,6 +273,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       const nickname = (event.stream.connection.data).split('%')[0];
       newUser.setNickname(JSON.parse(nickname).clientData);
       newUser.setType('remote');
+      console.log('----------- taking photo from remote User -----------');
+      newUser.setUserAvatar();
       this.remoteUsers.push(newUser);
       this.sendSignalUserChanged({
         isAudioActive: this.localUser.isAudioActive(),
@@ -288,6 +295,26 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       event.preventDefault();
     });
   }
+
+  private subscribedToChat() {
+    this.session.on('signal:chat', (event: any) => {
+        const data = JSON.parse(event.data);
+        const messageOwner =
+            this.localUser.getConnectionId() === data.connectionId
+                ? this.localUser
+                : this.remoteUsers.filter((user) => user.getConnectionId() === data.connectionId)[0];
+
+        this.messageList.push({
+            connectionId: event.from.connectionId,
+            nickname: data.nickname,
+            message: data.message,
+            userAvatar: messageOwner.getAvatar(),
+        });
+
+        this.checkNotification();
+        this.chatComponent.scrollToBottom();
+    });
+}
 
   private connectToSession(): void {
     if (this.token) {
@@ -330,6 +357,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
     if (this.session.capabilities.publish) {
       this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
+        console.log('----------- taking photo from Local User -----------');
+        this.localUser.setUserAvatar();
         this.joinSession.emit();
       });
     }

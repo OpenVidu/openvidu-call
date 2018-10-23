@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 
 @Component({
@@ -6,17 +6,19 @@ import { UserModel } from '../../models/user-model';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnInit, AfterViewInit {
+export class ChatComponent implements OnInit {
   @ViewChild('chatScroll') chatScroll: ElementRef;
 
   @Input() user: UserModel;
-  _chatDisplay: 'block' | 'none';
   @Input() lightTheme: boolean;
-  @Output() messageReceived = new EventEmitter<any>();
+  @Input()
+  messageList: { connectionId: string; nickname: string; message: string, userAvatar: string }[] = [];
+
+  _chatDisplay: 'block' | 'none';
+
   @Output() closeChat = new EventEmitter<any>();
 
   message: string;
-  messageList: { connectionId: string; nickname: string; message: string }[] = [];
 
   constructor() {}
 
@@ -30,22 +32,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    this.user.getStreamManager().stream.session.on('signal:chat', (event: any) => {
-      const data = JSON.parse(event.data);
-      this.messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
-      const document: any = window.document;
-      setTimeout(() => {
-        const userImg = <HTMLCanvasElement>document.getElementById('userImg-' + (this.messageList.length - 1));
-        const video = <HTMLVideoElement>document.getElementById('video-' + this.user.getStreamManager().stream.streamId);
-        const avatar = userImg.getContext('2d');
-        avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-      }, 50);
-      this.messageReceived.emit();
-      this.scrollToBottom();
-    });
-  }
-
   eventKeyPress(event) {
     if (event && event.keyCode === 13) {
       this.sendMessage();
@@ -56,7 +42,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     if (this.user && this.message) {
       this.message = this.message.replace(/ +(?= )/g, '');
       if (this.message !== '' && this.message !== ' ') {
-        const data = { message: this.message, nickname: this.user.getNickname() };
+        const data = { connectionId: this.user.getConnectionId(), message: this.message, nickname: this.user.getNickname() };
         this.user.getStreamManager().stream.session.signal({
           data: JSON.stringify(data),
           type: 'chat',
