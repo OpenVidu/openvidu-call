@@ -62,5 +62,5 @@
         "start": "ng serve",
         "test": "ng test"
     },
-    "version": "1.2.0"
+    "version": "2.6.0"
 }
