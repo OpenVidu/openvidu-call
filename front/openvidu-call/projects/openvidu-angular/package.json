@@ -3,13 +3,13 @@
   "author": "OpenVidu",
   "description": "OpenVidu Angular",
   "license": "Apache-2.0",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/OpenVidu/openvidu-call"
   },
   "peerDependencies": {
-    "@angular/common": "6.1.9",
-    "@angular/core": "6.1.9"
+    "@angular/common": "7.0.0",
+    "@angular/core": "7.0.0"
   }
 }
