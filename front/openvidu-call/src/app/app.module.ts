@@ -29,6 +29,7 @@ import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { LinkifyPipe } from './shared/pipes/linkfy';
     MatTooltipModule,
     AppRoutingModule,
     HttpClientModule,
+    NgxLinkifyjsModule.forRoot()
   ],
   entryComponents: [
     DialogErrorComponent,

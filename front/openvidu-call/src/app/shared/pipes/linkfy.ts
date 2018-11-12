@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as linkifyString from 'linkifyjs/string';
-
+import {NgxLinkifyjsService} from 'ngx-linkifyjs';
 @Pipe({name: 'linkify'})
 export class LinkifyPipe implements PipeTransform {
+  constructor(public linkifyService: NgxLinkifyjsService) { }
   transform(str: string): string {
-    return str ? linkifyString(str, {target: '_system'}) : str;
+    return str ? this.linkifyService.linkify(str) : str;
   }
 }
