@@ -28,6 +28,7 @@ import { WebComponentComponent } from './web-component/web-component.component';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 import { ApiService } from './shared/services/api.service';
+import { LinkifyPipe } from './shared/pipes/linkfy';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ApiService } from './shared/services/api.service';
     OpenViduVideoComponent,
     DialogErrorComponent,
     WebComponentComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    LinkifyPipe
   ],
   imports: [
     FormsModule,

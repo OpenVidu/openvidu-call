@@ -17,7 +17,7 @@
                     </div>
                     <div class="msg-content">
                         <span class="triangle"></span>
-                        <p class="text">{{data.message}}</p>
+                        <p class="text" [innerHTML]="data.message | linkify"></p>
                     </div>
                 </div>
             </div>
