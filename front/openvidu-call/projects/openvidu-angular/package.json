@@ -8,6 +8,9 @@
     "type": "git",
     "url": "git://github.com/OpenVidu/openvidu-call"
   },
+  "dependencies": {
+    "ngx-linkifyjs": "1.1.0"
+  },
   "peerDependencies": {
     "@angular/common": "7.0.0",
     "@angular/core": "7.0.0"

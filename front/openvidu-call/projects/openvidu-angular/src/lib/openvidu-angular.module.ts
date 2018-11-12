@@ -28,6 +28,8 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 import { OpenViduService } from './shared/services/open-vidu.service';
 import { ApiService } from './shared/services/api.service';
+import { LinkifyPipe } from './shared/pipes/linkfy';
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
 @NgModule({
   imports: [
@@ -46,6 +48,7 @@ import { ApiService } from './shared/services/api.service';
     MatDialogModule,
     MatTooltipModule,
     AppRoutingModule,
+    NgxLinkifyjsModule.forRoot()
   ],
   declarations: [
     OpenviduSessionComponent,
@@ -56,6 +59,7 @@ import { ApiService } from './shared/services/api.service';
     OpenViduVideoComponent,
     DialogErrorComponent,
     ToolbarComponent,
+    LinkifyPipe
   ],
   entryComponents: [
     DialogErrorComponent,
