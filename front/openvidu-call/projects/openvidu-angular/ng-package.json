@@ -6,7 +6,11 @@
     "entryFile": "src/public_api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "tslib","ngx-linkifyjs"
-    
+    "tslib",
+    "openvidu-browser",
+    "ngx-linkifyjs",
+    "@angular/material",
+    "@angular/cdk",
+    "@angular/animations"
   ]
 }
