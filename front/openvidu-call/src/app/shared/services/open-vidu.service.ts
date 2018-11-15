@@ -4,29 +4,23 @@ import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class OpenViduService {
   URL_OV: string;
-  MY_SECRET = 'MY_SECRET';
+  MY_SECRET: string;
 
-  constructor(private http: HttpClient) {
-    if (environment.openvidu_url) {
-      this.URL_OV = environment.openvidu_url;
-      this.MY_SECRET = environment.openvidu_secret;
-    } else {
-      this.URL_OV = 'https://' + location.hostname + ':4443';
-    }
-    console.log('url environment', this.URL_OV);
-  }
+  constructor(private http: HttpClient) {}
 
-  getToken(mySessionId: string, openviduServerUrl: string = this.URL_OV, openviduSecret: string = this.MY_SECRET): Promise<string> {
-    return this.createSession(mySessionId, openviduServerUrl, openviduSecret).then(
-      (sessionId: string) => {
-        return this.createToken(sessionId, openviduServerUrl, openviduSecret);
+  getToken(mySessionId: string, openviduServerUrl: string , openviduSecret: string): Promise<string> {
+    return this.getCredentials().then(() => {
+      const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
+      const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
+      return this.createSession(mySessionId, ov_url, ov_secret).then((sessionId: string) => {
+          return this.createToken(sessionId, ov_url, ov_secret);
       });
+    });
   }
 
   createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string) {
@@ -74,6 +68,32 @@ export class OpenViduService {
           console.log(response);
           resolve(response.token);
         });
+    });
+  }
+
+  private getCredentials(): Promise<any> {
+    return new Promise((resolve) => {
+      this.http.get('ov-credentials.json').subscribe((data: any) => {
+        console.log('FILE', data);
+        this.URL_OV = data.openviduCredentials.openvidu_url;
+        this.MY_SECRET = data.openviduCredentials.openvidu_secret;
+        console.log('URL Environment', this.URL_OV);
+        resolve();
+      },
+      (error) => {
+        console.warn('Credentials file not found ');
+        if (environment.openvidu_url) {
+          console.warn('Getting from environment ');
+          this.URL_OV = environment.openvidu_url;
+          this.MY_SECRET = environment.openvidu_secret;
+        } else {
+          console.warn('Getting default data ');
+          this.URL_OV = 'https://' + location.hostname + ':4443';
+          this.MY_SECRET = 'MY_SECRET';
+        }
+        console.log('URL Environment', this.URL_OV);
+        resolve();
+      });
     });
   }
 }
