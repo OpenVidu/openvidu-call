@@ -166,7 +166,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   screenShare() {
     const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
-    console.log("VIDEO SOURCE", videoSource);
     const publisher = this.OV.initPublisher(undefined, {
         videoSource: videoSource,
         publishAudio: this.localUser.isAudioActive(),
