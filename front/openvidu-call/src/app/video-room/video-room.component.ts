@@ -37,9 +37,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   lightTheme: boolean;
   chatDisplay: 'none' | 'block' = 'none';
   showDialogExtension = false;
-  bigElement: HTMLElement;
-
-  OV: OpenVidu;
   session: Session;
   openviduLayout: OpenViduLayout;
   openviduLayoutOptions: OpenViduLayoutOptions;
@@ -48,7 +45,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel;
   remoteUsers: UserModel[];
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
-  resizeTimeout;
+
+  private OV: OpenVidu;
+  private bigElement: HTMLElement;
 
   constructor(
     private openViduSrv: OpenViduService,
@@ -64,10 +63,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
-    clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => {
-      this.openviduLayout.updateLayout();
-    }, 20);
+    this.openviduLayout.updateLayout();
     this.checkSizeComponent();
   }
 
@@ -108,7 +104,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     if (this.chatDisplay === 'block') {
       this.messageReceived = false;
     }
-    setTimeout(() => this.openviduLayout.updateLayout(), 20);
+    this.openviduLayout.updateLayout();
   }
 
   checkNotification() {
@@ -289,10 +285,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private subscribedToStreamDestroyed() {
     this.session.on('streamDestroyed', (event: StreamEvent) => {
       this.deleteRemoteStream(event.stream);
-      clearTimeout(this.resizeTimeout);
-      this.resizeTimeout = setTimeout(() => {
-        this.checkSomeoneShareScreen();
-      }, 20);
+      this.checkSomeoneShareScreen();
+
       event.preventDefault();
     });
   }
