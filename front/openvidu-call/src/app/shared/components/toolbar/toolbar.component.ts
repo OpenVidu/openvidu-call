@@ -15,6 +15,7 @@ export class ToolbarComponent implements OnInit {
   @Input() localUser: UserModel;
   @Input() compact: boolean;
   @Input() showNotification: boolean;
+  @Input() newMessagesNum: number;
 
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();

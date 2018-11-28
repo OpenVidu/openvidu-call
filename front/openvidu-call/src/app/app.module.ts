@@ -11,6 +11,7 @@ import {
   MatFormFieldModule,
   MatDialogModule,
   MatTooltipModule,
+  MatBadgeModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -58,6 +59,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     MatFormFieldModule,
     MatDialogModule,
     MatTooltipModule,
+    MatBadgeModule,
     AppRoutingModule,
     HttpClientModule,
     NgxLinkifyjsModule.forRoot()

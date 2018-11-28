@@ -1,60 +1,80 @@
 #header {
-    color: #ffffff;
-    height: 40px;
-    background-color: #333333;
-    padding: 0 14px 0 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 999999;
-    min-width: 400px !important;
-  }
-  
-  .headerLight{
-    color: #706969 !important;
-    background-color: #eeeeee !important;
-  }
-  
-  #navSessionInfo {
-    height: 100%;
-    display: inline-flex;
-  }
+  color: #ffffff;
+  height: 40px;
+  background-color: #333333;
+  padding: 0 14px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  min-width: 400px !important;
+}
 
-  #navButtons {
-    position: absolute;
-    left: 0;
-    right: 0;
-    min-width: 400px;
-  }
-  #navChatButton {
-    position: absolute;
-    right: 10px;
-    top: none;
-  }
-  
-  #titleContent{
-    max-width: 100px;
-    background-color: #494949;
-    margin: 5px -18px;
-    padding: 0px 15px;
-    font-size: 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .titleContentLight{
-    background-color: #dfdfdf !important; 
-    color: #000;
-  }
-  
-  #header_img {
-    max-width: 135px;
-    margin-right: 10px;
-    margin-top: -3px;
-  }
+.headerLight {
+  color: #706969 !important;
+  background-color: #eeeeee !important;
+}
 
+#navSessionInfo {
+  height: 100%;
+  display: inline-flex;
+}
 
-#point{
+#navVisitors {
+  padding-left: 2%;
+}
+
+#navVisitors .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+  right: -14px;
+}
+
+#navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{
+  left: -17px;
+}
+
+#navVisitors .mat-badge-medium.mat-badge-above .mat-badge-content,
+#navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content {
+  top: -6px;
+}
+
+.mat-icon-button[disabled] {
+  color: #fff;
+}
+
+#navButtons {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 400px;
+}
+#navChatButton {
+  position: absolute;
+  right: 10px;
+  top: none;
+}
+
+#titleContent {
+  max-width: 100px;
+  background-color: #494949;
+  margin: 5px -18px;
+  padding: 0px 15px;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titleContentLight {
+  background-color: #dfdfdf !important;
+  color: #000;
+}
+
+#header_img {
+  max-width: 135px;
+  margin-right: 10px;
+  margin-top: -3px;
+}
+
+#point {
   width: 10px;
   height: 10px;
   position: absolute;
@@ -65,6 +85,6 @@
   border: 1px solid #000;
   z-index: 99999;
 }
-.pointLight{
+.pointLight {
   border: 1px solid #ffffff !important;
 }

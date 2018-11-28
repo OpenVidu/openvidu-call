@@ -23,7 +23,7 @@ export class StreamComponent implements OnInit {
   @Input() localUser: UserModel;
   @Input() lightTheme: boolean;
   @Input() compact: boolean;
-  @Input() showNotification: boolean;
+  @Input() newMessagesNum: number;
   @Output() nicknameClicked = new EventEmitter<any>();
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();

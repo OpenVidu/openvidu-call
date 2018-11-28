@@ -33,7 +33,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   // Variables
   compact = false;
-  messageReceived = false;
   lightTheme: boolean;
   chatDisplay: 'none' | 'block' = 'none';
   showDialogExtension = false;
@@ -45,6 +44,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   localUser: UserModel;
   remoteUsers: UserModel[];
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
+  newMessages = 0;
 
   private OV: OpenVidu;
   private bigElement: HTMLElement;
@@ -102,13 +102,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.chatDisplay = this.chatDisplay === 'none' ? 'block' : 'none';
     }
     if (this.chatDisplay === 'block') {
-      this.messageReceived = false;
+      this.newMessages = 0;
     }
     this.openviduLayout.updateLayout();
   }
 
   checkNotification() {
-    this.messageReceived = this.chatDisplay === 'none';
+    if (this.chatDisplay === 'none') {
+      this.newMessages++;
+    } else {
+      this.newMessages = 0;
+    }
   }
 
   joinToSession() {

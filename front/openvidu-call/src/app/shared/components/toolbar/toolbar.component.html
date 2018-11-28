@@ -33,7 +33,7 @@
     </button>
     <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!compact">
       <div *ngIf="showNotification" id="point" [class.pointLight]="lightTheme"></div>
-      <mat-icon matTooltip="Chat">question_answer</mat-icon>
+        <mat-icon matBadge="{{newMessagesNum}}" [matBadgeHidden]="newMessagesNum === 0"  matBadgePosition="above before"matTooltip="Chat" matBadgeColor="accent">chat</mat-icon>
     </button>
   </div>
 </mat-toolbar>
