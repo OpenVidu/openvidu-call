@@ -9,6 +9,13 @@
       <span id="session-title">{{mySessionId}}</span>
     </div>
   </div>
+
+  <div id="navVisitors">
+      <button mat-icon-button disabled *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.visitors)">
+          <mat-icon matBadge="{{visitorsNum}}" matBadgeColor="accent">remove_red_eye</mat-icon>
+      </button>
+  </div>
+
   <div id="navButtons" align="center">
     <button mat-icon-button (click)="micStatusChanged()" id="navMicButton">
       <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Unpublish your audio">mic</mat-icon>

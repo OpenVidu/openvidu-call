@@ -45,6 +45,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   remoteUsers: UserModel[];
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
   newMessages = 0;
+  visitorsNum = 0;
 
   private OV: OpenVidu;
   private bigElement: HTMLElement;
@@ -277,6 +278,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       console.log('----------- taking photo from remote User -----------');
       newUser.setUserAvatar();
       this.remoteUsers.push(newUser);
+      this.visitorsNum++;
       this.sendSignalUserChanged({
         isAudioActive: this.localUser.isAudioActive(),
         isVideoActive: this.localUser.isVideoActive(),
@@ -290,7 +292,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.session.on('streamDestroyed', (event: StreamEvent) => {
       this.deleteRemoteStream(event.stream);
       this.checkSomeoneShareScreen();
-
+      this.visitorsNum--;
       event.preventDefault();
     });
   }

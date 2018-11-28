@@ -24,6 +24,7 @@ export class StreamComponent implements OnInit {
   @Input() lightTheme: boolean;
   @Input() compact: boolean;
   @Input() newMessagesNum: number;
+  @Input() visitorsNum: number;
   @Output() nicknameClicked = new EventEmitter<any>();
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();

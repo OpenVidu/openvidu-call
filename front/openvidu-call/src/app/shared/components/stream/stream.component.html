@@ -1,6 +1,6 @@
 <div class="OT_widget-container" [id]="'container-' + this.user.getStreamManager().stream.streamId">
 
-    <app-toolbar *ngIf="isFullscreen" [lightTheme]="lightTheme" [newMessagesNum]="newMessagesNum" [mySessionId]="localUser.getStreamManager().stream.session.sessionId"
+    <app-toolbar *ngIf="isFullscreen" [lightTheme]="lightTheme" [visitorsNum]="visitorsNum" [newMessagesNum]="newMessagesNum" [mySessionId]="localUser.getStreamManager().stream.session.sessionId"
         [localUser]="localUser" [compact]="compact" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></app-toolbar>
 
