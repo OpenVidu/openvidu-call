@@ -1,12 +1,13 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent, SessionDisconnectedEvent, ConnectionEvent } from 'openvidu-browser';
+import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent, ConnectionEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { ChatComponent } from '../shared/components/chat/chat.component';
+import { ApiService } from '../shared/services/api.service';
 
 @Component({
   selector: 'app-video-room',
@@ -31,8 +32,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';
-  PUBLISHER = 'PUBLISHER';
-  SUBSCRIBER = 'SUBSCRIBER';
+  PUBLISHER: 'PUBLISHER' = 'PUBLISHER';
+  SUBSCRIBER: 'SUBSCRIBER' = 'SUBSCRIBER';
 
   // Variables
   compact = false;
@@ -60,6 +61,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     public dialog: MatDialog,
+    public apiSrv: ApiService
   ) {}
 
   @HostListener('window:beforeunload')
@@ -73,9 +75,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.checkSizeComponent();
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.exitSession();
@@ -85,6 +85,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.localUser = new UserModel();
     this.localUser.setType('local');
     this.localUser.setRole(this.roomChosen);
+    if (this.localUser.getRole() === this.SUBSCRIBER) {
+      this.apiSrv.getRandomAvatar().then(
+        (avatar: string) => this.localUser.setUserAvatar(avatar)
+      ).catch(err => console.error(err));
+    }
     this.remoteUsers = [];
     this.generateParticipantInfo();
     this.checkTheme();
@@ -315,6 +320,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       const nickname = (event.stream.connection.data).split('%')[0];
       newUser.setNickname(JSON.parse(nickname).clientData);
       newUser.setType('remote');
+      newUser.setRole(this.PUBLISHER);
       console.log('----------- taking photo from remote User -----------');
       newUser.setUserAvatar();
       this.remoteUsers.push(newUser);
@@ -368,7 +374,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             connectionId: event.from.connectionId,
             nickname: data.nickname,
             message: data.message,
-            userAvatar: messageOwner ? messageOwner.getAvatar() : 'https://picsum.photos/200',
+            userAvatar: data.userAvatar ? data.userAvatar : messageOwner.getAvatar(),
         });
 
         this.checkNotification();

@@ -1,6 +1,8 @@
 import { StreamManager } from 'openvidu-browser';
 
 export class UserModel {
+  private SUBSCRIBER: 'SUBSCRIBER' = 'SUBSCRIBER';
+
   private connectionId: string;
   private audioActive: boolean;
   private videoActive: boolean;
@@ -8,7 +10,8 @@ export class UserModel {
   private nickname: string;
   private streamManager: StreamManager;
   private type: 'local' | 'remote';
-  private avatar: HTMLCanvasElement;
+  private videAvatar: HTMLCanvasElement;
+  private randomAvatar: string;
   private role: 'SUBSCRIBER' | 'PUBLISHER';
 
   constructor() {
@@ -46,7 +49,7 @@ export class UserModel {
     return this.streamManager;
   }
   public getAvatar(): string {
-    return this.avatar.toDataURL();
+    return this.getRole() !== this.SUBSCRIBER ? this.videAvatar.toDataURL() : this.randomAvatar;
   }
 
   public getRole(): string {
@@ -83,28 +86,33 @@ export class UserModel {
   }
   public setRole(role: 'SUBSCRIBER' | 'PUBLISHER'): void {
     this.role = role;
-    if (role === 'SUBSCRIBER') {
+    if (role === this.SUBSCRIBER) {
       this.setAudioActive(false);
       this.setVideoActive(false);
     }
   }
 
-  public setUserAvatar(): Promise<any> {
+  public setUserAvatar(img?: string): Promise<any> {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
-        const avatar = this.avatar.getContext('2d');
-        avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-        console.log('Photo was taken: ', this.avatar);
+      if (this.getRole() !== this.SUBSCRIBER) {
+        setTimeout(() => {
+          const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
+          const avatar = this.videAvatar.getContext('2d');
+          avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
+          console.log('Photo was taken: ', this.videAvatar);
+          resolve();
+        }, 1500);
+      } else {
+        this.randomAvatar = img;
         resolve();
-      }, 2000);
+      }
     });
   }
 
   private createAvatar() {
-    this.avatar = document.createElement('canvas');
-    this.avatar.className = 'user-img';
-    this.avatar.width = 60;
-    this.avatar.height = 60;
+    this.videAvatar = document.createElement('canvas');
+    this.videAvatar.className = 'user-img';
+    this.videAvatar.width = 60;
+    this.videAvatar.height = 60;
   }
 }

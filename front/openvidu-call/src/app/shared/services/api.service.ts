@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor() { }
+  constructor(public http: HttpClient) { }
 
 
   toggleFullscreen(elementId: string): string {
@@ -40,5 +41,14 @@ export class ApiService {
       }
       return 'fullscreen_exit';
     }
+  }
+
+  public  getRandomAvatar(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.http.get('https://randomuser.me/api/?lego').subscribe((data: any) => {
+        resolve(data.results[0].picture.thumbnail);
+      });
+    });
+
   }
 }
