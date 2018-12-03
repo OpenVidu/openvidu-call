@@ -24,7 +24,7 @@
         </div>
 
         <div id="messageInput">
-            <input placeholder="Send a message" (keypress)="eventKeyPress($event)" [(ngModel)]="message" id="chatInput" />
+            <input #chatInput placeholder="Send a message" (keypress)="eventKeyPress($event)" [(ngModel)]="message" id="chatInput" />
             <button mat-mini-fab id="sendButton" (click)="sendMessage()">
                 <mat-icon matTooltip="Send">send</mat-icon>
             </button>

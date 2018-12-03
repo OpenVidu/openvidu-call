@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { Session } from 'openvidu-browser';
 
@@ -11,6 +11,7 @@ export class ChatComponent implements OnInit {
   private SUBSCRIBER = 'SUBSCRIBER';
 
   @ViewChild('chatScroll') chatScroll: ElementRef;
+  @ViewChild('chatInput') chatInput: ElementRef;
 
   @Input() session: Session;
   @Input() user: UserModel;
@@ -26,18 +27,31 @@ export class ChatComponent implements OnInit {
 
   constructor() {}
 
+  @HostListener('document:keydown.escape', ['$event'])
+  onKeydownHandler(event: KeyboardEvent) {
+    console.log(event);
+    if (this._chatDisplay === 'block') {
+      this.close();
+    }
+  }
+
   ngOnInit() {}
 
   @Input('chatDisplay')
   set isDisplayed(display: 'block' | 'none') {
     this._chatDisplay = display;
+
     if (this._chatDisplay === 'block') {
       this.scrollToBottom();
+      setTimeout(() => {
+        this.chatInput.nativeElement.focus();
+      });
     }
   }
 
   eventKeyPress(event) {
     if (event && event.keyCode === 13) {
+      // Press Enter
       this.sendMessage();
     }
   }
@@ -50,7 +64,7 @@ export class ChatComponent implements OnInit {
           connectionId: this.session.connection.connectionId,
           message: this.message,
           nickname: this.user.getNickname(),
-          userAvatar: this.user.getRole() === this.SUBSCRIBER ? this.user.getAvatar() : null
+          userAvatar: this.user.getRole() === this.SUBSCRIBER ? this.user.getAvatar() : null,
         };
         this.session.signal({
           data: JSON.stringify(data),
