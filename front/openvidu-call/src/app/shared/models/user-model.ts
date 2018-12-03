@@ -9,6 +9,7 @@ export class UserModel {
   private streamManager: StreamManager;
   private type: 'local' | 'remote';
   private avatar: HTMLCanvasElement;
+  private role: 'SUBSCRIBER' | 'PUBLISHER';
 
   constructor() {
     this.connectionId = '';
@@ -48,6 +49,10 @@ export class UserModel {
     return this.avatar.toDataURL();
   }
 
+  public getRole(): string {
+    return this.role;
+  }
+
   public isLocal(): boolean {
     return this.type === 'local';
   }
@@ -75,6 +80,13 @@ export class UserModel {
   }
   public setType(type: 'local' | 'remote') {
     this.type = type;
+  }
+  public setRole(role: 'SUBSCRIBER' | 'PUBLISHER'): void {
+    this.role = role;
+    if (role === 'SUBSCRIBER') {
+      this.setAudioActive(false);
+      this.setVideoActive(false);
+    }
   }
 
   public setUserAvatar(): Promise<any> {

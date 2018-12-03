@@ -1,7 +1,8 @@
 #videoRoomNavBar{
   min-width: 400px;
+  background-color: #494949;
+  height: 100%;
 }
-
 
 .stream-container {
   padding: 0;
@@ -17,7 +18,6 @@
   right: 0;
   text-align: center;
 }
-
 
 .bounds {
   background-color: #494949;

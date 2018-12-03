@@ -21,7 +21,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
     @Input()
     set streamManager(streamManager: StreamManager) {
         this._streamManager = streamManager;
-        if (!!this.elementRef) {
+        if (!!this.elementRef && this._streamManager) {
             this._streamManager.addVideoElement(this.elementRef.nativeElement);
         }
     }

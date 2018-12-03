@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { UserModel } from '../../models/user-model';
+import { Session } from 'openvidu-browser';
 
 @Component({
   selector: 'chat-component',
@@ -9,10 +10,11 @@ import { UserModel } from '../../models/user-model';
 export class ChatComponent implements OnInit {
   @ViewChild('chatScroll') chatScroll: ElementRef;
 
+  @Input() session: Session;
   @Input() user: UserModel;
   @Input() lightTheme: boolean;
   @Input()
-  messageList: { connectionId: string; nickname: string; message: string, userAvatar: string }[] = [];
+  messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 
   _chatDisplay: 'block' | 'none';
 
@@ -42,8 +44,12 @@ export class ChatComponent implements OnInit {
     if (this.user && this.message) {
       this.message = this.message.replace(/ +(?= )/g, '');
       if (this.message !== '' && this.message !== ' ') {
-        const data = { connectionId: this.user.getConnectionId(), message: this.message, nickname: this.user.getNickname() };
-        this.user.getStreamManager().stream.session.signal({
+        const data = {
+          connectionId: this.session.connection.connectionId,
+          message: this.message,
+          nickname: this.user.getNickname(),
+        };
+        this.session.signal({
           data: JSON.stringify(data),
           type: 'chat',
         });

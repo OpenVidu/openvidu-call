@@ -1,28 +1,96 @@
 <div id="videoRoomNavBar">
+  <app-dialog-choose-room *ngIf="showDialogChooseRoom" (close)="toggleDialogChooseRoom($event)"> </app-dialog-choose-room>
 
-  <app-toolbar [lightTheme]="lightTheme" [newMessagesNum]="newMessages" [compact]="compact"
-    [localUser]="localUser" [mySessionId]="mySessionId" [visitorsNum]="visitorsNum" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
-    (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()" (exitButtonClicked)="exitSession()"
-    (chatButtonClicked)="toggleChat($event)"></app-toolbar>
+  <div *ngIf="localUser">
+    <app-toolbar
+      [lightTheme]="lightTheme"
+      [newMessagesNum]="newMessages"
+      [compact]="compact"
+      [localUser]="localUser"
+      [mySessionId]="mySessionId"
+      [visitorsNum]="visitorsNum"
+      [ovSettings]="ovSettings"
+      (camButtonClicked)="camStatusChanged()"
+      (micButtonClicked)="micStatusChanged()"
+      (screenShareClicked)="screenShare()"
+      (screenShareDisabledClicked)="screenShareDisabled()"
+      (exitButtonClicked)="exitSession()"
+      (chatButtonClicked)="toggleChat($event)"
+    ></app-toolbar>
 
-  <app-dialog-extension *ngIf="showDialogExtension" [nickname]="localUser.getNickname()" (cancel)="toggleDialogExtension()"></app-dialog-extension>
+    <app-dialog-extension
+      *ngIf="showDialogExtension"
+      [nickname]="localUser.getNickname()"
+      (cancel)="toggleDialogExtension()"
+    ></app-dialog-extension>
 
-  <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
-    <div *ngIf="localUser && this.localUser.getStreamManager()" class="OT_root OT_publisher custom-class" id="localUser" (dblclick)="enlargeElement($event)">
-      <stream-component #videoStream [user]="localUser" [localUser]="localUser" [lightTheme]="lightTheme" [newMessagesNum]="newMessages"
-        [compact]="compact" [visitorsNum]="visitorsNum" (nicknameClicked)="nicknameChanged($event)" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
-        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
-    </div>
+    <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
+      <div
+        *ngIf="localUser && localUser.getRole() === PUBLISHER && localUser.getStreamManager()"
+        class="OT_root OT_publisher custom-class"
+        id="localUser"
+        (dblclick)="enlargeElement($event)"
+      >
+        <stream-component
+          #videoStream
+          [user]="localUser"
+          [localUser]="localUser"
+          [lightTheme]="lightTheme"
+          [newMessagesNum]="newMessages"
+          [compact]="compact"
+          [visitorsNum]="visitorsNum"
+          (nicknameClicked)="nicknameChanged($event)"
+          (camButtonClicked)="camStatusChanged()"
+          (micButtonClicked)="micStatusChanged()"
+          (exitButtonClicked)="exitSession()"
+          (chatButtonClicked)="toggleChat($event)"
+          (screenShareClicked)="screenShare()"
+          (screenShareDisabledClicked)="screenShareDisabled()"
+        ></stream-component>
+      </div>
 
-    <div *ngFor="let user of this.remoteUsers" class="OT_root OT_publisher custom-class" id="remoteUsers" (dblclick)="enlargeElement($event)">
-      <stream-component #videoStream [user]="user" [localUser]="localUser" [lightTheme]="lightTheme" [newMessagesNum]="newMessages"
-        [compact]="compact" [visitorsNum]="visitorsNum" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()" (exitButtonClicked)="exitSession()"
-        (chatButtonClicked)="toggleChat($event)" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></stream-component>
-    </div>
+      <div
+        *ngFor="let user of this.remoteUsers"
+        class="OT_root OT_publisher custom-class"
+        id="remoteUsers"
+        (dblclick)="enlargeElement($event)"
+      >
+        <stream-component
+          #videoStream
+          [user]="user"
+          [localUser]="localUser"
+          [lightTheme]="lightTheme"
+          [newMessagesNum]="newMessages"
+          [compact]="compact"
+          [visitorsNum]="visitorsNum"
+          (camButtonClicked)="camStatusChanged()"
+          (micButtonClicked)="micStatusChanged()"
+          (exitButtonClicked)="exitSession()"
+          (chatButtonClicked)="toggleChat($event)"
+          (screenShareClicked)="screenShare()"
+          (screenShareDisabledClicked)="screenShareDisabled()"
+        ></stream-component>
+      </div>
 
-    <div class="OT_root OT_dialog  custom-class" [style.display]="chatDisplay" *ngIf="localUser && this.localUser.getStreamManager()">
-      <chat-component #chatComponent [user]="this.localUser" [chatDisplay]="chatDisplay" [lightTheme]="lightTheme" [messageList]="messageList" (closeChat)="toggleChat(undefined)"></chat-component>
+      <div
+        class="OT_root OT_dialog  custom-class"
+        [style.display]="chatDisplay"
+        *ngIf="
+          localUser &&
+          (localUser.getRole() === SUBSCRIBER ||
+          (localUser.getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings[0].chat))))
+        "
+      >
+        <chat-component
+          #chatComponent
+          [session]="this.session"
+          [user]="this.localUser"
+          [chatDisplay]="chatDisplay"
+          [lightTheme]="lightTheme"
+          [messageList]="messageList"
+          (closeChat)="toggleChat(undefined)"
+        ></chat-component>
+      </div>
     </div>
   </div>
-
 </div>

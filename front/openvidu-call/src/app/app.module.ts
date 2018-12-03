@@ -28,6 +28,7 @@ import { DialogErrorComponent } from './shared/components/dialog-error/dialog-er
 import { WebComponentComponent } from './web-component/web-component.component';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
+import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
@@ -42,6 +43,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     DialogExtensionComponent,
     OpenViduVideoComponent,
     DialogErrorComponent,
+    DialogChooseRoomComponent,
     WebComponentComponent,
     ToolbarComponent,
     LinkifyPipe

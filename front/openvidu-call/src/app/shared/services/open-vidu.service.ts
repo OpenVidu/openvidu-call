@@ -10,10 +10,12 @@ import { environment } from '../../../environments/environment';
 export class OpenViduService {
   URL_OV: string;
   MY_SECRET: string;
+  private role: string;
 
   constructor(private http: HttpClient) {}
 
-  getToken(mySessionId: string, openviduServerUrl: string , openviduSecret: string): Promise<string> {
+  getToken(mySessionId: string, openviduServerUrl: string , openviduSecret: string, role: string): Promise<string> {
+    this.role = role;
     return this.getCredentials().then(() => {
       const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
       const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
@@ -25,8 +27,8 @@ export class OpenViduService {
 
   createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string) {
     return new Promise((resolve, reject) => {
-
-      const body = JSON.stringify({ customSessionId: sessionId });
+      console.log("Creando sesion para :", this.role);
+      const body = JSON.stringify({ customSessionId: sessionId, role: this.role });
       const options = {
         headers: new HttpHeaders({
           'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
@@ -49,8 +51,9 @@ export class OpenViduService {
 
   createToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
     return new Promise((resolve, reject) => {
+      console.log("Creando tokejn para :", this.role);
 
-      const body = JSON.stringify({ session: sessionId });
+      const body = JSON.stringify({ session: sessionId, role: this.role });
       const options = {
         headers: new HttpHeaders({
           'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
