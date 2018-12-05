@@ -14,3 +14,11 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent);
 
 // specify theme class eg: <body class="my-theme"> ... </body>
 
+.alternate-theme {
+    $alternate-primary: mat-palette($mat-grey, 800);
+    $alternate-secondary:  mat-palette($mat-grey, 400);
+  
+    $alternate-theme: mat-light-theme($alternate-primary, $alternate-secondary);
+  
+    @include angular-material-theme($alternate-theme);
+  }

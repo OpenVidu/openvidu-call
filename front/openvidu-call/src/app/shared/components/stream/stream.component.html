@@ -11,8 +11,8 @@
             <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
                 <mat-icon matTooltip="Close">highlight_off</mat-icon>
             </button>
-            <form id="nicknameForm">
-                <mat-form-field>
+            <form id="nicknameForm" class="alternate-theme">
+                <mat-form-field color="primary">
                     <input matInput placeholder="Nick: {{user.getNickname()}}" [formControl]="nicknameFormControl" [errorStateMatcher]="matcher"
                         (keypress)="eventKeyPress($event)" autocomplete="off">
                     <mat-error *ngIf="nicknameFormControl.hasError('required')">
