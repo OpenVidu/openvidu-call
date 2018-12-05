@@ -10,7 +10,7 @@ export class UserModel {
   private nickname: string;
   private streamManager: StreamManager;
   private type: 'local' | 'remote';
-  private videAvatar: HTMLCanvasElement;
+  private videoAvatar: HTMLCanvasElement;
   private randomAvatar: string;
   private role: 'SUBSCRIBER' | 'PUBLISHER';
 
@@ -49,7 +49,7 @@ export class UserModel {
     return this.streamManager;
   }
   public getAvatar(): string {
-    return this.getRole() !== this.SUBSCRIBER ? this.videAvatar.toDataURL() : this.randomAvatar;
+    return this.getRole() !== this.SUBSCRIBER ? this.videoAvatar.toDataURL() : this.randomAvatar;
   }
 
   public getRole(): string {
@@ -97,9 +97,9 @@ export class UserModel {
       if (this.getRole() !== this.SUBSCRIBER) {
         setTimeout(() => {
           const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
-          const avatar = this.videAvatar.getContext('2d');
+          const avatar = this.videoAvatar.getContext('2d');
           avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-          console.log('Photo was taken: ', this.videAvatar);
+          console.log('Photo was taken: ', this.videoAvatar);
           resolve();
         }, 1500);
       } else {
@@ -110,9 +110,9 @@ export class UserModel {
   }
 
   private createAvatar() {
-    this.videAvatar = document.createElement('canvas');
-    this.videAvatar.className = 'user-img';
-    this.videAvatar.width = 60;
-    this.videAvatar.height = 60;
+    this.videoAvatar = document.createElement('canvas');
+    this.videoAvatar.className = 'user-img';
+    this.videoAvatar.width = 100;
+    this.videoAvatar.height = 100;
   }
 }
