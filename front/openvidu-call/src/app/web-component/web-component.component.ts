@@ -4,7 +4,22 @@ import { VideoRoomComponent } from '../video-room/video-room.component';
 
 @Component({
   selector: 'app-web-component',
-  templateUrl: './web-component.component.html',
+  template: `
+    <app-video-room
+      #videoRoom
+      *ngIf="display"
+      [theme]="theme"
+      [sessionName]="_sessionName"
+      [user]="_user"
+      [openviduServerUrl]="openviduServerUrl"
+      [openviduSecret]="openviduSecret"
+      [token]="_token"
+      (leaveSession)="emitLeaveSessionEvent($event)"
+      (joinSession)="emitJoinSessionEvent($event)"
+      (error)="emitErrorEvent($event)"
+    >
+    </app-video-room>
+  `,
   styleUrls: ['./web-component.component.css'],
 })
 export class WebComponentComponent implements OnInit {
