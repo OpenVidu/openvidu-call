@@ -22,3 +22,13 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent);
   
     @include angular-material-theme($alternate-theme);
   }
+
+  .volume-theme {
+    $volume-primary: mat-palette($mat-light-green, A400);
+    $volume-accent:  mat-palette($mat-amber, 500);
+    $volume-warn:  mat-palette($mat-red, 500);
+  
+    $volume-theme: mat-light-theme($volume-primary, $volume-accent, $volume-warn);
+  
+    @include angular-material-theme($volume-theme);
+  }
