@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { ApiService } from '../../services/api.service';
+import { OvSettings } from '../../models/ov-settings';
 
 @Component({
   selector: 'app-toolbar',
@@ -16,8 +17,7 @@ export class ToolbarComponent implements OnInit {
   @Input() compact: boolean;
   @Input() showNotification: boolean;
   @Input() newMessagesNum: number;
-  @Input() ovSettings: Array<any>;
-  @Input() visitorsNum: number;
+  @Input() ovSettings: OvSettings;
 
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();

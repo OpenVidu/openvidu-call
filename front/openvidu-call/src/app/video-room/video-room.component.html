@@ -1,5 +1,11 @@
 <div id="videoRoomNavBar">
-  <app-dialog-choose-room *ngIf="showDialogChooseRoom" (close)="toggleDialogChooseRoom($event)"> </app-dialog-choose-room>
+  <app-dialog-choose-room
+    *ngIf="showDialogChooseRoom"
+    [userNickname]="user"
+    [sessionName]="sessionName"
+    [autopublish]="ovSettings && ovSettings.autopublish"
+    (join)="toggleDialogChooseRoom($event)"
+  ></app-dialog-choose-room>
 
   <div *ngIf="localUser">
     <app-toolbar
@@ -8,7 +14,6 @@
       [compact]="compact"
       [localUser]="localUser"
       [mySessionId]="mySessionId"
-      [visitorsNum]="visitorsNum"
       [ovSettings]="ovSettings"
       (camButtonClicked)="camStatusChanged()"
       (micButtonClicked)="micStatusChanged()"
@@ -26,7 +31,7 @@
 
     <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
       <div
-        *ngIf="localUser && localUser.getRole() === PUBLISHER && localUser.getStreamManager()"
+        *ngIf="localUser && localUser.getStreamManager()"
         class="OT_root OT_publisher custom-class"
         id="localUser"
         (dblclick)="enlargeElement($event)"
@@ -38,7 +43,6 @@
           [lightTheme]="lightTheme"
           [newMessagesNum]="newMessages"
           [compact]="compact"
-          [visitorsNum]="visitorsNum"
           (nicknameClicked)="nicknameChanged($event)"
           (camButtonClicked)="camStatusChanged()"
           (micButtonClicked)="micStatusChanged()"
@@ -62,7 +66,6 @@
           [lightTheme]="lightTheme"
           [newMessagesNum]="newMessages"
           [compact]="compact"
-          [visitorsNum]="visitorsNum"
           (camButtonClicked)="camStatusChanged()"
           (micButtonClicked)="micStatusChanged()"
           (exitButtonClicked)="exitSession()"
@@ -75,11 +78,7 @@
       <div
         class="OT_root OT_dialog  custom-class"
         [style.display]="chatDisplay"
-        *ngIf="
-          localUser &&
-          (localUser.getRole() === SUBSCRIBER ||
-          (localUser.getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings[0].chat))))
-        "
+        *ngIf="localUser && (localUser.getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
       >
         <chat-component
           #chatComponent

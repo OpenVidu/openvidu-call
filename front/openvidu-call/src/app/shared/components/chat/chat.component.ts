@@ -8,7 +8,6 @@ import { Session } from 'openvidu-browser';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit {
-  private SUBSCRIBER = 'SUBSCRIBER';
 
   @ViewChild('chatScroll') chatScroll: ElementRef;
   @ViewChild('chatInput') chatInput: ElementRef;
@@ -64,7 +63,6 @@ export class ChatComponent implements OnInit {
           connectionId: this.session.connection.connectionId,
           message: this.message,
           nickname: this.user.getNickname(),
-          userAvatar: this.user.getRole() === this.SUBSCRIBER ? this.user.getAvatar() : null,
         };
         this.session.signal({
           data: JSON.stringify(data),

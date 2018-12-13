@@ -20,19 +20,12 @@
   display: inline-flex;
 }
 
-#navVisitors {
-  padding-left: 2%;
-}
 
-#navVisitors .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
-  right: -14px;
-}
 
 #navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{
   left: -17px;
 }
 
-#navVisitors .mat-badge-medium.mat-badge-above .mat-badge-content,
 #navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content {
   top: -6px;
 }

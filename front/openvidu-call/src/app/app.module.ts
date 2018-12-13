@@ -12,6 +12,12 @@ import {
   MatDialogModule,
   MatTooltipModule,
   MatBadgeModule,
+  MatGridListModule,
+  MatCheckboxModule,
+  MatSelectModule,
+  MatOptionModule,
+  MatProgressSpinnerModule,
+  MatSliderModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -62,6 +68,12 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     MatDialogModule,
     MatTooltipModule,
     MatBadgeModule,
+    MatGridListModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatProgressSpinnerModule,
+    MatSliderModule,
     AppRoutingModule,
     HttpClientModule,
     NgxLinkifyjsModule.forRoot()

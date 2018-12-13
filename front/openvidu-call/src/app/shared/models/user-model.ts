@@ -1,7 +1,6 @@
 import { StreamManager } from 'openvidu-browser';
 
 export class UserModel {
-  private SUBSCRIBER: 'SUBSCRIBER' = 'SUBSCRIBER';
 
   private connectionId: string;
   private audioActive: boolean;
@@ -12,7 +11,6 @@ export class UserModel {
   private type: 'local' | 'remote';
   private videoAvatar: HTMLCanvasElement;
   private randomAvatar: string;
-  private role: 'SUBSCRIBER' | 'PUBLISHER';
 
   constructor() {
     this.connectionId = '';
@@ -22,7 +20,6 @@ export class UserModel {
     this.nickname = '';
     this.streamManager = null;
     this.type = 'local';
-    this.createAvatar();
   }
 
   public isAudioActive(): boolean {
@@ -49,11 +46,7 @@ export class UserModel {
     return this.streamManager;
   }
   public getAvatar(): string {
-    return this.getRole() !== this.SUBSCRIBER ? this.videoAvatar.toDataURL() : this.randomAvatar;
-  }
-
-  public getRole(): string {
-    return this.role;
+    return this.videoAvatar ? this.videoAvatar.toDataURL() : this.randomAvatar;
   }
 
   public isLocal(): boolean {
@@ -84,24 +77,16 @@ export class UserModel {
   public setType(type: 'local' | 'remote') {
     this.type = type;
   }
-  public setRole(role: 'SUBSCRIBER' | 'PUBLISHER'): void {
-    this.role = role;
-    if (role === this.SUBSCRIBER) {
-      this.setAudioActive(false);
-      this.setVideoActive(false);
-    }
-  }
 
   public setUserAvatar(img?: string): Promise<any> {
     return new Promise((resolve) => {
-      if (this.getRole() !== this.SUBSCRIBER) {
-        setTimeout(() => {
+      if (!img) {
+          this.createVideoAvatar();
           const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
           const avatar = this.videoAvatar.getContext('2d');
-          avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
+          avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 100, 100);
           console.log('Photo was taken: ', this.videoAvatar);
           resolve();
-        }, 1500);
       } else {
         this.randomAvatar = img;
         resolve();
@@ -109,7 +94,7 @@ export class UserModel {
     });
   }
 
-  private createAvatar() {
+  private createVideoAvatar() {
     this.videoAvatar = document.createElement('canvas');
     this.videoAvatar.className = 'user-img';
     this.videoAvatar.width = 100;

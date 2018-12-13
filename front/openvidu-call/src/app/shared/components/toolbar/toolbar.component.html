@@ -10,35 +10,29 @@
     </div>
   </div>
 
-  <div id="navVisitors">
-      <button mat-icon-button disabled *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.visitors)">
-          <mat-icon matBadge="{{visitorsNum}}" matBadgeColor="accent"  >remove_red_eye</mat-icon>
-      </button>
-  </div>
-
   <div id="navButtons" align="center">
-    <button mat-icon-button (click)="micStatusChanged()" id="navMicButton"  *ngIf="localUser.getRole() !== 'SUBSCRIBER' && !this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.audio)">
+    <button mat-icon-button (click)="micStatusChanged()" id="navMicButton"  *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.audio)">
       <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Unpublish your audio">mic</mat-icon>
       <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
     </button>
-    <button mat-icon-button (click)="camStatusChanged()" id="navCamButton" *ngIf="localUser.getRole() !== 'SUBSCRIBER' && !this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.video)">
+    <button mat-icon-button (click)="camStatusChanged()" id="navCamButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.video)">
       <mat-icon *ngIf="localUser && localUser.isVideoActive()" matTooltip="Unpublish your cam">videocam</mat-icon>
       <mat-icon *ngIf="localUser && !localUser.isVideoActive()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
     </button>
-    <button mat-icon-button (click)="screenShare()" id="navScreenButton" *ngIf="localUser.getRole() !== 'SUBSCRIBER' && !this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.screenShare)">
+    <button mat-icon-button (click)="screenShare()" id="navScreenButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare)">
       <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShareActive()">picture_in_picture</mat-icon>
       <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()">screen_share</mat-icon>
     </button>
     <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShareActive()">
       <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
     </button>
-    <button mat-icon-button (click)="toggleFullscreen()" *ngIf="localUser && (!this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.fullscreen))">
+    <button mat-icon-button (click)="toggleFullscreen()" *ngIf="localUser && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.fullscreen))">
       <mat-icon matTooltip="Fullscreen">{{fullscreenIcon}}</mat-icon>
     </button>
-    <button mat-icon-button (click)="exitSession()" id="navLeaveButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings[0].toolbarButtons.exit)">
+    <button mat-icon-button (click)="exitSession()" id="navLeaveButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.exit)">
       <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
     </button>
-    <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!compact && (!this.ovSettings || (this.ovSettings && this.ovSettings[0].chat))">
+    <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!compact && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat))">
       <div *ngIf="showNotification" id="point" [class.pointLight]="lightTheme"></div>
         <mat-icon matBadge="{{newMessagesNum}}" [matBadgeHidden]="newMessagesNum === 0"  matBadgePosition="above before" matTooltip="Chat" matBadgeColor="accent">chat</mat-icon>
     </button>

@@ -1,14 +1,130 @@
+<div id="dialogChooseRoom" [ngStyle]="{ display: autopublish ? 'none' : 'block' }">
+  <mat-card *ngIf="user.getStreamManager()">
+    <mat-card-title>
+      <div id="img_content">
+        <img
+          id="header_img"
+          alt="OpenVidu Logo"
+          src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png"
+        />
+      </div>
+      <h1 mat-dialog-title>Set up your room</h1>
+    </mat-card-title>
+    <mat-card-content align="center" id="card-content">
+      <div mat-dialog-content>
+        <mat-grid-list [cols]="columns" (window:resize)="onResize($event)">
+          <mat-grid-tile>
+            <mat-grid-list cols="1" rowHeight="1:1" id="optionsContent">
+              <mat-grid-tile class="volume-theme">
+                <h3 id="sessionInfo">Session : {{ mySessionId }}</h3>
+                <mat-slider
+                  class="volumeSlider"
+                  [max]="0"
+                  [min]="100"
+                  [color]="updateVolumeColor()"
+                  [ngModel]="volumeValue"
+                  [vertical]="true"
+                >
+                </mat-slider>
+                <ov-video [streamManager]="user.getStreamManager()"> </ov-video>
+                <div id="photoButton">
+                  <button mat-stroked-button (click)="takePhoto()" id="avatarButton">
+                    <mat-icon matTooltip="Take Photo">photo_camera</mat-icon>
+                    <span style="margin-left: 5px">Capture Avatar</span>
+                  </button>
+                </div>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-grid-tile>
 
+          <mat-grid-tile>
+            <mat-grid-list cols="1" rowHeight="4:1" id="optionsContent">
+              <mat-grid-tile>
+                <h3 style="margin: auto;">Avatar</h3>
+                <div
+                  id="avatarContainer"
+                  (mouseover)="hover1 = true"
+                  (click)="setAvatar('video')"
+                  (mouseleave)="hover1 = false"
+                  [ngStyle]="{ backgroundColor: videoAvatar && hover1 && avatarSelected !== 'video' ? 'lightgreen' : 'white' }"
+                  [style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'"
+                >
+                  <div id="imgText" *ngIf="!videoAvatar">Press Avatar Button</div>
+                  <img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
+                </div>
+                <div
+                  id="avatarContainer"
+                  (click)="setAvatar('random')"
+                  (mouseover)="hover2 = true"
+                  (mouseleave)="hover2 = false"
+                  [ngStyle]="{ backgroundColor: randomAvatar && hover2 && avatarSelected !== 'random' ? 'lightgreen' : 'white' }"
+                  [style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'"
+                >
+                  <mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
+                  <img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
+                </div>
+              </mat-grid-tile>
 
-<div id="dialogChooseRoom">
-  <mat-card>
-    <mat-card-content>
-      <h1 mat-dialog-title>What role do you prefer for join?</h1>
-      <div mat-dialog-content></div>
+              <mat-grid-tile>
+                <button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
+                  <mat-icon *ngIf="isVideoActive" matTooltip="Camera Enabled">videocam</mat-icon>
+                  <mat-icon *ngIf="!isVideoActive" color="warn" matTooltip="Camera Disabled">videocam_off</mat-icon>
+                </button>
+                <mat-form-field class="alternate-theme">
+                  <mat-select
+                    placeholder="Camera Options"
+                    [ngModel]="isVideoActive ? camValue.label : 'None'"
+                    (selectionChange)="camChanged($event.value)"
+                  >
+                    <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile class="alternate-theme">
+                <button mat-stroked-button (click)="toggleMic()" id="micDeviceButton">
+                  <mat-icon *ngIf="isAudioActive" matTooltip="Microphone Enabled">mic</mat-icon>
+                  <mat-icon *ngIf="!isAudioActive" color="warn" matTooltip="Microphone Disabled">mic_off</mat-icon>
+                </button>
+                <mat-form-field class="alternate-theme">
+                  <mat-select
+                    placeholder="Microphone Options"
+                    [ngModel]="isAudioActive ? micValue.label : 'None'"
+                    (selectionChange)="micChanged($event.value)"
+                  >
+                    <mat-option *ngFor="let microphone of microphones" [value]="microphone.label">{{
+                      microphone.label
+                    }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile>
+                <button mat-stroked-button (click)="generateNickname()" id="nicknameButton">
+                  <mat-icon matTooltip="Nickname">person</mat-icon>
+                </button>
+                <form id="nicknameDialog" class="alternate-theme">
+                  <mat-form-field>
+                    <input
+                      matInput
+                      placeholder="Nickname"
+                      [formControl]="nicknameFormControl"
+                      [errorStateMatcher]="matcher"
+                      (keypress)="eventKeyPress($event)"
+                      autocomplete="off"
+                    />
+                    <mat-error *ngIf="nicknameFormControl.hasError('required')">
+                      Nickname is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
+                      Nickname is <strong>too long!</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </form>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-grid-tile>
+        </mat-grid-list>
+        <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
+      </div>
     </mat-card-content>
-    <mat-card-actions align="center">
-      <button mat-stroked-button (click)="closeDialog(PUBLISHER)">Publisher</button>
-      <button mat-stroked-button (click)="closeDialog(SUBSCRIBER)">Subscriber</button>
-    </mat-card-actions>
   </mat-card>
 </div>

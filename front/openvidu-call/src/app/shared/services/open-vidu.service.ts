@@ -3,32 +3,41 @@ import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { OvSettings } from '../models/ov-settings';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OpenViduService {
-  URL_OV: string;
-  MY_SECRET: string;
-  private role: string;
+  private URL_OV: string;
+  private MY_SECRET: string;
+  private SETTINGS_FILE_NAME = 'ov-settings.json';
+
+  private ovSettings: OvSettings = {
+    chat: true,
+    autopublish: false,
+    toolbarButtons: {
+      video: true,
+      audio: true,
+      fullscreen: true,
+      screenShare: true,
+      exit: true
+    }
+  };
 
   constructor(private http: HttpClient) {}
 
-  getToken(mySessionId: string, openviduServerUrl: string , openviduSecret: string, role: string): Promise<string> {
-    this.role = role;
-    return this.getCredentials().then(() => {
-      const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
-      const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
-      return this.createSession(mySessionId, ov_url, ov_secret).then((sessionId: string) => {
-          return this.createToken(sessionId, ov_url, ov_secret);
-      });
+  getToken(mySessionId: string, openviduServerUrl: string , openviduSecret: string ): Promise<string> {
+    const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
+    const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
+    return this.createSession(mySessionId, ov_url, ov_secret).then((sessionId: string) => {
+        return this.createToken(sessionId, ov_url, ov_secret);
     });
   }
 
   createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string) {
     return new Promise((resolve, reject) => {
-      console.log("Creando sesion para :", this.role);
-      const body = JSON.stringify({ customSessionId: sessionId, role: this.role });
+      const body = JSON.stringify({ customSessionId: sessionId });
       const options = {
         headers: new HttpHeaders({
           'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
@@ -51,9 +60,7 @@ export class OpenViduService {
 
   createToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      console.log("Creando tokejn para :", this.role);
-
-      const body = JSON.stringify({ session: sessionId, role: this.role });
+      const body = JSON.stringify({ session: sessionId });
       const options = {
         headers: new HttpHeaders({
           'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
@@ -74,14 +81,16 @@ export class OpenViduService {
     });
   }
 
-  private getCredentials(): Promise<any> {
+  getOvSettingsData(): Promise<OvSettings> {
     return new Promise((resolve) => {
-      this.http.get('ov-credentials.json').subscribe((data: any) => {
+      this.http.get(this.SETTINGS_FILE_NAME).subscribe((data: any) => {
         console.log('FILE', data);
+        console.log(data.openviduSettings);
+        this.ovSettings = data.openviduSettings ? data.openviduSettings : this.ovSettings;
         this.URL_OV = data.openviduCredentials.openvidu_url;
         this.MY_SECRET = data.openviduCredentials.openvidu_secret;
         console.log('URL Environment', this.URL_OV);
-        resolve();
+        resolve(data.openviduSettings);
       },
       (error) => {
         console.warn('Credentials file not found ');
@@ -95,7 +104,7 @@ export class OpenViduService {
           this.MY_SECRET = 'MY_SECRET';
         }
         console.log('URL Environment', this.URL_OV);
-        resolve();
+        resolve(this.ovSettings);
       });
     });
   }

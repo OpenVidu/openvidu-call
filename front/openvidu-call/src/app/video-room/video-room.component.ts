@@ -1,13 +1,13 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent, ConnectionEvent } from 'openvidu-browser';
+import { Router } from '@angular/router';
+import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { OpenViduService } from '../shared/services/open-vidu.service';
 import { ChatComponent } from '../shared/components/chat/chat.component';
-import { ApiService } from '../shared/services/api.service';
+import { OvSettings } from '../shared/models/ov-settings';
 
 @Component({
   selector: 'app-video-room',
@@ -17,7 +17,7 @@ import { ApiService } from '../shared/services/api.service';
 export class VideoRoomComponent implements OnInit, OnDestroy {
 
   // webComponent's inputs and outputs
-  @Input() ovSettings: Array<any>;
+  @Input() ovSettings: OvSettings;
   @Input() sessionName: string;
   @Input() user: string;
   @Input() openviduServerUrl: string;
@@ -32,8 +32,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';
-  PUBLISHER: 'PUBLISHER' = 'PUBLISHER';
-  SUBSCRIBER: 'SUBSCRIBER' = 'SUBSCRIBER';
 
   // Variables
   compact = false;
@@ -50,18 +48,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   remoteUsers: UserModel[];
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
   newMessages = 0;
-  visitorsNum = 0;
 
   private OV: OpenVidu;
   private bigElement: HTMLElement;
-  private roomChosen: 'PUBLISHER' | 'SUBSCRIBER';
 
   constructor(
     private openViduSrv: OpenViduService,
     private router: Router,
-    private route: ActivatedRoute,
     public dialog: MatDialog,
-    public apiSrv: ApiService
   ) {}
 
   @HostListener('window:beforeunload')
@@ -75,23 +69,18 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.checkSizeComponent();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.openViduSrv.getOvSettingsData().then((data: OvSettings) => {
+      this.ovSettings = this.ovSettings ? this.ovSettings : data;
+    });
+  }
 
   ngOnDestroy() {
     this.exitSession();
   }
 
   initApp() {
-    this.localUser = new UserModel();
-    this.localUser.setType('local');
-    this.localUser.setRole(this.roomChosen);
-    if (this.localUser.getRole() === this.SUBSCRIBER) {
-      this.apiSrv.getRandomAvatar().then(
-        (avatar: string) => this.localUser.setUserAvatar(avatar)
-      ).catch(err => console.error(err));
-    }
     this.remoteUsers = [];
-    this.generateParticipantInfo();
     this.checkTheme();
     setTimeout(() => {
       this.openviduLayout = new OpenViduLayout();
@@ -137,9 +126,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.OV = new OpenVidu();
     this.session = this.OV.initSession();
     this.subscribeToUserChanged();
-    this.subscribeToConnectionCreated();
     this.subscribeToStreamCreated();
-    this.subscribeToConnectionDestroyed();
     this.subscribedToStreamDestroyed();
     this.subscribedToChat();
     this.connectToSession();
@@ -183,9 +170,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   toggleDialogExtension() {
     this.showDialogExtension = !this.showDialogExtension;
   }
-  toggleDialogChooseRoom(role: 'SUBSCRIBER' | 'PUBLISHER') {
-    this.showDialogChooseRoom = !this.showDialogChooseRoom;
-    this.roomChosen = role; // PUBLISHER || SUBSCRIBER
+
+  toggleDialogChooseRoom(data: {user: UserModel, sessionId: string}) {
+    this.showDialogChooseRoom = false;
+    this.localUser = data.user;
+    this.mySessionId = data.sessionId;
     this.initApp();
   }
 
@@ -248,13 +237,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.openviduLayout.updateLayout();
   }
 
-  private generateParticipantInfo() {
-    this.route.params.subscribe((params: Params) => {
-      this.mySessionId = params.roomName !== undefined ? params.roomName : this.sessionName;
-      this.myUserName = this.user || 'OpenVidu_User' + Math.floor(Math.random() * 100);
-    });
-  }
-
   private deleteRemoteStream(stream: Stream): void {
     const userStream = this.remoteUsers.filter((user: UserModel) => user.getStreamManager().stream === stream)[0];
     const index = this.remoteUsers.indexOf(userStream, 0);
@@ -280,31 +262,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
           if (data.isScreenShareActive !== undefined) {
             user.setScreenShareActive(data.isScreenShareActive);
           }
+          if (data.avatar !== undefined) {
+            user.setUserAvatar(data.avatar);
+          }
         }
       });
       this.checkSomeoneShareScreen();
     });
-  }
-
-  private subscribeToConnectionCreated() {
-    this.session.on('connectionCreated', (event: ConnectionEvent) => {
-      setTimeout(() => {// Allows to add to remoteUser before check if is subscriber
-        if (event.connection.connectionId === this.session.connection.connectionId) {
-            console.log('YOUR OWN CONNECTION CREATED!');
-            if (this.localUser.getRole() === this.SUBSCRIBER) {
-              this.visitorsNum++;
-            }
-        } else {
-            console.log('OTHER USER\'S CONNECTION CREATED!');
-            const isPublisher = this.remoteUsers.filter((user: UserModel) => user.getConnectionId() === event.connection.connectionId)[0];
-            if (!isPublisher) {
-              this.visitorsNum++;
-            }
-        }
-    }, 1000);
-      console.warn(event.connection);
-    });
-
   }
 
   private subscribeToStreamCreated() {
@@ -320,45 +284,22 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       const nickname = (event.stream.connection.data).split('%')[0];
       newUser.setNickname(JSON.parse(nickname).clientData);
       newUser.setType('remote');
-      newUser.setRole(this.PUBLISHER);
-      console.log('----------- taking photo from remote User -----------');
-      newUser.setUserAvatar();
       this.remoteUsers.push(newUser);
       this.sendSignalUserChanged({
         isAudioActive: this.localUser.isAudioActive(),
         isVideoActive: this.localUser.isVideoActive(),
         isScreenShareActive: this.localUser.isScreenShareActive(),
         nickname: this.localUser.getNickname(),
-        role: this.localUser.getRole()
+        avatar: this.localUser.getAvatar()
       });
-    });
-  }
-
-  private subscribeToConnectionDestroyed() {
-    this.session.on('connectionDestroyed', (event: ConnectionEvent) => {
-      console.warn(event);
-      if (event.connection.connectionId === this.session.connection.connectionId) {
-        console.log('YOUR OWN CONNECTION CREATED!');
-        if (this.localUser.getRole() === this.SUBSCRIBER) {
-          this.visitorsNum--;
-        }
-      } else {
-       console.log('OTHER USER\'S CONNECTION CREATED!');
-       const isPublisher = this.remoteUsers.filter((user: UserModel) => user.getConnectionId() === event.connection.connectionId)[0];
-       if (!isPublisher) {
-         this.visitorsNum--;
-       }
-      }
     });
   }
 
   private subscribedToStreamDestroyed() {
     this.session.on('streamDestroyed', (event: StreamEvent) => {
-      setTimeout(() => { // Allows to check if subscriber in ConectionDestroyed event
         this.deleteRemoteStream(event.stream);
         this.checkSomeoneShareScreen();
         event.preventDefault();
-      }, 100);
     });
   }
 
@@ -374,7 +315,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             connectionId: event.from.connectionId,
             nickname: data.nickname,
             message: data.message,
-            userAvatar: data.userAvatar ? data.userAvatar : messageOwner.getAvatar(),
+            userAvatar: messageOwner.getAvatar()
         });
 
         this.checkNotification();
@@ -386,7 +327,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     if (this.token) {
       this.connect(this.token);
     } else {
-      this.openViduSrv.getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret, this.localUser.getRole())
+      this.openViduSrv.getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret)
         .then((token) => {
           this.connect(token);
         })
@@ -399,7 +340,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private connect(token: string): void {
-    this.session.connect(token, { clientData: this.myUserName })
+    this.session.connect(token, { clientData: this.localUser.getNickname() })
       .then(() => {
         this.connectWebCam();
       })
@@ -411,26 +352,20 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   private connectWebCam(): void {
-    this.localUser.setNickname(this.myUserName);
     this.localUser.setConnectionId(this.session.connection.connectionId);
 
     if (this.session.capabilities.publish) {
-      this.localUser.setStreamManager(this.OV.initPublisher(undefined, {
-        audioSource: undefined,
-        videoSource: undefined,
-        publishAudio: this.localUser.isAudioActive(),
-        publishVideo: this.localUser.isVideoActive(),
-        resolution: '640x480',
-        frameRate: 30,
-        insertMode: 'APPEND',
-      }));
       this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
-        console.log('----------- taking photo from Local User -----------');
-        this.localUser.setUserAvatar();
+        this.localUser.setScreenShareActive(false);
+        this.sendSignalUserChanged({
+          isAudioActive: this.localUser.isAudioActive(),
+          isVideoActive: this.localUser.isVideoActive(),
+          isScreenShareActive: this.localUser.isScreenShareActive(),
+          nickname: this.localUser.getNickname(),
+          avatar: this.localUser.getAvatar()
+        });
         this.joinSession.emit();
       });
-      this.localUser.setScreenShareActive(false);
-      this.sendSignalUserChanged({ isScreenShareActive: this.localUser.isScreenShareActive() });
 
       this.localUser.getStreamManager().on('streamPlaying', () => {
         this.openviduLayout.updateLayout();
