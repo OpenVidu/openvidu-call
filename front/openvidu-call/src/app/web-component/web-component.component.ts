@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ISessionCongif } from '../shared/models/webcomponent-config';
 import { VideoRoomComponent } from '../video-room/video-room.component';
+import { OvSettings } from '../shared/models/ov-settings';
 
 @Component({
   selector: 'app-web-component',
@@ -14,6 +15,7 @@ import { VideoRoomComponent } from '../video-room/video-room.component';
       [openviduServerUrl]="openviduServerUrl"
       [openviduSecret]="openviduSecret"
       [token]="_token"
+      [ovSettings]="ovSettings"
       (leaveSession)="emitLeaveSessionEvent($event)"
       (joinSession)="emitJoinSessionEvent($event)"
       (error)="emitErrorEvent($event)"
@@ -30,6 +32,7 @@ export class WebComponentComponent implements OnInit {
   @Input() openviduServerUrl: string;
   @Input() openviduSecret: string;
   @Input() theme: string;
+  @Input() ovSettings: OvSettings;
   @Output() joinSession = new EventEmitter<any>();
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
@@ -52,6 +55,9 @@ export class WebComponentComponent implements OnInit {
       this._sessionName = sessionConfig.sessionName;
       this._user = sessionConfig.user;
       this._token = sessionConfig.token;
+      if (this.isOvSettingsType(sessionConfig.ovSettings)) {
+        this.ovSettings = sessionConfig.ovSettings;
+      }
       if (this.validateParameters()) {
         this.display = true;
       }
@@ -81,5 +87,17 @@ export class WebComponentComponent implements OnInit {
 
   emitErrorEvent(event): void {
     setTimeout(() => this.error.emit(event), 20);
+  }
+
+  private isOvSettingsType(obj) {
+    return 'chat' in obj && typeof obj['chat'] === 'boolean' &&
+    'autopublish' in obj && typeof obj['autopublish'] === 'boolean' &&
+    'toolbarButtons' in obj && typeof obj['toolbarButtons'] === 'object' &&
+    'audio' in obj.toolbarButtons && typeof obj.toolbarButtons['audio'] === 'boolean' &&
+    'audio' in obj.toolbarButtons && typeof obj.toolbarButtons['audio'] === 'boolean' &&
+    'video' in obj.toolbarButtons && typeof obj.toolbarButtons['video'] === 'boolean' &&
+    'screenShare' in obj.toolbarButtons && typeof obj.toolbarButtons['screenShare'] === 'boolean' &&
+    'fullscreen' in obj.toolbarButtons && typeof obj.toolbarButtons['fullscreen'] === 'boolean' &&
+    'exit' in obj.toolbarButtons && typeof obj.toolbarButtons['exit'] === 'boolean';
   }
 }
