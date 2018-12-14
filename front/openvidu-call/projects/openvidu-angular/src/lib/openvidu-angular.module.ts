@@ -15,6 +15,13 @@ import {
   MatFormFieldModule,
   MatDialogModule,
   MatTooltipModule,
+  MatBadgeModule,
+  MatGridListModule,
+  MatCheckboxModule,
+  MatSelectModule,
+  MatOptionModule,
+  MatProgressSpinnerModule,
+  MatSliderModule
 } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -30,6 +37,7 @@ import { OpenViduService } from './shared/services/open-vidu.service';
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
 
 @NgModule({
   imports: [
@@ -47,6 +55,13 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     MatFormFieldModule,
     MatDialogModule,
     MatTooltipModule,
+    MatBadgeModule,
+    MatGridListModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatProgressSpinnerModule,
+    MatSliderModule,
     AppRoutingModule,
     NgxLinkifyjsModule.forRoot()
   ],
@@ -58,6 +73,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     DialogExtensionComponent,
     OpenViduVideoComponent,
     DialogErrorComponent,
+    DialogChooseRoomComponent,
     ToolbarComponent,
     LinkifyPipe
   ],

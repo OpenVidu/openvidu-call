@@ -1,18 +1,32 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { VideoRoomComponent } from './video-room/video-room.component';
+import { Session } from 'openvidu-browser';
+import { UserModel } from './shared/models/user-model';
+import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-layout';
+import { OvSettings } from './shared/models/ov-settings';
 
 @Component({
   selector: 'opv-session',
   template: `
-  <app-video-room #videoRoom [theme]="theme" [sessionName]="sessionName" [user]="user" [openviduServerUrl]="openviduServerUrl"
-  [openviduSecret]="openviduSecret" [token]="token" (leaveSession)="emitLeaveSessionEvent($event)"
-   (joinSession)="emitJoinSessionEvent($event)" (error)="emitErrorEvent($event)">
-</app-video-room>
+    <app-video-room
+      #videoRoom
+      [theme]="theme"
+      [sessionName]="sessionName"
+      [user]="user"
+      [openviduServerUrl]="openviduServerUrl"
+      [openviduSecret]="openviduSecret"
+      [token]="token"
+      [ovSettings]="ovSettings"
+      (leaveSession)="emitLeaveSessionEvent($event)"
+      (joinSession)="emitJoinSessionEvent($event)"
+      (error)="emitErrorEvent($event)">
+    </app-video-room>
   `,
   styles: [],
 })
 export class OpenviduSessionComponent implements OnInit {
   // webComponent's inputs and outputs
+  @Input() ovSettings: OvSettings;
   @Input()
   sessionName: string;
   @Input()
@@ -33,7 +47,7 @@ export class OpenviduSessionComponent implements OnInit {
   error = new EventEmitter<any>();
 
   @ViewChild('videoRoom')
-  videoRoom: VideoRoomComponent;
+  public videoRoom: VideoRoomComponent;
 
   constructor() {}
 
@@ -51,5 +65,21 @@ export class OpenviduSessionComponent implements OnInit {
 
   emitErrorEvent(event): void {
     setTimeout(() => this.error.emit(event), 20);
+  }
+
+  getSession(): Session {
+    return this.videoRoom.session;
+  }
+
+  getLocalUser(): UserModel {
+    return this.videoRoom.localUser;
+  }
+
+  getOpenviduLayout(): OpenViduLayout {
+    return this.videoRoom.openviduLayout;
+  }
+
+  getOpenviduLayputOptions(): OpenViduLayoutOptions {
+    return this.videoRoom.openviduLayoutOptions;
   }
 }
