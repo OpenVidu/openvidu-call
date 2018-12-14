@@ -79,7 +79,7 @@ export class OpenviduSessionComponent implements OnInit {
     return this.videoRoom.openviduLayout;
   }
 
-  getOpenviduLayputOptions(): OpenViduLayoutOptions {
+  getOpenviduLayoutOptions(): OpenViduLayoutOptions {
     return this.videoRoom.openviduLayoutOptions;
   }
 }
