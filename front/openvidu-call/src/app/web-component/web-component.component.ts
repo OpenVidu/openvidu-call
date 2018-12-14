@@ -55,7 +55,7 @@ export class WebComponentComponent implements OnInit {
       this._sessionName = sessionConfig.sessionName;
       this._user = sessionConfig.user;
       this._token = sessionConfig.token;
-      if (this.isOvSettingsType(sessionConfig.ovSettings)) {
+      if (sessionConfig.ovSettings && this.isOvSettingsType(sessionConfig.ovSettings)) {
         this.ovSettings = sessionConfig.ovSettings;
       }
       if (this.validateParameters()) {
