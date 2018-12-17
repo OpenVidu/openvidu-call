@@ -164,6 +164,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   screenShareDisabled(): void {
     this.session.unpublish(<Publisher>this.localUser.getStreamManager());
+    this.localUser.setStreamManager(this.OV.initPublisher(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: this.localUser.isAudioActive(),
+      publishVideo: this.localUser.isVideoActive(),
+      resolution: '640x480',
+      frameRate: 30,
+      insertMode: 'APPEND',
+    }));
     this.connectWebCam();
   }
 
