@@ -8,7 +8,7 @@
   text-align: center;
 }
 #card-content {
-  max-width: 90%;
+  max-width: 95%;
   height: fit-content;
   margin: auto;
   overflow-y: auto;
@@ -17,10 +17,8 @@
 
 .volumeSlider {
   position: absolute;
+  height: 40%;
   z-index: 99999;
-  left: 0;
-  bottom: 17%;
-  height: 45%;
   pointer-events: none;
 }
 
@@ -33,10 +31,9 @@
 #header_img {
   max-width: 165px;
 }
+
 #sessionInfo {
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  margin-top: 0;
 }
 #camDeviceButton,
 #micDeviceButton,
@@ -48,21 +45,29 @@
 }
 
 #photoButton {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto !important;
+  margin: 10px;
 }
 #avatarContainer {
   border: 1px solid;
   border-color: rgb(182, 182, 182);
-  width: 25%;
-  height: 95%;
+  width: 100px;
+  height: 100px;
   margin: 10px;
   position: relative;
   cursor: pointer;
+  display: inline-block;
 }
+
+#devicesSection {
+  margin: 15px 0px;
+}
+
+#avatarSection,
+#devicesSection {
+  height: fit-content !important;
+  min-height: auto !important;
+}
+
 #imgText {
   display: table;
 }
@@ -93,7 +98,7 @@ mat-form-field,
 }
 
 mat-card {
-  max-width: 70% !important;
+  max-width: 85% !important;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -103,37 +108,13 @@ mat-card {
   max-height: fit-content;
   margin: auto;
   padding: 20px;
+  overflow-y: auto;
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 959px) {
   mat-card {
-    max-width: 100% !important;
-    max-height: 90% !important;
-  }
-
-  #card-content {
-    height: 90%;
-  }
-
-  #dialogChooseRoom {
-    max-width: 90% !important;
-    max-height: 90% !important;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  #joinButton {
-    margin: 10px 10px;
-  }
-}
-
-@media only screen and (max-width: 900px) and (min-width: 630px) {
-  #card-content {
-    max-width: 83%;
+    max-width: 80% !important;
+    max-height: 80% !important;
   }
 }
 

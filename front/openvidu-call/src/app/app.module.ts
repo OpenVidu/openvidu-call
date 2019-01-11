@@ -38,6 +38,7 @@ import { DialogChooseRoomComponent } from './shared/components/dialog-choose-roo
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
     MatSliderModule,
     AppRoutingModule,
     HttpClientModule,
+    FlexLayoutModule,
     NgxLinkifyjsModule.forRoot()
   ],
   entryComponents: [

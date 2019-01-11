@@ -53,12 +53,12 @@ export class OpenviduSessionComponent implements OnInit {
 
   ngOnInit() {}
 
-  emitJoinSessionEvent(event): void {
+  emitJoinSessionEvent(event: any): void {
     this.joinSession.emit(event);
     this.videoRoom.checkSizeComponent();
   }
 
-  emitLeaveSessionEvent(event): void {
+  emitLeaveSessionEvent(event: any): void {
     this.leaveSession.emit(event);
     // this.display = false;
   }
