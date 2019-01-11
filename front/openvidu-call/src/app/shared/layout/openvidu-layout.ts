@@ -1,22 +1,235 @@
+/**
+ * @hidden
+ */
 declare var $: any;
 
 export interface OpenViduLayoutOptions {
+  /**
+   * The narrowest ratio that will be used (*2x3* by default)
+   */
   maxRatio: number;
+
+  /**
+   * The widest ratio that will be used (*16x9* by default)
+   */
   minRatio: number;
+
+  /**
+   * If this is true then the aspect ratio of the video is maintained and minRatio and maxRatio are ignored (*false* by default)
+   */
   fixedRatio: boolean;
+  /**
+   * Whether you want to animate the transitions
+   */
   animate: any;
+  /**
+   * The class to add to elements that should be sized bigger
+   */
   bigClass: string;
+
+  /**
+   * The maximum percentage of space the big ones should take up
+   */
   bigPercentage: any;
+
+  /**
+   * FixedRatio for the big ones
+   */
   bigFixedRatio: any;
+
+  /**
+   * The narrowest ratio to use for the big elements (*2x3* by default)
+   */
   bigMaxRatio: any;
+
+  /**
+   * The widest ratio to use for the big elements (*16x9* by default)
+   */
   bigMinRatio: any;
+
+  /**
+   * Whether to place the big one in the top left `true` or bottom right
+   */
   bigFirst: any;
 }
 
 export class OpenViduLayout {
+  /**
+   * @hidden
+   */
   private layoutContainer: HTMLElement;
+
+  /**
+   * @hidden
+   */
   private opts: OpenViduLayoutOptions;
 
+  /**
+   * Update the layout container
+   */
+  updateLayout() {
+    setTimeout(() => {
+      if (this.layoutContainer.style.display === 'none') {
+        return;
+      }
+      let id = this.layoutContainer.id;
+      if (!id) {
+        id = 'OT_' + this.cheapUUID();
+        this.layoutContainer.id = id;
+      }
+
+      const HEIGHT =
+        this.getHeight(this.layoutContainer) -
+        this.getCSSNumber(this.layoutContainer, 'borderTop') -
+        this.getCSSNumber(this.layoutContainer, 'borderBottom');
+      const WIDTH =
+        this.getWidth(this.layoutContainer) -
+        this.getCSSNumber(this.layoutContainer, 'borderLeft') -
+        this.getCSSNumber(this.layoutContainer, 'borderRight');
+
+      const availableRatio = HEIGHT / WIDTH;
+
+      let offsetLeft = 0;
+      let offsetTop = 0;
+      let bigOffsetTop = 0;
+      let bigOffsetLeft = 0;
+
+      const bigOnes = Array.prototype.filter.call(
+        this.layoutContainer.querySelectorAll('#' + id + '>.' + this.opts.bigClass),
+        this.filterDisplayNone,
+      );
+      const smallOnes = Array.prototype.filter.call(
+        this.layoutContainer.querySelectorAll('#' + id + '>*:not(.' + this.opts.bigClass + ')'),
+        this.filterDisplayNone,
+      );
+
+      if (bigOnes.length > 0 && smallOnes.length > 0) {
+        let bigWidth, bigHeight;
+
+        if (availableRatio > this.getVideoRatio(bigOnes[0])) {
+          // We are tall, going to take up the whole width and arrange small
+          // guys at the bottom
+          bigWidth = WIDTH;
+          bigHeight = Math.floor(HEIGHT * this.opts.bigPercentage);
+          offsetTop = bigHeight;
+          bigOffsetTop = HEIGHT - offsetTop;
+        } else {
+          // We are wide, going to take up the whole height and arrange the small
+          // guys on the right
+          bigHeight = HEIGHT;
+          bigWidth = Math.floor(WIDTH * this.opts.bigPercentage);
+          offsetLeft = bigWidth;
+          bigOffsetLeft = WIDTH - offsetLeft;
+        }
+        if (this.opts.bigFirst) {
+          this.arrange(
+            bigOnes,
+            bigWidth,
+            bigHeight,
+            0,
+            0,
+            this.opts.bigFixedRatio,
+            this.opts.bigMinRatio,
+            this.opts.bigMaxRatio,
+            this.opts.animate,
+          );
+          this.arrange(
+            smallOnes,
+            WIDTH - offsetLeft,
+            HEIGHT - offsetTop,
+            offsetLeft,
+            offsetTop,
+            this.opts.fixedRatio,
+            this.opts.minRatio,
+            this.opts.maxRatio,
+            this.opts.animate,
+          );
+        } else {
+          this.arrange(
+            smallOnes,
+            WIDTH - offsetLeft,
+            HEIGHT - offsetTop,
+            0,
+            0,
+            this.opts.fixedRatio,
+            this.opts.minRatio,
+            this.opts.maxRatio,
+            this.opts.animate,
+          );
+          this.arrange(
+            bigOnes,
+            bigWidth,
+            bigHeight,
+            bigOffsetLeft,
+            bigOffsetTop,
+            this.opts.bigFixedRatio,
+            this.opts.bigMinRatio,
+            this.opts.bigMaxRatio,
+            this.opts.animate,
+          );
+        }
+      } else if (bigOnes.length > 0 && smallOnes.length === 0) {
+        this
+          // We only have one bigOne just center it
+          .arrange(
+            bigOnes,
+            WIDTH,
+            HEIGHT,
+            0,
+            0,
+            this.opts.bigFixedRatio,
+            this.opts.bigMinRatio,
+            this.opts.bigMaxRatio,
+            this.opts.animate,
+          );
+      } else {
+        this.arrange(
+          smallOnes,
+          WIDTH - offsetLeft,
+          HEIGHT - offsetTop,
+          offsetLeft,
+          offsetTop,
+          this.opts.fixedRatio,
+          this.opts.minRatio,
+          this.opts.maxRatio,
+          this.opts.animate,
+        );
+      }
+    }, 50);
+  }
+
+  /**
+   * Initialize the layout inside of the container with the options required
+   * @param container
+   * @param {OpenViduLayoutOptions} opts
+   */
+  initLayoutContainer(container: HTMLElement, opts: OpenViduLayoutOptions) {
+    this.opts = {
+      maxRatio: opts.maxRatio != null ? opts.maxRatio : 3 / 2,
+      minRatio: opts.minRatio != null ? opts.minRatio : 9 / 16,
+      fixedRatio: opts.fixedRatio != null ? opts.fixedRatio : false,
+      animate: opts.animate != null ? opts.animate : false,
+      bigClass: opts.bigClass != null ? opts.bigClass : 'OT_big',
+      bigPercentage: opts.bigPercentage != null ? opts.bigPercentage : 0.8,
+      bigFixedRatio: opts.bigFixedRatio != null ? opts.bigFixedRatio : false,
+      bigMaxRatio: opts.bigMaxRatio != null ? opts.bigMaxRatio : 3 / 2,
+      bigMinRatio: opts.bigMinRatio != null ? opts.bigMinRatio : 9 / 16,
+      bigFirst: opts.bigFirst != null ? opts.bigFirst : true,
+    };
+    this.layoutContainer = typeof container === 'string' ? $(container) : container;
+  }
+
+  /**
+   * Set the layout configuration
+   * @param {OpenViduLayoutOptions} options
+   */
+  setLayoutOptions(options: OpenViduLayoutOptions) {
+    this.opts = options;
+  }
+
+  /**
+   * @hidden
+   */
   private fixAspectRatio(elem: HTMLVideoElement, width: number) {
     const sub: HTMLVideoElement = <HTMLVideoElement>elem.querySelector('.OT_root');
     if (sub) {
@@ -30,6 +243,9 @@ export class OpenViduLayout {
     }
   }
 
+  /**
+   * @hidden
+   */
   private positionElement(elem: HTMLVideoElement, x: number, y: number, width: number, height: number, animate: any) {
     const targetPosition = {
       left: x + 'px',
@@ -54,6 +270,9 @@ export class OpenViduLayout {
     this.fixAspectRatio(elem, width);
   }
 
+  /**
+   * @hidden
+   */
   private getVideoRatio(elem: HTMLVideoElement) {
     if (!elem) {
       return 3 / 4;
@@ -67,26 +286,41 @@ export class OpenViduLayout {
     return 3 / 4;
   }
 
+  /**
+   * @hidden
+   */
   private getCSSNumber(elem: HTMLElement, prop: string) {
     const cssStr = $(elem).css(prop);
     return cssStr ? parseInt(cssStr, 10) : 0;
   }
 
+  /**
+   * @hidden
+   */
   // Really cheap UUID function
   private cheapUUID() {
     return (Math.random() * 100000000).toFixed(0);
   }
 
+  /**
+   * @hidden
+   */
   private getHeight(elem: HTMLElement) {
     const heightStr = $(elem).css('height');
     return heightStr ? parseInt(heightStr, 10) : 0;
   }
 
+  /**
+   * @hidden
+   */
   private getWidth(elem: HTMLElement) {
     const widthStr = $(elem).css('width');
     return widthStr ? parseInt(widthStr, 10) : 0;
   }
 
+  /**
+   * @hidden
+   */
   private getBestDimensions(minR: number, maxR: number, count: number, WIDTH: number, HEIGHT: number, targetHeight: number) {
     let maxArea, targetCols, targetRows, targetWidth, tWidth, tHeight, tRatio;
 
@@ -132,6 +366,9 @@ export class OpenViduLayout {
     };
   }
 
+  /**
+   * @hidden
+   */
   private arrange(
     children: HTMLVideoElement[],
     WIDTH: number,
@@ -264,158 +501,10 @@ export class OpenViduLayout {
     }
   }
 
+  /**
+   * @hidden
+   */
   private filterDisplayNone(element: HTMLElement) {
     return element.style.display !== 'none';
-  }
-
-  updateLayout() {
-    setTimeout(() => {
-      if (this.layoutContainer.style.display === 'none') {
-        return;
-      }
-      let id = this.layoutContainer.id;
-      if (!id) {
-        id = 'OT_' + this.cheapUUID();
-        this.layoutContainer.id = id;
-      }
-
-      const HEIGHT =
-        this.getHeight(this.layoutContainer) -
-        this.getCSSNumber(this.layoutContainer, 'borderTop') -
-        this.getCSSNumber(this.layoutContainer, 'borderBottom');
-      const WIDTH =
-        this.getWidth(this.layoutContainer) -
-        this.getCSSNumber(this.layoutContainer, 'borderLeft') -
-        this.getCSSNumber(this.layoutContainer, 'borderRight');
-
-      const availableRatio = HEIGHT / WIDTH;
-
-      let offsetLeft = 0;
-      let offsetTop = 0;
-      let bigOffsetTop = 0;
-      let bigOffsetLeft = 0;
-
-      const bigOnes = Array.prototype.filter.call(
-        this.layoutContainer.querySelectorAll('#' + id + '>.' + this.opts.bigClass),
-        this.filterDisplayNone,
-      );
-      const smallOnes = Array.prototype.filter.call(
-        this.layoutContainer.querySelectorAll('#' + id + '>*:not(.' + this.opts.bigClass + ')'),
-        this.filterDisplayNone,
-      );
-
-      if (bigOnes.length > 0 && smallOnes.length > 0) {
-        let bigWidth, bigHeight;
-
-        if (availableRatio > this.getVideoRatio(bigOnes[0])) {
-          // We are tall, going to take up the whole width and arrange small
-          // guys at the bottom
-          bigWidth = WIDTH;
-          bigHeight = Math.floor(HEIGHT * this.opts.bigPercentage);
-          offsetTop = bigHeight;
-          bigOffsetTop = HEIGHT - offsetTop;
-        } else {
-          // We are wide, going to take up the whole height and arrange the small
-          // guys on the right
-          bigHeight = HEIGHT;
-          bigWidth = Math.floor(WIDTH * this.opts.bigPercentage);
-          offsetLeft = bigWidth;
-          bigOffsetLeft = WIDTH - offsetLeft;
-        }
-        if (this.opts.bigFirst) {
-          this.arrange(
-            bigOnes,
-            bigWidth,
-            bigHeight,
-            0,
-            0,
-            this.opts.bigFixedRatio,
-            this.opts.bigMinRatio,
-            this.opts.bigMaxRatio,
-            this.opts.animate,
-          );
-          this.arrange(
-            smallOnes,
-            WIDTH - offsetLeft,
-            HEIGHT - offsetTop,
-            offsetLeft,
-            offsetTop,
-            this.opts.fixedRatio,
-            this.opts.minRatio,
-            this.opts.maxRatio,
-            this.opts.animate,
-          );
-        } else {
-          this.arrange(
-            smallOnes,
-            WIDTH - offsetLeft,
-            HEIGHT - offsetTop,
-            0,
-            0,
-            this.opts.fixedRatio,
-            this.opts.minRatio,
-            this.opts.maxRatio,
-            this.opts.animate,
-          );
-          this.arrange(
-            bigOnes,
-            bigWidth,
-            bigHeight,
-            bigOffsetLeft,
-            bigOffsetTop,
-            this.opts.bigFixedRatio,
-            this.opts.bigMinRatio,
-            this.opts.bigMaxRatio,
-            this.opts.animate,
-          );
-        }
-      } else if (bigOnes.length > 0 && smallOnes.length === 0) {
-        this
-          // We only have one bigOne just center it
-          .arrange(
-            bigOnes,
-            WIDTH,
-            HEIGHT,
-            0,
-            0,
-            this.opts.bigFixedRatio,
-            this.opts.bigMinRatio,
-            this.opts.bigMaxRatio,
-            this.opts.animate,
-          );
-      } else {
-        this.arrange(
-          smallOnes,
-          WIDTH - offsetLeft,
-          HEIGHT - offsetTop,
-          offsetLeft,
-          offsetTop,
-          this.opts.fixedRatio,
-          this.opts.minRatio,
-          this.opts.maxRatio,
-          this.opts.animate,
-        );
-      }
-    }, 50);
-  }
-
-  initLayoutContainer(container, opts) {
-    this.opts = {
-      maxRatio: opts.maxRatio != null ? opts.maxRatio : 3 / 2,
-      minRatio: opts.minRatio != null ? opts.minRatio : 9 / 16,
-      fixedRatio: opts.fixedRatio != null ? opts.fixedRatio : false,
-      animate: opts.animate != null ? opts.animate : false,
-      bigClass: opts.bigClass != null ? opts.bigClass : 'OT_big',
-      bigPercentage: opts.bigPercentage != null ? opts.bigPercentage : 0.8,
-      bigFixedRatio: opts.bigFixedRatio != null ? opts.bigFixedRatio : false,
-      bigMaxRatio: opts.bigMaxRatio != null ? opts.bigMaxRatio : 3 / 2,
-      bigMinRatio: opts.bigMinRatio != null ? opts.bigMinRatio : 9 / 16,
-      bigFirst: opts.bigFirst != null ? opts.bigFirst : true,
-    };
-    this.layoutContainer = typeof container === 'string' ? $(container) : container;
-  }
-
-  setLayoutOptions(options: OpenViduLayoutOptions) {
-    this.opts = options;
   }
 }
