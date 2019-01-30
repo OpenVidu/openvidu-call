@@ -28,10 +28,16 @@ export class OpenViduService {
   constructor(private http: HttpClient) {}
 
   getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
-    const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
-    const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
-    return this.createSession(mySessionId, ov_url, ov_secret).then((sessionId: string) => {
-      return this.createToken(sessionId, ov_url, ov_secret);
+    return new Promise((resolve, reject) => {
+      const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
+      const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
+      this.createSession(mySessionId, ov_url, ov_secret)
+        .then((sessionId: string) => {
+          this.createToken(sessionId, ov_url, ov_secret)
+            .then((token) => resolve(token))
+            .catch((error) => reject(error));
+        })
+        .catch((error) => reject(error));
     });
   }
 

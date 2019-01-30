@@ -157,7 +157,7 @@ export class DialogChooseRoomComponent implements OnInit {
       this.camValue = this.cameras[1] ? this.cameras[1] : this.cameras[0];
       this.micValue = this.microphones[1] ? this.microphones[1] : this.microphones[0];
       this.initPublisher();
-    });
+    }).catch((error) => console.error(error));
   }
   private setSessionName() {
     this.route.params.subscribe((params: Params) => {
@@ -188,7 +188,7 @@ export class DialogChooseRoomComponent implements OnInit {
       if (this.autopublish) {
         this.accept();
       }
-    });
+    }).catch((error) => console.error(error));
   }
 
   private launchNewPublisher() {

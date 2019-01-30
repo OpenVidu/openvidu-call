@@ -72,7 +72,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.openViduSrv.getOvSettingsData().then((data: OvSettings) => {
       this.ovSettings = this.ovSettings ? this.ovSettings : data;
-    });
+    }).catch((error) => console.error(error));
   }
 
   ngOnDestroy() {
@@ -212,9 +212,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.session.unpublish(<Publisher>this.localUser.getStreamManager());
       this.localUser.setStreamManager(publisher);
       this.session.publish(<Publisher>this.localUser.getStreamManager()).then(() => {
-      this.localUser.setScreenShareActive(true);
-      this.sendSignalUserChanged({ isScreenShareActive: this.localUser.isScreenShareActive() });
-      });
+        this.localUser.setScreenShareActive(true);
+        this.sendSignalUserChanged({ isScreenShareActive: this.localUser.isScreenShareActive() });
+      }).catch((error) => console.error(error));
     });
 
     publisher.on('streamPlaying', () => {
@@ -374,7 +374,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
           avatar: this.localUser.getAvatar()
         });
         this.joinSession.emit();
-      });
+      }).catch((error) => console.error(error));
 
       this.localUser.getStreamManager().on('streamPlaying', () => {
         this.openviduLayout.updateLayout();
