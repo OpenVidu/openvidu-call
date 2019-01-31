@@ -73,4 +73,4 @@ async function cleanLibrary() {
 cleanLibrary()
   .then(() => {
     copyFiles();
-  })
+  }).catch((error) => console.error(error));

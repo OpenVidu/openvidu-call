@@ -40,5 +40,5 @@ buildElement()
     return copyFiles();
   })
   .then(() => {
-    console.log('OpenVidu Web Component (' + VERSION + ') built')
-  });
+    console.log('OpenVidu Web Component (' + VERSION + ') built');
+  }).catch((error) => console.error(error));
