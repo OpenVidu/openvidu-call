@@ -24,7 +24,7 @@
       <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()">screen_share</mat-icon>
     </button>
     <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShareActive()">
-      <mat-icon matTooltip="Stop screen share" color="warn">stop_screen_share</mat-icon>
+      <mat-icon matTooltip="Stop sharing">desktop_windows</mat-icon>
     </button>
     <button mat-icon-button (click)="toggleFullscreen()" *ngIf="localUser && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.fullscreen))">
       <mat-icon matTooltip="Fullscreen">{{fullscreenIcon}}</mat-icon>
