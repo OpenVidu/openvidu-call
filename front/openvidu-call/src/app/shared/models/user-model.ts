@@ -135,7 +135,7 @@ export class UserModel {
 
   /**
    * Set the audioActive value
-   * @param {boolean} isAudioActive value of audioActive
+   * @param isAudioActive value of audioActive
    */
   public setAudioActive(isAudioActive: boolean) {
     this.audioActive = isAudioActive;
@@ -143,7 +143,7 @@ export class UserModel {
 
   /**
    * Set the videoActive value
-   * @param {boolean} isVideoActive value of videoActive
+   * @param isVideoActive value of videoActive
    */
   public setVideoActive(isVideoActive: boolean) {
     this.videoActive = isVideoActive;
@@ -151,7 +151,7 @@ export class UserModel {
 
   /**
    * Set the screenShare value
-   * @param {boolean} isScreenShareActive value of isScreenShareActive
+   * @param isScreenShareActive value of isScreenShareActive
    */
   public setScreenShareActive(isScreenShareActive: boolean) {
     this.screenShareActive = isScreenShareActive;
@@ -159,7 +159,7 @@ export class UserModel {
 
   /**
    * Set the streamManager value object
-   * @param {StreamManager} streamManager value of streamManager
+   * @param streamManager value of streamManager
    */
   public setStreamManager(streamManager: StreamManager) {
     this.streamManager = streamManager;
@@ -167,7 +167,7 @@ export class UserModel {
 
   /**
    * Set the connectionId value
-   * @param {string} conecctionId value of connectionId
+   * @param conecctionId value of connectionId
    */
   public setConnectionId(conecctionId: string) {
     this.connectionId = conecctionId;
@@ -175,7 +175,7 @@ export class UserModel {
 
   /**
    * Set the user nickname value
-   * @param {string} nickname value of user nickname
+   * @param nickname value of user nickname
    */
   public setNickname(nickname: string) {
     this.nickname = nickname;
@@ -183,7 +183,7 @@ export class UserModel {
 
   /**
    * Set the user type value
-   * @param {'local' | 'remote'} type value of user type
+   * @param type value of user type
    */
   public setType(type: 'local' | 'remote' | 'screen') {
     this.type = type;

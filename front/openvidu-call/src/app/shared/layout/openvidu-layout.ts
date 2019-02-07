@@ -201,7 +201,7 @@ export class OpenViduLayout {
   /**
    * Initialize the layout inside of the container with the options required
    * @param container
-   * @param {OpenViduLayoutOptions} opts
+   * @param opts
    */
   initLayoutContainer(container: HTMLElement, opts: OpenViduLayoutOptions) {
     this.opts = {
@@ -221,7 +221,7 @@ export class OpenViduLayout {
 
   /**
    * Set the layout configuration
-   * @param {OpenViduLayoutOptions} options
+   * @param options
    */
   setLayoutOptions(options: OpenViduLayoutOptions) {
     this.opts = options;
