@@ -12,19 +12,19 @@
 
   <div id="navButtons" align="center">
     <button mat-icon-button (click)="micStatusChanged()" id="navMicButton"  *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.audio)">
-      <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Unpublish your audio">mic</mat-icon>
-      <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Publish your audio">mic_off</mat-icon>
+      <mat-icon *ngIf="localUser && localUser.isAudioActive()" matTooltip="Mute your audio">mic</mat-icon>
+      <mat-icon *ngIf="localUser && !localUser.isAudioActive()" color="warn" matTooltip="Unmute your audio">mic_off</mat-icon>
     </button>
     <button mat-icon-button (click)="camStatusChanged()" id="navCamButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.video)">
-      <mat-icon *ngIf="localUser && localUser.isVideoActive()" matTooltip="Unpublish your cam">videocam</mat-icon>
-      <mat-icon *ngIf="localUser && !localUser.isVideoActive()" color="warn" matTooltip="Publish your cam">videocam_off</mat-icon>
+      <mat-icon *ngIf="localUser && localUser.isLocal() && localUser.isVideoActive()" matTooltip="Mute your cam">videocam</mat-icon>
+      <mat-icon *ngIf="(localUser && localUser.isLocal() && !localUser.isVideoActive()) || localUser && localUser.isScreen()" color="warn" matTooltip="Unmute your cam">videocam_off</mat-icon>
     </button>
     <button mat-icon-button (click)="screenShare()" id="navScreenButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare)">
       <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShareActive()">picture_in_picture</mat-icon>
-      <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()">screen_share</mat-icon>
+      <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()" color="warn">stop_screen_share</mat-icon>
     </button>
-    <button mat-icon-button (click)="screenShareDisabled()" *ngIf="localUser && localUser.isScreenShareActive()">
-      <mat-icon matTooltip="Stop sharing">desktop_windows</mat-icon>
+    <button mat-icon-button (click)="stopScreenSharing()" *ngIf="localUser && localUser.isScreenShareActive()">
+      <mat-icon matTooltip="Stop sharing">screen_share</mat-icon>
     </button>
     <button mat-icon-button (click)="toggleFullscreen()" *ngIf="localUser && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.fullscreen))">
       <mat-icon matTooltip="Fullscreen">{{fullscreenIcon}}</mat-icon>

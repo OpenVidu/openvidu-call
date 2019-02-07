@@ -24,7 +24,7 @@ export class ToolbarComponent implements OnInit {
   @Output() screenShareClicked = new EventEmitter<any>();
   @Output() exitButtonClicked = new EventEmitter<any>();
   @Output() chatButtonClicked = new EventEmitter<any>();
-  @Output() screenShareDisabledClicked = new EventEmitter<any>();
+  @Output() stopScreenSharingClicked = new EventEmitter<any>();
 
   constructor(private apiSrv: ApiService) {}
 
@@ -53,8 +53,8 @@ export class ToolbarComponent implements OnInit {
     this.screenShareClicked.emit();
   }
 
-  screenShareDisabled() {
-    this.screenShareDisabledClicked.emit();
+  stopScreenSharing() {
+    this.stopScreenSharingClicked.emit();
   }
 
   exitSession() {

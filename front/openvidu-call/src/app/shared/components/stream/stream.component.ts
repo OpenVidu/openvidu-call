@@ -28,7 +28,7 @@ export class StreamComponent implements OnInit {
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();
   @Output() screenShareClicked = new EventEmitter<any>();
-  @Output() screenShareDisabledClicked = new EventEmitter<any>();
+  @Output() stopScreenSharingClicked = new EventEmitter<any>();
   @Output() exitButtonClicked = new EventEmitter<any>();
   @Output() chatButtonClicked = new EventEmitter<any>();
 
@@ -80,11 +80,11 @@ export class StreamComponent implements OnInit {
     }
   }
 
-  micStatusChanged() {
+  toggleMic() {
     this.micButtonClicked.emit();
   }
 
-  camStatusChanged() {
+  toggleCam() {
     this.camButtonClicked.emit();
   }
 
@@ -92,8 +92,8 @@ export class StreamComponent implements OnInit {
     this.screenShareClicked.emit();
   }
 
-  screenShareDisabled() {
-    this.screenShareDisabledClicked.emit();
+  stopScreenSharing() {
+    this.stopScreenSharingClicked.emit();
   }
 
   exitSession() {

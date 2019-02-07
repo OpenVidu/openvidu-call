@@ -1,12 +1,13 @@
 <div class="OT_widget-container" [id]="'container-' + this.user.getStreamManager().stream.streamId">
 
     <app-toolbar *ngIf="isFullscreen" [lightTheme]="lightTheme" [newMessagesNum]="newMessagesNum" [mySessionId]="localUser.getStreamManager().stream.session.sessionId"
-        [localUser]="localUser" [compact]="compact" (camButtonClicked)="camStatusChanged()" (micButtonClicked)="micStatusChanged()"
-        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (screenShareDisabledClicked)="screenShareDisabled()"></app-toolbar>
+        [localUser]="localUser" [compact]="compact" (camButtonClicked)="toggleCam()" (micButtonClicked)="toggleMic()"
+        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
 
     <div class="nickname pointer" [class.fullscreen]="isFullscreen">
         <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
         <span *ngIf="!editNickname && user.isLocal()" (click)="toggleNicknameForm()"> (edit)</span>
+        <span *ngIf="!editNickname && user.isScreen()">_SCREEN</span>
         <div *ngIf="editNickname && user.isLocal()" id="dialogNickname">
             <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
                 <mat-icon matTooltip="Close">highlight_off</mat-icon>

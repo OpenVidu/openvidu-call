@@ -27,18 +27,22 @@ export class DialogChooseRoomComponent implements OnInit {
   mySessionId: string;
   cameras: IDevices[] = [{ label: 'None', device: null }];
   microphones: IDevices[] = [{ label: 'None', device: null }];
+  screenActive: 'None' | 'Screen' = 'None';
   camValue: IDevices;
   micValue: IDevices;
   isVideoActive = true;
   isAudioActive = true;
+  isScreenShareActive = false;
   volumeValue = 100;
+  showDialogExtension = false;
 
-  user: UserModel = new UserModel();
+  localUsers: UserModel[] = [];
   randomAvatar: string;
   videoAvatar: string;
   avatarSelected: string;
   columns: number;
   private OV: OpenVidu;
+  private userCamDeleted: UserModel;
 
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
@@ -47,6 +51,7 @@ export class DialogChooseRoomComponent implements OnInit {
 
   ngOnInit() {
     this.OV = new OpenVidu();
+    this.localUsers.push(new UserModel());
     this.generateNickname();
     this.setSessionName();
     this.setDevicesValue();
@@ -56,8 +61,16 @@ export class DialogChooseRoomComponent implements OnInit {
 
   toggleCam() {
     this.isVideoActive = !this.isVideoActive;
-    this.user.setVideoActive(this.isVideoActive);
-    (<Publisher>this.user.getStreamManager()).publishVideo(this.isVideoActive);
+    if (this.localUsers.length === 2) {
+      this.destroyPublisher(0);
+      this.userCamDeleted = this.localUsers.shift();
+    } else if (this.localUsers[0].isScreen()) {
+      this.localUsers.unshift(this.userCamDeleted);
+      this.initPublisher();
+    } else {
+      this.localUsers[0].setVideoActive(this.isVideoActive);
+      (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.isVideoActive);
+    }
   }
 
   camChanged(label: string) {
@@ -65,17 +78,43 @@ export class DialogChooseRoomComponent implements OnInit {
     const option = this.cameras.filter((opt: IDevices) => opt.label === label)[0];
     this.camValue = option;
     this.isVideoActive = this.camValue.label === 'None' ? false : true;
-    this.user.setVideoActive(this.isVideoActive);
-    (<Publisher>this.user.getStreamManager()).publishVideo(this.isVideoActive);
-    if (initPublisherRequired) {
-      this.launchNewPublisher();
+    if (this.localUsers[0].isLocal()) {
+      this.localUsers[0].setVideoActive(this.isVideoActive);
+      (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.isVideoActive);
+      if (initPublisherRequired) {
+        this.launchNewPublisher(0);
+      }
+    } else {
+      this.localUsers.unshift(this.userCamDeleted);
+      this.initPublisher();
     }
   }
 
+  toggleScreenShare() {
+    if (this.isScreenShareActive) {
+      if (this.localUsers[0].isScreen()) {
+        this.localUsers.unshift(this.userCamDeleted);
+        this.initPublisher();
+      }
+        this.destroyPublisher(1);
+        this.localUsers.pop();
+        this.localUsers[0].setScreenShareActive(false);
+        this.screenActive = 'None';
+        this.isScreenShareActive = !this.isScreenShareActive;
+        this.localUsers[0].setScreenShareActive(this.isScreenShareActive);
+    } else {
+      this.initScreenPublisher();
+    }
+  }
+
+
+
   toggleMic() {
     this.isAudioActive = !this.isAudioActive;
-    this.user.setAudioActive(this.isAudioActive);
-    (<Publisher>this.user.getStreamManager()).publishAudio(this.isAudioActive);
+    this.localUsers.forEach((user) => {
+      user.setAudioActive(this.isAudioActive);
+      (<Publisher>user.getStreamManager()).publishAudio(this.isAudioActive);
+    });
   }
 
   micChanged(label: string) {
@@ -83,10 +122,12 @@ export class DialogChooseRoomComponent implements OnInit {
     const option = this.microphones.filter((opt: IDevices) => opt.label === label)[0];
     this.micValue = option;
     this.isAudioActive = this.micValue.label === 'None' ? false : true;
-    this.user.setAudioActive(this.isAudioActive);
-    (<Publisher>this.user.getStreamManager()).publishAudio(this.isAudioActive);
+    this.localUsers[0].setAudioActive(this.isAudioActive);
+    this.localUsers.forEach((user) => {
+      (<Publisher>user.getStreamManager()).publishAudio(this.isAudioActive);
+    });
     if (initPublisherRequired) {
-      this.launchNewPublisher();
+      this.launchNewPublisher(0);
     }
   }
 
@@ -100,14 +141,14 @@ export class DialogChooseRoomComponent implements OnInit {
     if ((option === 'random' && this.randomAvatar) || (option === 'video' && this.videoAvatar)) {
       this.avatarSelected = option;
       if (option === 'random') {
-        this.user.setUserAvatar(this.randomAvatar);
+        this.localUsers[0].setUserAvatar(this.randomAvatar);
       }
     }
   }
 
   takePhoto() {
-    this.user.setUserAvatar();
-    this.videoAvatar = this.user.getAvatar();
+    this.localUsers[0].setUserAvatar();
+    this.videoAvatar = this.localUsers[0].getAvatar();
   }
 
   generateNickname() {
@@ -138,10 +179,16 @@ export class DialogChooseRoomComponent implements OnInit {
 
   accept() {
     if (this.nicknameFormControl.valid) {
-      this.user.getStreamManager().off('streamAudioVolumeChange');
-      this.user.setNickname(this.nicknameFormControl.value);
-      this.join.emit({ user: this.user, sessionId: this.mySessionId });
+      this.localUsers.forEach((user) => {
+        user.getStreamManager().off('streamAudioVolumeChange');
+        user.setNickname(this.nicknameFormControl.value);
+      });
+      this.join.emit({ localUsers: this.localUsers, sessionId: this.mySessionId });
     }
+  }
+
+  toggleDialogExtension() {
+    this.showDialogExtension = !this.showDialogExtension;
   }
 
   private setDevicesValue() {
@@ -179,26 +226,61 @@ export class DialogChooseRoomComponent implements OnInit {
       videoSource: this.camValue.device,
       publishAudio: this.isAudioActive,
       publishVideo: this.isVideoActive,
-      resolution: '640x480',
-      frameRate: 30,
-      insertMode: 'APPEND',
     }).then(publisher => {
       this.subscribeToVolumeChange(publisher);
-      this.user.setStreamManager(publisher);
+      this.localUsers[0].setStreamManager(publisher);
       if (this.autopublish) {
         this.accept();
       }
     }).catch((error) => console.error(error));
   }
 
-  private launchNewPublisher() {
-    this.destroyPublisher();
+  private initScreenPublisher() {
+    const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
+    const publisherProperties = {
+      videoSource: videoSource,
+      publishAudio: this.isAudioActive,
+      publishVideo: true,
+      mirror: false,
+    };
+
+    this.OV.initPublisherAsync(undefined, publisherProperties )
+    .then( (publisher: Publisher ) => {
+      this.localUsers.push(new UserModel());
+      this.localUsers[1].setStreamManager(publisher);
+      this.localUsers[1].setScreenShareActive(true);
+      this.localUsers[1].setAudioActive(this.isAudioActive);
+      this.localUsers[1].setType('screen');
+      this.localUsers[1].setUserAvatar(this.randomAvatar);
+      this.isScreenShareActive = !this.isScreenShareActive;
+      this.screenActive = 'Screen';
+      this.localUsers[0].setScreenShareActive(this.isScreenShareActive);
+      if (this.localUsers[0].isLocal() && !this.localUsers[0].isVideoActive()) {
+        this.destroyPublisher(0);
+        this.userCamDeleted = this.localUsers.shift();
+      }
+
+    }).catch((error) => {
+      if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
+        this.toggleDialogExtension();
+      } else if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
+        alert('Your browser does not support screen sharing');
+      } else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
+        alert('You need to enable screen sharing extension');
+      } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
+        alert('You need to choose a window or application to share');
+      }
+    });
+  }
+
+  private launchNewPublisher(index: number) {
+    this.destroyPublisher(index);
     this.initPublisher();
   }
 
-  private destroyPublisher() {
-    (<Publisher>this.user.getStreamManager()).off('streamAudioVolumeChange');
-    this.user.getStreamManager().stream.disposeWebRtcPeer();
-    this.user.getStreamManager().stream.disposeMediaStream();
+  private destroyPublisher(index: number) {
+    (<Publisher>this.localUsers[index].getStreamManager()).off('streamAudioVolumeChange');
+    this.localUsers[index].getStreamManager().stream.disposeWebRtcPeer();
+    this.localUsers[index].getStreamManager().stream.disposeMediaStream();
   }
 }

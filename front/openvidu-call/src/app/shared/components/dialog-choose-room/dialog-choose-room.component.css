@@ -15,11 +15,28 @@
   padding-right: 8px;
 }
 
+#videoContainer {
+  position: relative;
+}
 .volumeSlider {
   position: absolute;
-  height: 40%;
+  height: 60%;
   z-index: 99999;
+  bottom: 0;
   pointer-events: none;
+}
+
+#ovVideoScreen, #ovVideo {
+  display: inline-block;
+}
+
+.smallVideo {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  border: 1px solid;
+  border-color: #ffffff;
 }
 
 #img_content {

@@ -38,7 +38,7 @@ export class UserModel {
   /**
    * User type (`local` or  `remote`)
    */
-  private type: 'local' | 'remote';
+  private type: 'local' | 'remote' | 'screen';
 
   /**
    * @hidden
@@ -126,6 +126,13 @@ export class UserModel {
     return !this.isLocal();
   }
 
+   /**
+   * Return `true` if user has a screen role and `false` if not
+   */
+  public isScreen(): boolean {
+    return this.type === 'screen';
+  }
+
   /**
    * Set the audioActive value
    * @param {boolean} isAudioActive value of audioActive
@@ -178,7 +185,7 @@ export class UserModel {
    * Set the user type value
    * @param {'local' | 'remote'} type value of user type
    */
-  public setType(type: 'local' | 'remote') {
+  public setType(type: 'local' | 'remote' | 'screen') {
     this.type = type;
   }
 

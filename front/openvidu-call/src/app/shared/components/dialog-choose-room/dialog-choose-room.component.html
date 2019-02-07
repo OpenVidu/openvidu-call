@@ -1,5 +1,10 @@
 <div id="dialogChooseRoom" [ngStyle]="{ display: autopublish ? 'none' : 'block' }">
-  <mat-card *ngIf="user.getStreamManager()">
+    <app-dialog-extension
+    *ngIf="showDialogExtension"
+    [nickname]="localUsers[0].getNickname()"
+    (cancel)="toggleDialogExtension()"
+  ></app-dialog-extension>
+  <mat-card *ngIf="localUsers[0].getStreamManager()">
     <mat-card-title>
       <div id="img_content">
         <img
@@ -16,16 +21,20 @@
           <!--  left section -->
           <div fxFlex="45" fxFlex.sm="25" fxFlex.lt-sm="25" class="volume-theme">
             <h3 id="sessionInfo">Session : {{ mySessionId }}</h3>
-            <mat-slider
-              class="volumeSlider"
-              [max]="0"
-              [min]="100"
-              [color]="updateVolumeColor()"
-              [ngModel]="volumeValue"
-              [vertical]="true"
-            >
-            </mat-slider>
-            <ov-video [streamManager]="user.getStreamManager()" id="ovVideo" style="display: inline-block"></ov-video>
+            
+            <div id="videoContainer">
+                <mat-slider
+                class="volumeSlider"
+                [max]="0"
+                [min]="100"
+                [color]="updateVolumeColor()"
+                [ngModel]="volumeValue"
+                [vertical]="true"
+              >
+              </mat-slider>
+              <ov-video *ngIf="localUsers[0] && localUsers[0].getStreamManager()" [streamManager]="localUsers[0].getStreamManager()" id="ovVideo" [className]="localUsers[1] ? 'smallVideo' : ''"></ov-video>
+              <ov-video *ngIf="localUsers[1] && localUsers[1].getStreamManager()" [streamManager]="localUsers[1].getStreamManager()" id="ovVideoScreen"></ov-video>
+            </div>
             <div id="photoButton">
               <button mat-stroked-button (click)="takePhoto()" id="avatarButton">
                 <mat-icon matTooltip="Take Photo">photo_camera</mat-icon>
@@ -38,7 +47,7 @@
             <div fxLayout="row" fxFill id="avatarSection">
               <div fxLayout fxFlex>
                 <div class="" fxFlex="30" fxLayoutAlign="center center"><h3 style="margin: auto;">Avatar</h3></div>
-                <div class="two" style="background-color: azure" fxFlex="70" fxLayoutAlign="center center">
+                <div class="" fxFlex="70" fxLayoutAlign="center center">
                   <div
                     id="avatarContainer"
                     (mouseover)="hover1 = true"
@@ -63,28 +72,6 @@
                     <mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
                     <img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
                   </div>
-                </div>
-              </div>
-            </div>
-            <!-- Devices section / Camera-->
-            <div fxLayout="row" fxFill id="devicesSection">
-              <div fxLayout fxFlex>
-                <div class="one" fxFlex="20" fxLayoutAlign="center center">
-                  <button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
-                    <mat-icon *ngIf="isVideoActive" matTooltip="Camera Enabled">videocam</mat-icon>
-                    <mat-icon *ngIf="!isVideoActive" color="warn" matTooltip="Camera Disabled">videocam_off</mat-icon>
-                  </button>
-                </div>
-                <div class="two" fxFlex="80" fxLayoutAlign="center center">
-                  <mat-form-field class="alternate-theme">
-                    <mat-select
-                      placeholder="Camera Options"
-                      [ngModel]="isVideoActive ? camValue.label : 'None'"
-                      (selectionChange)="camChanged($event.value)"
-                    >
-                      <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
                 </div>
               </div>
             </div>
@@ -113,8 +100,51 @@
                 </div>
               </div>
             </div>
+            <!-- Devices section / Camera-->
+            <div fxLayout="row" fxFill id="devicesSection">
+              <div fxLayout fxFlex>
+                <div class="one" fxFlex="20" fxLayoutAlign="center center">
+                  <button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
+                    <mat-icon *ngIf="isVideoActive" matTooltip="Camera Enabled">videocam</mat-icon>
+                    <mat-icon *ngIf="!isVideoActive" color="warn" matTooltip="Camera Disabled">videocam_off</mat-icon>
+                  </button>
+                </div>
+                <div class="two" fxFlex="80" fxLayoutAlign="center center">
+                  <mat-form-field class="alternate-theme">
+                    <mat-select
+                      placeholder="Camera Options"
+                      [ngModel]="isVideoActive ? camValue.label : 'None'"
+                      (selectionChange)="camChanged($event.value)"
+                    >
+                      <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
 
-            <!-- Devices section / Microphone-->
+            <!-- Devices section / ScreenShare-->
+            <div fxLayout="row" fxFill id="devicesSection">
+              <div fxLayout fxFlex>
+                <div class="one" fxFlex="20" fxLayoutAlign="center center">
+                  <button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">
+                    <mat-icon *ngIf="isScreenShareActive" matTooltip="Screen Share Enabled">screen_share</mat-icon>
+                    <mat-icon *ngIf="!isScreenShareActive" color="warn" matTooltip="Screen Share Disabled">stop_screen_share</mat-icon>
+                  </button>
+                </div>
+                <div class="two" fxFlex="80" fxLayoutAlign="center center">
+                  <mat-form-field class="alternate-theme">
+                    <input matInput disabled
+                      placeholder="Screen Pages"
+                      [ngModel]="screenActive"
+                    >
+              
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <!-- Devices section / Nickname-->
             <div fxLayout="row" fxFill id="devicesSection">
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">

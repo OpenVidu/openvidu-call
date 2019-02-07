@@ -7,50 +7,53 @@
     (join)="toggleDialogChooseRoom($event)"
   ></app-dialog-choose-room>
 
-  <div *ngIf="localUser">
+  <div *ngIf="localUsers && localUsers[0]">
     <app-toolbar
       [lightTheme]="lightTheme"
       [newMessagesNum]="newMessages"
       [compact]="compact"
-      [localUser]="localUser"
+      [localUser]="localUsers[0]"
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
-      (camButtonClicked)="camStatusChanged()"
-      (micButtonClicked)="micStatusChanged()"
-      (screenShareClicked)="screenShare()"
-      (screenShareDisabledClicked)="screenShareDisabled()"
+      (stopCameraClicked)="stopCamera()"
+      (camButtonClicked)="toggleCam()"
+      (micButtonClicked)="toggleMic()"
+      (screenShareClicked)="screenShareAndChangeScreen()"
+      (stopScreenSharingClicked)="stopScreenSharing()"
       (exitButtonClicked)="exitSession()"
       (chatButtonClicked)="toggleChat($event)"
     ></app-toolbar>
 
     <app-dialog-extension
       *ngIf="showDialogExtension"
-      [nickname]="localUser.getNickname()"
+      [nickname]="localUsers[0].getNickname()"
       (cancel)="toggleDialogExtension()"
     ></app-dialog-extension>
 
-    <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
+    <div id="layout" class="bounds" [class.boundsLight]="lightTheme" *ngIf="localUsers">
+ 
       <div
-        *ngIf="localUser && localUser.getStreamManager()"
         class="OT_root OT_publisher custom-class"
         id="localUser"
+        *ngFor="let localUser of localUsers"
         (dblclick)="enlargeElement($event)"
       >
-        <stream-component
+        <stream-component *ngIf="localUser.getStreamManager()"
           #videoStream
           [user]="localUser"
-          [localUser]="localUser"
+          [localUser]="localUsers[0]"
           [lightTheme]="lightTheme"
           [newMessagesNum]="newMessages"
           [compact]="compact"
           (nicknameClicked)="nicknameChanged($event)"
-          (camButtonClicked)="camStatusChanged()"
-          (micButtonClicked)="micStatusChanged()"
+          (camButtonClicked)="toggleCam()"
+          (micButtonClicked)="toggleMic()"
           (exitButtonClicked)="exitSession()"
           (chatButtonClicked)="toggleChat($event)"
-          (screenShareClicked)="screenShare()"
-          (screenShareDisabledClicked)="screenShareDisabled()"
+          (screenShareClicked)="screenShareAndChangeScreen()"
+          (stopScreenSharingClicked)="stopScreenSharing()"
         ></stream-component>
+
       </div>
 
       <div
@@ -62,28 +65,28 @@
         <stream-component
           #videoStream
           [user]="user"
-          [localUser]="localUser"
+          [localUser]="localUsers[0]"
           [lightTheme]="lightTheme"
           [newMessagesNum]="newMessages"
           [compact]="compact"
-          (camButtonClicked)="camStatusChanged()"
-          (micButtonClicked)="micStatusChanged()"
+          (camButtonClicked)="toggleCam()"
+          (micButtonClicked)="toggleMic()"
           (exitButtonClicked)="exitSession()"
           (chatButtonClicked)="toggleChat($event)"
-          (screenShareClicked)="screenShare()"
-          (screenShareDisabledClicked)="screenShareDisabled()"
+          (screenShareClicked)="screenShareAndChangeScreen()"
+          (stopScreenSharingClicked)="stopScreenSharing()"
         ></stream-component>
       </div>
 
       <div
         class="OT_root OT_dialog  custom-class"
         [style.display]="chatDisplay"
-        *ngIf="localUser && (localUser.getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
+        *ngIf="localUsers && (localUsers[0].getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
       >
         <chat-component
           #chatComponent
           [session]="this.session"
-          [user]="this.localUser"
+          [user]="this.localUsers[0]"
           [chatDisplay]="chatDisplay"
           [lightTheme]="lightTheme"
           [messageList]="messageList"
