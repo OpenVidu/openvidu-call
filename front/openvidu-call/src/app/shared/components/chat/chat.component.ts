@@ -60,7 +60,7 @@ export class ChatComponent implements OnInit {
       this.message = this.message.replace(/ +(?= )/g, '');
       if (this.message !== '' && this.message !== ' ') {
         const data = {
-          connectionId: this.session.connection.connectionId,
+          connectionId: this.user.getConnectionId(),
           message: this.message,
           nickname: this.user.getNickname(),
         };

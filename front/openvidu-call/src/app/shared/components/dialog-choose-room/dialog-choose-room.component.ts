@@ -183,6 +183,9 @@ export class DialogChooseRoomComponent implements OnInit {
         user.getStreamManager().off('streamAudioVolumeChange');
         user.setNickname(this.nicknameFormControl.value);
       });
+      if(this.localUsers[1]) {
+        this.localUsers[1].setUserAvatar(this.localUsers[0]. getAvatar());
+      }
       this.join.emit({ localUsers: this.localUsers, sessionId: this.mySessionId });
     }
   }

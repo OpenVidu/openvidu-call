@@ -190,15 +190,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       console.log('ARRAY 1, FIRST IS SCREEN - TOGGLE CAM');
       if (this.userCamDeleted) {
         this.localUsers.unshift(this.userCamDeleted);
-        this.session.publish(<Publisher>this.localUsers[0].getStreamManager()).then(() => {
-          this.localUsers[0].setVideoActive(true);
-          (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
-          this.sendSignalUserChanged({ isVideoActive: this.localUsers[0].isVideoActive() });
-        }).catch((error) => console.error(error));
+        this.session
+          .publish(<Publisher>this.localUsers[0].getStreamManager())
+          .then(() => {
+            this.localUsers[0].setVideoActive(true);
+            (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
+            this.sendSignalUserChanged({ isVideoActive: this.localUsers[0].isVideoActive() });
+          })
+          .catch((error) => console.error(error));
       } else {
         this.createConnection(true);
       }
-
     } else {
       console.log('ARRAY 1, FIRST IS CAM - TOGGLE CAM');
       this.localUsers[0].setVideoActive(!this.localUsers[0].isVideoActive());
@@ -270,7 +272,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
                 .publish(<Publisher>this.localUsers[index].getStreamManager())
                 .then(() => {
                   this.localUsers[0].setScreenShareActive(true);
-                  this.sendSignalUserChanged({ isScreenShareActive: this.localUsers[index].isScreenShareActive() }, true);
+                  this.sendSignalUserChanged(
+                    {
+                      isScreenShareActive: this.localUsers[index].isScreenShareActive(),
+                      avatar: this.localUsers[index].getAvatar(),
+                    },
+                    true,
+                  );
                   if (!this.localUsers[0].isVideoActive()) {
                     this.session.unpublish(<Publisher>this.localUsers[0].getStreamManager());
                     this.removeAndSaveFirstUser();
@@ -315,6 +323,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     };
     this.OVScreen.initPublisherAsync(undefined, publisherProperties)
       .then((publisher: Publisher) => {
+        // CHANGE CAMERA
         if ((this.localUsers[0].isLocal() && this.localUsers[1]) || this.localUsers[0].isScreen()) {
           publisher.once('accessAllowed', () => {
             const index = this.localUsers[0].isLocal() ? 1 : 0;
@@ -323,6 +332,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             this.sessionScreen.publish(publisher);
           });
         } else {
+          // ADD NEW SCREEN USER
           console.log('STREAM SHARE - ELSE: posicion 1');
           this.localUsers.push(this.createScreenUser(publisher));
           this.startScreenSharing(1);
@@ -534,13 +544,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       data: JSON.stringify(data),
       type: 'userChanged',
     };
-    console.log("sendSignalUserChanged - IS SCREEN; ", isScreen);
+    console.log('sendSignalUserChanged - IS SCREEN; ', isScreen);
     if (isScreen) {
-      console.log("SEND SIGNAL CHANGED - SESSIONSCREEN");
+      console.log('SEND SIGNAL CHANGED - SESSIONSCREEN');
       this.sessionScreen.signal(signalOptions);
     } else {
-      console.log("SEND SIGNAL CHANGED - SESSION");
-      console.log("signal options", signalOptions);
+      console.log('SEND SIGNAL CHANGED - SESSION');
       this.session.signal(signalOptions);
     }
   }
@@ -569,7 +578,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.userCamDeleted = this.localUsers.shift();
       this.openviduLayout.updateLayout();
-     }, 200 );
+    }, 200);
   }
 
   private createScreenUser(publisher: StreamManager): UserModel {
@@ -601,7 +610,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             newUser.setStreamManager(publisher);
             this.userCamDeleted = newUser;
             this.openviduLayout.updateLayout();
-          // session.publish(publisher).then(() => {});
+            // session.publish(publisher).then(() => {});
         }).catch((error) => console.error(error));
       }).catch((error) => console.error(error));
   }
@@ -612,7 +621,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       publishVideo: true,
     }).then(publisher => {
       this.localUsers[0].setStreamManager(publisher);
-
     }).catch((error) => console.error(error));
   }
 }
