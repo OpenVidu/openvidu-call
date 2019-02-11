@@ -208,6 +208,10 @@ export class UserModel {
     });
   }
 
+  public removeVideoAvatar() {
+    this.videoAvatar = null;
+  }
+
   /**
    * @hidden
    */

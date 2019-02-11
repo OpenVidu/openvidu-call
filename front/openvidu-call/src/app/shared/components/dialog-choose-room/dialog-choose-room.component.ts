@@ -39,7 +39,7 @@ export class DialogChooseRoomComponent implements OnInit {
   localUsers: UserModel[] = [];
   randomAvatar: string;
   videoAvatar: string;
-  avatarSelected: string;
+  avatarSelected: 'random' | 'video';
   columns: number;
   private OV: OpenVidu;
   private userCamDeleted: UserModel;
@@ -149,6 +149,7 @@ export class DialogChooseRoomComponent implements OnInit {
   takePhoto() {
     this.localUsers[0].setUserAvatar();
     this.videoAvatar = this.localUsers[0].getAvatar();
+    this.setAvatar('video');
   }
 
   generateNickname() {
@@ -183,8 +184,11 @@ export class DialogChooseRoomComponent implements OnInit {
         user.getStreamManager().off('streamAudioVolumeChange');
         user.setNickname(this.nicknameFormControl.value);
       });
-      if(this.localUsers[1]) {
-        this.localUsers[1].setUserAvatar(this.localUsers[0]. getAvatar());
+      if (this.avatarSelected === 'random') {
+        this.localUsers[0].removeVideoAvatar();
+      }
+      if (this.localUsers[1]) {
+        this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
       }
       this.join.emit({ localUsers: this.localUsers, sessionId: this.mySessionId });
     }
