@@ -189,6 +189,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     } else if (this.localUsers[0].isScreen()) {
       console.log('ARRAY 1, FIRST IS SCREEN - TOGGLE CAM');
       if (this.userCamDeleted) {
+        this.setAudio(false);
         this.localUsers.unshift(this.userCamDeleted);
         this.session
           .publish(<Publisher>this.localUsers[0].getStreamManager())
@@ -315,9 +316,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   screenShareAndChangeScreen() {
     const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
+    const hasAudio = this.localUsers[0].isLocal() ? false : true;
     const publisherProperties = {
       videoSource: videoSource,
-      publishAudio: false,
+      publishAudio: hasAudio,
       publishVideo: true,
       mirror: false,
     };
@@ -577,8 +579,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private removeAndSaveFirstUser() {
     setTimeout(() => {
       this.userCamDeleted = this.localUsers.shift();
+      this.setAudio(this.userCamDeleted.isAudioActive());
       this.openviduLayout.updateLayout();
     }, 200);
+  }
+
+  private setAudio(value: boolean) {
+    this.localUsers[0].setAudioActive(value);
+    (<Publisher>(this.localUsers[0].getStreamManager())).publishAudio(value);
   }
 
   private createScreenUser(publisher: StreamManager): UserModel {
@@ -588,6 +596,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     user.setStreamManager(publisher);
     user.setNickname(this.localUsers[0].getNickname());
     user.setUserAvatar(this.localUsers[0].getAvatar());
+    user.setAudioActive(false);
     return user;
   }
 

@@ -64,7 +64,10 @@ export class DialogChooseRoomComponent implements OnInit {
     if (this.localUsers.length === 2) {
       this.destroyPublisher(0);
       this.userCamDeleted = this.localUsers.shift();
+      this.setAudio(this.isAudioActive);
     } else if (this.localUsers[0].isScreen()) {
+      this.setAudio(false);
+      (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
       this.localUsers.unshift(this.userCamDeleted);
       this.initPublisher();
     } else {
@@ -106,8 +109,6 @@ export class DialogChooseRoomComponent implements OnInit {
       this.initScreenPublisher();
     }
   }
-
-
 
   toggleMic() {
     this.isAudioActive = !this.isAudioActive;
@@ -244,9 +245,10 @@ export class DialogChooseRoomComponent implements OnInit {
 
   private initScreenPublisher() {
     const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
+    const hasAudio = !this.localUsers[0].isLocal();
     const publisherProperties = {
       videoSource: videoSource,
-      publishAudio: this.isAudioActive,
+      publishAudio: hasAudio,
       publishVideo: true,
       mirror: false,
     };
@@ -256,7 +258,7 @@ export class DialogChooseRoomComponent implements OnInit {
       this.localUsers.push(new UserModel());
       this.localUsers[1].setStreamManager(publisher);
       this.localUsers[1].setScreenShareActive(true);
-      this.localUsers[1].setAudioActive(this.isAudioActive);
+      this.localUsers[1].setAudioActive(hasAudio);
       this.localUsers[1].setType('screen');
       this.localUsers[1].setUserAvatar(this.randomAvatar);
       this.isScreenShareActive = !this.isScreenShareActive;
@@ -265,6 +267,8 @@ export class DialogChooseRoomComponent implements OnInit {
       if (this.localUsers[0].isLocal() && !this.localUsers[0].isVideoActive()) {
         this.destroyPublisher(0);
         this.userCamDeleted = this.localUsers.shift();
+        this.setAudio(true);
+        this.subscribeToVolumeChange(publisher);
       }
 
     }).catch((error) => {
@@ -289,5 +293,10 @@ export class DialogChooseRoomComponent implements OnInit {
     (<Publisher>this.localUsers[index].getStreamManager()).off('streamAudioVolumeChange');
     this.localUsers[index].getStreamManager().stream.disposeWebRtcPeer();
     this.localUsers[index].getStreamManager().stream.disposeMediaStream();
+  }
+
+  private setAudio(value: boolean) {
+    this.localUsers[0].setAudioActive(value);
+    (<Publisher>(this.localUsers[0].getStreamManager())).publishAudio(value);
   }
 }
