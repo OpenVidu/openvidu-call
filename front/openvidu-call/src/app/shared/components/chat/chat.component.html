@@ -1,34 +1,51 @@
 <div id="chatContainer">
-
-    <div id="chatComponent" [style.display]="_chatDisplay" [class.chatComponentLight]="lightTheme">
-        <div id="chatToolbar">
-            <span> CHAT</span>
-            <button mat-icon-button (click)="close()" id="closeButton">
-                <mat-icon matTooltip="Close" color="warn">highlight_off</mat-icon>
-            </button>
-        </div>
-        <div class="message-wrap" #chatScroll>
-            <div *ngFor="let data of messageList; let i = index" class="message" [class.right]="data.connectionId === user.getConnectionId()"
-                [class.left]=" data.connectionId !== user.getConnectionId()">
-                <img class="user-img" [src]="data.userAvatar" />
-                <div class="msg-detail">
-                    <div class="msg-info">
-                        <p> {{data.nickname}}</p>
-                    </div>
-                    <div class="msg-content">
-                        <span class="triangle"></span>
-                        <p class="text" [innerHTML]="data.message | linkify"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="messageInput">
-            <input #chatInput placeholder="Send a message"  autocomplete="off" (keypress)="eventKeyPress($event)" [(ngModel)]="message" id="chatInput" />
-            <button mat-mini-fab id="sendButton" (click)="sendMessage()">
-                <mat-icon matTooltip="Send">send</mat-icon>
-            </button>
-        </div>
-
+  <div id="chatComponent" [style.display]="_chatDisplay" [class.chatComponentLight]="lightTheme">
+    <div id="chatToolbar">
+      <span> CHAT</span>
+      <button mat-icon-button (click)="close()" id="closeButton">
+        <mat-icon matTooltip="Close" color="warn">highlight_off</mat-icon>
+      </button>
     </div>
+    <div class="message-wrap" #chatScroll>
+      <div
+        *ngFor="let data of messageList"
+        class="message"
+        [class.right]="
+          data.connectionId === session.connection.connectionId ||
+          (sessionScreen && sessionScreen.connection && data.connectionId === sessionScreen.connection.connectionId)
+        "
+        [class.left]="
+          !(
+            data.connectionId === session.connection.connectionId ||
+            (sessionScreen && sessionScreen.connection && data.connectionId === sessionScreen.connection.connectionId)
+          )
+        "
+      >
+        <img class="user-img" [src]="data.userAvatar" />
+        <div class="msg-detail">
+          <div class="msg-info">
+            <p>{{ data.nickname }}</p>
+          </div>
+          <div class="msg-content">
+            <span class="triangle"></span>
+            <p class="text" [innerHTML]="data.message | linkify"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="messageInput">
+      <input
+        #chatInput
+        placeholder="Send a message"
+        autocomplete="off"
+        (keypress)="eventKeyPress($event)"
+        [(ngModel)]="message"
+        id="chatInput"
+      />
+      <button mat-mini-fab id="sendButton" (click)="sendMessage()">
+        <mat-icon matTooltip="Send">send</mat-icon>
+      </button>
+    </div>
+  </div>
 </div>

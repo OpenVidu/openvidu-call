@@ -525,13 +525,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         this.localUsers[0].getConnectionId() === data.connectionId
           ? this.localUsers[0]
           : this.remoteUsers.filter((user) => user.getConnectionId() === data.connectionId)[0];
-      const avatar = messageOwner ? messageOwner.getAvatar() : this.localUsers[0].getAvatar();
+      //const avatar = messageOwner ? messageOwner.getAvatar() : this.localUsers[0].getAvatar();
 
       this.messageList.push({
-        connectionId: event.from.connectionId,
+        connectionId: data.connectionId,
         nickname: data.nickname,
         message: data.message,
-        userAvatar: avatar,
+        userAvatar: messageOwner.getAvatar(),
       });
 
       this.checkNotification();

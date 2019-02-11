@@ -13,6 +13,7 @@ export class ChatComponent implements OnInit {
   @ViewChild('chatInput') chatInput: ElementRef;
 
   @Input() session: Session;
+  @Input() sessionScreen: Session;
   @Input() user: UserModel;
   @Input() lightTheme: boolean;
   @Input()

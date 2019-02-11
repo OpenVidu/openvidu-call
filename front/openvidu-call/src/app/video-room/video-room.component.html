@@ -1,5 +1,5 @@
 <div id="videoRoomNavBar">
-  <app-dialog-choose-room
+    <app-dialog-choose-room
     *ngIf="showDialogChooseRoom"
     [userNickname]="user"
     [sessionName]="sessionName"
@@ -86,6 +86,7 @@
         <chat-component
           #chatComponent
           [session]="this.session"
+          [sessionScreen]="this.sessionScreen"
           [user]="this.localUsers[0]"
           [chatDisplay]="chatDisplay"
           [lightTheme]="lightTheme"
