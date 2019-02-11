@@ -6,9 +6,9 @@
 
     <div class="nickname pointer" [class.fullscreen]="isFullscreen">
         <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
-        <span *ngIf="!editNickname && user.isLocal()" (click)="toggleNicknameForm()"> (edit)</span>
-        <span *ngIf="!editNickname && user.isScreen()">_SCREEN</span>
-        <div *ngIf="editNickname && user.isLocal()" id="dialogNickname">
+        <span *ngIf="!editNickname && user.isScreen()" (click)="toggleNicknameForm()">_SCREEN</span>
+        <span *ngIf="!editNickname && (user.isLocal() || user.isScreen())" (click)="toggleNicknameForm()"> (edit)</span>
+        <div *ngIf="editNickname && (user.isLocal() || user.isScreen())" id="dialogNickname">
             <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
                 <mat-icon matTooltip="Close">highlight_off</mat-icon>
             </button>

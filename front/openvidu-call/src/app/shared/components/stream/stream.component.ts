@@ -67,7 +67,7 @@ export class StreamComponent implements OnInit {
   }
 
   toggleNicknameForm(): void {
-    if (this.user.isLocal()) {
+    if (this.user.isLocal() || this.user.isScreen()) {
       this.editNickname = !this.editNickname;
     }
   }

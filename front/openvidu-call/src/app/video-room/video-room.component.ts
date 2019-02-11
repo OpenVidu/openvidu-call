@@ -212,11 +212,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   nicknameChanged(nickname: string): void {
-    if (this.localUsers[0].isLocal()) {
+    if (this.localUsers[0].isLocal() || this.localUsers[0].isScreen()) {
       this.localUsers[0].setNickname(nickname);
-      this.sendSignalUserChanged({ nickname: this.localUsers[0].getNickname() });
+      this.sendSignalUserChanged({ nickname: this.localUsers[0].getNickname() }, this.localUsers[0].isScreen());
     }
-    if ((this.localUsers[1] && this.localUsers[1].isScreen()) || this.localUsers[0].isScreen()) {
+    if ((this.localUsers[1] && this.localUsers[1].isScreen())) {
       this.localUsers[1].setNickname(nickname);
       this.sendSignalUserChanged({ nickname: this.localUsers[1].getNickname() }, true);
     }
@@ -442,7 +442,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         }
       });
       if (this.localUsers.length === 1 && this.localUsers[0].isScreen()) {
-        this.createConnection(true);
+        // this.createConnection(true);
       }
     }
   }
@@ -619,6 +619,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             newUser.setStreamManager(publisher);
             this.userCamDeleted = newUser;
             this.openviduLayout.updateLayout();
+            this.toggleCam();
             // session.publish(publisher).then(() => {});
         }).catch((error) => console.error(error));
       }).catch((error) => console.error(error));
