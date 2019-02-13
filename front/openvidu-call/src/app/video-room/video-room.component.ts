@@ -180,16 +180,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       // SCREEN USER, START CAMERA
       console.log('USER IS SCREEN - START CAM');
       if (this.userCamDeleted) {
+        const hasAudio = this.localUsers[0].isAudioActive();
         this.setFirstUserAudio(false);
         this.localUsers.unshift(this.userCamDeleted);
+        this.localUsers[0].setVideoActive(true);
+        this.localUsers[0].setAudioActive(hasAudio);
         this.publishSession(this.localUsers[0]).then(() => {
-            this.localUsers[0].setVideoActive(true);
             (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
+            (<Publisher>this.localUsers[0].getStreamManager()).publishAudio(hasAudio);
             this.sendSignalUserChanged(this.localUsers[0]);
           })
           .catch((error) => console.error(error));
-      } else {
-        this.createConnection(true);
       }
     } else {
       // CAM USER, MUTE / UNMUTE CAMERA
@@ -378,9 +379,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             });
         }
       });
-      /*if (this.localUsers.length === 1 && this.localUsers[0].isScreen()) {
-        // this.createConnection(true);
-      }*/
+      if (this.localUsers.length === 1 && this.localUsers[0].isScreen()) {
+        // CREATING CAM USER AND SAVING LIKE USERCAMDELETED
+        this.createConnection(true);
+      }
     }
   }
 
@@ -503,6 +505,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   private removeAndSaveFirstUser() {
     setTimeout(() => {
+      this.localUsers[0].setVideoActive(false);
       this.userCamDeleted = this.localUsers.shift();
       this.setFirstUserAudio(this.userCamDeleted.isAudioActive());
       this.openviduLayout.updateLayout();
@@ -517,7 +520,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private stopCamera() {
     console.log('STOP CAMERA');
     (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(false);
-    this.localUsers[0].setVideoActive(false);
     this.session.unpublish(<Publisher>this.localUsers[0].getStreamManager());
     this.removeAndSaveFirstUser();
   }
@@ -556,8 +558,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             newUser.setStreamManager(publisher);
             this.userCamDeleted = newUser;
             this.openviduLayout.updateLayout();
-            this.toggleCam();
-            // session.publish(publisher).then(() => {});
           })
           .catch((error) => console.error(error));
       })
