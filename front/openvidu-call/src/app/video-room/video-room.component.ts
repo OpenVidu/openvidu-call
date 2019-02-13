@@ -182,6 +182,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       if (this.userCamDeleted) {
         const hasAudio = this.localUsers[0].isAudioActive();
         this.setFirstUserAudio(false);
+        this.userCamDeleted.setNickname(this.localUsers[0].getNickname());
         this.localUsers.unshift(this.userCamDeleted);
         this.localUsers[0].setVideoActive(true);
         this.localUsers[0].setAudioActive(hasAudio);
