@@ -245,7 +245,7 @@ export class DialogChooseRoomComponent implements OnInit {
 
   private initScreenPublisher() {
     const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
-    const hasAudio = !this.localUsers[0].isLocal();
+    const hasAudio = this.localUsers[0].isLocal() ? false : this.isAudioActive;
     const publisherProperties = {
       videoSource: videoSource,
       publishAudio: hasAudio,
@@ -265,12 +265,11 @@ export class DialogChooseRoomComponent implements OnInit {
       this.screenActive = 'Screen';
       this.localUsers[0].setScreenShareActive(this.isScreenShareActive);
       if (this.localUsers[0].isLocal() && !this.localUsers[0].isVideoActive()) {
+        this.setAudio(true);
         this.destroyPublisher(0);
         this.userCamDeleted = this.localUsers.shift();
-        this.setAudio(true);
         this.subscribeToVolumeChange(publisher);
       }
-
     }).catch((error) => {
       if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
         this.toggleDialogExtension();
