@@ -8,20 +8,31 @@
   padding: 0;
 }
 
-#footer {
-  padding: 0;
-  width: 40%;
+.sidenav-container {
+  position: relative;
+  width: 100%;
+  height: calc(100% + 40px);
+  min-height: -webkit-fill-available;
+  overflow: hidden;
+}
+.sidenav-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  background-color: #494949;
+  border-left: none;
   position: absolute;
-  margin: auto;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
+}
+
+.sidenav-main {
+height: calc(100% - 40px);
+overflow: hidden;
+min-height: -webkit-fill-available;
 }
 
 .bounds {
   background-color: #494949;
-  overflow: hidden;
   position: absolute;
   left: 0;
   right: 0;

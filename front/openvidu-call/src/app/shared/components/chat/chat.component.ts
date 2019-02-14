@@ -19,7 +19,7 @@ export class ChatComponent implements OnInit {
   @Input()
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 
-  _chatDisplay: 'block' | 'none';
+  _chatOpened: boolean;
 
   @Output() closeChat = new EventEmitter<any>();
 
@@ -30,18 +30,17 @@ export class ChatComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event'])
   onKeydownHandler(event: KeyboardEvent) {
     console.log(event);
-    if (this._chatDisplay === 'block') {
+    if (this._chatOpened) {
       this.close();
     }
   }
 
   ngOnInit() {}
 
-  @Input('chatDisplay')
-  set isDisplayed(display: 'block' | 'none') {
-    this._chatDisplay = display;
-
-    if (this._chatDisplay === 'block') {
+  @Input('chatOpened')
+  set isDisplayed(display: boolean) {
+    this._chatOpened = display;
+    if (this._chatOpened) {
       this.scrollToBottom();
       setTimeout(() => {
         this.chatInput.nativeElement.focus();

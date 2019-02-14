@@ -23,6 +23,7 @@ export class StreamComponent implements OnInit {
   @Input() localUser: UserModel;
   @Input() lightTheme: boolean;
   @Input() compact: boolean;
+  @Input() chatOpened: boolean;
   @Input() newMessagesNum: number;
   @Output() nicknameClicked = new EventEmitter<any>();
   @Output() micButtonClicked = new EventEmitter<any>();
@@ -55,7 +56,9 @@ export class StreamComponent implements OnInit {
     if (state === 'fullscreen') {
       this.isFullscreen = true;
       this.fullscreenIcon = 'fullscreen_exit';
-      this.chatButtonClicked.emit('none');
+      if (this.chatOpened) {
+        this.chatButtonClicked.emit();
+      }
     } else {
       this.isFullscreen = false;
       this.fullscreenIcon = 'fullscreen';
@@ -102,6 +105,8 @@ export class StreamComponent implements OnInit {
 
   toggleChat() {
     this.toggleFullscreen();
-    this.chatButtonClicked.emit('block');
+    if (!this.chatOpened) {
+      this.chatButtonClicked.emit();
+    }
   }
 }

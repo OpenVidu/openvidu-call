@@ -1,5 +1,5 @@
-<div id="videoRoomNavBar">
-    <app-dialog-choose-room
+<div id="videoRoomNavBar" [class.boundsLight]="lightTheme">
+  <app-dialog-choose-room
     *ngIf="showDialogChooseRoom"
     [userNickname]="user"
     [sessionName]="sessionName"
@@ -20,7 +20,7 @@
       (screenShareClicked)="screenShareAndChangeScreen()"
       (stopScreenSharingClicked)="stopScreenSharing()"
       (exitButtonClicked)="exitSession()"
-      (chatButtonClicked)="toggleChat($event)"
+      (chatButtonClicked)="toggleChat()"
     ></app-toolbar>
 
     <app-dialog-extension
@@ -28,58 +28,16 @@
       [nickname]="localUsers[0].getNickname()"
       (cancel)="toggleDialogExtension()"
     ></app-dialog-extension>
-
-    <div id="layout" class="bounds" [class.boundsLight]="lightTheme" *ngIf="localUsers">
- 
-      <div
-        class="OT_root OT_publisher custom-class"
-        id="localUser"
-        *ngFor="let localUser of localUsers"
-        (dblclick)="enlargeElement($event)"
-      >
-        <stream-component *ngIf="localUser.getStreamManager()"
-          #videoStream
-          [user]="localUser"
-          [localUser]="localUsers[0]"
-          [lightTheme]="lightTheme"
-          [newMessagesNum]="newMessages"
-          [compact]="compact"
-          (nicknameClicked)="nicknameChanged($event)"
-          (camButtonClicked)="toggleCam()"
-          (micButtonClicked)="toggleMic()"
-          (exitButtonClicked)="exitSession()"
-          (chatButtonClicked)="toggleChat($event)"
-          (screenShareClicked)="screenShareAndChangeScreen()"
-          (stopScreenSharingClicked)="stopScreenSharing()"
-        ></stream-component>
-
-      </div>
-
-      <div
-        *ngFor="let user of this.remoteUsers"
-        class="OT_root OT_publisher custom-class"
-        id="remoteUsers"
-        (dblclick)="enlargeElement($event)"
-      >
-        <stream-component
-          #videoStream
-          [user]="user"
-          [localUser]="localUsers[0]"
-          [lightTheme]="lightTheme"
-          [newMessagesNum]="newMessages"
-          [compact]="compact"
-          (camButtonClicked)="toggleCam()"
-          (micButtonClicked)="toggleMic()"
-          (exitButtonClicked)="exitSession()"
-          (chatButtonClicked)="toggleChat($event)"
-          (screenShareClicked)="screenShareAndChangeScreen()"
-          (stopScreenSharingClicked)="stopScreenSharing()"
-        ></stream-component>
-      </div>
-
-      <div
-        class="OT_root OT_dialog  custom-class"
-        [style.display]="chatDisplay"
+    <mat-sidenav-container class="sidenav-container" id="room-container">
+      <mat-sidenav
+        #sidenav
+        mode="side"
+        position="end"
+        class="sidenav-chat"
+        [class.boundsLight]="lightTheme"
+        fixedInViewport="true"
+        fixedTopGap="40"
+        fixedBottomGap="0"
         *ngIf="localUsers && (localUsers[0].getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
       >
         <chat-component
@@ -87,12 +45,64 @@
           [session]="this.session"
           [sessionScreen]="this.sessionScreen"
           [user]="this.localUsers[0]"
-          [chatDisplay]="chatDisplay"
+          [chatOpened]="chatOpened"
           [lightTheme]="lightTheme"
           [messageList]="messageList"
-          (closeChat)="toggleChat(undefined)"
+          (closeChat)="toggleChat()"
         ></chat-component>
-      </div>
-    </div>
+      </mat-sidenav>
+
+      <mat-sidenav-content class="sidenav-main">
+        <div id="layout" class="bounds" [class.boundsLight]="lightTheme">
+          <div
+            class="OT_root OT_publisher custom-class"
+            id="localUser"
+            *ngFor="let localUser of localUsers"
+            (dblclick)="enlargeElement($event)"
+          >
+            <stream-component
+              *ngIf="localUser.getStreamManager()"
+              #videoStream
+              [user]="localUser"
+              [localUser]="localUsers[0]"
+              [lightTheme]="lightTheme"
+              [newMessagesNum]="newMessages"
+              [compact]="compact"
+              [chatOpened]="chatOpened"
+              (nicknameClicked)="nicknameChanged($event)"
+              (camButtonClicked)="toggleCam()"
+              (micButtonClicked)="toggleMic()"
+              (exitButtonClicked)="exitSession()"
+              (chatButtonClicked)="toggleChat()"
+              (screenShareClicked)="screenShareAndChangeScreen()"
+              (stopScreenSharingClicked)="stopScreenSharing()"
+            ></stream-component>
+          </div>
+
+          <div
+            *ngFor="let user of this.remoteUsers"
+            class="OT_root OT_publisher custom-class"
+            id="remoteUsers"
+            (dblclick)="enlargeElement($event)"
+          >
+            <stream-component
+              #videoStream
+              [user]="user"
+              [localUser]="localUsers[0]"
+              [lightTheme]="lightTheme"
+              [newMessagesNum]="newMessages"
+              [compact]="compact"
+              [chatOpened]="chatOpened"
+              (camButtonClicked)="toggleCam()"
+              (micButtonClicked)="toggleMic()"
+              (exitButtonClicked)="exitSession()"
+              (chatButtonClicked)="toggleChat()"
+              (screenShareClicked)="screenShareAndChangeScreen()"
+              (stopScreenSharingClicked)="stopScreenSharing()"
+            ></stream-component>
+          </div>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
   </div>
 </div>

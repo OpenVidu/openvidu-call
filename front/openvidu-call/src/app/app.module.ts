@@ -17,7 +17,8 @@ import {
   MatSelectModule,
   MatOptionModule,
   MatProgressSpinnerModule,
-  MatSliderModule
+  MatSliderModule,
+  MatSidenavModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -75,6 +76,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatOptionModule,
     MatProgressSpinnerModule,
     MatSliderModule,
+    MatSidenavModule,
     AppRoutingModule,
     HttpClientModule,
     FlexLayoutModule,

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import {
@@ -38,6 +38,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() error = new EventEmitter<any>();
 
   @ViewChild('chatComponent') chatComponent: ChatComponent;
+  @ViewChild('sidenav') chat: any;
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';
@@ -47,7 +48,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   // Variables
   compact = false;
   lightTheme: boolean;
-  chatDisplay: 'none' | 'block' = 'none';
+  chatOpened: boolean;
   showDialogExtension = false;
   showDialogChooseRoom = true;
   session: Session;
@@ -85,6 +86,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.checkTheme();
     this.openViduSrv
       .getOvSettingsData()
       .then((data: OvSettings) => {
@@ -99,7 +101,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   initApp() {
     this.remoteUsers = [];
-    this.checkTheme();
     setTimeout(() => {
       this.openviduLayout = new OpenViduLayout();
       this.openviduLayoutOptions = this.apiSrv.getOpenviduLayoutOptions();
@@ -108,24 +109,19 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     }, 50);
   }
 
-  toggleChat(property: 'none' | 'block') {
-    if (property) {
-      this.chatDisplay = property;
-    } else {
-      this.chatDisplay = this.chatDisplay === 'none' ? 'block' : 'none';
-    }
-    if (this.chatDisplay === 'block') {
+  toggleChat() {
+    this.chat.toggle();
+    this.chatOpened = this.chat.opened;
+    if (this.chatOpened) {
       this.newMessages = 0;
     }
-    this.openviduLayout.updateLayout();
+    setTimeout(() => {
+      this.openviduLayout.updateLayout();
+    }, 380);
   }
 
   checkNotification() {
-    if (this.chatDisplay === 'none') {
-      this.newMessages++;
-    } else {
-      this.newMessages = 0;
-    }
+    this.newMessages = this.chatOpened ? 0 : this.newMessages + 1;
   }
 
   joinToSession() {
@@ -302,9 +298,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   checkSizeComponent() {
-    if (document.getElementById('layout').offsetWidth <= 700) {
+    if (document.getElementById('room-container').offsetWidth <= 700) {
       this.compact = true;
-      this.toggleChat('none');
+      if (this.chat && this.chat.opened) {
+        this.toggleChat();
+      }
     } else {
       this.compact = false;
     }
