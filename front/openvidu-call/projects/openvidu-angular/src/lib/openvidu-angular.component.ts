@@ -71,8 +71,8 @@ export class OpenviduSessionComponent implements OnInit {
     return this.videoRoom.session;
   }
 
-  getLocalUser(): UserModel {
-    return this.videoRoom.localUser;
+  getLocalUsers(): UserModel[] {
+    return this.videoRoom.localUsers;
   }
 
   getOpenviduLayout(): OpenViduLayout {
