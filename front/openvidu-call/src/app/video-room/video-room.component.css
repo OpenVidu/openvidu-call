@@ -25,6 +25,10 @@
   position: absolute;
 }
 
+.mat-drawer-container {
+  background-color: #494949;
+}
+
 .sidenav-main {
 height: calc(100% - 40px);
 overflow: hidden;
