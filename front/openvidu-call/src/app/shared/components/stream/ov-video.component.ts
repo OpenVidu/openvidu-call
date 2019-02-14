@@ -31,7 +31,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
     if (!!this.elementRef && this._streamManager) {
       if (this._streamManager.stream.typeOfVideo === 'SCREEN') {
         this.elementRef.nativeElement.style.objectFit = 'contain';
-        this.elementRef.nativeElement.style.background = '#636363';
+        this.elementRef.nativeElement.style.background = '#878787';
       } else {
         this.elementRef.nativeElement.style.objectFit = 'cover';
       }
