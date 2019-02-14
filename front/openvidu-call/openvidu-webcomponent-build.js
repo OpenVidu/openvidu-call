@@ -1,12 +1,8 @@
 const fs = require('fs-extra');
 const concat = require('concat');
+const VERSION = require('./package.json').version;
 
-if (process.argv.length != 3) {
-    console.warn("Usage: npm run build:openvidu-webcomponent -- VERSION");
-    console.warn('For example: "npm run build:openvidu-webcomponent -- 2.3.0"');
-    process.exit(-1);
-}
-var VERSION = process.argv[2];
+console.log("Building OpenVidu Web Component (" + VERSION + ")");
 
 async function buildElement() {
   const files = [
