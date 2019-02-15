@@ -33,6 +33,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Input() openviduSecret: string;
   @Input() token: string;
   @Input() theme: string;
+  @Input() isWebComponent: boolean;
   @Output() joinSession = new EventEmitter<any>();
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
@@ -110,14 +111,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   toggleChat() {
-    this.chat.toggle();
-    this.chatOpened = this.chat.opened;
-    if (this.chatOpened) {
-      this.newMessages = 0;
-    }
-    setTimeout(() => {
-      this.openviduLayout.updateLayout();
-    }, 380);
+    this.chat.toggle().then(() => {
+      this.chatOpened = this.chat.opened;
+      if (this.chatOpened) {
+        this.newMessages = 0;
+      }
+      const ms = this.isWebComponent ? 300 : 0;
+      setTimeout(() => this.openviduLayout.updateLayout(), ms);
+    });
+
   }
 
   checkNotification() {

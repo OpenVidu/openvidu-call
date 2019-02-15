@@ -16,6 +16,7 @@ import { OvSettings } from '../shared/models/ov-settings';
       [openviduSecret]="openviduSecret"
       [token]="_token"
       [ovSettings]="ovSettings"
+      [isWebComponent]="true"
       (leaveSession)="emitLeaveSessionEvent($event)"
       (joinSession)="emitJoinSessionEvent($event)"
       (error)="emitErrorEvent($event)"
