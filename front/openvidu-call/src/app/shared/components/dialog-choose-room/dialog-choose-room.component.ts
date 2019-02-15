@@ -245,7 +245,7 @@ export class DialogChooseRoomComponent implements OnInit {
 
   private initScreenPublisher() {
     const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
-    const hasAudio = this.localUsers[0].isLocal() ? false : this.isAudioActive;
+    const hasAudio = this.localUsers[0].isLocal() && this.localUsers[0].isVideoActive() ? false : this.isAudioActive;
     const publisherProperties = {
       videoSource: videoSource,
       publishAudio: hasAudio,
