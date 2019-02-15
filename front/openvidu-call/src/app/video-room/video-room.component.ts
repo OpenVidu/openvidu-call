@@ -287,12 +287,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       .catch((error) => {
         if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
           this.toggleDialogExtension();
-        } else if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
-          alert('Your browser does not support screen sharing');
-        } else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
-          alert('You need to enable screen sharing extension');
-        } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
-          alert('You need to choose a window or application to share');
+        } else {
+          this.apiSrv.handlerScreenShareError(error);
         }
       });
   }

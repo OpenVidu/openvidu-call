@@ -53,6 +53,16 @@ export class ApiService {
     });
   }
 
+  public handlerScreenShareError(error: any) {
+    if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
+      alert('Your browser does not support screen sharing');
+    } else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
+      alert('You need to enable screen sharing extension');
+    } else if (error && error.name === 'SCREEN_CAPTURE_DENIED') {
+       // alert('You need to choose a window or application to share');
+    }
+  }
+
   public getOpenviduLayoutOptions(): OpenViduLayoutOptions {
     const options = {
       maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
