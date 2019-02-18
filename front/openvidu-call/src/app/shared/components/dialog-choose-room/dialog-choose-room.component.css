@@ -1,4 +1,10 @@
-h1, h3, #imgText, mat-select, mat-option, input, button {
+h1,
+h3,
+#imgText,
+mat-select,
+mat-option,
+input,
+button {
   font-family: 'Ubuntu', sans-serif;
 }
 
@@ -11,6 +17,7 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 #dialogChooseRoom h1 {
   text-align: center;
 }
+
 #card-content {
   max-width: 95%;
   height: fit-content;
@@ -21,12 +28,14 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 
 #videoContainer {
   position: relative;
+}
 
 #closeButton {
   position: absolute;
   top: 0;
   right: 7px;
 }
+
 .volumeSlider {
   position: absolute;
   height: 60%;
@@ -35,7 +44,8 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
   pointer-events: none;
 }
 
-#ovVideoScreen, #ovVideo {
+#ovVideoScreen,
+#ovVideo {
   display: inline-block;
 }
 
@@ -61,11 +71,13 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 #sessionInfo {
   margin-top: 0;
 }
+
 #camDeviceButton,
 #micDeviceButton,
 #nicknameButton {
   margin: 0px 10px;
 }
+
 #joinButton {
   margin: 15px;
 }
@@ -73,6 +85,7 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 #photoButton {
   margin: 10px;
 }
+
 #avatarContainer {
   border: 1px solid;
   border-color: rgb(182, 182, 182);
@@ -97,6 +110,7 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 #imgText {
   display: table;
 }
+
 #avatarImg,
 #imgText {
   position: absolute;
@@ -106,14 +120,17 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
   right: 0;
   bottom: 0;
 }
+
 #avatarImg {
   height: 88%;
   width: 88%;
 }
+
 #avatarContainer,
 #avatarImg {
   border-radius: 50%;
 }
+
 #optionsContent {
   position: initial;
 }
@@ -151,6 +168,7 @@ mat-card {
 ::ng-deep .mat-slider-thumb {
   visibility: hidden;
 }
+
 ::ng-deep .mat-slider-vertical .mat-slider-track-fill,
 ::ng-deep .mat-slider-vertical .mat-slider-track-background,
 ::ng-deep .mat-slider-vertical .mat-slider-track-wrapper {
