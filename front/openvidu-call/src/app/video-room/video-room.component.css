@@ -73,7 +73,7 @@ min-height: -webkit-fill-available;
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Ubuntu', sans-serif;
   vertical-align: baseline;
 }
 
@@ -96,7 +96,7 @@ min-height: -webkit-fill-available;
   margin-left: auto;
 
   color: #fff;
-  font-family: 'Didact Gothic', sans-serif;
+  font-family: 'Ubuntu', sans-serif;
   font-size: 13px;
   line-height: 1.4;
 }

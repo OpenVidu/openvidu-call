@@ -47,6 +47,7 @@
 }
 
 #titleContent {
+  font-family: 'Ubuntu', sans-serif;
   max-width: 100px;
   background-color: #494949;
   margin: 5px -18px;

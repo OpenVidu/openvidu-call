@@ -4,6 +4,7 @@
   z-index: 999;
   border-radius: 5px; 
   color: #313131;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 .localNickname {
@@ -48,7 +49,6 @@ video {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 #statusIcons {

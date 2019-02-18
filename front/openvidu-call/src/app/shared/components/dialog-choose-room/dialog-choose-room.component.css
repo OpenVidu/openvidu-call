@@ -1,3 +1,7 @@
+h1, h3, #imgText, mat-select, mat-option, input, button {
+  font-family: 'Ubuntu', sans-serif;
+}
+
 #dialogChooseRoom {
   position: absolute;
   width: 100%;
