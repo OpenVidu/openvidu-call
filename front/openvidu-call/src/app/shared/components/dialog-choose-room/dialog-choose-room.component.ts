@@ -4,7 +4,7 @@ import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
 import { OpenVidu, Publisher } from 'openvidu-browser';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 interface IDevices {
   label: string;
@@ -47,7 +47,7 @@ export class DialogChooseRoomComponent implements OnInit {
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
 
-  constructor(private route: ActivatedRoute, private apiSrv: ApiService) {}
+  constructor(private route: ActivatedRoute, private apiSrv: ApiService, private router: Router) {}
 
   ngOnInit() {
     this.OV = new OpenVidu();
@@ -197,6 +197,10 @@ export class DialogChooseRoomComponent implements OnInit {
 
   toggleDialogExtension() {
     this.showDialogExtension = !this.showDialogExtension;
+  }
+
+  close() {
+    this.router.navigate(['']);
   }
 
   private setDevicesValue() {

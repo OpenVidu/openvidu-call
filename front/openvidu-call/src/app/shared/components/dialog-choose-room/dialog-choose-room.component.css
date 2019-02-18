@@ -21,6 +21,11 @@ h1, h3, #imgText, mat-select, mat-option, input, button {
 
 #videoContainer {
   position: relative;
+
+#closeButton {
+  position: absolute;
+  top: 0;
+  right: 7px;
 }
 .volumeSlider {
   position: absolute;
