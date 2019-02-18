@@ -201,17 +201,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     // this.openviduLayout.updateLayout();
   }
 
-  startScreenSharing(index: number) {
+  startScreenSharing(i: number) {
     console.log('STARTsCREENsHARING - ');
     this.getToken().then((token) => {
         this.sessionScreen
-          .connect(token, { clientData: this.localUsers[index].getNickname() })
+          .connect(token, { clientData: this.localUsers[i].getNickname() })
           .then(() => {
-            this.localUsers[index].getStreamManager().once('accessAllowed', () => {
-              this.localUsers[index].setConnectionId(this.sessionScreen.connection.connectionId);
-              this.publishSession(this.localUsers[index]).then(() => {
+            this.localUsers[i].getStreamManager().once('accessAllowed', () => {
+              this.localUsers[i].setConnectionId(this.sessionScreen.connection.connectionId);
+              this.publishSession(this.localUsers[i]).then(() => {
                   this.localUsers[0].setScreenShareActive(true);
-                  this.sendSignalUserChanged(this.localUsers[index]);
+                  this.sendSignalUserChanged(this.localUsers[i]);
                   if (!this.localUsers[0].isVideoActive()) {
                     // REMOVE CAM STREAM
                     this.stopCamera();
@@ -362,9 +362,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     if (this.token) {
       this.connect(this.token);
     } else {
-      this.localUsers.forEach((user, index) => {
+      this.localUsers.forEach((user, position) => {
         if (user.isScreen()) {
-          this.startScreenSharing(index);
+          this.startScreenSharing(position);
         } else {
           this.getToken().then((token) => {
               this.connect(token);
@@ -378,7 +378,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       });
       if (this.localUsers.length === 1 && this.localUsers[0].isScreen()) {
         // CREATING CAM USER AND SAVING LIKE USERCAMDELETED
-        this.createConnection(true);
+        this.createCamConnection();
       }
     }
   }
@@ -400,10 +400,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.localUsers[0].setConnectionId(this.session.connection.connectionId);
     if (this.session.capabilities.publish) {
       this.publishSession(this.localUsers[0]).then(() => {
-          // this.localUsers[0].setScreenShareActive(false);
           this.sendSignalUserChanged(this.localUsers[0]);
           this.joinSession.emit();
-        })
+      })
         .catch((error) => console.error(error));
       this.localUsers[0].getStreamManager().on('streamPlaying', () => {
         this.openviduLayout.updateLayout();
@@ -532,24 +531,19 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     return user;
   }
 
-  private createConnection(isCam: boolean) {
-    const session = isCam ? this.session : this.sessionScreen;
-    const ov = isCam ? this.OV : this.OVScreen;
-
-    this.getToken()
-      .then((token) => {
-        session
-          .connect(token, { clientData: this.localUsers[0].getNickname() })
+  private createCamConnection() {
+    this.getToken().then((token) => {
+        this.session.connect(token, { clientData: this.localUsers[0].getNickname() })
           .then(() => {
-            const publisher = ov.initPublisher(undefined, {
+            const publisher = this.OV.initPublisher(undefined, {
               publishAudio: this.localUsers[0].isAudioActive(),
               publishVideo: true,
             });
             const newUser = new UserModel();
-            const audioActive = isCam ? this.localUsers[0].isAudioActive() : false;
+            const audioActive = this.localUsers[0].isAudioActive();
             newUser.setAudioActive(audioActive);
             newUser.setUserAvatar(this.localUsers[0].getAvatar());
-            newUser.setConnectionId(session.connection.connectionId);
+            newUser.setConnectionId(this.session.connection.connectionId);
             newUser.setNickname(this.localUsers[0].getNickname());
             newUser.setScreenShareActive(true);
             newUser.setStreamManager(publisher);
