@@ -252,6 +252,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       this.localUsers[0].setScreenShareActive(false);
       this.session.publish(<Publisher>this.localUsers[0].getStreamManager()).then(() => {
         (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.localUsers[0].isVideoActive());
+        this.sendSignalUserChanged(this.localUsers[0]);
       });
     }
   }
