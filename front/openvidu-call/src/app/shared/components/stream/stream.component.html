@@ -4,11 +4,11 @@
         [localUser]="localUser" [compact]="compact" (camButtonClicked)="toggleCam()" (micButtonClicked)="toggleMic()"
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
 
-    <div class="nickname pointer" [class.fullscreen]="isFullscreen">
+    <div class="nickname pointer" [ngClass]="user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()) ? 'localNickname' : 'remoteNickname'" [class.fullscreen]="isFullscreen">
         <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
         <span *ngIf="!editNickname && user.isScreen()" (click)="toggleNicknameForm()">_SCREEN</span>
-        <span *ngIf="!editNickname && (user.isLocal() || user.isScreen())" (click)="toggleNicknameForm()"> (edit)</span>
-        <div *ngIf="editNickname && (user.isLocal() || user.isScreen())" id="dialogNickname">
+        <span *ngIf="!editNickname && (user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId() ))" (click)="toggleNicknameForm()"> (edit)</span>
+        <div *ngIf="editNickname && (user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()))" id="dialogNickname">
             <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
                 <mat-icon matTooltip="Close">highlight_off</mat-icon>
             </button>

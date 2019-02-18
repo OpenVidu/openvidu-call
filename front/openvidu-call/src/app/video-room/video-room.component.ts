@@ -180,10 +180,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       if (this.userCamDeleted) {
         const hasAudio = this.localUsers[0].isAudioActive();
         this.setFirstUserAudio(false);
+        // Setting local connection ID to Screen User
+        this.localUsers[0].setLocalConnectionId(this.session.connection.connectionId);
         this.userCamDeleted.setNickname(this.localUsers[0].getNickname());
         this.localUsers.unshift(this.userCamDeleted);
         this.localUsers[0].setVideoActive(true);
         this.localUsers[0].setAudioActive(hasAudio);
+        // Setting local connection ID to Local User
+        this.localUsers[0].setLocalConnectionId(this.session.connection.connectionId);
         this.publishSession(this.localUsers[0]).then(() => {
             (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
             (<Publisher>this.localUsers[0].getStreamManager()).publishAudio(hasAudio);
@@ -209,6 +213,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
           .then(() => {
             this.localUsers[i].getStreamManager().once('accessAllowed', () => {
               this.localUsers[i].setConnectionId(this.sessionScreen.connection.connectionId);
+              if (this.session.connection && this.session.connection.connectionId) {
+                this.localUsers[i].setLocalConnectionId(this.session.connection.connectionId);
+              }
               this.publishSession(this.localUsers[i]).then(() => {
                   this.localUsers[0].setScreenShareActive(true);
                   this.sendSignalUserChanged(this.localUsers[i]);
@@ -398,6 +405,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   private connectWebCam(): void {
     this.localUsers[0].setConnectionId(this.session.connection.connectionId);
+    this.localUsers[0].setLocalConnectionId(this.session.connection.connectionId);
     if (this.session.capabilities.publish) {
       this.publishSession(this.localUsers[0]).then(() => {
           this.sendSignalUserChanged(this.localUsers[0]);
@@ -544,6 +552,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
             newUser.setAudioActive(audioActive);
             newUser.setUserAvatar(this.localUsers[0].getAvatar());
             newUser.setConnectionId(this.session.connection.connectionId);
+            newUser.setLocalConnectionId(this.session.connection.connectionId);
             newUser.setNickname(this.localUsers[0].getNickname());
             newUser.setScreenShareActive(true);
             newUser.setStreamManager(publisher);

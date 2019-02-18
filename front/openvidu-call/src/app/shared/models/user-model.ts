@@ -53,6 +53,11 @@ export class UserModel {
   /**
    * @hidden
    */
+  private localConnectionId: string;
+
+  /**
+   * @hidden
+   */
   constructor() {
     this.connectionId = '';
     this.audioActive = true;
@@ -89,6 +94,13 @@ export class UserModel {
    */
   public getConnectionId(): string {
     return this.connectionId;
+  }
+
+  /**
+   * @hidden
+   */
+  public getLocalConnectionId(): string {
+    return this.localConnectionId;
   }
 
   /**
@@ -171,6 +183,13 @@ export class UserModel {
    */
   public setConnectionId(conecctionId: string) {
     this.connectionId = conecctionId;
+  }
+
+  /**
+   * @hidden
+   */
+  public setLocalConnectionId(connectionId: string) {
+    this.localConnectionId = connectionId;
   }
 
   /**
