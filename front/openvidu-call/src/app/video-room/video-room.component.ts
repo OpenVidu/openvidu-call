@@ -48,6 +48,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   // Variables
   compact = false;
+  sidenavMode: 'side' | 'over' = 'side';
   lightTheme: boolean;
   chatOpened: boolean;
   showDialogExtension = false;
@@ -59,13 +60,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   mySessionId: string;
   myUserName: string;
   localUsers: UserModel[] = [];
-  remoteUsers: UserModel[];
+  remoteUsers: UserModel[] = [];
   messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
   newMessages = 0;
 
   private OV: OpenVidu;
   private OVScreen: OpenVidu;
-  private bigElement: HTMLElement;
   private userCamDeleted: UserModel;
 
   constructor(
@@ -80,10 +80,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
     this.exitSession();
   }
 
-  @HostListener('window:resize', ['$event'])
-  sizeChange(event) {
-    this.openviduLayout.updateLayout();
-    this.checkSizeComponent();
+  @HostListener('window:resize')
+  sizeChange() {
+    if (this.openviduLayout) {
+      this.openviduLayout.updateLayout();
+      this.checkSizeComponent();
+    }
   }
 
   ngOnInit() {
@@ -101,11 +103,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   initApp() {
-    this.remoteUsers = [];
     setTimeout(() => {
       this.openviduLayout = new OpenViduLayout();
       this.openviduLayoutOptions = this.apiSrv.getOpenviduLayoutOptions();
       this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);
+      this.checkSizeComponent();
       this.joinToSession();
     }, 50);
   }
@@ -119,7 +121,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       const ms = this.isWebComponent ? 300 : 0;
       setTimeout(() => this.openviduLayout.updateLayout(), ms);
     });
-
   }
 
   checkNotification() {
@@ -202,7 +203,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
       (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.localUsers[0].isVideoActive());
       this.sendSignalUserChanged(this.localUsers[0]);
     }
-    // this.openviduLayout.updateLayout();
   }
 
   startScreenSharing(i: number) {
@@ -304,14 +304,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   checkSizeComponent() {
-    if (document.getElementById('room-container').offsetWidth <= 700) {
-      this.compact = true;
-      if (this.chat && this.chat.opened) {
-        this.toggleChat();
-      }
-    } else {
-      this.compact = false;
-    }
+    this.compact = document.getElementById('room-container').offsetWidth <= 790;
+    this.sidenavMode = this.compact ? 'over' : 'side';
   }
 
   enlargeElement(event) {
