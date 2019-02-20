@@ -200,6 +200,10 @@ export class DialogChooseRoomComponent implements OnInit {
   }
 
   close() {
+    this.localUsers.forEach((user, index) => {
+      this.destroyPublisher(index);
+    });
+    this.localUsers = [];
     this.router.navigate(['']);
   }
 
