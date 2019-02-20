@@ -22,7 +22,8 @@ import {
   MatOptionModule,
   MatProgressSpinnerModule,
   MatSliderModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatChipsModule
 } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -65,6 +66,7 @@ import { DialogChooseRoomComponent } from './shared/components/dialog-choose-roo
     MatSliderModule,
     MatSidenavModule,
     AppRoutingModule,
+    MatChipsModule,
     NgxLinkifyjsModule.forRoot()
   ],
   declarations: [

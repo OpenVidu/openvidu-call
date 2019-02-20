@@ -18,7 +18,8 @@ import {
   MatOptionModule,
   MatProgressSpinnerModule,
   MatSliderModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatChipsModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -80,6 +81,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     AppRoutingModule,
     HttpClientModule,
     FlexLayoutModule,
+    MatChipsModule,
     NgxLinkifyjsModule.forRoot()
   ],
   entryComponents: [

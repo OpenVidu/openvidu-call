@@ -7,17 +7,9 @@
   font-family: 'Ubuntu', sans-serif;
 }
 
-.localNickname {
-  background: rgba(195, 255, 176, 0.582);
-}
-
-.remoteNickname {
-  background: rgba(255, 255, 255, 0.582);
-
-}
-
-.pointer {
-  cursor: pointer;
+#dialogNickname {
+  background-color:  #ffffffd0;
+  border-radius: 10%;
 }
 
 #closeButton {

@@ -4,11 +4,13 @@
         [localUser]="localUser" [compact]="compact" (camButtonClicked)="toggleCam()" (micButtonClicked)="toggleMic()"
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
 
-    <div class="nickname pointer" [ngClass]="user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()) ? 'localNickname' : 'remoteNickname'" [class.fullscreen]="isFullscreen">
-        <span *ngIf="!editNickname" (click)="toggleNicknameForm()" id="nickname">{{this.user.getNickname()}}</span>
-        <span *ngIf="!editNickname && user.isScreen()" (click)="toggleNicknameForm()">_SCREEN</span>
-        <span *ngIf="!editNickname && (user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId() ))" (click)="toggleNicknameForm()"> (edit)</span>
-        <div *ngIf="editNickname && (user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()))" id="dialogNickname">
+    <mat-chip-list class="nickname" [class.fullscreen]="isFullscreen" >
+        <mat-chip (click)="toggleNicknameForm()" [color]="user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()) ? 'accent' : 'primary'" selected *ngIf="!editNickname">
+            <span id="nickname">{{this.user.getNickname()}}</span>
+            <span *ngIf="user.isScreen()">_SCREEN</span>
+            <span *ngIf="(user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId() ))"> (edit)</span>
+        </mat-chip>
+        <div *ngIf="editNickname && (user.isLocal() || user.isScreen() && (user.getLocalConnectionId() === localUser.getLocalConnectionId()))" [class.fullscreen]="isFullscreen" id="dialogNickname">
             <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
                 <mat-icon matTooltip="Close">highlight_off</mat-icon>
             </button>
@@ -25,7 +27,7 @@
                 </mat-form-field>
             </form>
         </div>
-    </div>
+    </mat-chip-list>
 
     <ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound"></ov-video>
     <div id="statusIcons">
