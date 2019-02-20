@@ -66,7 +66,7 @@ export class ApiService {
   public getOpenviduLayoutOptions(): OpenViduLayoutOptions {
     const options = {
       maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
-      minRatio: 9 / 17, // The widest ratio that will be used (default 16x9)
+      minRatio: 9 / 15, // The widest ratio that will be used (default 16x9)
       fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
       and minRatio and maxRatio are ignored (default false) */,
       bigClass: this.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
