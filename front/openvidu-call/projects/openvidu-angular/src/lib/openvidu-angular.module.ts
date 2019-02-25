@@ -1,54 +1,49 @@
-import { NgModule } from '@angular/core';
-import { OpenviduSessionComponent } from './openvidu-angular.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
+  MatBadgeModule,
   MatButtonModule,
   MatCardModule,
-  MatToolbarModule,
+  MatCheckboxModule,
+  MatChipsModule,
+  MatDialogModule,
+  MatFormFieldModule,
+  MatGridListModule,
   MatIconModule,
   MatInputModule,
-  MatFormFieldModule,
-  MatDialogModule,
-  MatTooltipModule,
-  MatBadgeModule,
-  MatGridListModule,
-  MatCheckboxModule,
-  MatSelectModule,
   MatOptionModule,
   MatProgressSpinnerModule,
-  MatSliderModule,
+  MatSelectModule,
   MatSidenavModule,
-  MatChipsModule
+  MatSliderModule,
+  MatToolbarModule,
+  MatTooltipModule,
 } from '@angular/material';
-import { AppRoutingModule } from './app-routing.module';
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
-// Components
-import { VideoRoomComponent } from './video-room/video-room.component';
-import { StreamComponent } from './shared/components/stream/stream.component';
+import { AppRoutingModule } from './app-routing.module';
+import { OpenviduSessionComponent } from './openvidu-angular.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
+import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
+import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
-import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
+import { StreamComponent } from './shared/components/stream/stream.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
-import { OpenViduService } from './shared/services/open-vidu.service';
-import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
-import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
+import { ApiService } from './shared/services/api.service';
+import { OpenViduService } from './shared/services/open-vidu.service';
+import { VideoRoomComponent } from './video-room/video-room.component';
 
+// Components
 @NgModule({
   imports: [
     CommonModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatButtonModule,
     MatCardModule,
     MatToolbarModule,
@@ -87,4 +82,4 @@ import { DialogChooseRoomComponent } from './shared/components/dialog-choose-roo
   providers: [OpenViduService, ApiService],
   exports: [OpenviduSessionComponent],
 })
-export class OpenviduSessionModule {}
+export class OpenviduSessionModule { }
