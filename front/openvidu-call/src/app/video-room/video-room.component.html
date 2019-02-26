@@ -5,6 +5,7 @@
     [sessionName]="sessionName"
     [autopublish]="ovSettings && ovSettings.autopublish"
     (join)="toggleDialogChooseRoom($event)"
+    (leaveSession)="exitSession()"
   ></app-dialog-choose-room>
 
   <div *ngIf="localUsers && localUsers[0]">

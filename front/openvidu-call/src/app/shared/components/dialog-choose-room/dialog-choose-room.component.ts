@@ -4,7 +4,7 @@ import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
 import { OpenVidu, Publisher } from 'openvidu-browser';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 interface IDevices {
   label: string;
@@ -22,6 +22,7 @@ export class DialogChooseRoomComponent implements OnInit {
   @Input() sessionName: string;
   @Input() autopublish: boolean;
   @Output() join = new EventEmitter<any>();
+  @Output() leaveSession = new EventEmitter<any>();
   hover1: boolean;
   hover2: boolean;
   mySessionId: string;
@@ -47,7 +48,7 @@ export class DialogChooseRoomComponent implements OnInit {
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
 
-  constructor(private route: ActivatedRoute, private apiSrv: ApiService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private apiSrv: ApiService) {}
 
   ngOnInit() {
     this.OV = new OpenVidu();
@@ -204,7 +205,7 @@ export class DialogChooseRoomComponent implements OnInit {
       this.destroyPublisher(index);
     });
     this.localUsers = [];
-    this.router.navigate(['']);
+    this.leaveSession.emit();
   }
 
   private setDevicesValue() {
