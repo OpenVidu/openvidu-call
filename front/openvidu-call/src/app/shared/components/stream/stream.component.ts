@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { UserModel } from '../../models/user-model';
-import { OpenViduLayout } from '../../layout/openvidu-layout';
 import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
