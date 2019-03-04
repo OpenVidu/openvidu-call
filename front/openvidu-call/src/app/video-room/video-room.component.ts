@@ -187,8 +187,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         this.localUsers.unshift(this.userCamDeleted);
         this.localUsers[0].setVideoActive(true);
         this.localUsers[0].setAudioActive(hasAudio);
-        // Setting local connection ID to Local User
-        this.localUsers[0].setLocalConnectionId(this.session.connection.connectionId);
         this.publishSession(this.localUsers[0]).then(() => {
             (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
             (<Publisher>this.localUsers[0].getStreamManager()).publishAudio(hasAudio);
