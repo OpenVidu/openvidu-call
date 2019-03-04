@@ -12,7 +12,7 @@ import { ApiService } from '../../services/api.service';
 export class StreamComponent implements OnInit {
   fullscreenIcon = 'fullscreen';
   mutedSound: boolean;
-  editNickname: boolean;
+  toggleNickname: boolean;
   isFullscreen: boolean;
 
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
@@ -24,6 +24,7 @@ export class StreamComponent implements OnInit {
   @Input() compact: boolean;
   @Input() chatOpened: boolean;
   @Input() newMessagesNum: number;
+  @Input() canEditNickname: boolean;
   @Output() nicknameClicked = new EventEmitter<any>();
   @Output() micButtonClicked = new EventEmitter<any>();
   @Output() camButtonClicked = new EventEmitter<any>();
@@ -69,8 +70,8 @@ export class StreamComponent implements OnInit {
   }
 
   toggleNicknameForm(): void {
-    if (this.user.isLocal() || this.user.isScreen() && (this.user.getLocalConnectionId() === this.localUser.getLocalConnectionId() )) {
-      this.editNickname = !this.editNickname;
+    if (this.canEditNickname) {
+      this.toggleNickname = !this.toggleNickname;
     }
   }
 
