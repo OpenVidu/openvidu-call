@@ -9,6 +9,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 interface IDevices {
   label: string;
   device: string;
+  type: string;
 }
 
 @Component({
@@ -26,8 +27,8 @@ export class DialogChooseRoomComponent implements OnInit {
   hover1: boolean;
   hover2: boolean;
   mySessionId: string;
-  cameras: IDevices[] = [{ label: 'None', device: null }];
-  microphones: IDevices[] = [{ label: 'None', device: null }];
+  cameras: IDevices[] = [{ label: 'None', device: null, type: '' }];
+  microphones: IDevices[] = [{ label: 'None', device: null, type: '' }];
   screenActive: 'None' | 'Screen' = 'None';
   camValue: IDevices;
   micValue: IDevices;
@@ -55,7 +56,9 @@ export class DialogChooseRoomComponent implements OnInit {
     this.localUsers.push(new UserModel());
     this.generateNickname();
     this.setSessionName();
-    this.setDevicesValue();
+    this.initPublisher().then(publisher => {
+      this.setDevicesValue(publisher);
+    }).catch((error) => console.log(error));
     this.getRandomAvatar();
     this.columns = (window.innerWidth > 900) ? 2 : 1;
   }
@@ -66,6 +69,7 @@ export class DialogChooseRoomComponent implements OnInit {
       this.destroyPublisher(0);
       this.userCamDeleted = this.localUsers.shift();
       this.setAudio(this.isAudioActive);
+      this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
     } else if (this.localUsers[0].isScreen()) {
       this.setAudio(false);
       (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
@@ -208,19 +212,27 @@ export class DialogChooseRoomComponent implements OnInit {
     this.leaveSession.emit();
   }
 
-  private setDevicesValue() {
+  private setDevicesValue(publisher: Publisher) {
     this.OV.getDevices().then((devices: any) => {
       console.log('Devices: ', devices);
+      const defaultDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
       devices.forEach((device: any) => {
         if (device.kind === 'audioinput') {
-          this.microphones.push({ label: device.label, device: device.deviceId });
+          this.microphones.push({ label: device.label, device: device.deviceId, type: '' });
         } else {
-          this.cameras.push({ label: device.label, device: device.deviceId });
+          const element  = {label: device.label, device: device.deviceId, type: ''};
+          if (device.deviceId === defaultDeviceId) {
+            element.type = 'FRONT';
+            this.camValue = element;
+          } else {
+            element.type = 'BACK';
+          }
+          this.cameras.push(element);
         }
       });
-      this.camValue = this.cameras[1] ? this.cameras[1] : this.cameras[0];
+
+      this.camValue = this.camValue ? this.camValue : this.cameras[0];
       this.micValue = this.microphones[1] ? this.microphones[1] : this.microphones[0];
-      this.initPublisher();
     }).catch((error) => console.error(error));
   }
   private setSessionName() {
@@ -237,19 +249,24 @@ export class DialogChooseRoomComponent implements OnInit {
       .catch((err) => console.error(err));
   }
 
-  private initPublisher() {
-    this.OV.initPublisherAsync(undefined, {
-      audioSource: this.micValue.device,
-      videoSource: this.camValue.device,
-      publishAudio: this.isAudioActive,
-      publishVideo: this.isVideoActive,
-    }).then(publisher => {
-      this.subscribeToVolumeChange(publisher);
-      this.localUsers[0].setStreamManager(publisher);
-      if (this.autopublish) {
-        this.accept();
-      }
-    }).catch((error) => console.error(error));
+  private initPublisher(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.OV.initPublisherAsync(undefined, {
+        audioSource: this.micValue ? this.micValue.device : undefined,
+        videoSource: this.camValue ? this.camValue.device : undefined,
+        publishAudio: this.isAudioActive,
+        publishVideo: this.isVideoActive,
+        mirror: this.camValue && this.camValue.type === 'FRONT'
+      }).then((publisher: Publisher) => {
+        this.subscribeToVolumeChange(publisher);
+        this.localUsers[0].setStreamManager(publisher);
+        if (this.autopublish) {
+          this.accept();
+        }
+        resolve(publisher);
+      }).catch((error) => reject(error));
+    });
+
   }
 
   private initScreenPublisher() {

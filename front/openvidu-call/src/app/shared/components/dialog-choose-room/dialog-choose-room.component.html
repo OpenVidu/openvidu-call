@@ -92,7 +92,7 @@
                   <mat-form-field class="alternate-theme">
                     <mat-select
                       placeholder="Microphone Options"
-                      [ngModel]="isAudioActive ? micValue.label : 'None'"
+                      [ngModel]="isAudioActive && micValue ? micValue.label : 'None'"
                       (selectionChange)="micChanged($event.value)"
                     >
                       <mat-option *ngFor="let microphone of microphones" [value]="microphone.label">{{
@@ -116,7 +116,7 @@
                   <mat-form-field class="alternate-theme">
                     <mat-select
                       placeholder="Camera Options"
-                      [ngModel]="isVideoActive ? camValue.label : 'None'"
+                      [ngModel]="isVideoActive && camValue ? camValue.label : 'None'"
                       (selectionChange)="camChanged($event.value)"
                     >
                       <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
