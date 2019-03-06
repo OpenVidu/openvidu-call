@@ -30,9 +30,13 @@
     </mat-chip-list>
 
     <ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound"></ov-video>
-    <div id="statusIcons">
-        <mat-icon *ngIf="!this.user.isAudioActive()" id="statusMic">mic_off</mat-icon>
-        <mat-icon *ngIf="!this.user.isVideoActive()" id="statusCam">videocam_off</mat-icon>
+    <div class="statusIcons">
+        <div id="statusMic" *ngIf="!this.user.isAudioActive()">
+            <mat-icon>mic_off</mat-icon>
+        </div>
+        <div id="statusCam" *ngIf="!this.user.isVideoActive()">
+            <mat-icon>videocam_off</mat-icon>
+        </div>
     </div>
     <button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="toggleFullscreen()">
         <mat-icon>{{this.fullscreenIcon}}</mat-icon>

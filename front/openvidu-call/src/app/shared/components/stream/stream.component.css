@@ -43,17 +43,27 @@ video {
   font-size: 100%;
 }
 
-#statusIcons {
+.statusIcons {
   bottom: 0;
-  background: #c71100;
+  left: 5px;
   width: 40px;
   height: fit-content;
   position: absolute;
   color: #ffffff;
 }
 
-#statusIcons mat-icon {
+.statusIcons mat-icon {
   padding: 8px;
+}
+
+#camStatus {
+  bottom: 43px;
+}
+
+#statusCam, #statusMic { 
+  border-radius: 50%;
+  background: #c71100;
+  margin: 5px 0px;
 }
 
 .streamButtons {
