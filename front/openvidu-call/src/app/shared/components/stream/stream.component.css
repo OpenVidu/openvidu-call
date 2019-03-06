@@ -56,19 +56,18 @@ video {
   padding: 8px;
 }
 
-#fullscreenButton {
+.streamButtons {
   position: absolute;
-  bottom: 1px;
-  right: 1px;
   z-index: 1000;
   background-color: #000000c4;
+  right: 1px;
+}
+
+#fullscreenButton {
+  bottom: 1px;
 }
 #volumeButton {
-  background-color: #000000c4;
-  position: absolute;
   bottom: 45px;
-  right: 1px;
-  z-index: 1000;
 }
 /* Contains the video element, used to fix video letter-boxing */
 .OT_widget-container {

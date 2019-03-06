@@ -19,9 +19,8 @@
       <mat-icon *ngIf="localUser && localUser.isLocal() && localUser.isVideoActive()" matTooltip="Mute your cam">videocam</mat-icon>
       <mat-icon *ngIf="(localUser && localUser.isLocal() && !localUser.isVideoActive()) || localUser && localUser.isScreen()" color="warn" matTooltip="Unmute your cam">videocam_off</mat-icon>
     </button>
-    <button mat-icon-button (click)="screenShare()" id="navScreenButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare)">
-      <mat-icon matTooltip="Choose screen" *ngIf="localUser && localUser.isScreenShareActive()">picture_in_picture</mat-icon>
-      <mat-icon matTooltip="Screen share" *ngIf="localUser && !localUser.isScreenShareActive()" color="warn">stop_screen_share</mat-icon>
+    <button mat-icon-button (click)="screenShare()" id="navScreenButton" *ngIf="localUser && !localUser.isScreenShareActive() && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare))">
+      <mat-icon matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
     </button>
     <button mat-icon-button (click)="stopScreenSharing()" *ngIf="localUser && localUser.isScreenShareActive()">
       <mat-icon matTooltip="Stop sharing">screen_share</mat-icon>

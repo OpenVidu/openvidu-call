@@ -34,11 +34,14 @@
         <mat-icon *ngIf="!this.user.isAudioActive()" id="statusMic">mic_off</mat-icon>
         <mat-icon *ngIf="!this.user.isVideoActive()" id="statusCam">videocam_off</mat-icon>
     </div>
-    <button mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
+    <button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="toggleFullscreen()">
         <mat-icon>{{this.fullscreenIcon}}</mat-icon>
     </button>
-    <button mat-icon-button id="volumeButton" *ngIf="this.user.isRemote()" (click)="toggleSound()">
+    <button mat-icon-button id="volumeButton" class="streamButtons" *ngIf="this.user.isRemote()" (click)="toggleSound()">
         <mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
         <mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
+    </button>
+    <button mat-icon-button (click)="screenShare()" class="streamButtons" id="changeScreenButton" *ngIf="this.user.isRemote() && canEditNickname ">
+        <mat-icon matTooltip="Choose screen" >picture_in_picture</mat-icon>
     </button>
 </div>
