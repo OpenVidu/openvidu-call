@@ -1,4 +1,4 @@
-#videoRoomNavBar{
+#videoRoomNavBar {
   min-width: 400px;
   background-color: #494949;
   height: -webkit-fill-available;
@@ -30,9 +30,9 @@
 }
 
 .sidenav-main {
-height: calc(100% - 40px);
-overflow: hidden;
-min-height: -webkit-fill-available;
+  height: calc(100% - 40px);
+  overflow: hidden;
+  min-height: -webkit-fill-available;
 }
 
 .bounds {
@@ -47,7 +47,7 @@ min-height: -webkit-fill-available;
   width: inherit;
 }
 
-.boundsLight{
+.boundsLight {
   background-color: #dfdfdf !important;
 }
 
@@ -878,4 +878,20 @@ min-height: -webkit-fill-available;
   text-align: center;
   height: 100%;
   margin-top: 40px;
+}
+
+@media (min-width: 1440px) {
+  .sidenav-chat{
+    width: 33%;
+  }
+}
+@media (max-width: 1440px) and (min-width: 1024px){
+  .sidenav-chat{
+    width: 30%;
+  }
+}
+@media (max-width: 1024px) and (min-width: 790px){
+  .sidenav-chat{
+    width: 350px;
+  }
 }
