@@ -3,7 +3,7 @@
     *ngIf="showDialogChooseRoom"
     [userNickname]="user"
     [sessionName]="sessionName"
-    [autopublish]="ovSettings && ovSettings.autopublish"
+    [ovSettings]="ovSettings"
     (join)="toggleDialogChooseRoom($event)"
     (leaveSession)="exitSession()"
   ></app-dialog-choose-room>

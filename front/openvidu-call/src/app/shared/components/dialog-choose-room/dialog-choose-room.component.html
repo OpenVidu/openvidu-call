@@ -80,7 +80,7 @@
             </div>
 
             <!-- Devices section / Microphone-->
-            <div fxLayout="row" fxFill id="devicesSection">
+            <div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.audio">
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleMic()" id="micDeviceButton">
@@ -104,7 +104,7 @@
               </div>
             </div>
             <!-- Devices section / Camera-->
-            <div fxLayout="row" fxFill id="devicesSection">
+            <div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.video">
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
@@ -127,7 +127,7 @@
             </div>
 
             <!-- Devices section / ScreenShare-->
-            <div fxLayout="row" fxFill id="devicesSection">
+            <div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.screenShare">
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">

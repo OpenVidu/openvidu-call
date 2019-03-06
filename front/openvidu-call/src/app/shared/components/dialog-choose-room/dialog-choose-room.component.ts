@@ -5,6 +5,7 @@ import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
 import { OpenVidu, Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
+import { OvSettings } from '../../models/ov-settings';
 
 interface IDevices {
   label: string;
@@ -21,7 +22,7 @@ export class DialogChooseRoomComponent implements OnInit {
 
   @Input() userNickname: string;
   @Input() sessionName: string;
-  @Input() autopublish: boolean;
+  @Input() ovSettings: OvSettings;
   @Output() join = new EventEmitter<any>();
   @Output() leaveSession = new EventEmitter<any>();
   hover1: boolean;
@@ -260,7 +261,7 @@ export class DialogChooseRoomComponent implements OnInit {
       }).then((publisher: Publisher) => {
         this.subscribeToVolumeChange(publisher);
         this.localUsers[0].setStreamManager(publisher);
-        if (this.autopublish) {
+        if (this.ovSettings.autopublish) {
           this.accept();
         }
         resolve(publisher);
