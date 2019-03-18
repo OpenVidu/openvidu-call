@@ -32,7 +32,6 @@
       <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
     </button>
     <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)">
-      <div *ngIf="showNotification" id="point" [class.pointLight]="lightTheme"></div>
         <mat-icon matBadge="{{newMessagesNum}}" [matBadgeHidden]="newMessagesNum === 0"  matBadgePosition="above before" matTooltip="Chat" matBadgeColor="accent">chat</mat-icon>
     </button>
   </div>

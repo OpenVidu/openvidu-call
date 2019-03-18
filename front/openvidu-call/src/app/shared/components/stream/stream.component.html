@@ -5,6 +5,7 @@
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
 
     <mat-chip-list class="nickname" [class.fullscreen]="isFullscreen" >
+       
         <mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
             <span id="nickname">{{this.user.getNickname()}}</span>
             <span *ngIf="user.isScreen()">_SCREEN</span>
