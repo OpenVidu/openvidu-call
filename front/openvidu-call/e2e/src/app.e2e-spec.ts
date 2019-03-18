@@ -177,7 +177,7 @@ describe('Two browsers: ', () => {
     OVC.getChatInput(browser).sendKeys('New Message');
     OVC.pressEnter(browser);
     OVC.getChatButton(browser).click();
-    expect(OVC.getNewMessagePoint(browser2).isDisplayed()).toBeTruthy();
+    expect(OVC.getNewMessagePoint(browser2).getText()).toBe('1');
     OVC.closeSession(browser2);
   });
 

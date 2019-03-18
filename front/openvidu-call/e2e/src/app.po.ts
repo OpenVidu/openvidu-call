@@ -88,7 +88,7 @@ export class OpenViduCall {
   }
 
   getNewMessagePoint(browser): ElementFinder {
-    return browser.element(by.css('#point'));
+    return browser.element(by.css('#mat-badge-content-0'));
   }
 
   pressEnter(browser) {
