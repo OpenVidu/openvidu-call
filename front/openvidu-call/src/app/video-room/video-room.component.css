@@ -1,7 +1,7 @@
 #videoRoomNavBar {
   min-width: 400px;
   background-color: #494949;
-  height: -webkit-fill-available;
+  height: 100%;
 }
 
 .stream-container {
@@ -11,7 +11,7 @@
 .sidenav-container {
   position: relative;
   width: 100%;
-  height: calc(100% + 40px);
+  height: 100%;
   min-height: -webkit-fill-available;
   overflow: hidden;
 }
@@ -30,9 +30,10 @@
 }
 
 .sidenav-main {
-  height: calc(100% - 40px);
+  height: 100%;
   overflow: hidden;
   min-height: -webkit-fill-available;
+  min-height: -moz-available;
 }
 
 .bounds {
@@ -42,7 +43,6 @@
   right: 0;
   top: 40px;
   bottom: 0;
-  height: inherit;
   min-width: 400px !important;
   width: inherit;
 }

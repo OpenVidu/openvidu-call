@@ -1,4 +1,4 @@
-<div id="dialogChooseRoom" [ngStyle]="{ display: autopublish ? 'none' : 'block' }">
+<div id="dialogChooseRoom" [ngStyle]="{ display: ovSettings.autopublish ? 'none' : 'block' }">
     <app-dialog-extension
     *ngIf="showDialogExtension"
     [nickname]="localUsers[0].getNickname()"
@@ -59,7 +59,9 @@
                     [ngStyle]="{ backgroundColor: videoAvatar && hover1 && avatarSelected !== 'video' ? 'lightgreen' : 'white' }"
                     [style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'"
                   >
-                    <div id="imgText" *ngIf="!videoAvatar">Press Avatar Button</div>
+                    <div id="imgText" *ngIf="!videoAvatar">
+                      <span>Press Avatar Button</span>
+                    </div>
                     <img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
                   </div>
                   <div
@@ -179,8 +181,13 @@
             </div>
           </div>
         </div>
+        <div id="joinButtonDiv">
+          <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
+        </div>
+        
+        
       </div>
-      <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
+      
     </mat-card-content>
   </mat-card>
 </div>

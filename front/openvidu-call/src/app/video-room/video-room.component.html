@@ -29,7 +29,7 @@
       [nickname]="localUsers[0].getNickname()"
       (cancel)="toggleDialogExtension()"
     ></app-dialog-extension>
-    <mat-sidenav-container class="sidenav-container" id="room-container" [class.boundsLight]="lightTheme">
+    <mat-sidenav-container class="sidenav-container" id="room-container" [class.boundsLight]="lightTheme" fullscreen>
       <mat-sidenav
         #sidenav
         mode="{{sidenavMode}}"

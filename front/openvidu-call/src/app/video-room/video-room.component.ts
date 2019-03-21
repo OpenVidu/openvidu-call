@@ -307,7 +307,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   }
 
   enlargeElement(event) {
-    const element: HTMLElement = event.path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
+    const path = event.path ? event.path : event.composedPath(); // Chrome or Firefox
+    const element: HTMLElement = path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
     if (element.className.includes(this.BIG_ELEMENT_CLASS)) {
       element.classList.remove(this.BIG_ELEMENT_CLASS);
     } else {
