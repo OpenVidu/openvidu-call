@@ -14,7 +14,7 @@ import { OvSettings } from '../shared/models/ov-settings';
       [user]="_user"
       [openviduServerUrl]="openviduServerUrl"
       [openviduSecret]="openviduSecret"
-      [tokens]="_token"
+      [tokens]="_tokens"
       [ovSettings]="ovSettings"
       [isWebComponent]="true"
       (leaveSession)="emitLeaveSessionEvent($event)"
@@ -28,7 +28,7 @@ import { OvSettings } from '../shared/models/ov-settings';
 export class WebComponentComponent implements OnInit {
   _sessionName: string;
   _user: string;
-  _token: string[];
+  _tokens: string[];
 
   @Input() openviduServerUrl: string;
   @Input() openviduSecret: string;
@@ -42,7 +42,19 @@ export class WebComponentComponent implements OnInit {
 
   public display = false;
 
-  constructor() {}
+  constructor() {
+    this.ovSettings = {
+      chat: true,
+      autopublish: false,
+      toolbarButtons: {
+        video: true,
+        audio: true,
+        fullscreen: true,
+        screenShare: true,
+        exit: true,
+      },
+    };
+  }
 
   @Input('sessionConfig')
   set sessionConfig(config: any) {
@@ -55,7 +67,7 @@ export class WebComponentComponent implements OnInit {
     if (sessionConfig) {
       this._sessionName = sessionConfig.sessionName;
       this._user = sessionConfig.user;
-      this._token = sessionConfig.token;
+      this._tokens = sessionConfig.tokens;
       if (sessionConfig.ovSettings && this.isOvSettingsType(sessionConfig.ovSettings)) {
         this.ovSettings = sessionConfig.ovSettings;
       }
@@ -70,7 +82,12 @@ export class WebComponentComponent implements OnInit {
   ngOnInit() {}
 
   validateParameters(): boolean {
-    if ((this._sessionName && this.openviduServerUrl && this.openviduSecret && this._user) || (this._token && this._user)) {
+    console.log("TOKENS", this._tokens);
+    if ((this._sessionName && this.openviduServerUrl && this.openviduSecret && this._user) || (this._tokens.length > 0 && this._user)) {
+      if (this._tokens.length === 1) {
+        this.ovSettings.toolbarButtons.screenShare = false;
+        console.warn('Screen share funcionality has been disabled. OpenVidu Angular has received only one token.');
+      }
       return true;
     }
     return false;
