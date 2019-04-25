@@ -15,7 +15,7 @@ import { OvSettings } from './shared/models/ov-settings';
       [user]="user"
       [openviduServerUrl]="openviduServerUrl"
       [openviduSecret]="openviduSecret"
-      [token]="token"
+      [tokens]="tokens"
       [ovSettings]="ovSettings"
       (leaveSession)="emitLeaveSessionEvent($event)"
       (joinSession)="emitJoinSessionEvent($event)"
@@ -36,7 +36,7 @@ export class OpenviduSessionComponent implements OnInit {
   @Input()
   openviduSecret: string;
   @Input()
-  token: string;
+  tokens: string[];
   @Input()
   theme: string;
   @Output()
@@ -51,7 +51,26 @@ export class OpenviduSessionComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.tokens.length === 1) {
+      if (this.ovSettings) {
+        this.ovSettings.toolbarButtons.screenShare = false;
+      } else {
+        this.ovSettings = {
+          chat: true,
+          autopublish: false,
+          toolbarButtons: {
+            video: true,
+            audio: true,
+            fullscreen: true,
+            screenShare: false,
+            exit: true,
+          },
+        };
+      }
+      console.warn('Screen share funcionality has been disabled. OpenVidu Angular has received only one token.');
+    }
+  }
 
   emitJoinSessionEvent(event: any): void {
     this.joinSession.emit(event);

@@ -21,7 +21,7 @@
         "hammerjs": "2.0.8",
         "jquery": "3.3.1",
         "ngx-linkifyjs": "1.3.0",
-        "openvidu-browser": "2.8.0",
+        "openvidu-browser": "2.9.0",
         "rxjs": "6.4.0",
         "wolfy87-eventemitter": "5.2.6",
         "zone.js": "0.8.29"
@@ -67,5 +67,5 @@
         "start": "ng serve",
         "test": "ng test"
     },
-    "version": "2.8.0"
+    "version": "2.9.0"
 }

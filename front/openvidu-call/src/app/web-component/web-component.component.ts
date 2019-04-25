@@ -14,7 +14,7 @@ import { OvSettings } from '../shared/models/ov-settings';
       [user]="_user"
       [openviduServerUrl]="openviduServerUrl"
       [openviduSecret]="openviduSecret"
-      [token]="_token"
+      [tokens]="_token"
       [ovSettings]="ovSettings"
       [isWebComponent]="true"
       (leaveSession)="emitLeaveSessionEvent($event)"
@@ -28,7 +28,7 @@ import { OvSettings } from '../shared/models/ov-settings';
 export class WebComponentComponent implements OnInit {
   _sessionName: string;
   _user: string;
-  _token: string;
+  _token: string[];
 
   @Input() openviduServerUrl: string;
   @Input() openviduSecret: string;
