@@ -1,4 +1,4 @@
-<div id="videoRoomNavBar" [class.boundsLight]="lightTheme">
+<div *ngIf="!!ovSettings" id="videoRoomNavBar" [class.boundsLight]="lightTheme">
   <app-dialog-choose-room
     *ngIf="showDialogChooseRoom"
     [userNickname]="user"
