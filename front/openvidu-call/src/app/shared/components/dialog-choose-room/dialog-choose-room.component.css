@@ -152,11 +152,12 @@ mat-card {
   bottom: 0;
   left: 0;
   right: 0;
-  max-width: 100%;
-  max-height: 70%;
+  max-height: 90%;
   margin: auto;
   padding: 20px;
   overflow-y: auto;
+  border: 2px solid #ffffff;
+  border-right: 4px solid #ffffff;
 }
 
 @media only screen and (max-width: 959px) {
@@ -181,9 +182,20 @@ mat-card {
 }
 
 ::-webkit-scrollbar {
-  width: 3px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #6b6b6b;
+  background: #b8afaf;
+  border-radius: 4px;
 }
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888888;
+}
+
+::-webkit-scrollbar-track {
+  background: #e1e1e1;
+  border-radius: 4px;
+}
+
