@@ -38,8 +38,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
 
-  @ViewChild('chatComponent') chatComponent: ChatComponent;
-  @ViewChild('sidenav') chat: any;
+  @ViewChild('chatComponent', {static: false}) chatComponent: ChatComponent;
+  @ViewChild('sidenav', {static: false}) chat: any;
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';
