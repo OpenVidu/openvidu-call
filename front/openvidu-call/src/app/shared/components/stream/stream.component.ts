@@ -15,8 +15,8 @@ export class StreamComponent implements OnInit {
   toggleNickname: boolean;
   isFullscreen: boolean;
 
-  nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
-  matcher = new NicknameMatcher();
+  nicknameFormControl: FormControl;
+  matcher: NicknameMatcher;
 
   @Input() user: UserModel;
   @Input() localUser: UserModel;
@@ -34,6 +34,8 @@ export class StreamComponent implements OnInit {
   @Output() chatButtonClicked = new EventEmitter<any>();
 
   @ViewChild('videoReference') htmlVideoElement: ElementRef;
+  @ViewChild('nicknameInput') nicknameInput: ElementRef;
+
 
   constructor(private apiSrv: ApiService) {}
 
@@ -49,7 +51,10 @@ export class StreamComponent implements OnInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
+    this.matcher = new NicknameMatcher();
+  }
 
   toggleFullscreen() {
     const state = this.apiSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
@@ -72,6 +77,11 @@ export class StreamComponent implements OnInit {
   toggleNicknameForm(): void {
     if (this.canEditNickname) {
       this.toggleNickname = !this.toggleNickname;
+      setTimeout(() => {
+        if (this.nicknameInput.nativeElement) {
+          this.nicknameInput.nativeElement.focus();
+        }
+      });
     }
   }
 
@@ -79,7 +89,6 @@ export class StreamComponent implements OnInit {
     if (event && event.keyCode === 13 && this.nicknameFormControl.valid) {
       this.nicknameClicked.emit(this.nicknameFormControl.value);
       this.toggleNicknameForm();
-      this.nicknameFormControl.reset();
     }
   }
 
