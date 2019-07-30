@@ -1,17 +1,12 @@
 <div id="dialogChooseRoom" [ngStyle]="{ display: ovSettings.autopublish ? 'none' : 'block' }">
-    <app-dialog-extension
-    *ngIf="showDialogExtension"
-    [nickname]="localUsers[0].getNickname()"
-    (cancel)="toggleDialogExtension()"
-  ></app-dialog-extension>
+  <app-dialog-extension *ngIf="showDialogExtension" [nickname]="localUsers[0].getNickname()"
+    (cancel)="toggleDialogExtension()"></app-dialog-extension>
+
   <mat-card *ngIf="localUsers[0].getStreamManager()">
     <mat-card-title>
       <div id="img_content">
-        <img
-          id="header_img"
-          alt="OpenVidu Logo"
-          src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png"
-        />
+        <img id="header_img" alt="OpenVidu Logo"
+          src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png" />
       </div>
       <h1 mat-dialog-title>Set up your room</h1>
       <button mat-icon-button (click)="close()" id="closeButton">
@@ -24,19 +19,16 @@
           <!--  left section -->
           <div fxFlex="45" fxFlex.sm="25" fxFlex.lt-sm="25" class="volume-theme">
             <h3 id="sessionInfo">Session : {{ mySessionId }}</h3>
-            
+
             <div id="videoContainer">
-                <mat-slider
-                class="volumeSlider"
-                [max]="0"
-                [min]="100"
-                [color]="updateVolumeColor()"
-                [ngModel]="volumeValue"
-                [vertical]="true"
-              >
+              <mat-slider class="volumeSlider" [max]="0" [min]="100" [color]="updateVolumeColor()"
+                [ngModel]="volumeValue" [vertical]="true">
               </mat-slider>
-              <ov-video *ngIf="localUsers[0] && localUsers[0].getStreamManager()" [streamManager]="localUsers[0].getStreamManager()" id="ovVideo" [className]="localUsers[1] ? 'smallVideo' : ''"></ov-video>
-              <ov-video *ngIf="localUsers[1] && localUsers[1].getStreamManager()" [streamManager]="localUsers[1].getStreamManager()" id="ovVideoScreen"></ov-video>
+              <ov-video *ngIf="localUsers[0] && localUsers[0].getStreamManager()"
+                [streamManager]="localUsers[0].getStreamManager()" id="ovVideo"
+                [className]="localUsers[1] ? 'smallVideo' : ''"></ov-video>
+              <ov-video *ngIf="localUsers[1] && localUsers[1].getStreamManager()"
+                [streamManager]="localUsers[1].getStreamManager()" id="ovVideoScreen"></ov-video>
             </div>
             <div id="photoButton">
               <button mat-stroked-button (click)="takePhoto()" id="avatarButton">
@@ -49,31 +41,23 @@
           <div fxFlex="55" fxFlex.sm="65" fxFlex.lt-sm="65" class="sec3">
             <div fxLayout="row" fxFill id="avatarSection">
               <div fxLayout fxFlex>
-                <div class="" fxFlex="30" fxLayoutAlign="center center"><h3 style="margin: auto;">Avatar</h3></div>
+                <div class="" fxFlex="30" fxLayoutAlign="center center">
+                  <h3 style="margin: auto;">Avatar</h3>
+                </div>
                 <div class="" fxFlex="70" fxLayoutAlign="center center">
-                  <div
-                    id="avatarContainer"
-                    (mouseover)="hover1 = true"
-                    (click)="setAvatar('video')"
+                  <div id="avatarContainer" (mouseover)="hover1 = true" (click)="setAvatar('video')"
                     (mouseleave)="hover1 = false"
                     [ngStyle]="{ backgroundColor: videoAvatar && hover1 && avatarSelected !== 'video' ? 'lightgreen' : 'white' }"
-                    [style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'"
-                  >
+                    [style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'">
                     <div id="imgText" *ngIf="!videoAvatar">
                       <span>Press Avatar Button</span>
                     </div>
                     <img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
                   </div>
-                  <div
-                    id="avatarContainer"
-                    (click)="setAvatar('random')"
-                    (mouseover)="hover2 = true"
-                    (mouseleave)="hover2 = false"
-                    [ngStyle]="{
+                  <div id="avatarContainer" (click)="setAvatar('random')" (mouseover)="hover2 = true"
+                    (mouseleave)="hover2 = false" [ngStyle]="{
                       backgroundColor: randomAvatar && hover2 && avatarSelected !== 'random' ? 'lightgreen' : 'white'
-                    }"
-                    [style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'"
-                  >
+                    }" [style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'">
                     <mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
                     <img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
                   </div>
@@ -92,11 +76,9 @@
                 </div>
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
-                    <mat-select
-                      placeholder="Microphone Options"
+                    <mat-select placeholder="Microphone Options"
                       [ngModel]="isAudioActive && micValue ? micValue.label : 'None'"
-                      (selectionChange)="micChanged($event.value)"
-                    >
+                      (selectionChange)="micChanged($event.value)">
                       <mat-option *ngFor="let microphone of microphones" [value]="microphone.label">{{
                         microphone.label
                       }}</mat-option>
@@ -116,11 +98,9 @@
                 </div>
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
-                    <mat-select
-                      placeholder="Camera Options"
+                    <mat-select placeholder="Camera Options"
                       [ngModel]="isVideoActive && camValue ? camValue.label : 'None'"
-                      (selectionChange)="camChanged($event.value)"
-                    >
+                      (selectionChange)="camChanged($event.value)">
                       <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -134,16 +114,14 @@
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">
                     <mat-icon *ngIf="isScreenShareActive" matTooltip="Screen Share Enabled">screen_share</mat-icon>
-                    <mat-icon *ngIf="!isScreenShareActive" color="warn" matTooltip="Screen Share Disabled">stop_screen_share</mat-icon>
+                    <mat-icon *ngIf="!isScreenShareActive" color="warn" matTooltip="Screen Share Disabled">
+                      stop_screen_share</mat-icon>
                   </button>
                 </div>
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
-                    <input matInput disabled
-                      placeholder="Screen Pages"
-                      [ngModel]="screenActive"
-                    >
-              
+                    <input matInput disabled placeholder="Screen Pages" [ngModel]="screenActive">
+
                   </mat-form-field>
                 </div>
               </div>
@@ -160,14 +138,8 @@
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <form id="nicknameDialog" class="alternate-theme">
                     <mat-form-field>
-                      <input
-                        matInput
-                        placeholder="Nickname"
-                        [formControl]="nicknameFormControl"
-                        [errorStateMatcher]="matcher"
-                        (keypress)="eventKeyPress($event)"
-                        autocomplete="off"
-                      />
+                      <input matInput placeholder="Nickname" [formControl]="nicknameFormControl"
+                        [errorStateMatcher]="matcher" (keypress)="eventKeyPress($event)" autocomplete="off" />
                       <mat-error *ngIf="nicknameFormControl.hasError('required')">
                         Nickname is <strong>required</strong>
                       </mat-error>
@@ -181,13 +153,15 @@
             </div>
           </div>
         </div>
-        <div id="joinButtonDiv">
-          <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
-        </div>
-        
-        
       </div>
-      
+
     </mat-card-content>
+
+    <mat-card-footer>
+      <div id="joinButtonDiv">
+        <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
+      </div>
+    </mat-card-footer>
+
   </mat-card>
 </div>
