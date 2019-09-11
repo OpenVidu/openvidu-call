@@ -2,7 +2,26 @@ const fs = require('fs-extra');
 const concat = require('concat');
 const VERSION = require('./package.json').version;
 
-console.log("Building OpenVidu Web Component (" + VERSION + ")");
+
+module.exports.prepareWebcomponent = function () { 
+  console.log("Preparing webcomponent files ...");
+  const appModule = './src/app/app.module.ts';
+  replaceText(appModule, "bootstrap: [AppComponent]", "// bootstrap: [AppComponent]");
+}
+
+module.exports.buildWebcomponent = function () {
+  console.log("Building OpenVidu Web Component (" + VERSION + ")");
+
+  buildElement()
+  .then(() => {
+    copyFiles().then(() => {
+      return restore();
+    });
+  })
+  .then(() => {
+    console.log('OpenVidu Web Component (' + VERSION + ') built');
+  }).catch((error) => console.error(error));
+}
 
 async function buildElement() {
   const files = [
@@ -42,12 +61,23 @@ async function deleteFilesBuilt() {
   }
 }
 
-buildElement()
-  .then(() => {
-    copyFiles().then(() => {
-      return deleteFilesBuilt();
+async function restore() {
+  const appModule = './src/app/app.module.ts';
+  replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
+  deleteFilesBuilt();
+}
+
+function replaceText(file, originalText, changedText) {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      return console.log(err);
+    }
+    let result = data.replace(originalText, changedText);
+
+    fs.writeFile(file, result, 'utf8', (err) => {
+      if (err) return console.log(err);
     });
-  })
-  .then(() => {
-    console.log('OpenVidu Web Component (' + VERSION + ') built');
-  }).catch((error) => console.error(error));
+  });
+
+}
+

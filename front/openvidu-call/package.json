@@ -59,7 +59,7 @@
     "scripts": {
         "build": "./node_modules/@angular/cli/bin/ng build",
         "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
-        "build:openvidu-webcomponent": "./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node openvidu-webcomponent-build.js",
+        "build:openvidu-webcomponent": "node -e \"require('./openvidu-webcomponent-build.js').prepareWebcomponent()\" && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node -e \"require('./openvidu-webcomponent-build.js').buildWebcomponent()\"",
         "e2e": "ng e2e",
         "lint": "ng lint",
         "ng": "ng",
