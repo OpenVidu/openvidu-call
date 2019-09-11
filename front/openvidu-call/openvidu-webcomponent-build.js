@@ -24,6 +24,7 @@ async function buildElement() {
 async function copyFiles() {
   const destination = '../../../openvidu-tutorials/openvidu-webcomponent/web';
   try {
+    console.log("Copying openvidu-webcomponents files from: ./openvidu-webcomponent to: " + destination);
     await fs.ensureDir('openvidu-webcomponent');
     await fs.copy('./openvidu-webcomponent/', destination);
   } catch (err) {
@@ -31,9 +32,21 @@ async function copyFiles() {
   }
 }
 
+async function deleteFilesBuilt() {
+  try {
+    console.log("Deleting openvidu-webcomponent directory...");
+    await fs.ensureDir('openvidu-webcomponent');
+    await fs.remove("./openvidu-webcomponent");
+  } catch (err) {
+    console.error('Error executing delete function in webcomponent-builds.js', err);
+  }
+}
+
 buildElement()
   .then(() => {
-    return copyFiles();
+    copyFiles().then(() => {
+      return deleteFilesBuilt();
+    });
   })
   .then(() => {
     console.log('OpenVidu Web Component (' + VERSION + ') built');
