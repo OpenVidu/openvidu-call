@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const concat = require('concat');
 const VERSION = require('./package.json').version;
 
-
+// Fixed app-route bug: https://github.com/angular/angular/issues/24674
 module.exports.prepareWebcomponent = function () { 
   console.log("Preparing webcomponent files ...");
   const appModule = './src/app/app.module.ts';
@@ -37,6 +37,7 @@ async function buildElement() {
     await fs.copy('./dist/openvidu-call/styles.css', './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css');
   } catch (err) {
     console.error('Error executing build funtion in webcomponent-builds.js', err);
+    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
   }
 }
 
@@ -48,6 +49,7 @@ async function copyFiles() {
     await fs.copy('./openvidu-webcomponent/', destination);
   } catch (err) {
     console.error('Error executing copy function in webcomponent-builds.js', err);
+    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
   }
 }
 
@@ -58,6 +60,7 @@ async function deleteFilesBuilt() {
     await fs.remove("./openvidu-webcomponent");
   } catch (err) {
     console.error('Error executing delete function in webcomponent-builds.js', err);
+    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
   }
 }
 
