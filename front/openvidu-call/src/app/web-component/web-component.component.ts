@@ -38,7 +38,7 @@ export class WebComponentComponent implements OnInit {
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
 
-  @ViewChild('videoRoom', {static: false}) videoRoom: VideoRoomComponent;
+  @ViewChild('videoRoom', { static: false }) videoRoom: VideoRoomComponent;
 
   public display = false;
 
@@ -82,9 +82,12 @@ export class WebComponentComponent implements OnInit {
   ngOnInit() {}
 
   validateParameters(): boolean {
-    console.log("TOKENS", this._tokens);
-    if ((this._sessionName && this.openviduServerUrl && this.openviduSecret && this._user) || (this._tokens.length > 0 && this._user)) {
-      if (this._tokens.length === 1) {
+    console.log('TOKENS', this._tokens);
+    if (
+      (this._sessionName && this.openviduServerUrl && this.openviduSecret && this._user) ||
+      (this._tokens && this._tokens.length > 0 && this._user)
+    ) {
+      if (this._tokens && this._tokens.length === 1) {
         this.ovSettings.toolbarButtons.screenShare = false;
         console.warn('Screen share funcionality has been disabled. OpenVidu Angular has received only one token.');
       }
@@ -108,14 +111,25 @@ export class WebComponentComponent implements OnInit {
   }
 
   private isOvSettingsType(obj) {
-    return 'chat' in obj && typeof obj['chat'] === 'boolean' &&
-    'autopublish' in obj && typeof obj['autopublish'] === 'boolean' &&
-    'toolbarButtons' in obj && typeof obj['toolbarButtons'] === 'object' &&
-    'audio' in obj.toolbarButtons && typeof obj.toolbarButtons['audio'] === 'boolean' &&
-    'audio' in obj.toolbarButtons && typeof obj.toolbarButtons['audio'] === 'boolean' &&
-    'video' in obj.toolbarButtons && typeof obj.toolbarButtons['video'] === 'boolean' &&
-    'screenShare' in obj.toolbarButtons && typeof obj.toolbarButtons['screenShare'] === 'boolean' &&
-    'fullscreen' in obj.toolbarButtons && typeof obj.toolbarButtons['fullscreen'] === 'boolean' &&
-    'exit' in obj.toolbarButtons && typeof obj.toolbarButtons['exit'] === 'boolean';
+    return (
+      'chat' in obj &&
+      typeof obj['chat'] === 'boolean' &&
+      'autopublish' in obj &&
+      typeof obj['autopublish'] === 'boolean' &&
+      'toolbarButtons' in obj &&
+      typeof obj['toolbarButtons'] === 'object' &&
+      'audio' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['audio'] === 'boolean' &&
+      'audio' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['audio'] === 'boolean' &&
+      'video' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['video'] === 'boolean' &&
+      'screenShare' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['screenShare'] === 'boolean' &&
+      'fullscreen' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['fullscreen'] === 'boolean' &&
+      'exit' in obj.toolbarButtons &&
+      typeof obj.toolbarButtons['exit'] === 'boolean'
+    );
   }
 }
