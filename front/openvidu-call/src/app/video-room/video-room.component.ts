@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import {
   OpenVidu,
@@ -38,8 +38,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
 
-  @ViewChild('chatComponent', {static: false}) chatComponent: ChatComponent;
-  @ViewChild('sidenav', {static: false}) chat: any;
+  @ViewChild('chatComponent') chatComponent: ChatComponent;
+  @ViewChild('sidenav') chat: any;
 
   // Constants
   BIG_ELEMENT_CLASS = 'OV_big';

@@ -46,7 +46,7 @@ export class OpenviduSessionComponent implements OnInit {
   @Output()
   error = new EventEmitter<any>();
 
-  @ViewChild('videoRoom', { static: false })
+  @ViewChild('videoRoom')
   public videoRoom: VideoRoomComponent;
 
   constructor() {}

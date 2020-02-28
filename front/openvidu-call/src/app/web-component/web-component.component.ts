@@ -38,7 +38,7 @@ export class WebComponentComponent implements OnInit {
   @Output() leaveSession = new EventEmitter<any>();
   @Output() error = new EventEmitter<any>();
 
-  @ViewChild('videoRoom', { static: false }) videoRoom: VideoRoomComponent;
+  @ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
   public display = false;
 

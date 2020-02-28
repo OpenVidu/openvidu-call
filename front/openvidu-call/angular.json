@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/openvidu-call",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -35,6 +36,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -52,6 +59,12 @@
               "buildOptimizer": true
             },
             "ci": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -156,7 +169,8 @@
           "configurations": {
             "production": {
               "project": "projects/openvidu-angular/ng-package.prod.json"
-            }
+            ,              "tsConfig": "projects/openvidu-angular/tsconfig.lib.prod.json"
+}
           }
         },
         "test": {

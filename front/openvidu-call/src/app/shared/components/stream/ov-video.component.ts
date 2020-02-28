@@ -13,7 +13,7 @@ import { StreamManager } from 'openvidu-browser';
   styleUrls: ['./stream.component.css'],
 })
 export class OpenViduVideoComponent implements AfterViewInit {
-  @ViewChild('videoElement', {static: false}) elementRef: ElementRef;
+  @ViewChild('videoElement') elementRef: ElementRef;
 
   @Input() mutedSound: boolean;
 
