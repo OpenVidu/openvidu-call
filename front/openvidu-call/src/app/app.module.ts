@@ -24,7 +24,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { VideoRoomComponent } from './video-room/video-room.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { OpenViduService } from './shared/services/open-vidu.service';
+import { OpenViduService } from './shared/services/openvidu.service';
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ChatComponent } from './shared/components/chat/chat.component';

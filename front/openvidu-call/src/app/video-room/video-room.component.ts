@@ -14,7 +14,7 @@ import {
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
-import { OpenViduService } from '../shared/services/open-vidu.service';
+import { OpenViduService } from '../shared/services/openvidu.service';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { OvSettings } from '../shared/models/ov-settings';
 import { ApiService } from '../shared/services/api.service';
