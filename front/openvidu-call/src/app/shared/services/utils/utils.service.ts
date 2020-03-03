@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import { OpenViduLayoutOptions } from '../layout/openvidu-layout';
+import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class UtilsService {
 
   BIG_ELEMENT_CLASS = 'OV_big';
 

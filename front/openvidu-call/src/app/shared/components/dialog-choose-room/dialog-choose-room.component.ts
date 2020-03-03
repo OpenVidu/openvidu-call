@@ -2,11 +2,11 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
-import { ApiService } from '../../services/api.service';
+import { UtilsService } from '../../services/utils/utils.service';
 import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OvSettings } from '../../models/ov-settings';
-import { OpenViduSessionService, AVATAR_TYPE } from '../../services/openvidu-session.service';
+import { OpenViduSessionService, AVATAR_TYPE } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice } from '../../models/device-type';
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -46,7 +46,7 @@ export class DialogChooseRoomComponent implements OnInit {
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
 
-  constructor(private route: ActivatedRoute, private apiSrv: ApiService, private OVSessionService: OpenViduSessionService) {}
+  constructor(private route: ActivatedRoute, private utilsSrv: UtilsService, private OVSessionService: OpenViduSessionService) {}
 
   ngOnInit() {
     this._OVUsers = this.OVSessionService.OVUsers;
@@ -154,7 +154,7 @@ export class DialogChooseRoomComponent implements OnInit {
       this.nicknameFormControl.setValue(this.userNickname);
       return;
     }
-    this.nicknameFormControl.setValue(this.apiSrv.generateNickname());
+    this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
   }
 
   eventKeyPress(event) {
@@ -234,7 +234,7 @@ export class DialogChooseRoomComponent implements OnInit {
   }
 
   private setRandomAvatar() {
-    this.apiSrv.getRandomAvatar().then((avatar: string) => {
+    this.utilsSrv.getRandomAvatar().then((avatar: string) => {
       this.OVSessionService.setAvatar(AVATAR_TYPE.RANDOM, avatar);
       this.randomAvatar = avatar;
       this.avatarSelected = AVATAR_TYPE.RANDOM;
@@ -259,7 +259,7 @@ export class DialogChooseRoomComponent implements OnInit {
       if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
           this.toggleDialogExtension();
         } else {
-          this.apiSrv.handlerScreenShareError(error);
+          this.utilsSrv.handlerScreenShareError(error);
         }
     }
 

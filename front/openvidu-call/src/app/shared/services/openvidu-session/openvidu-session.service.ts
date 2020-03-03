@@ -1,9 +1,9 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
-import { UserModel } from '../models/user-model';
+import { UserModel } from '../../models/user-model';
 import { OpenVidu, PublisherProperties, Publisher, Device } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export enum AVATAR_TYPE {RANDOM = 'random', VIDEO = 'video' }
+export enum AVATAR_TYPE {RANDOM = 'random', VIDEO = 'video'}
 
 @Injectable({
   providedIn: 'root'

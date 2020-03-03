@@ -14,10 +14,10 @@ import {
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
-import { OpenViduService } from '../shared/services/openvidu.service';
+import { NetworkService } from '../shared/services/network/network.service';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { OvSettings } from '../shared/models/ov-settings';
-import { ApiService } from '../shared/services/api.service';
+import { UtilsService } from '../shared/services/utils/utils.service';
 
 @Component({
   selector: 'app-video-room',
@@ -69,10 +69,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   private userCamDeleted: UserModel;
 
   constructor(
-    private openViduSrv: OpenViduService,
+    private networkSrv: NetworkService,
     private router: Router,
     public dialog: MatDialog,
-    private apiSrv: ApiService,
+    private utilsSrv: UtilsService,
   ) {}
 
   @HostListener('window:beforeunload')
@@ -90,7 +90,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.checkTheme();
-    this.openViduSrv
+    this.networkSrv
       .getOvSettingsData()
       .then((data: OvSettings) => {
         this.ovSettings = this.ovSettings ? this.ovSettings : data;
@@ -105,7 +105,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
   initApp() {
     setTimeout(() => {
       this.openviduLayout = new OpenViduLayout();
-      this.openviduLayoutOptions = this.apiSrv.getOpenviduLayoutOptions();
+      this.openviduLayoutOptions = this.utilsSrv.getOpenviduLayoutOptions();
       this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);
       this.checkSizeComponent();
       this.joinToSession();
@@ -312,7 +312,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
         if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
           this.toggleDialogExtension();
         } else {
-          this.apiSrv.handlerScreenShareError(error);
+          this.utilsSrv.handlerScreenShareError(error);
         }
       });
   }
@@ -573,7 +573,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
   private getToken(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.openViduSrv
+      this.networkSrv
         .getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret)
         .then((token) => {
           resolve(token);

@@ -2,13 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { OvSettings } from '../models/ov-settings';
+import { environment } from '../../../../environments/environment';
+import { OvSettings } from '../../models/ov-settings';
 
 @Injectable({
   providedIn: 'root',
 })
-export class OpenViduService {
+export class NetworkService {
   private URL_OV = 'https://demos.openvidu.io' + ':4443';
   private MY_SECRET = 'MY_SECRET';
   private SETTINGS_FILE_NAME = 'ov-settings.json';

@@ -42,9 +42,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 
 // Services
-import { OpenViduService } from './shared/services/openvidu.service';
-import { OpenViduSessionService } from './shared/services/openvidu-session.service';
-import { ApiService } from './shared/services/api.service';
+import { NetworkService } from './shared/services/network/network.service';
+import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
+import { UtilsService } from './shared/services/utils/utils.service';
 
 @NgModule({
   declarations: [
@@ -91,7 +91,7 @@ import { ApiService } from './shared/services/api.service';
     DialogErrorComponent,
     WebComponentComponent,
   ],
-  providers: [OpenViduService, OpenViduSessionService, ApiService],
+  providers: [NetworkService, OpenViduSessionService, UtilsService],
   bootstrap: [AppComponent],
 })
 export class AppModule {

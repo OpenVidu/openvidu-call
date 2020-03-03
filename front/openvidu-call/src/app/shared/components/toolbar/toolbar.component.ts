@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
-import { ApiService } from '../../services/api.service';
+import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../models/ov-settings';
 
 @Component({
@@ -26,7 +26,7 @@ export class ToolbarComponent implements OnInit {
   @Output() chatButtonClicked = new EventEmitter<any>();
   @Output() stopScreenSharingClicked = new EventEmitter<any>();
 
-  constructor(private apiSrv: ApiService) {}
+  constructor(private utilsSrv: UtilsService) {}
 
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
@@ -66,7 +66,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   toggleFullscreen() {
-    const state = this.apiSrv.toggleFullscreen('videoRoomNavBar');
+    const state = this.utilsSrv.toggleFullscreen('videoRoomNavBar');
     if (state === 'fullscreen') {
       this.fullscreenIcon = 'fullscreen_exit';
     } else {

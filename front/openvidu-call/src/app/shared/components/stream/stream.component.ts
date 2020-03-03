@@ -2,7 +2,7 @@ import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, 
 import { UserModel } from '../../models/user-model';
 import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
-import { ApiService } from '../../services/api.service';
+import { UtilsService } from '../../services/utils/utils.service';
 
 @Component({
   selector: 'stream-component',
@@ -37,7 +37,7 @@ export class StreamComponent implements OnInit {
   @ViewChild('nicknameInput') nicknameInput: ElementRef;
 
 
-  constructor(private apiSrv: ApiService) {}
+  constructor(private utilsSrv: UtilsService) {}
 
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
@@ -57,7 +57,7 @@ export class StreamComponent implements OnInit {
   }
 
   toggleFullscreen() {
-    const state = this.apiSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
+    const state = this.utilsSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
     if (state === 'fullscreen') {
       this.isFullscreen = true;
       this.fullscreenIcon = 'fullscreen_exit';
