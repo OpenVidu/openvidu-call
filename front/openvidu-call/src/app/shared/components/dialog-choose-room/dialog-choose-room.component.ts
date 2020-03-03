@@ -3,15 +3,12 @@ import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
-import { OpenVidu, Publisher } from 'openvidu-browser';
+import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OvSettings } from '../../models/ov-settings';
-
-interface IDevices {
-  label: string;
-  device: string;
-  type: string;
-}
+import { OpenViduSessionService, AVATAR_TYPE } from '../../services/openvidu-session.service';
+import { IDevice } from '../../models/device-type';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-dialog-choose-room',
@@ -28,89 +25,102 @@ export class DialogChooseRoomComponent implements OnInit {
   hover1: boolean;
   hover2: boolean;
   mySessionId: string;
-  cameras: IDevices[] = [{ label: 'None', device: null, type: '' }];
-  microphones: IDevices[] = [{ label: 'None', device: null, type: '' }];
+  cameras: IDevice[] = [{ label: 'None', device: null, type: '' }];
+  microphones: IDevice[] = [{ label: 'None', device: null, type: '' }];
   screenActive: 'None' | 'Screen' = 'None';
-  camValue: IDevices;
-  micValue: IDevices;
+  camValue: IDevice;
+  micValue: IDevice;
   isVideoActive = true;
   isAudioActive = true;
   isScreenShareActive = false;
   volumeValue = 100;
   showDialogExtension = false;
 
+  _OVUsers: Observable<UserModel[]>;
   localUsers: UserModel[] = [];
   randomAvatar: string;
   videoAvatar: string;
-  avatarSelected: 'random' | 'video';
+  avatarSelected: AVATAR_TYPE;
   columns: number;
-  private OV: OpenVidu;
-  private userCamDeleted: UserModel;
 
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
 
-  constructor(private route: ActivatedRoute, private apiSrv: ApiService) {}
+  constructor(private route: ActivatedRoute, private apiSrv: ApiService, private OVSessionService: OpenViduSessionService) {}
 
   ngOnInit() {
-    this.OV = new OpenVidu();
-    this.localUsers.push(new UserModel());
-    this.generateNickname();
+    this._OVUsers = this.OVSessionService.OVUsers;
+    this._OVUsers.subscribe(users => {
+      this.localUsers = users;
+    });
+    this.setNicknameForm();
     this.setSessionName();
-    this.initPublisher().then(publisher => {
-      this.setDevicesValue(publisher);
-    }).catch((error) => console.log(error));
-    this.getRandomAvatar();
+
+    const properties = {
+      audioSource: this.micValue ? this.micValue.device : undefined,
+      videoSource: this.camValue ? this.camValue.device : undefined,
+      publishAudio: this.isAudioActive,
+      publishVideo: this.isVideoActive,
+      mirror: this.camValue && this.camValue.type === 'FRONT'
+    };
+
+    const publisher = this.OVSessionService.initCamPublisher(undefined, properties);
+
+      if (this.ovSettings.autopublish) {
+        this.accept();
+      }
+      // publisher.on('streamAudioVolumeChange', (event: any) => {
+      //   this.volumeValue = Math.round(Math.abs(event.value.newValue));
+      // });
+
+      publisher.once('accessAllowed', () => {
+        this.setDevicesValue(publisher);
+      });
+
+    this.setRandomAvatar();
     this.columns = (window.innerWidth > 900) ? 2 : 1;
   }
 
   toggleCam() {
     this.isVideoActive = !this.isVideoActive;
-    if (this.localUsers.length === 2) {
-      this.destroyPublisher(0);
-      this.userCamDeleted = this.localUsers.shift();
-      this.setAudio(this.isAudioActive);
-      this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
-    } else if (this.localUsers[0].isScreen()) {
+    if (this.OVSessionService.areBothConnected()) {
+
+      this.OVSessionService.disableWebCamUser();
+      // !this.setAudio(this.isAudioActive);
+      // !this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
+    } else if (this.OVSessionService.isOnlyScreenConnected()) {
       this.setAudio(false);
       (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
-      this.localUsers.unshift(this.userCamDeleted);
-      this.initPublisher();
+      this.OVSessionService.enableWebCamUser();
+      // !this.initPublisher();
     } else {
-      this.localUsers[0].setVideoActive(this.isVideoActive);
-      (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.isVideoActive);
+      this.OVSessionService.toggleWebCam();
     }
   }
 
-  camChanged(label: string) {
-    const initPublisherRequired = this.camValue.label !== 'None' && label !== 'None';
-    const option = this.cameras.filter((opt: IDevices) => opt.label === label)[0];
-    this.camValue = option;
-    this.isVideoActive = this.camValue.label === 'None' ? false : true;
-    if (this.localUsers[0].isLocal()) {
-      this.localUsers[0].setVideoActive(this.isVideoActive);
-      (<Publisher>this.localUsers[0].getStreamManager()).publishVideo(this.isVideoActive);
-      if (initPublisherRequired) {
-        this.launchNewPublisher(0);
+  camChanged(device: string) {
+
+    if (this.OVSessionService.isWebCamEnabled()) {
+      // ! this.localUsers[0].setVideoActive(this.isVideoActive);
+
+      if (!!device) {
+        this.OVSessionService.updateVideoDevice(device);
+        return;
       }
-    } else {
-      this.localUsers.unshift(this.userCamDeleted);
-      this.initPublisher();
+      this.OVSessionService.publishWebCamVideo(false);
+      return;
     }
+
+    this.OVSessionService.enableWebCamUser();
   }
 
   toggleScreenShare() {
-    if (this.isScreenShareActive) {
-      if (this.localUsers[0].isScreen()) {
-        this.localUsers.unshift(this.userCamDeleted);
-        this.initPublisher();
+    if (this.OVSessionService.isScreenShareEnabled()) {
+      if (this.OVSessionService.isOnlyScreenConnected()) {
+        this.OVSessionService.enableWebCamUser();
       }
-        this.destroyPublisher(1);
-        this.localUsers.pop();
-        this.localUsers[0].setScreenShareActive(false);
-        this.screenActive = 'None';
-        this.isScreenShareActive = !this.isScreenShareActive;
-        this.localUsers[0].setScreenShareActive(this.isScreenShareActive);
+      this.OVSessionService.disableScreenUser();
+      this.screenActive = 'None';
     } else {
       this.initScreenPublisher();
     }
@@ -124,44 +134,27 @@ export class DialogChooseRoomComponent implements OnInit {
     });
   }
 
-  micChanged(label: string) {
-    const initPublisherRequired = this.micValue.label !== 'None' && label !== 'None';
-    const option = this.microphones.filter((opt: IDevices) => opt.label === label)[0];
-    this.micValue = option;
-    this.isAudioActive = this.micValue.label === 'None' ? false : true;
-    this.localUsers[0].setAudioActive(this.isAudioActive);
-    this.localUsers.forEach((user) => {
-      (<Publisher>user.getStreamManager()).publishAudio(this.isAudioActive);
-    });
-    if (initPublisherRequired) {
-      this.launchNewPublisher(0);
-    }
-  }
+  micChanged(device: string) {
 
-  subscribeToVolumeChange(publisher: Publisher) {
-    publisher.on('streamAudioVolumeChange', (event: any) => {
-      this.volumeValue = Math.round(Math.abs(event.value.newValue));
-    });
-  }
-
-  setAvatar(option: string) {
-    if ((option === 'random' && this.randomAvatar) || (option === 'video' && this.videoAvatar)) {
-      this.avatarSelected = option;
-      if (option === 'random') {
-        this.localUsers[0].setUserAvatar(this.randomAvatar);
-      }
+    if (!!device) {
+      this.OVSessionService.updateAudioDevice(device);
+      return;
     }
+    this.OVSessionService.publishWebCamAudio(false);
   }
 
   takePhoto() {
     this.localUsers[0].setUserAvatar();
     this.videoAvatar = this.localUsers[0].getAvatar();
-    this.setAvatar('video');
+    this.OVSessionService.setAvatar(AVATAR_TYPE.VIDEO);
   }
 
-  generateNickname() {
-    const nickname = this.userNickname ? this.userNickname : 'OpenVidu_User' + Math.floor(Math.random() * 100);
-    this.nicknameFormControl.setValue(nickname);
+  setNicknameForm() {
+    if (this.userNickname) {
+      this.nicknameFormControl.setValue(this.userNickname);
+      return;
+    }
+    this.nicknameFormControl.setValue(this.apiSrv.generateNickname());
   }
 
   eventKeyPress(event) {
@@ -191,7 +184,7 @@ export class DialogChooseRoomComponent implements OnInit {
         user.getStreamManager().off('streamAudioVolumeChange');
         user.setNickname(this.nicknameFormControl.value);
       });
-      if (this.avatarSelected === 'random') {
+      if (this.avatarSelected === AVATAR_TYPE.RANDOM) {
         this.localUsers[0].removeVideoAvatar();
       }
       if (this.localUsers[1]) {
@@ -206,15 +199,12 @@ export class DialogChooseRoomComponent implements OnInit {
   }
 
   close() {
-    this.localUsers.forEach((user, index) => {
-      this.destroyPublisher(index);
-    });
-    this.localUsers = [];
+    this.OVSessionService.destroyUsers();
     this.leaveSession.emit();
   }
 
   private setDevicesValue(publisher: Publisher) {
-    this.OV.getDevices().then((devices: any) => {
+    this.OVSessionService.getDevices().then((devices: any) => {
       console.log('Devices: ', devices);
       const defaultDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
       devices.forEach((device: any) => {
@@ -236,38 +226,20 @@ export class DialogChooseRoomComponent implements OnInit {
       this.micValue = this.microphones[1] ? this.microphones[1] : this.microphones[0];
     }).catch((error) => console.error(error));
   }
+
   private setSessionName() {
     this.route.params.subscribe((params: Params) => {
       this.mySessionId = this.sessionName ? this.sessionName : params.roomName;
     });
   }
 
-  private getRandomAvatar() {
+  private setRandomAvatar() {
     this.apiSrv.getRandomAvatar().then((avatar: string) => {
-        this.randomAvatar = avatar;
-        this.setAvatar('random');
-      })
-      .catch((err) => console.error(err));
-  }
-
-  private initPublisher(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.OV.initPublisherAsync(undefined, {
-        audioSource: this.micValue ? this.micValue.device : undefined,
-        videoSource: this.camValue ? this.camValue.device : undefined,
-        publishAudio: this.isAudioActive,
-        publishVideo: this.isVideoActive,
-        mirror: this.camValue && this.camValue.type === 'FRONT'
-      }).then((publisher: Publisher) => {
-        this.subscribeToVolumeChange(publisher);
-        this.localUsers[0].setStreamManager(publisher);
-        if (this.ovSettings.autopublish) {
-          this.accept();
-        }
-        resolve(publisher);
-      }).catch((error) => reject(error));
-    });
-
+      this.OVSessionService.setAvatar(AVATAR_TYPE.RANDOM, avatar);
+      this.randomAvatar = avatar;
+      this.avatarSelected = AVATAR_TYPE.RANDOM;
+    })
+    .catch((err) => console.error(err));
   }
 
   private initScreenPublisher() {
@@ -280,41 +252,17 @@ export class DialogChooseRoomComponent implements OnInit {
       mirror: false,
     };
 
-    this.OV.initPublisherAsync(undefined, publisherProperties )
-    .then( (publisher: Publisher ) => {
-      this.localUsers.push(new UserModel());
-      this.localUsers[1].setStreamManager(publisher);
-      this.localUsers[1].setScreenShareActive(true);
-      this.localUsers[1].setAudioActive(hasAudio);
-      this.localUsers[1].setType('screen');
-      this.localUsers[1].setUserAvatar(this.randomAvatar);
-      this.isScreenShareActive = !this.isScreenShareActive;
-      this.screenActive = 'Screen';
-      this.localUsers[0].setScreenShareActive(this.isScreenShareActive);
-      if (this.localUsers[0].isLocal() && !this.localUsers[0].isVideoActive()) {
-        this.setAudio(true);
-        this.destroyPublisher(0);
-        this.userCamDeleted = this.localUsers.shift();
-        this.subscribeToVolumeChange(publisher);
-      }
-    }).catch((error) => {
+    try {
+      const publisher = this.OVSessionService.initScreenPublisher(undefined, publisherProperties);
+      this.OVSessionService.enableScreenUser();
+    } catch (error) {
       if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
-        this.toggleDialogExtension();
-      } else {
-        this.apiSrv.handlerScreenShareError(error);
-      }
-    });
-  }
+          this.toggleDialogExtension();
+        } else {
+          this.apiSrv.handlerScreenShareError(error);
+        }
+    }
 
-  private launchNewPublisher(index: number) {
-    this.destroyPublisher(index);
-    this.initPublisher();
-  }
-
-  private destroyPublisher(index: number) {
-    (<Publisher>this.localUsers[index].getStreamManager()).off('streamAudioVolumeChange');
-    this.localUsers[index].getStreamManager().stream.disposeWebRtcPeer();
-    this.localUsers[index].getStreamManager().stream.disposeMediaStream();
   }
 
   private setAudio(value: boolean) {

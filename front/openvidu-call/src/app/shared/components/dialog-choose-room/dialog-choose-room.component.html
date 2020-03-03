@@ -2,7 +2,7 @@
   <app-dialog-extension *ngIf="showDialogExtension" [nickname]="localUsers[0].getNickname()"
     (cancel)="toggleDialogExtension()"></app-dialog-extension>
 
-  <mat-card *ngIf="localUsers[0].getStreamManager()">
+  <mat-card *ngIf="localUsers.length > 0 && localUsers[0].getStreamManager()">
     <mat-card-title>
       <div id="img_content">
         <img id="header_img" alt="OpenVidu Logo"
@@ -79,7 +79,7 @@
                     <mat-select placeholder="Microphone Options"
                       [ngModel]="isAudioActive && micValue ? micValue.label : 'None'"
                       (selectionChange)="micChanged($event.value)">
-                      <mat-option *ngFor="let microphone of microphones" [value]="microphone.label">{{
+                      <mat-option *ngFor="let microphone of microphones" [value]="microphone.device">{{
                         microphone.label
                       }}</mat-option>
                     </mat-select>
@@ -101,7 +101,7 @@
                     <mat-select placeholder="Camera Options"
                       [ngModel]="isVideoActive && camValue ? camValue.label : 'None'"
                       (selectionChange)="camChanged($event.value)">
-                      <mat-option *ngFor="let camera of cameras" [value]="camera.label">{{ camera.label }}</mat-option>
+                      <mat-option *ngFor="let camera of cameras" [value]="camera.device">{{ camera.label }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -131,7 +131,7 @@
             <div fxLayout="row" fxFill id="devicesSection">
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
-                  <button mat-stroked-button (click)="generateNickname()" id="nicknameButton">
+                  <button mat-stroked-button (click)="setNicknameForm()" id="nicknameButton">
                     <mat-icon matTooltip="Nickname">person</mat-icon>
                   </button>
                 </div>
@@ -157,9 +157,9 @@
 
     </mat-card-content>
 
-    <mat-card-footer>
-      <div id="joinButtonDiv">
-        <button mat-stroked-button (click)="accept()" id="joinButton">JOIN</button>
+    <mat-card-footer >
+      <div id="joinButtonDiv"  >
+        <button  mat-flat-button color="accent" (click)="accept()" id="joinButton">JOIN</button>
       </div>
     </mat-card-footer>
 

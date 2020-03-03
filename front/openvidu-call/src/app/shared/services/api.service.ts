@@ -79,4 +79,8 @@ export class ApiService {
     };
     return options;
   }
+
+  generateNickname(): string {
+    return 'OpenVidu_User' + Math.floor(Math.random() * 100);
+  }
 }

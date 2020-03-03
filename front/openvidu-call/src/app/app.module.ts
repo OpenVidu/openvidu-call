@@ -18,26 +18,33 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
-import { VideoRoomComponent } from './video-room/video-room.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { OpenViduService } from './shared/services/openvidu.service';
-import { StreamComponent } from './shared/components/stream/stream.component';
 import { HttpClientModule } from '@angular/common/http';
+import { createCustomElement } from '@angular/elements';
+import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+import { FlexLayoutModule } from '@angular/flex-layout';
+
+// Pipes
+import { LinkifyPipe } from './shared/pipes/linkfy';
+
+//Components
+import { StreamComponent } from './shared/components/stream/stream.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
-import { createCustomElement } from '@angular/elements';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
-import { WebComponentComponent } from './web-component/web-component.component';
-import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
+import { WebComponentComponent } from './web-component/web-component.component';
+import { VideoRoomComponent } from './video-room/video-room.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { AppComponent } from './app.component';
+
+// Services
+import { OpenViduService } from './shared/services/openvidu.service';
+import { OpenViduSessionService } from './shared/services/openvidu-session.service';
 import { ApiService } from './shared/services/api.service';
-import { LinkifyPipe } from './shared/pipes/linkfy';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -84,7 +91,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     DialogErrorComponent,
     WebComponentComponent,
   ],
-  providers: [OpenViduService, ApiService],
+  providers: [OpenViduService, OpenViduSessionService, ApiService],
   bootstrap: [AppComponent],
 })
 export class AppModule {
