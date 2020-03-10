@@ -11,11 +11,11 @@ import { IDevice } from '../../models/device-type';
 import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
-  selector: 'app-dialog-choose-room',
-  templateUrl: './dialog-choose-room.component.html',
-  styleUrls: ['./dialog-choose-room.component.css'],
+  selector: 'app-room-config',
+  templateUrl: './room-config.component.html',
+  styleUrls: ['./room-config.component.css'],
 })
-export class DialogChooseRoomComponent implements OnInit {
+export class RoomConfigComponent implements OnInit {
 
   @Input() userNickname: string;
   @Input() sessionName: string;

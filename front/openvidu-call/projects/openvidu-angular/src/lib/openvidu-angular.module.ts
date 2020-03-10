@@ -36,7 +36,7 @@ import { OpenViduService } from './shared/services/open-vidu.service';
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
-import { DialogChooseRoomComponent } from './shared/components/dialog-choose-room/dialog-choose-room.component';
+import { RoomConfigComponent } from './shared/components/room-config/room-config.component';
 
 @NgModule({
   imports: [
@@ -73,7 +73,7 @@ import { DialogChooseRoomComponent } from './shared/components/dialog-choose-roo
     DialogExtensionComponent,
     OpenViduVideoComponent,
     DialogErrorComponent,
-    DialogChooseRoomComponent,
+    RoomConfigComponent,
     ToolbarComponent,
     LinkifyPipe
   ],

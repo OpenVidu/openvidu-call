@@ -1,12 +1,12 @@
 <div *ngIf="!!ovSettings" id="videoRoomNavBar" [class.boundsLight]="lightTheme">
-  <app-dialog-choose-room
+  <app-room-config
     *ngIf="showDialogChooseRoom"
     [userNickname]="user"
     [sessionName]="sessionName"
     [ovSettings]="ovSettings"
     (join)="toggleDialogChooseRoom($event)"
     (leaveSession)="exitSession()"
-  ></app-dialog-choose-room>
+  ></app-room-config>
 
   <div *ngIf="localUsers && localUsers[0]">
     <app-toolbar
