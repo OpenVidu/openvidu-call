@@ -1,4 +1,4 @@
-import { Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenVidu, PublisherProperties, Publisher, Device } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -20,7 +20,6 @@ export class OpenViduSessionService {
   private videoSource = '';
   private audioSource = '';
 
-
   constructor() {
     this.OVUsers = this._OVUsers.asObservable();
     this.webCamUser = new UserModel();
@@ -37,9 +36,7 @@ export class OpenViduSessionService {
     this._OVUsers.next([this.webCamUser, this.screenUser]);
   }
 
-
   disableWebCamUser() {
-
     // this.destryoWebCamUser();
     this._OVUsers.next([this.screenUser]);
     this.webCamUser.setScreenShareActive(true);
@@ -139,9 +136,9 @@ export class OpenViduSessionService {
     this._OVUsers.next([this.webCamUser]);
   }
 
-  getDevices(): Promise<Device[]> {
-    return this.OV.getDevices();
-  }
+  // getDevices(): Promise<Device[]> {
+  //   return this.OV.getDevices();
+  // }
 
   isWebCamEnabled(): boolean {
 
