@@ -51,6 +51,17 @@ export class StreamComponent implements OnInit {
     }
   }
 
+  @HostListener('fullscreenchange', ['$event'])
+  @HostListener('webkitfullscreenchange', ['$event'])
+  @HostListener('mozfullscreenchange', ['$event'])
+  @HostListener('MSFullscreenChange', ['$event'])
+  fullscreenChange(event) {
+    if (!document.fullscreenElement) {
+      this.isFullscreen = false;
+      this.fullscreenIcon = 'fullscreen';
+    }
+  }
+
   ngOnInit() {
     this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
     this.matcher = new NicknameMatcher();
