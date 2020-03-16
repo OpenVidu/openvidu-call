@@ -37,13 +37,13 @@ async function copyFiles() {
           if (err) return console.log(err);
         });
         // openvidu-service environments path
-        fs.readFile(sharedDest + 'services/open-vidu.service.ts', 'utf8', (err, data) => {
+        fs.readFile(sharedDest + 'services/openvidu.service.ts', 'utf8', (err, data) => {
           if (err) {
             return console.log(err);
           }
           const result = data.replace('../../../environments/environment', '../../environments/environment');
 
-          fs.writeFile(sharedDest + 'services/open-vidu.service.ts', result, 'utf8', (err) => {
+          fs.writeFile(sharedDest + 'services/openvidu.service.ts', result, 'utf8', (err) => {
             if (err) return console.log(err);
           });
         });

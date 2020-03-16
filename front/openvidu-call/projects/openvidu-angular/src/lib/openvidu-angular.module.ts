@@ -32,7 +32,7 @@ import { DialogExtensionComponent } from './shared/components/dialog-extension/d
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
-import { OpenViduService } from './shared/services/open-vidu.service';
+import { OpenViduService } from './shared/services/openvidu.service';
 import { ApiService } from './shared/services/api.service';
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
