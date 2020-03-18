@@ -108,15 +108,14 @@
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">
-                    <mat-icon *ngIf="isScreenShareActive" matTooltip="Screen Share Enabled">screen_share</mat-icon>
-                    <mat-icon *ngIf="!isScreenShareActive" color="warn" matTooltip="Screen Share Disabled">
+                    <mat-icon *ngIf="this.OVSessionService.isScreenShareEnabled()" matTooltip="Screen Share Enabled">screen_share</mat-icon>
+                    <mat-icon *ngIf="!this.OVSessionService.isScreenShareEnabled()" color="warn" matTooltip="Screen Share Disabled">
                       stop_screen_share</mat-icon>
                   </button>
                 </div>
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
-                    <input matInput disabled placeholder="Screen Pages" [ngModel]="screenActive">
-
+                    <input matInput disabled placeholder="Screen Pages" [ngModel]="this.OVSessionService.isScreenShareEnabled() ? 'Screen' : 'None'">
                   </mat-form-field>
                 </div>
               </div>
@@ -154,7 +153,7 @@
 
     <mat-card-footer >
       <div id="joinButtonDiv">
-        <button  mat-flat-button color="accent" (click)="accept()" id="joinButton">JOIN</button>
+        <button  mat-flat-button color="accent" (click)="joinSession()" id="joinButton">JOIN</button>
       </div>
     </mat-card-footer>
 

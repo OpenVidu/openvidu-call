@@ -11,9 +11,7 @@ export enum AVATAR_TYPE {
 @Injectable({
 	providedIn: 'root'
 })
-
 export class OpenViduSessionService {
-
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 	private OV: OpenVidu = null;
@@ -56,7 +54,17 @@ export class OpenViduSessionService {
 		(<Publisher>this.webCamUser.getStreamManager()).publishAudio(isAudioActive);
 	}
 
-	enableScreenUser() {
+	enableScreenUser(screenPublisher: Publisher) {
+		const hasAudio = this.webCamUser.isVideoActive() ? false : this.webCamUser.isAudioActive();
+		this.screenUser = new UserModel();
+		this.screenUser.setScreenShareActive(true);
+		this.webCamUser.setScreenShareActive(false);
+
+		this.screenUser.setType('screen');
+		this.screenUser.setAudioActive(hasAudio);
+		this.screenUser.setUserAvatar(this.webCamUser.getAvatar());
+		this.screenUser.setStreamManager(screenPublisher);
+
 		if (this.isWebCamEnabled() && !this.hasWebCamVideoActive()) {
 			this.disableWebCamUser();
 			// Enabling webcam user audio
@@ -108,7 +116,7 @@ export class OpenViduSessionService {
 			publishVideo: this.webCamUser.isVideoActive()
 		};
 
-		this.OV.getUserMedia(properties).then((mediaStream) => {
+		this.OV.getUserMedia(properties).then(mediaStream => {
 			const track = mediaStream.getVideoTracks()[0];
 			(<Publisher>this.webCamUser.getStreamManager()).replaceTrack(track);
 		});
@@ -117,18 +125,7 @@ export class OpenViduSessionService {
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
-		const hasAudio = this.webCamUser.isVideoActive() ? false : this.webCamUser.isAudioActive();
-
 		const publisher = this.initPublisher(targetElement, properties);
-
-		this.screenUser = new UserModel();
-		this.screenUser.setScreenShareActive(true);
-		this.webCamUser.setScreenShareActive(false);
-
-		this.screenUser.setType('screen');
-		this.screenUser.setAudioActive(hasAudio);
-		this.screenUser.setUserAvatar(this.webCamUser.getAvatar());
-		this.screenUser.setStreamManager(publisher);
 		return publisher;
 	}
 
