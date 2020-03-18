@@ -45,12 +45,8 @@ export class ApiService {
     }
   }
 
-  public getRandomAvatar(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.http.get('https://randomuser.me/api/?lego').subscribe((data: any) => {
-        resolve(data.results[0].picture.thumbnail);
-      });
-    });
+  public getRandomAvatar(): string {
+    return 'https://openvidu.io/img/logos/openvidu_globe_bg_transp_cropped.png'
   }
 
   public handlerScreenShareError(error: any) {

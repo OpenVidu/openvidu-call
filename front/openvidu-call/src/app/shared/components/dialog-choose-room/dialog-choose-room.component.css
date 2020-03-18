@@ -127,13 +127,13 @@ button {
 }
 
 #avatarImg {
-  height: 88%;
-  width: 88%;
+  height: 83%;
+  width: 83%;
 }
 
 #avatarContainer,
 #avatarImg {
-  border-radius: 50%;
+  border-radius: 25%;
 }
 
 #optionsContent {

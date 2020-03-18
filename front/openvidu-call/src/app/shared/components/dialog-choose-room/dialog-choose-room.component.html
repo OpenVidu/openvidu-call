@@ -45,19 +45,16 @@
                   <h3 style="margin: auto;">Avatar</h3>
                 </div>
                 <div class="" fxFlex="70" fxLayoutAlign="center center">
-                  <div id="avatarContainer" (mouseover)="hover1 = true" (click)="setAvatar('video')"
-                    (mouseleave)="hover1 = false"
-                    [ngStyle]="{ backgroundColor: videoAvatar && hover1 && avatarSelected !== 'video' ? 'lightgreen' : 'white' }"
+                  <div id="avatarContainer" (click)="setAvatar('video')"
+
+
                     [style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'">
                     <div id="imgText" *ngIf="!videoAvatar">
                       <span>Press Avatar Button</span>
                     </div>
                     <img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
                   </div>
-                  <div id="avatarContainer" (click)="setAvatar('random')" (mouseover)="hover2 = true"
-                    (mouseleave)="hover2 = false" [ngStyle]="{
-                      backgroundColor: randomAvatar && hover2 && avatarSelected !== 'random' ? 'lightgreen' : 'white'
-                    }" [style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'">
+                  <div id="avatarContainer" (click)="setAvatar('random')" [style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'">
                     <mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
                     <img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
                   </div>

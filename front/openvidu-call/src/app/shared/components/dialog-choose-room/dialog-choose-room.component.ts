@@ -3,9 +3,11 @@ import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { ApiService } from '../../services/api.service';
-import { OpenVidu, Publisher } from 'openvidu-browser';
+import { OpenVidu, Publisher, Device } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OvSettings } from '../../models/ov-settings';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 
 interface IDevices {
   label: string;
@@ -50,10 +52,25 @@ export class DialogChooseRoomComponent implements OnInit {
   nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
   matcher = new NicknameMatcher();
 
-  constructor(private route: ActivatedRoute, private apiSrv: ApiService) {}
+  constructor(private route: ActivatedRoute, private apiSrv: ApiService,  public dialog: MatDialog) {}
 
   ngOnInit() {
+
+
     this.OV = new OpenVidu();
+    this.OV.getDevices().then((devices: Device[]) => {
+      console.log(devices);
+      const haveCamera = devices.filter(device => device.kind === 'videoinput');
+      console.log(haveCamera);
+      if (haveCamera.length === 0) {
+        const message = 'It looks like that you do not have any cameras available on your PC. Please, check your devices and connect a webcam to start :)'
+        this.dialog.open(DialogErrorComponent, {
+          width: '450px',
+          data: { message: 'Device Error', messageError: message },
+        });
+      }
+
+    });
     this.localUsers.push(new UserModel());
     this.generateNickname();
     this.setSessionName();
@@ -243,11 +260,9 @@ export class DialogChooseRoomComponent implements OnInit {
   }
 
   private getRandomAvatar() {
-    this.apiSrv.getRandomAvatar().then((avatar: string) => {
-        this.randomAvatar = avatar;
-        this.setAvatar('random');
-      })
-      .catch((err) => console.error(err));
+    this.randomAvatar = this.apiSrv.getRandomAvatar();
+    this.avatarSelected = 'random';
+    this.setAvatar('random');
   }
 
   private initPublisher(): Promise<any> {
