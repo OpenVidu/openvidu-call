@@ -13,6 +13,7 @@ export enum AVATAR_TYPE {
 })
 
 export class OpenViduSessionService {
+
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 	private OV: OpenVidu = null;
@@ -45,12 +46,12 @@ export class OpenViduSessionService {
 		this.webCamUser.setScreenShareActive(true);
 	}
 
-	publishWebCamVideo(isVideoActive: boolean) {
+	publishVideo(isVideoActive: boolean) {
 		this.webCamUser.setVideoActive(isVideoActive);
 		(<Publisher>this.webCamUser.getStreamManager()).publishVideo(isVideoActive);
 	}
 
-	publishWebCamAudio(isAudioActive: boolean) {
+	publishAudio(isAudioActive: boolean) {
 		this.webCamUser.setAudioActive(isAudioActive);
 		(<Publisher>this.webCamUser.getStreamManager()).publishAudio(isAudioActive);
 	}
@@ -92,17 +93,27 @@ export class OpenViduSessionService {
 		this.initCamPublisher(undefined, properties);
 	}
 
-	updateVideoDevice(source: string) {
-		this.videoSource = source;
+	replaceTrack(videoSource: string, audioSource: string) {
+		if (!!videoSource) {
+			this.videoSource = videoSource;
+		}
+		if (!!audioSource) {
+			this.audioSource = audioSource;
+		}
 
 		const properties: PublisherProperties = {
 			audioSource: this.audioSource,
-			videoSource: source,
+			videoSource: this.videoSource,
 			publishAudio: this.webCamUser.isAudioActive(),
 			publishVideo: this.webCamUser.isVideoActive()
 		};
 
-		this.initCamPublisher(undefined, properties);
+		this.OV.getUserMedia(properties).then((mediaStream) => {
+			const track = mediaStream.getVideoTracks()[0];
+			(<Publisher>this.webCamUser.getStreamManager()).replaceTrack(track);
+		});
+
+		//this.initCamPublisher(undefined, properties);
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
@@ -141,7 +152,7 @@ export class OpenViduSessionService {
 	// }
 
 	isWebCamEnabled(): boolean {
-		return !this._OVUsers.value[0].isLocal();
+		return this._OVUsers.value[0].isLocal();
 	}
 
 	hasWebCamVideoActive(): boolean {
