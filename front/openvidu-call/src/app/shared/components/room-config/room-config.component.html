@@ -72,7 +72,7 @@
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
                     <mat-select placeholder="Microphone Options"
-                      [ngModel]="isAudioActive && micValue ? micValue.device : 'None'"
+                      [ngModel]="isAudioActive && micSelected ? micSelected.device : 'None'"
                       (selectionChange)="onMicrophoneSelected($event)">
                       <mat-option *ngFor="let microphone of microphones" [value]="microphone.device">{{
                         microphone.label
@@ -108,14 +108,14 @@
               <div fxLayout fxFlex>
                 <div class="one" fxFlex="20" fxLayoutAlign="center center">
                   <button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">
-                    <mat-icon *ngIf="this.OVSessionService.isScreenShareEnabled()" matTooltip="Screen Share Enabled">screen_share</mat-icon>
-                    <mat-icon *ngIf="!this.OVSessionService.isScreenShareEnabled()" color="warn" matTooltip="Screen Share Disabled">
+                    <mat-icon *ngIf="this.oVSessionService.isScreenShareEnabled()" matTooltip="Screen Share Enabled">screen_share</mat-icon>
+                    <mat-icon *ngIf="!this.oVSessionService.isScreenShareEnabled()" color="warn" matTooltip="Screen Share Disabled">
                       stop_screen_share</mat-icon>
                   </button>
                 </div>
                 <div class="two" fxFlex="80" fxLayoutAlign="center center">
                   <mat-form-field class="alternate-theme">
-                    <input matInput disabled placeholder="Screen Pages" [ngModel]="this.OVSessionService.isScreenShareEnabled() ? 'Screen' : 'None'">
+                    <input matInput disabled placeholder="Screen Pages" [ngModel]="this.oVSessionService.isScreenShareEnabled() ? 'Screen' : 'None'">
                   </mat-form-field>
                 </div>
               </div>

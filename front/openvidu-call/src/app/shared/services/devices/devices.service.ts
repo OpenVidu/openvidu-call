@@ -6,10 +6,12 @@ import { IDevice, CameraType } from '../../models/device-type';
 	providedIn: 'root'
 })
 export class DevicesService {
-	private OV: OpenVidu = null;
 
-	private cameras: IDevice[] = [{ label: 'None', device: null, type: null }];
-	private microphones: IDevice[] = [{ label: 'None', device: null, type: null }];
+	private OV: OpenVidu = null;
+	private devices: Device[];
+
+	private cameras: IDevice[];
+	private microphones: IDevice[];
 
 	private camSelected: IDevice;
 	private micSelected: IDevice;
@@ -19,15 +21,14 @@ export class DevicesService {
 	}
 
 	async initDevices(publisher: Publisher) {
-		const devices: Device[] = await this.getDevices();
-		console.log('Devices: ', devices);
-
+		console.log('Devices: ', this.devices);
+		this.resetDevicesArray();
 		const defaultId = publisher.stream
 			.getMediaStream()
 			.getVideoTracks()[0]
 			.getSettings().deviceId;
 
-		devices.forEach((device: any) => {
+		this.devices.forEach((device: any) => {
 			// Microphones
 			if (device.kind === 'audioinput') {
 				// Don't add default device
@@ -52,6 +53,7 @@ export class DevicesService {
 		});
 		this.micSelected = this.getMicSelected();
 	}
+
 
 	getCamSelected(): IDevice {
 		// ! TODO: check other way
@@ -82,7 +84,6 @@ export class DevicesService {
 	}
 
 	needUpdateAudioTrack(newAudioSource: string): boolean {
-		console.log("microphones", this.microphones);
 		return this.micSelected.device !== newAudioSource;
 	}
 
@@ -95,16 +96,27 @@ export class DevicesService {
 	}
 
 	getCameras(): IDevice[] {
-		console.log("cameras: ",this.cameras );
 		return this.cameras;
 	}
 
 	getMicrophones(): IDevice[] {
-		console.log("MICROPHONES: ",this.microphones );
 		return this.microphones;
+	}
+
+	async isWebcamAvailable(): Promise<boolean> {
+		this.devices = await this.getDevices();
+
+		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
+		console.log('Is webcam available? ', videoDevices.length > 0);
+		return videoDevices.length > 0;
 	}
 
 	private getDevices(): Promise<Device[]> {
 		return this.OV.getDevices();
+	}
+
+	private resetDevicesArray() {
+		this.cameras = [{ label: 'None', device: null, type: null }];
+		this.microphones = [{ label: 'None', device: null, type: null }];
 	}
 }

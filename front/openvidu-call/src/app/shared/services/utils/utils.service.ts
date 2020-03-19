@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class UtilsService {
+
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
 
-	constructor(private http: HttpClient) {}
+	constructor(private http: HttpClient, public dialog: MatDialog) {}
 
 	toggleFullscreen(elementId: string): string {
 		const document: any = window.document;
@@ -80,5 +83,11 @@ export class UtilsService {
 
 	isFF(): boolean {
 		return /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
+	}
+
+	showErrorMessage(message, messageError) {
+		this.dialog.open(DialogErrorComponent, {
+			data: { message: message, messageError: messageError },
+		});
 	}
 }

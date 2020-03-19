@@ -12,6 +12,7 @@ export enum AVATAR_TYPE {
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
+
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 	private OV: OpenVidu = null;
@@ -29,9 +30,12 @@ export class OpenViduSessionService {
 		this._OVUsers.next([this.webCamUser]);
 	}
 
-	toggleWebCam() {
-		this.webCamUser.setVideoActive(!this.webCamUser.isVideoActive());
-		(<Publisher>this.webCamUser.getStreamManager()).publishVideo(this.webCamUser.isVideoActive());
+	setWebcamAvatar() {
+		this.webCamUser.setUserAvatar();
+	}
+
+	getWebCamAvatar(): string {
+		return this.webCamUser.getAvatar();
 	}
 
 	enableWebCamUser() {
@@ -91,12 +95,13 @@ export class OpenViduSessionService {
 	updateAudioDevice(source: string) {
 		this.audioSource = source;
 
-		const properties: PublisherProperties = {
-			audioSource: source,
-			videoSource: this.videoSource,
-			publishAudio: this.webCamUser.isAudioActive(),
-			publishVideo: this.webCamUser.isVideoActive()
-		};
+		const properties = this.createProperties(
+			this.videoSource,
+			this.audioSource,
+			this.webCamUser.isAudioActive(),
+			this.webCamUser.isVideoActive(),
+			true
+		);
 
 		this.initCamPublisher(undefined, properties);
 	}
@@ -109,12 +114,13 @@ export class OpenViduSessionService {
 			this.audioSource = audioSource;
 		}
 
-		const properties: PublisherProperties = {
-			audioSource: this.audioSource,
-			videoSource: this.videoSource,
-			publishAudio: this.webCamUser.isAudioActive(),
-			publishVideo: this.webCamUser.isVideoActive()
-		};
+		const properties = this.createProperties(
+			this.videoSource,
+			this.audioSource,
+			this.webCamUser.isAudioActive(),
+			this.webCamUser.isVideoActive(),
+			true
+		);
 
 		this.OV.getUserMedia(properties).then(mediaStream => {
 			const track = mediaStream.getVideoTracks()[0];
@@ -166,6 +172,22 @@ export class OpenViduSessionService {
 
 	isScreenShareEnabled(): boolean {
 		return this.areBothConnected() || this.isOnlyScreenConnected();
+	}
+
+	createProperties(
+		videoSource: string | MediaStreamTrack | boolean,
+		audioSource: string | MediaStreamTrack | boolean,
+		publishVideo: boolean,
+		publishAudio: boolean,
+		mirror: boolean
+	): PublisherProperties {
+		return {
+			videoSource,
+			audioSource,
+			publishVideo,
+			publishAudio,
+			mirror
+		};
 	}
 
 	private initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
