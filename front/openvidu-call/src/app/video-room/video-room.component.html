@@ -4,7 +4,7 @@
     [userNickname]="user"
     [sessionName]="sessionName"
     [ovSettings]="ovSettings"
-    (join)="toggleDialogChooseRoom($event)"
+    (join)="onConfigRoomJoin($event)"
     (leaveSession)="exitSession()"
   ></app-room-config>
 
@@ -18,8 +18,8 @@
       [ovSettings]="ovSettings"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
-      (screenShareClicked)="screenShareAndChangeScreen()"
-      (stopScreenSharingClicked)="stopScreenSharing()"
+      (screenShareClicked)="toggleScreenShare()"
+      (stopScreenSharingClicked)="toggleScreenShare()"
       (exitButtonClicked)="exitSession()"
       (chatButtonClicked)="toggleChat()"
     ></app-toolbar>
@@ -76,8 +76,9 @@
               (micButtonClicked)="toggleMic()"
               (exitButtonClicked)="exitSession()"
               (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="screenShareAndChangeScreen()"
-              (stopScreenSharingClicked)="stopScreenSharing()"
+              (screenShareClicked)="toggleScreenShare()"
+              (stopScreenSharingClicked)="toggleScreenShare()"
+              (replaceScreenTrackClicked)="replaceScreenTrack()"
             ></stream-component>
           </div>
 
@@ -100,8 +101,9 @@
               (micButtonClicked)="toggleMic()"
               (exitButtonClicked)="exitSession()"
               (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="screenShareAndChangeScreen()"
-              (stopScreenSharingClicked)="stopScreenSharing()"
+              (screenShareClicked)="toggleScreenShare()"
+              (stopScreenSharingClicked)="toggleScreenShare()"
+              (replaceScreenTrackClicked)="replaceScreenTrack()"
             ></stream-component>
           </div>
         </div>
