@@ -5,11 +5,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { VideoType } from '../../types/video-type';
 import { AvatarType } from '../../types/chat-type';
 
-
 @Injectable({
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
+
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -28,12 +28,11 @@ export class OpenViduSessionService {
 	private sessionId = '';
 
 	constructor() {
-		this.OVUsers = this._OVUsers.asObservable();
-		this.webcamUser = new UserModel();
-
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
 
+		this.OVUsers = this._OVUsers.asObservable();
+		this.webcamUser = new UserModel();
 		this._OVUsers.next([this.webcamUser]);
 	}
 
@@ -59,8 +58,10 @@ export class OpenViduSessionService {
 	}
 
 	async publishWebcam(): Promise<any> {
-		this.webcamUser.setConnectionId(this.webcamSession.connection.connectionId);
-		// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
+		if (!this.webcamUser.getConnectionId()) {
+			this.webcamUser.setConnectionId(this.webcamSession.connection.connectionId);
+			// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
+		}
 
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
@@ -73,9 +74,6 @@ export class OpenViduSessionService {
 	}
 
 	async publishScreen(): Promise<any> {
-		this.screenUser.setConnectionId(this.screenSession.connection.connectionId);
-		// this.screenUser.setLocalConnectionId(this.screenSession.connection.connectionId);
-
 		if (this.screenSession.capabilities.publish) {
 			const publisher = <Publisher>this.screenUser.getStreamManager();
 			if (!!publisher) {
@@ -112,14 +110,16 @@ export class OpenViduSessionService {
 
 	enableScreenUser(screenPublisher: Publisher) {
 		const hasAudio = this.webcamUser.isVideoActive() ? false : this.webcamUser.isAudioActive();
-		this.screenUser = new UserModel();
+		const hasVideo = true;
+		const connectionId = this.screenSession.connection.connectionId;
+
+		this.screenUser = new UserModel(connectionId, screenPublisher, hasAudio, hasVideo, this.getScreenUserName(), VideoType.SCREEN);
+
+		// ! REFACTOR, check if it's necessary
 		this.screenUser.setScreenShareActive(true);
 		this.webcamUser.setScreenShareActive(false);
-
-		this.screenUser.setType(VideoType.SCREEN);
-		this.screenUser.setAudioActive(hasAudio);
 		this.screenUser.setUserAvatar(this.webcamUser.getAvatar());
-		this.screenUser.setStreamManager(screenPublisher);
+		// !
 
 		if (this.isWebCamEnabled() && !this.hasWebCamVideoActive()) {
 			this.disableWebcamUser();
@@ -199,18 +199,28 @@ export class OpenViduSessionService {
 		return publisher;
 	}
 
-	setAvatar(option: AvatarType, avatar?: string): void {
-		if ((option === AvatarType.RANDOM && avatar) || (AvatarType.VIDEO && avatar)) {
-			if (option === AvatarType.RANDOM) {
-				this.webcamUser.setUserAvatar(avatar);
-			}
-		}
-	}
-
 	destroyUsers() {
 		this.destryoScreenUser();
 		this.destryoWebcamUser();
 		// Initial state
+		this._OVUsers.next([this.webcamUser]);
+	}
+
+	disconnect() {
+		if (this.screenSession) {
+			this.screenSession.disconnect();
+			this.screenSession = null;
+		}
+		if (this.webcamSession) {
+			this.webcamSession.disconnect();
+			this.webcamSession = null;
+		}
+		this.screenUser = null;
+		this.videoSource = '';
+		this.audioSource = '';
+		this.sessionId = '';
+
+		this.webcamUser = new UserModel();
 		this._OVUsers.next([this.webcamUser]);
 	}
 
@@ -239,10 +249,9 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-
-		console.log("CONNECTION RECEIVED: ", connectionId);
-		console.log("CONNECTION WEBCAM: ", this.webcamUser?.getConnectionId());
-		console.log("CONNECTION SCREEN: ", this.screenUser?.getConnectionId());
+		console.log('CONNECTION RECEIVED: ', connectionId);
+		console.log('CONNECTION WEBCAM: ', this.webcamUser?.getConnectionId());
+		console.log('CONNECTION SCREEN: ', this.screenUser?.getConnectionId());
 		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 
@@ -274,21 +283,22 @@ export class OpenViduSessionService {
 		this.webcamUser.setUserAvatar();
 	}
 
-	getWebCamAvatar(): string {
-		return this.webcamUser.getAvatar();
+
+	setAvatar(option: AvatarType, avatar?: string): void {
+		if ((option === AvatarType.RANDOM && avatar) || (AvatarType.VIDEO && avatar)) {
+			if (option === AvatarType.RANDOM) {
+				this.webcamUser.setUserAvatar(avatar);
+			}
+		}
 	}
 
-	reset() {
-		this._OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
-		this.OV = null;
-		this.OVScreen = null;
-		this.webcamSession = null;
-		this.screenSession = null;
-		this.webcamUser = null;
-		this.screenUser = null;
-		this.videoSource = '';
-		this.audioSource = '';
-		this.sessionId = '';
+	setWebcamName(nickname: string) {
+		this.webcamUser.setNickname(nickname);
+	}
+
+
+	getWebCamAvatar(): string {
+		return this.webcamUser.getAvatar();
 	}
 
 	getWebcamUserName(): string {

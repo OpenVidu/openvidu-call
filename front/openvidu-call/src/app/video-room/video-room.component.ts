@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { OpenVidu, Publisher, Subscriber, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
+import { Publisher, Subscriber, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -10,10 +10,8 @@ import { ChatComponent } from '../shared/components/chat/chat.component';
 import { OvSettings } from '../shared/models/ov-settings';
 import { UtilsService } from '../shared/services/utils/utils.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
-import { DevicesService } from '../shared/services/devices/devices.service';
 import { Subscription } from 'rxjs';
 import { ScreenType, VideoType } from '../shared/types/video-type';
-
 
 @Component({
 	selector: 'app-video-room',
@@ -39,8 +37,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	// Constants
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
-	// readonly SCREEN_TYPE: 'screen' = 'screen';
-	// readonly REMOTE_TYPE: 'remote' = 'remote';
 
 	// Variables
 	compact = false;
@@ -60,10 +56,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 	newMessages = 0;
 
-	private OV: OpenVidu;
-	private OVScreen: OpenVidu;
-	private userCamDeleted: UserModel;
-
 	private oVUsersSubscription: Subscription;
 
 	constructor(
@@ -71,8 +63,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		private router: Router,
 		public dialog: MatDialog,
 		private utilsSrv: UtilsService,
-		private oVSessionService: OpenViduSessionService,
-		private oVDevicesService: DevicesService
+		private oVSessionService: OpenViduSessionService
 	) {}
 
 	@HostListener('window:beforeunload')
@@ -88,14 +79,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	ngOnInit() {
-		this.checkTheme();
-		this.networkSrv
-			.getOvSettingsData()
-			.then((data: OvSettings) => {
-				this.ovSettings = this.ovSettings ? this.ovSettings : data;
-			})
-			.catch(error => console.error(error));
+	async ngOnInit() {
+		this.lightTheme = this.theme === 'light';
+		this.ovSettings = this.ovSettings ? this.ovSettings : await this.networkSrv.getOvSettingsData();
 	}
 
 	ngOnDestroy() {
@@ -118,9 +104,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	joinToSession() {
-		this.OV = new OpenVidu();
-		this.OVScreen = new OpenVidu();
-
 		this.oVSessionService.initSession();
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
@@ -133,19 +116,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	exitSession() {
-		if (this.sessionScreen) {
-			this.sessionScreen.disconnect();
-		}
-		if (this.session) {
-			this.session.disconnect();
-		}
-		// this.OV = null;
-		// this.OVScreen = null;
-		// this.oVSessionService.reset();
-		// this.oVUsersSubscription.unsubscribe();
+
+		this.oVSessionService.disconnect();
+		this.oVUsersSubscription.unsubscribe();
 		this.session = null;
 		this.sessionScreen = null;
-		this.userCamDeleted = null;
 		this.localUsers = [];
 		this.remoteUsers = [];
 		this.openviduLayout = null;
@@ -153,11 +128,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.leaveSession.emit();
 	}
 
-	nicknameChanged(nickname: string): void {
-		this.localUsers.forEach(user => {
-			user.setNickname(nickname);
-			this.sendSignalUserChanged(user);
-		});
+	onNicknameUpdate(nickname: string) {
+		this.oVSessionService.setWebcamName(nickname);
+		// ! this.sendSignalUserChanged(user);
 	}
 
 	toggleChat() {
@@ -172,12 +145,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleMic(): void {
-
 		const isVideoActive = !this.oVSessionService.hasWebcamAudioActive();
 		this.oVSessionService.publishAudio(isVideoActive);
-
-		// this.sendSignalUserChanged(this.localUsers[0]);
+		// ! this.sendSignalUserChanged(this.localUsers[0]);
 	}
+
+	// ? ChatService
 	checkNotification() {
 		this.newMessages = this.chatOpened ? 0 : this.newMessages + 1;
 	}
@@ -187,16 +160,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.publishVideo(isVideoActive);
-
 			this.oVSessionService.disableWebcamUser();
 			this.oVSessionService.unpublishWebcam();
-		} else if (this.oVSessionService.isOnlyScreenConnected()) {
+			return;
+		}
+		if (this.oVSessionService.isOnlyScreenConnected()) {
 			this.oVSessionService.enableWebcamUser();
 			await this.oVSessionService.publishWebcam();
-			this.oVSessionService.publishVideo(isVideoActive);
 		}
+		this.oVSessionService.publishVideo(isVideoActive);
 	}
-
 
 	toggleScreenShare() {
 		if (this.oVSessionService.isScreenShareEnabled()) {
@@ -225,7 +198,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	replaceScreenTrack() {
-		console.log('replaceScreenTrack');
 		this.oVSessionService.replaceScreenTrack();
 	}
 
@@ -245,16 +217,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.openviduLayout.updateLayout();
 	}
 
-	// connectionBelongToMyUsers(connectionId: string): boolean {
-	// 	return (
-	// 		(this.localUsers[0] &&
-	// 			this.localUsers[0].getConnectionId() === connectionId &&
-	// 			this.localUsers[1] &&
-	// 			this.localUsers[1].getConnectionId() === connectionId) ||
-	// 		(this.localUsers[0] && !this.localUsers[1] && this.localUsers[0].getConnectionId() === connectionId)
-	// 	);
-	// }
-
 	private deleteRemoteStream(stream: Stream): void {
 		const userStream = this.remoteUsers.filter((user: UserModel) => user.getStreamManager().stream === stream)[0];
 		const index = this.remoteUsers.indexOf(userStream, 0);
@@ -267,17 +229,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('streamCreated', (event: StreamEvent) => {
 			const connectionId = event.stream.connection.connectionId;
 			if (!this.oVSessionService.isMyOwnConnection(connectionId)) {
-
 				const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 
 				subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
 					this.checkSomeoneShareScreen();
 					(<HTMLElement>subscriber.videos[0].video).parentElement.classList.remove('custom-class');
 				});
-				const nickname = event.stream.connection.data.split('%')[0];
+				const nickname = JSON.parse(event.stream.connection.data)?.clientData;
 				const type = event.stream.typeOfVideo === 'SCREEN' ? VideoType.SCREEN : VideoType.REMOTE;
 
-				const newUser = new UserModel(connectionId, subscriber, nickname, type);
+				const newUser = new UserModel(connectionId, subscriber, null, null, nickname, type);
 
 				this.remoteUsers.push(newUser);
 
@@ -315,6 +276,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.oVSessionService.publishWebcam();
 			}
 		}
+		this.openviduLayout.updateLayout();
 	}
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
@@ -414,14 +376,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private checkSomeoneShareScreen() {
 		let isScreenShared: boolean;
 		// return true if at least one passes the test
-		isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.localUsers[0].isScreenShareActive();
+		isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.oVSessionService.isScreenShareEnabled();
 		this.openviduLayoutOptions.fixedRatio = isScreenShared;
 		this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
 		this.openviduLayout.updateLayout();
-	}
-
-	private checkTheme() {
-		this.lightTheme = this.theme === 'light';
 	}
 
 	private initScreenPublisher(): Publisher {
