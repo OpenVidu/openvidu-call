@@ -146,18 +146,18 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.oVSessionService.publishVideo(this.isVideoActive);
 
 		if (this.oVSessionService.areBothConnected()) {
-			this.oVSessionService.disableWebCamUser();
+			this.oVSessionService.disableWebcamUser();
 			// !this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
 		} else if (this.oVSessionService.isOnlyScreenConnected()) {
 			// (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
-			this.oVSessionService.enableWebCamUser();
+			this.oVSessionService.enableWebcamUser();
 		}
 	}
 
 	toggleScreenShare() {
 		if (this.oVSessionService.isScreenShareEnabled()) {
 			if (this.oVSessionService.isOnlyScreenConnected()) {
-				this.oVSessionService.enableWebCamUser();
+				this.oVSessionService.enableWebcamUser();
 			}
 			this.oVSessionService.disableScreenUser();
 		} else {
@@ -217,7 +217,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// if (this.localUsers[1]) {
 			// 	this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
 			// }
-			this.join.emit({ localUsers: this.localUsers, sessionId: this.mySessionId });
+			this.join.emit();
 		}
 	}
 
@@ -252,6 +252,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private setSessionName() {
 		this.route.params.subscribe((params: Params) => {
 			this.mySessionId = this.sessionName ? this.sessionName : params.roomName;
+			this.oVSessionService.setSessionId(this.mySessionId);
 		});
 	}
 
