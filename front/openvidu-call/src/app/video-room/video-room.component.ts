@@ -110,13 +110,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		// !! Refactor these methods
 		// this.subscribeToUserChanged();
 		this.subscribeToStreamCreated();
-		// this.subscribedToStreamDestroyed();
+		this.subscribedToStreamDestroyed();
 		// this.subscribedToChat();
 		this.connectToSession();
 	}
 
 	exitSession() {
-
 		this.oVSessionService.disconnect();
 		this.oVUsersSubscription.unsubscribe();
 		this.session = null;
@@ -225,31 +224,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private subscribeToStreamCreated() {
-		this.session.on('streamCreated', (event: StreamEvent) => {
-			const connectionId = event.stream.connection.connectionId;
-			if (!this.oVSessionService.isMyOwnConnection(connectionId)) {
-				const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
-
-				subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
-					this.checkSomeoneShareScreen();
-					(<HTMLElement>subscriber.videos[0].video).parentElement.classList.remove('custom-class');
-				});
-				const nickname = JSON.parse(event.stream.connection.data)?.clientData;
-				const type = event.stream.typeOfVideo === 'SCREEN' ? VideoType.SCREEN : VideoType.REMOTE;
-
-				const newUser = new UserModel(connectionId, subscriber, null, null, nickname, type);
-
-				this.remoteUsers.push(newUser);
-
-				// !Refactor
-				// this.localUsers.forEach(user => {
-				// 	this.sendSignalUserChanged(user);
-				// });
-			}
-		});
-	}
-
 	private async connectToSession(): Promise<void> {
 		if (this.tokens) {
 			// Retrieves tokens from subcomponent or library
@@ -298,6 +272,39 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	private subscribeToStreamCreated() {
+		this.session.on('streamCreated', (event: StreamEvent) => {
+			const connectionId = event.stream.connection.connectionId;
+			if (!this.oVSessionService.isMyOwnConnection(connectionId)) {
+				const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
+
+				subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
+					this.checkSomeoneShareScreen();
+				});
+
+				const nickname = JSON.parse(event.stream.connection.data)?.clientData;
+				const type = event.stream.typeOfVideo === 'SCREEN' ? VideoType.SCREEN : VideoType.REMOTE;
+
+				const newUser = new UserModel(connectionId, subscriber, null, null, nickname, type);
+
+				this.remoteUsers.push(newUser);
+
+				// !Refactor
+				// this.localUsers.forEach(user => {
+				// 	this.sendSignalUserChanged(user);
+				// });
+			}
+		});
+	}
+
+	private subscribedToStreamDestroyed() {
+		this.session.on('streamDestroyed', (event: StreamEvent) => {
+			this.deleteRemoteStream(event.stream);
+			this.checkSomeoneShareScreen();
+			// event.preventDefault();
+		});
+	}
+
 	private subscribeToUserChanged() {
 		this.session.on('signal:userChanged', (event: any) => {
 			const data = JSON.parse(event.data);
@@ -321,14 +328,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				}
 			});
 			this.checkSomeoneShareScreen();
-		});
-	}
-
-	private subscribedToStreamDestroyed() {
-		this.session.on('streamDestroyed', (event: StreamEvent) => {
-			this.deleteRemoteStream(event.stream);
-			this.checkSomeoneShareScreen();
-			event.preventDefault();
 		});
 	}
 
