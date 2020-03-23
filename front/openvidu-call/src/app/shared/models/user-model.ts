@@ -58,12 +58,19 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	constructor(connectionId?: string, streamManager?: StreamManager, nickname?: string, type?: VideoType ) {
+	constructor(
+		connectionId?: string,
+		streamManager?: StreamManager,
+		audioActive?: boolean,
+		videoActive?: boolean,
+		nickname?: string,
+		type?: VideoType
+	) {
 		this.connectionId = connectionId || '';
-		this.audioActive = true;
-		this.videoActive = true;
+		this.audioActive = audioActive || true;
+		this.videoActive = videoActive || true;
 		this.screenShareActive = false;
-		this.nickname = nickname || '';
+		this.nickname = nickname || 'OpenVidu';
 		this.streamManager = streamManager || null;
 		this.type = type || VideoType.LOCAL;
 	}
