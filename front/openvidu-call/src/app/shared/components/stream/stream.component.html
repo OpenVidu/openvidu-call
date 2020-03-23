@@ -5,7 +5,7 @@
         (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
 
     <mat-chip-list class="nickname" [class.fullscreen]="isFullscreen" >
-       
+
         <mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
             <span id="nickname">{{this.user.getNickname()}}</span>
             <span *ngIf="user.isScreen()">_SCREEN</span>
@@ -46,7 +46,7 @@
         <mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
         <mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
     </button>
-    <button mat-icon-button (click)="screenShare()" class="streamButtons" id="changeScreenButton" *ngIf="this.user.isRemote() && canEditNickname ">
+    <button mat-icon-button (click)="replaceScreenTrack()" class="streamButtons" id="changeScreenButton" *ngIf="this.user.isRemote() && canEditNickname ">
         <mat-icon matTooltip="Choose screen" >picture_in_picture</mat-icon>
     </button>
 </div>
