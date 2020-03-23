@@ -2,18 +2,14 @@ import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenVidu, PublisherProperties, Publisher, Session } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { VideoType } from '../../types/video-type';
+import { AvatarType } from '../../types/chat-type';
 
-export enum AVATAR_TYPE {
-	RANDOM = 'random',
-	VIDEO = 'video'
-}
 
 @Injectable({
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
-
-
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -64,7 +60,7 @@ export class OpenViduSessionService {
 
 	async publishWebcam(): Promise<any> {
 		this.webcamUser.setConnectionId(this.webcamSession.connection.connectionId);
-		this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
+		// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
 
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
@@ -77,8 +73,8 @@ export class OpenViduSessionService {
 	}
 
 	async publishScreen(): Promise<any> {
-		this.screenUser.setConnectionId(this.webcamSession.connection.connectionId);
-		this.screenUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
+		this.screenUser.setConnectionId(this.screenSession.connection.connectionId);
+		// this.screenUser.setLocalConnectionId(this.screenSession.connection.connectionId);
 
 		if (this.screenSession.capabilities.publish) {
 			const publisher = <Publisher>this.screenUser.getStreamManager();
@@ -120,7 +116,7 @@ export class OpenViduSessionService {
 		this.screenUser.setScreenShareActive(true);
 		this.webcamUser.setScreenShareActive(false);
 
-		this.screenUser.setType('screen');
+		this.screenUser.setType(VideoType.SCREEN);
 		this.screenUser.setAudioActive(hasAudio);
 		this.screenUser.setUserAvatar(this.webcamUser.getAvatar());
 		this.screenUser.setStreamManager(screenPublisher);
@@ -134,7 +130,7 @@ export class OpenViduSessionService {
 			return;
 		}
 
-		console.log("ENABLED SCREEN SHARE");
+		console.log('ENABLED SCREEN SHARE');
 		this._OVUsers.next([this.webcamUser, this.screenUser]);
 	}
 
@@ -185,11 +181,9 @@ export class OpenViduSessionService {
 	}
 
 	replaceScreenTrack() {
-
-
 		const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
 		const hasAudio = !this.isWebCamEnabled();
-		const properties =  this.createProperties(videoSource, undefined, true, hasAudio, false);
+		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
 		const publisher = this.OVScreen.initPublisher(undefined, properties);
 
@@ -200,15 +194,14 @@ export class OpenViduSessionService {
 		});
 	}
 
-
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		const publisher = this.initPublisher(targetElement, properties);
 		return publisher;
 	}
 
-	setAvatar(option: AVATAR_TYPE, avatar?: string): void {
-		if ((option === AVATAR_TYPE.RANDOM && avatar) || (AVATAR_TYPE.VIDEO && avatar)) {
-			if (option === AVATAR_TYPE.RANDOM) {
+	setAvatar(option: AvatarType, avatar?: string): void {
+		if ((option === AvatarType.RANDOM && avatar) || (AvatarType.VIDEO && avatar)) {
+			if (option === AvatarType.RANDOM) {
 				this.webcamUser.setUserAvatar(avatar);
 			}
 		}
@@ -243,6 +236,14 @@ export class OpenViduSessionService {
 
 	isScreenShareEnabled(): boolean {
 		return this.areBothConnected() || this.isOnlyScreenConnected();
+	}
+
+	isMyOwnConnection(connectionId: string): boolean {
+
+		console.log("CONNECTION RECEIVED: ", connectionId);
+		console.log("CONNECTION WEBCAM: ", this.webcamUser?.getConnectionId());
+		console.log("CONNECTION SCREEN: ", this.screenUser?.getConnectionId());
+		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 
 	createProperties(
@@ -297,7 +298,6 @@ export class OpenViduSessionService {
 	getScreenUserName() {
 		return this.getWebcamUserName() + '_SCREEN';
 	}
-
 
 	private initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		return this.OV.initPublisher(targetElement, properties);

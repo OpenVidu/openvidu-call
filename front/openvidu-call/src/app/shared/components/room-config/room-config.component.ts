@@ -6,10 +6,11 @@ import { UtilsService } from '../../services/utils/utils.service';
 import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OvSettings } from '../../models/ov-settings';
-import { OpenViduSessionService, AVATAR_TYPE } from '../../services/openvidu-session/openvidu-session.service';
+import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice, CameraType } from '../../models/device-type';
 import { DevicesService } from '../../services/devices/devices.service';
 import { Subscription } from 'rxjs';
+import { AvatarType } from '../../types/chat-type';
 
 @Component({
 	selector: 'app-room-config',
@@ -42,7 +43,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	localUsers: UserModel[] = [];
 	randomAvatar: string;
 	videoAvatar: string;
-	avatarSelected: AVATAR_TYPE;
+	avatarSelected: AvatarType;
 	columns: number;
 
 	nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
@@ -173,7 +174,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	takePhoto() {
 		this.oVSessionService.setWebcamAvatar();
 		this.videoAvatar = this.oVSessionService.getWebCamAvatar();
-		this.oVSessionService.setAvatar(AVATAR_TYPE.VIDEO);
+		this.oVSessionService.setAvatar(AvatarType.VIDEO);
 	}
 
 	setNicknameForm() {
@@ -230,9 +231,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.leaveSession.emit();
 	}
 
-	setAvatar(avatarType: AVATAR_TYPE) {
+	setAvatar(avatarType: AvatarType) {
 		// !! REFACTOR
-		if ((avatarType === AVATAR_TYPE.RANDOM && this.randomAvatar) || (avatarType === AVATAR_TYPE.VIDEO && this.videoAvatar)) {
+		if ((avatarType === AvatarType.RANDOM && this.randomAvatar) || (avatarType === AvatarType.VIDEO && this.videoAvatar)) {
 			this.avatarSelected = avatarType;
 			// if (avatarType === AVATAR_TYPE.RANDOM) {
 			//   this.localUsers[0].setUserAvatar(this.randomAvatar);
@@ -258,8 +259,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private setRandomAvatar() {
 		this.randomAvatar = this.utilsSrv.getOpeViduAvatar();
-		this.oVSessionService.setAvatar(AVATAR_TYPE.RANDOM, this.randomAvatar);
-		this.avatarSelected = AVATAR_TYPE.RANDOM;
+		this.oVSessionService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
+		this.avatarSelected = AvatarType.RANDOM;
 	}
 
 	private initScreenPublisher() {

@@ -1,4 +1,5 @@
 import { StreamManager } from 'openvidu-browser';
+import { VideoType } from '../types/video-type';
 
 /**
  * Packs all the information about the user
@@ -37,7 +38,7 @@ export class UserModel {
 	/**
 	 * User type (`local` or  `remote`)
 	 */
-	private type: 'local' | 'remote' | 'screen';
+	private type: VideoType;
 
 	/**
 	 * @hidden
@@ -52,19 +53,19 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	private localConnectionId: string;
+	// private localConnectionId: string;
 
 	/**
 	 * @hidden
 	 */
-	constructor() {
-		this.connectionId = '';
+	constructor(connectionId?: string, streamManager?: StreamManager, nickname?: string, type?: VideoType ) {
+		this.connectionId = connectionId || '';
 		this.audioActive = true;
 		this.videoActive = true;
 		this.screenShareActive = false;
-		this.nickname = '';
-		this.streamManager = null;
-		this.type = 'local';
+		this.nickname = nickname || '';
+		this.streamManager = streamManager || null;
+		this.type = type || VideoType.LOCAL;
 	}
 
 	/**
@@ -98,9 +99,9 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	public getLocalConnectionId(): string {
-		return this.localConnectionId;
-	}
+	// public getLocalConnectionId(): string {
+	// 	return this.localConnectionId;
+	// }
 
 	/**
 	 * Return the user nickname
@@ -187,9 +188,9 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	public setLocalConnectionId(connectionId: string) {
-		this.localConnectionId = connectionId;
-	}
+	// public setLocalConnectionId(connectionId: string) {
+	// 	this.localConnectionId = connectionId;
+	// }
 
 	/**
 	 * Set the user nickname value
@@ -203,7 +204,7 @@ export class UserModel {
 	 * Set the user type value
 	 * @param type value of user type
 	 */
-	public setType(type: 'local' | 'remote' | 'screen') {
+	public setType(type: VideoType) {
 		this.type = type;
 	}
 

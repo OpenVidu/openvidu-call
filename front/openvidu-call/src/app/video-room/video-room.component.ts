@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { OpenVidu, Publisher, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent, StreamManager } from 'openvidu-browser';
+import { OpenVidu, Publisher, Subscriber, Session, SignalOptions, Stream, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -12,11 +12,8 @@ import { UtilsService } from '../shared/services/utils/utils.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
 import { DevicesService } from '../shared/services/devices/devices.service';
 import { Subscription } from 'rxjs';
+import { ScreenType, VideoType } from '../shared/types/video-type';
 
-enum SCREEN_TYPE {
-	WINDOW = 'window',
-	SCREEN = 'screen'
-}
 
 @Component({
 	selector: 'app-video-room',
@@ -42,8 +39,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	// Constants
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
-	readonly SCREEN_TYPE: 'screen' = 'screen';
-	readonly REMOTE_TYPE: 'remote' = 'remote';
+	// readonly SCREEN_TYPE: 'screen' = 'screen';
+	// readonly REMOTE_TYPE: 'remote' = 'remote';
 
 	// Variables
 	compact = false;
@@ -104,33 +101,32 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this.exitSession();
 	}
-
-	toggleChat() {
-		this.chat.toggle().then(() => {
-			this.chatOpened = this.chat.opened;
-			if (this.chatOpened) {
-				this.newMessages = 0;
-			}
-			const ms = this.isWebComponent ? 300 : 0;
-			setTimeout(() => this.openviduLayout.updateLayout(), ms);
+	onConfigRoomJoin() {
+		this.showDialogChooseRoom = false;
+		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
+			this.localUsers = users;
 		});
-	}
+		this.mySessionId = this.oVSessionService.getSessionId();
 
-	checkNotification() {
-		this.newMessages = this.chatOpened ? 0 : this.newMessages + 1;
+		setTimeout(() => {
+			this.openviduLayout = new OpenViduLayout();
+			this.openviduLayoutOptions = this.utilsSrv.getOpenviduLayoutOptions();
+			this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);
+			this.checkSizeComponent();
+			this.joinToSession();
+		}, 50);
 	}
 
 	joinToSession() {
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
-		// this.session = this.OV.initSession();
-		// this.sessionScreen = this.OVScreen.initSession();
+
 		this.oVSessionService.initSession();
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
 		// !! Refactor these methods
 		// this.subscribeToUserChanged();
-		// this.subscribeToStreamCreated();
+		this.subscribeToStreamCreated();
 		// this.subscribedToStreamDestroyed();
 		// this.subscribedToChat();
 		this.connectToSession();
@@ -164,10 +160,26 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	toggleChat() {
+		this.chat.toggle().then(() => {
+			this.chatOpened = this.chat.opened;
+			if (this.chatOpened) {
+				this.newMessages = 0;
+			}
+			const ms = this.isWebComponent ? 300 : 0;
+			setTimeout(() => this.openviduLayout.updateLayout(), ms);
+		});
+	}
+
 	toggleMic(): void {
-		this.localUsers[0].setAudioActive(!this.localUsers[0].isAudioActive());
-		(<Publisher>this.localUsers[0].getStreamManager()).publishAudio(this.localUsers[0].isAudioActive());
-		this.sendSignalUserChanged(this.localUsers[0]);
+
+		const isVideoActive = !this.oVSessionService.hasWebcamAudioActive();
+		this.oVSessionService.publishAudio(isVideoActive);
+
+		// this.sendSignalUserChanged(this.localUsers[0]);
+	}
+	checkNotification() {
+		this.newMessages = this.chatOpened ? 0 : this.newMessages + 1;
 	}
 
 	async toggleCam() {
@@ -185,10 +197,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	replaceScreenTrack() {
-		console.log('replaceScreenTrack');
-		this.oVSessionService.replaceScreenTrack();
-	}
 
 	toggleScreenShare() {
 		if (this.oVSessionService.isScreenShareEnabled()) {
@@ -199,78 +207,26 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.oVSessionService.disableScreenUser();
 			this.oVSessionService.unpublishScreenSession();
 		} else {
-			this.initScreenPublisher();
-		}
-	}
+			const screenPublisher = this.initScreenPublisher();
+			screenPublisher.on('accessAllowed', event => {
+				console.log('ACCESS ALOWED screenPublisher');
+				this.oVSessionService.enableScreenUser(screenPublisher);
+				this.oVSessionService.publishScreen();
+			});
 
-	publishCamSession() {
-		const hasAudio = this.localUsers[0].isAudioActive();
-		this.setFirstUserAudio(false);
-		this.localUsers.unshift(this.userCamDeleted);
-		this.localUsers[0].setVideoActive(true);
-		this.localUsers[0].setAudioActive(hasAudio);
-		this.publishSession(this.localUsers[0])
-			.then(() => {
-				(<Publisher>this.localUsers[0].getStreamManager()).publishVideo(true);
-				(<Publisher>this.localUsers[0].getStreamManager()).publishAudio(hasAudio);
-				this.sendSignalUserChanged(this.localUsers[0]);
-			})
-			.catch(error => console.error(error));
+			screenPublisher.on('accessDenied', event => {
+				console.warn('ScreenShare: Access Denied');
+			});
+		}
 	}
 
 	toggleDialogExtension() {
 		this.showDialogExtension = !this.showDialogExtension;
 	}
 
-	onConfigRoomJoin() {
-		this.showDialogChooseRoom = false;
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
-			this.localUsers = users;
-		});
-		this.mySessionId = this.oVSessionService.getSessionId();
-
-		setTimeout(() => {
-			this.openviduLayout = new OpenViduLayout();
-			this.openviduLayoutOptions = this.utilsSrv.getOpenviduLayoutOptions();
-			this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);
-			this.checkSizeComponent();
-			this.joinToSession();
-		}, 50);
-	}
-
-	screenShareAndChangeScreen() {
-		const videoSource = this.getScreenVideoSource();
-		const hasAudio = this.localUsers[0].isLocal() ? false : true;
-		const publisherProperties = {
-			videoSource: videoSource,
-			publishAudio: hasAudio,
-			publishVideo: true,
-			mirror: false
-		};
-		this.OVScreen.initPublisherAsync(undefined, publisherProperties)
-			.then((publisher: Publisher) => {
-				publisher.once('accessAllowed', () => {
-					// CHANGE CAMERA
-					if ((this.localUsers[0].isLocal() && this.localUsers[1]) || this.localUsers[0].isScreen()) {
-						const index = this.localUsers[0].isLocal() ? 1 : 0;
-						this.sessionScreen.unpublish(<Publisher>this.localUsers[index].getStreamManager());
-						this.localUsers[index].setStreamManager(publisher);
-						this.sessionScreen.publish(publisher);
-					} else {
-						// ADD NEW SCREEN USER
-						console.log('STREAM SHARE - ELSE: position 1');
-						this.localUsers.push(this.createScreenUser(publisher));
-						// this.startScreenSharing(1);
-					}
-				});
-			})
-			.catch(error => {
-				if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
-					this.toggleDialogExtension();
-				} else {
-					this.utilsSrv.handlerScreenShareError(error);
-				}
-			});
+	replaceScreenTrack() {
+		console.log('replaceScreenTrack');
+		this.oVSessionService.replaceScreenTrack();
 	}
 
 	checkSizeComponent() {
@@ -289,15 +245,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.openviduLayout.updateLayout();
 	}
 
-	connectionBelongToMyUsers(connectionId: string): boolean {
-		return (
-			(this.localUsers[0] &&
-				this.localUsers[0].getConnectionId() === connectionId &&
-				this.localUsers[1] &&
-				this.localUsers[1].getConnectionId() === connectionId) ||
-			(this.localUsers[0] && !this.localUsers[1] && this.localUsers[0].getConnectionId() === connectionId)
-		);
-	}
+	// connectionBelongToMyUsers(connectionId: string): boolean {
+	// 	return (
+	// 		(this.localUsers[0] &&
+	// 			this.localUsers[0].getConnectionId() === connectionId &&
+	// 			this.localUsers[1] &&
+	// 			this.localUsers[1].getConnectionId() === connectionId) ||
+	// 		(this.localUsers[0] && !this.localUsers[1] && this.localUsers[0].getConnectionId() === connectionId)
+	// 	);
+	// }
 
 	private deleteRemoteStream(stream: Stream): void {
 		const userStream = this.remoteUsers.filter((user: UserModel) => user.getStreamManager().stream === stream)[0];
@@ -310,24 +266,25 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private subscribeToStreamCreated() {
 		this.session.on('streamCreated', (event: StreamEvent) => {
 			const connectionId = event.stream.connection.connectionId;
-			if (!this.connectionBelongToMyUsers(connectionId)) {
-				const subscriber = this.session.subscribe(event.stream, undefined);
+			if (!this.oVSessionService.isMyOwnConnection(connectionId)) {
+
+				const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
+
 				subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
 					this.checkSomeoneShareScreen();
 					(<HTMLElement>subscriber.videos[0].video).parentElement.classList.remove('custom-class');
 				});
-				const newUser = new UserModel();
-				newUser.setStreamManager(subscriber);
-				newUser.setConnectionId(event.stream.connection.connectionId);
 				const nickname = event.stream.connection.data.split('%')[0];
-				newUser.setNickname(JSON.parse(nickname).clientData);
-				const type = event.stream.typeOfVideo === 'SCREEN' ? this.SCREEN_TYPE : this.REMOTE_TYPE;
-				newUser.setType(type);
+				const type = event.stream.typeOfVideo === 'SCREEN' ? VideoType.SCREEN : VideoType.REMOTE;
+
+				const newUser = new UserModel(connectionId, subscriber, nickname, type);
+
 				this.remoteUsers.push(newUser);
 
-				this.localUsers.forEach(user => {
-					this.sendSignalUserChanged(user);
-				});
+				// !Refactor
+				// this.localUsers.forEach(user => {
+				// 	this.sendSignalUserChanged(user);
+				// });
 			}
 		});
 	}
@@ -467,48 +424,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.lightTheme = this.theme === 'light';
 	}
 
-	private removeAndSaveFirstUser() {
-		setTimeout(() => {
-			this.localUsers[0].setVideoActive(false);
-			this.userCamDeleted = this.localUsers.shift();
-			this.setFirstUserAudio(this.userCamDeleted.isAudioActive());
-			this.openviduLayout.updateLayout();
-		}, 200);
-	}
-
-	private setFirstUserAudio(value: boolean) {
-		this.localUsers[0].setAudioActive(value);
-		(<Publisher>this.localUsers[0].getStreamManager()).publishAudio(value);
-	}
-
-	private createScreenUser(publisher: StreamManager): UserModel {
-		const user = new UserModel();
-		user.setScreenShareActive(true);
-		user.setType(this.SCREEN_TYPE);
-		user.setStreamManager(publisher);
-		user.setNickname(this.localUsers[0].getNickname());
-		user.setUserAvatar(this.localUsers[0].getAvatar());
-		user.setAudioActive(false);
-		return user;
-	}
-
-	private initScreenPublisher() {
+	private initScreenPublisher(): Publisher {
 		const videoSource = this.getScreenVideoSource();
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebCamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.oVSessionService.hasWebcamAudioActive();
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
 
 		try {
-			const screenPublisher = this.oVSessionService.initScreenPublisher(undefined, properties);
-			screenPublisher.on('accessAllowed', event => {
-				console.log('ACCESS ALOWED screenPublisher');
-				this.oVSessionService.enableScreenUser(screenPublisher);
-				this.oVSessionService.publishScreen();
-			});
-
-			screenPublisher.on('accessDenied', event => {
-				console.warn('ScreenShare: Access Denied');
-			});
+			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
 			console.error(error);
 			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
@@ -529,19 +452,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private publishSession(user: UserModel): Promise<any> {
-		return new Promise((resolve, reject) => {
-			const session = user.isLocal() ? this.session : this.sessionScreen;
-			session
-				.publish(<Publisher>user.getStreamManager())
-				.then(() => {
-					resolve();
-				})
-				.catch(error => reject(error));
-		});
-	}
-
-	getScreenVideoSource(): string {
-		return this.utilsSrv.isFF() ? SCREEN_TYPE.WINDOW : SCREEN_TYPE.SCREEN;
+	private getScreenVideoSource(): string {
+		return this.utilsSrv.isFF() ? ScreenType.WINDOW : ScreenType.SCREEN;
 	}
 }
