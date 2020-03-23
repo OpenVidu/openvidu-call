@@ -1,52 +1,70 @@
 <div class="OT_widget-container" [id]="'container-' + this.user.getStreamManager().stream.streamId">
+	<app-toolbar
+		*ngIf="isFullscreen"
+		[lightTheme]="lightTheme"
+		[newMessagesNum]="newMessagesNum"
+		[mySessionId]="localUser.getStreamManager().stream.session.sessionId"
+		[localUser]="localUser"
+		[compact]="compact"
+		(camButtonClicked)="toggleCam()"
+		(micButtonClicked)="toggleMic()"
+		(exitButtonClicked)="exitSession()"
+		(chatButtonClicked)="toggleChat()"
+		(screenShareClicked)="screenShare()"
+		(stopScreenSharingClicked)="stopScreenSharing()"
+	></app-toolbar>
 
-    <app-toolbar *ngIf="isFullscreen" [lightTheme]="lightTheme" [newMessagesNum]="newMessagesNum" [mySessionId]="localUser.getStreamManager().stream.session.sessionId"
-        [localUser]="localUser" [compact]="compact" (camButtonClicked)="toggleCam()" (micButtonClicked)="toggleMic()"
-        (exitButtonClicked)="exitSession()" (chatButtonClicked)="toggleChat()" (screenShareClicked)="screenShare()" (stopScreenSharingClicked)="stopScreenSharing()"></app-toolbar>
+	<mat-chip-list class="nickname" [class.fullscreen]="isFullscreen">
+		<mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
+			<span id="nickname">{{ this.user.getNickname() }}</span>
+			<span *ngIf="user.isScreen()">_SCREEN</span>
+			<span *ngIf="canEditNickname"> (edit)</span>
+		</mat-chip>
+		<div *ngIf="toggleNickname && canEditNickname" [class.fullscreen]="isFullscreen" id="dialogNickname">
+			<button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
+				<mat-icon matTooltip="Close">highlight_off</mat-icon>
+			</button>
+			<form id="nicknameForm" class="alternate-theme">
+				<mat-form-field color="primary">
+					<input
+						matInput
+						#nicknameInput
+						placeholder="Nick: {{ user.getNickname() }}"
+						[formControl]="nicknameFormControl"
+						[errorStateMatcher]="matcher"
+						(keypress)="eventKeyPress($event)"
+						autocomplete="off"
+					/>
+					<mat-error *ngIf="nicknameFormControl.hasError('required')"> Nickname is <strong>required</strong> </mat-error>
+					<mat-error *ngIf="nicknameFormControl.hasError('maxlength')"> Nickname is <strong>too long!</strong> </mat-error>
+				</mat-form-field>
+			</form>
+		</div>
+	</mat-chip-list>
 
-    <mat-chip-list class="nickname" [class.fullscreen]="isFullscreen" >
-
-        <mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
-            <span id="nickname">{{this.user.getNickname()}}</span>
-            <span *ngIf="user.isScreen()">_SCREEN</span>
-            <span *ngIf="canEditNickname"> (edit)</span>
-        </mat-chip>
-        <div *ngIf="toggleNickname && canEditNickname" [class.fullscreen]="isFullscreen" id="dialogNickname">
-            <button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
-                <mat-icon matTooltip="Close">highlight_off</mat-icon>
-            </button>
-            <form id="nicknameForm" class="alternate-theme">
-                <mat-form-field color="primary">
-                    <input matInput #nicknameInput placeholder="Nick: {{user.getNickname()}}" [formControl]="nicknameFormControl" [errorStateMatcher]="matcher"
-                        (keypress)="eventKeyPress($event)" autocomplete="off">
-                    <mat-error *ngIf="nicknameFormControl.hasError('required')">
-                        Nickname is <strong>required</strong>
-                    </mat-error>
-                    <mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
-                        Nickname is <strong>too long!</strong>
-                    </mat-error>
-                </mat-form-field>
-            </form>
-        </div>
-    </mat-chip-list>
-
-    <ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound"></ov-video>
-    <div class="statusIcons">
-        <div id="statusMic" *ngIf="!this.user.isAudioActive()">
-            <mat-icon>mic_off</mat-icon>
-        </div>
-        <div id="statusCam" *ngIf="!this.user.isVideoActive()">
-            <mat-icon>videocam_off</mat-icon>
-        </div>
-    </div>
-    <button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="toggleFullscreen()">
-        <mat-icon>{{this.fullscreenIcon}}</mat-icon>
-    </button>
-    <button mat-icon-button id="volumeButton" class="streamButtons" *ngIf="this.user.isRemote()" (click)="toggleSound()">
-        <mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
-        <mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
-    </button>
-    <button mat-icon-button (click)="replaceScreenTrack()" class="streamButtons" id="changeScreenButton" *ngIf="this.user.isRemote() && canEditNickname ">
-        <mat-icon matTooltip="Choose screen" >picture_in_picture</mat-icon>
-    </button>
+	<ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound"></ov-video>
+	<div class="statusIcons">
+		<div id="statusMic" *ngIf="!this.user.isAudioActive()">
+			<mat-icon>mic_off</mat-icon>
+		</div>
+		<div id="statusCam" *ngIf="!this.user.isVideoActive()">
+			<mat-icon>videocam_off</mat-icon>
+		</div>
+	</div>
+	<button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="toggleFullscreen()">
+		<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
+	</button>
+	<button mat-icon-button id="volumeButton" class="streamButtons" *ngIf="this.user.isRemote()" (click)="toggleSound()">
+		<mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
+		<mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
+	</button>
+	<button
+		mat-icon-button
+		(click)="replaceScreenTrack()"
+		class="streamButtons"
+		id="changeScreenButton"
+		*ngIf="this.user.isRemote() && canEditNickname"
+	>
+		<mat-icon matTooltip="Choose screen">picture_in_picture</mat-icon>
+	</button>
 </div>

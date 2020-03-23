@@ -31,8 +31,8 @@ export class StreamComponent implements OnInit {
 	@Output() screenShareClicked = new EventEmitter<any>();
 	@Output() stopScreenSharingClicked = new EventEmitter<any>();
 	@Output() exitButtonClicked = new EventEmitter<any>();
-  @Output() chatButtonClicked = new EventEmitter<any>();
-  @Output() replaceScreenTrackClicked = new EventEmitter<any>();
+	@Output() chatButtonClicked = new EventEmitter<any>();
+	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
 
 	@ViewChild('videoReference') htmlVideoElement: ElementRef;
 	@ViewChild('nicknameInput') nicknameInput: ElementRef;

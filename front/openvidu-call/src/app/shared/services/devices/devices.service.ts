@@ -6,7 +6,6 @@ import { IDevice, CameraType } from '../../models/device-type';
 	providedIn: 'root'
 })
 export class DevicesService {
-
 	private OV: OpenVidu = null;
 	private devices: Device[];
 
@@ -54,12 +53,10 @@ export class DevicesService {
 		this.micSelected = this.getMicSelected();
 	}
 
-
 	getCamSelected(): IDevice {
 		// ! TODO: check other way
 		return this.camSelected ? this.camSelected : this.cameras[0];
 	}
-
 
 	getMicSelected(): IDevice {
 		// ! TODO: check other way
@@ -73,7 +70,6 @@ export class DevicesService {
 	setMicSelected(audioSource: any) {
 		this.camSelected = this.getMicrophoneByAudioSource(audioSource);
 	}
-
 
 	deviceHasValue(deviceId): boolean {
 		return !!deviceId;

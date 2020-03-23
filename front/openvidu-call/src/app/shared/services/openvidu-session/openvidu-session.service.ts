@@ -181,7 +181,7 @@ export class OpenViduSessionService {
 			(<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
 		});
 
-		//this.initCamPublisher(undefined, properties);
+		// this.initCamPublisher(undefined, properties);
 	}
 
 	replaceScreenTrack() {
@@ -265,7 +265,7 @@ export class OpenViduSessionService {
 		this.sessionId = sessionId;
 	}
 
-	getSessionId(): string{
+	getSessionId(): string {
 		return this.sessionId;
 	}
 

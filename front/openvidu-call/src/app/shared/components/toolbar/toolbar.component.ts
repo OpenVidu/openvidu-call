@@ -4,73 +4,73 @@ import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../models/ov-settings';
 
 @Component({
-  selector: 'app-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css'],
+	selector: 'app-toolbar',
+	templateUrl: './toolbar.component.html',
+	styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-  fullscreenIcon = 'fullscreen';
+	fullscreenIcon = 'fullscreen';
 
-  @Input() lightTheme: boolean;
-  @Input() mySessionId: boolean;
-  @Input() localUser: UserModel;
-  @Input() compact: boolean;
-  @Input() showNotification: boolean;
-  @Input() newMessagesNum: number;
-  @Input() ovSettings: OvSettings;
+	@Input() lightTheme: boolean;
+	@Input() mySessionId: boolean;
+	@Input() localUser: UserModel;
+	@Input() compact: boolean;
+	@Input() showNotification: boolean;
+	@Input() newMessagesNum: number;
+	@Input() ovSettings: OvSettings;
 
-  @Output() micButtonClicked = new EventEmitter<any>();
-  @Output() camButtonClicked = new EventEmitter<any>();
-  @Output() screenShareClicked = new EventEmitter<any>();
-  @Output() exitButtonClicked = new EventEmitter<any>();
-  @Output() chatButtonClicked = new EventEmitter<any>();
-  @Output() stopScreenSharingClicked = new EventEmitter<any>();
+	@Output() micButtonClicked = new EventEmitter<any>();
+	@Output() camButtonClicked = new EventEmitter<any>();
+	@Output() screenShareClicked = new EventEmitter<any>();
+	@Output() exitButtonClicked = new EventEmitter<any>();
+	@Output() chatButtonClicked = new EventEmitter<any>();
+	@Output() stopScreenSharingClicked = new EventEmitter<any>();
 
-  constructor(private utilsSrv: UtilsService) {}
+	constructor(private utilsSrv: UtilsService) {}
 
-  @HostListener('window:resize', ['$event'])
-  sizeChange(event) {
-    const maxHeight = window.screen.height;
-    const maxWidth = window.screen.width;
-    const curHeight = window.innerHeight;
-    const curWidth = window.innerWidth;
-    if (maxWidth !== curWidth && maxHeight !== curHeight) {
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	@HostListener('window:resize', ['$event'])
+	sizeChange(event) {
+		const maxHeight = window.screen.height;
+		const maxWidth = window.screen.width;
+		const curHeight = window.innerHeight;
+		const curWidth = window.innerWidth;
+		if (maxWidth !== curWidth && maxHeight !== curHeight) {
+			this.fullscreenIcon = 'fullscreen';
+		}
+	}
 
-  ngOnInit() {}
+	ngOnInit() {}
 
-  micStatusChanged() {
-    this.micButtonClicked.emit();
-  }
+	micStatusChanged() {
+		this.micButtonClicked.emit();
+	}
 
-  camStatusChanged() {
-    this.camButtonClicked.emit();
-  }
+	camStatusChanged() {
+		this.camButtonClicked.emit();
+	}
 
-  screenShare() {
-    this.screenShareClicked.emit();
-  }
+	screenShare() {
+		this.screenShareClicked.emit();
+	}
 
-  stopScreenSharing() {
-    this.stopScreenSharingClicked.emit();
-  }
+	stopScreenSharing() {
+		this.stopScreenSharingClicked.emit();
+	}
 
-  exitSession() {
-    this.exitButtonClicked.emit();
-  }
+	exitSession() {
+		this.exitButtonClicked.emit();
+	}
 
-  toggleChat() {
-    this.chatButtonClicked.emit();
-  }
+	toggleChat() {
+		this.chatButtonClicked.emit();
+	}
 
-  toggleFullscreen() {
-    const state = this.utilsSrv.toggleFullscreen('videoRoomNavBar');
-    if (state === 'fullscreen') {
-      this.fullscreenIcon = 'fullscreen_exit';
-    } else {
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	toggleFullscreen() {
+		const state = this.utilsSrv.toggleFullscreen('videoRoomNavBar');
+		if (state === 'fullscreen') {
+			this.fullscreenIcon = 'fullscreen_exit';
+		} else {
+			this.fullscreenIcon = 'fullscreen';
+		}
+	}
 }

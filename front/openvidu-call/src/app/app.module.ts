@@ -28,7 +28,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
 
-//Components
+// Components
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
 import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
@@ -47,60 +47,56 @@ import { OpenViduSessionService } from './shared/services/openvidu-session/openv
 import { UtilsService } from './shared/services/utils/utils.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    VideoRoomComponent,
-    DashboardComponent,
-    StreamComponent,
-    ChatComponent,
-    DialogExtensionComponent,
-    OpenViduVideoComponent,
-    DialogErrorComponent,
-    RoomConfigComponent,
-    WebComponentComponent,
-    ToolbarComponent,
-    LinkifyPipe
-  ],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    MatTooltipModule,
-    MatBadgeModule,
-    MatGridListModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatProgressSpinnerModule,
-    MatSliderModule,
-    MatSidenavModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FlexLayoutModule,
-    MatChipsModule,
-    NgxLinkifyjsModule.forRoot()
-  ],
-  entryComponents: [
-    DialogErrorComponent,
-    WebComponentComponent,
-  ],
-  providers: [NetworkService, OpenViduSessionService, UtilsService],
-  bootstrap: [AppComponent],
+	declarations: [
+		AppComponent,
+		VideoRoomComponent,
+		DashboardComponent,
+		StreamComponent,
+		ChatComponent,
+		DialogExtensionComponent,
+		OpenViduVideoComponent,
+		DialogErrorComponent,
+		RoomConfigComponent,
+		WebComponentComponent,
+		ToolbarComponent,
+		LinkifyPipe
+	],
+	imports: [
+		FormsModule,
+		ReactiveFormsModule,
+		BrowserModule,
+		BrowserAnimationsModule,
+		MatButtonModule,
+		MatCardModule,
+		MatToolbarModule,
+		MatIconModule,
+		MatInputModule,
+		MatFormFieldModule,
+		MatDialogModule,
+		MatTooltipModule,
+		MatBadgeModule,
+		MatGridListModule,
+		MatSelectModule,
+		MatOptionModule,
+		MatProgressSpinnerModule,
+		MatSliderModule,
+		MatSidenavModule,
+		AppRoutingModule,
+		HttpClientModule,
+		FlexLayoutModule,
+		MatChipsModule,
+		NgxLinkifyjsModule.forRoot()
+	],
+	entryComponents: [DialogErrorComponent, WebComponentComponent],
+	providers: [NetworkService, OpenViduSessionService, UtilsService],
+	bootstrap: [AppComponent]
 })
 export class AppModule {
+	constructor(private injector: Injector) {
+		const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
+		const element = createCustomElement(WebComponentComponent, { injector: this.injector, strategyFactory });
+		customElements.define('openvidu-webcomponent', element);
+	}
 
-  constructor(private injector: Injector) {
-    const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
-    const element = createCustomElement(WebComponentComponent, { injector: this.injector, strategyFactory });
-    customElements.define('openvidu-webcomponent', element);
-  }
-
-  ngDoBootstrap() {}
+	ngDoBootstrap() {}
 }

@@ -8,7 +8,6 @@ import { DialogErrorComponent } from '../../components/dialog-error/dialog-error
 	providedIn: 'root'
 })
 export class UtilsService {
-
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
 
 	constructor(private http: HttpClient, public dialog: MatDialog) {}
@@ -87,7 +86,7 @@ export class UtilsService {
 
 	showErrorMessage(message, messageError) {
 		this.dialog.open(DialogErrorComponent, {
-			data: { message: message, messageError: messageError },
+			data: { message: message, messageError: messageError }
 		});
 	}
 }
