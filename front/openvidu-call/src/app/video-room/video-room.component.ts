@@ -74,7 +74,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@HostListener('window:resize')
 	sizeChange() {
 		if (this.openviduLayout) {
-			this.openviduLayout.updateLayout();
+			this.updateOpenViduLayout();
 			this.checkSizeComponent();
 		}
 	}
@@ -142,8 +142,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.chatOpened) {
 				this.newMessages = 0;
 			}
-			const ms = this.isWebComponent ? 300 : 0;
-			setTimeout(() => this.openviduLayout.updateLayout(), ms);
+			const timeout = this.isWebComponent ? 300 : 0;
+			this.updateOpenViduLayout(timeout);
 		});
 	}
 
@@ -217,7 +217,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		} else {
 			element.classList.add(this.BIG_ELEMENT_CLASS);
 		}
-		this.openviduLayout.updateLayout();
+		this.updateOpenViduLayout();
 	}
 
 	private async connectToSession(): Promise<void> {
@@ -246,7 +246,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.oVSessionService.publishWebcam();
 			}
 		}
-		this.openviduLayout.updateLayout();
+		this.updateOpenViduLayout();
 	}
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
@@ -258,7 +258,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// ! this.joinSession.emit(); Webcomponent
 
 			this.localUsers[0].getStreamManager().on('streamPlaying', () => {
-				this.openviduLayout.updateLayout();
+				this.updateOpenViduLayout();
 				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
 			});
 		} catch (error) {
@@ -273,6 +273,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const connectionId = event.stream.connection.connectionId;
 
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				this.updateOpenViduLayout(500);
 				return;
 			}
 
@@ -293,6 +294,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// this.localUsers.forEach(user => {
 			// 	this.sendSignalUserChanged(user);
 			// });
+
+			this.updateOpenViduLayout();
 		});
 	}
 
@@ -306,6 +309,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			}
 			// this.checkSomeoneShareScreen();
 			// event.preventDefault();
+			this.updateOpenViduLayout();
 		});
 	}
 
@@ -397,7 +401,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.oVSessionService.isScreenShareEnabled();
 		this.openviduLayoutOptions.fixedRatio = isScreenShared;
 		this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
-		this.openviduLayout.updateLayout();
+		this.updateOpenViduLayout();
 	}
 
 	private initScreenPublisher(): Publisher {
@@ -442,5 +446,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			type: 'nicknameChanged'
 		};
 		this.session.signal(signalOptions);
+	}
+
+	private updateOpenViduLayout(timeout?: number) {
+		if (!timeout) {
+			this.openviduLayout.updateLayout();
+			return;
+		}
+		setTimeout(() => {
+			this.openviduLayout.updateLayout();
+		}, timeout);
 	}
 }
