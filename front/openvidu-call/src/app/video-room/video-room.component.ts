@@ -112,7 +112,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribedToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
-		// this.subscribedToChat();
+		this.subscribedToChat();
 		this.connectToSession();
 	}
 
@@ -378,18 +378,22 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	// ! Create chat service
 	private subscribedToChat() {
 		this.session.on('signal:chat', (event: any) => {
+			const connectionId = event.from.connectionId;
 			const data = JSON.parse(event.data);
-			const messageOwner =
-				this.localUsers[0].getConnectionId() === data.connectionId
-					? this.localUsers[0]
-					: this.remoteUsers.filter(user => user.getConnectionId() === data.connectionId)[0];
+			let owner: UserModel;
+			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				owner = this.localUsers.filter(u => u.getConnectionId() === connectionId)[0];
+			} else {
+				owner = this.getRemoteUserByConnectionId(connectionId);
+			}
 			this.messageList.push({
 				connectionId: data.connectionId,
 				nickname: data.nickname,
 				message: data.message,
-				userAvatar: messageOwner.getAvatar()
+				userAvatar: owner?.getAvatar() || this.utilsSrv.getOpeViduAvatar()
 			});
 			this.checkNotification();
 			this.chatComponent.scrollToBottom();
