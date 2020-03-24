@@ -121,7 +121,7 @@ export class OpenViduSessionService {
 		this.screenUser.setUserAvatar(this.webcamUser.getAvatar());
 		// !
 
-		if (this.isWebCamEnabled() && !this.hasWebCamVideoActive()) {
+		if (this.isWebCamEnabled() && !this.hasWebcamVideoActive()) {
 			this.disableWebcamUser();
 			// Enabling webcam user audio
 			this.webcamUser.setAudioActive(true);
@@ -228,7 +228,7 @@ export class OpenViduSessionService {
 		return this._OVUsers.value[0].isLocal();
 	}
 
-	hasWebCamVideoActive(): boolean {
+	hasWebcamVideoActive(): boolean {
 		return this.webcamUser.isVideoActive();
 	}
 
@@ -249,9 +249,6 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-		console.log('CONNECTION RECEIVED: ', connectionId);
-		console.log('CONNECTION WEBCAM: ', this.webcamUser?.getConnectionId());
-		console.log('CONNECTION SCREEN: ', this.screenUser?.getConnectionId());
 		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 

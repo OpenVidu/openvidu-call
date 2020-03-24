@@ -1,23 +1,12 @@
-<div class="OT_widget-container" [id]="'container-' + this.user.getStreamManager().stream.streamId">
-	<app-toolbar
-		*ngIf="isFullscreen"
-		[lightTheme]="lightTheme"
-		[newMessagesNum]="newMessagesNum"
-		[mySessionId]="localUser.getStreamManager().stream.session.sessionId"
-		[localUser]="localUser"
-		[compact]="compact"
-		(camButtonClicked)="toggleCam()"
-		(micButtonClicked)="toggleMic()"
-		(exitButtonClicked)="exitSession()"
-		(chatButtonClicked)="toggleChat()"
-		(screenShareClicked)="screenShare()"
-		(stopScreenSharingClicked)="stopScreenSharing()"
-	></app-toolbar>
-
+<div
+	class="OT_widget-container"
+	[id]="'container-' + this.user.getStreamManager().stream.streamId"
+	#streamComponent
+	(dblclick)="enlargeVideo()"
+>
 	<mat-chip-list class="nickname" [class.fullscreen]="isFullscreen">
 		<mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
 			<span id="nickname">{{ this.user.getNickname() }}</span>
-			<span *ngIf="user.isScreen()">_SCREEN</span>
 			<span *ngIf="canEditNickname"> (edit)</span>
 		</mat-chip>
 		<div *ngIf="toggleNickname && canEditNickname" [class.fullscreen]="isFullscreen" id="dialogNickname">
@@ -51,7 +40,7 @@
 			<mat-icon>videocam_off</mat-icon>
 		</div>
 	</div>
-	<button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="toggleFullscreen()">
+	<button mat-icon-button id="fullscreenButton" class="streamButtons" (click)="enlargeVideo()">
 		<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
 	</button>
 	<button mat-icon-button id="volumeButton" class="streamButtons" *ngIf="this.user.isRemote()" (click)="toggleSound()">

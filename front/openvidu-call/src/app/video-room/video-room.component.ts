@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Publisher, Subscriber, Session, SignalOptions, StreamEvent, StreamPropertyChangedEvent } from 'openvidu-browser';
@@ -158,7 +158,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	async toggleCam() {
-		const isVideoActive = !this.oVSessionService.hasWebCamVideoActive();
+		const isVideoActive = !this.oVSessionService.hasWebcamVideoActive();
 
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.publishVideo(isVideoActive);
@@ -199,7 +199,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.showDialogExtension = !this.showDialogExtension;
 	}
 
-	replaceScreenTrack() {
+	onReplaceScreenTrack(event) {
 		this.oVSessionService.replaceScreenTrack();
 	}
 
@@ -208,9 +208,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	enlargeElement(event) {
-		const path = event.path ? event.path : event.composedPath(); // Chrome or Firefox
-		const element: HTMLElement = path.filter((e: HTMLElement) => e.className && e.className.includes('OT_root'))[0];
+	onEnlargeVideo(event: HTMLElement ) {
+		console.log('EVENT ENLARGE', event);
+		const element = event;
+
 		if (element.className.includes(this.BIG_ELEMENT_CLASS)) {
 			element.classList.remove(this.BIG_ELEMENT_CLASS);
 		} else {
@@ -218,7 +219,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 		this.openviduLayout.updateLayout();
 	}
-
 
 	private async connectToSession(): Promise<void> {
 		if (this.tokens) {
@@ -272,7 +272,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('streamCreated', (event: StreamEvent) => {
 			const connectionId = event.stream.connection.connectionId;
 
-			if (this.oVSessionService.isMyOwnConnection(connectionId)) { return; }
+			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				return;
+			}
 
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 
@@ -310,15 +312,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	subscribeToStreamPropertyChange() {
 		this.session.on('streamPropertyChanged', (event: StreamPropertyChangedEvent) => {
 			const connectionId = event.stream.connection.connectionId;
-			if (this.oVSessionService.isMyOwnConnection(connectionId)) { return; }
+			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				return;
+			}
 
 			const user = this.getRemoteUserByConnectionId(connectionId);
 
 			if (event.changedProperty === 'videoActive') {
-				user.setVideoActive(<boolean>(event.newValue));
+				user.setVideoActive(<boolean>event.newValue);
 			}
 			if (event.changedProperty === 'audioActive') {
-				user.setAudioActive(<boolean>(event.newValue));
+				user.setAudioActive(<boolean>event.newValue);
 			}
 		});
 	}
@@ -326,7 +330,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	subscribeToNicknameChanged() {
 		this.session.on('signal:nicknameChanged', (event: any) => {
 			const connectionId = event.from.connectionId;
-			if (this.oVSessionService.isMyOwnConnection(connectionId)) { return; }
+			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				return;
+			}
 
 			const user = this.getRemoteUserByConnectionId(connectionId);
 			const nickname = JSON.parse(event.data).nickname;
@@ -396,7 +402,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = this.getScreenVideoSource();
-		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebCamVideoActive();
+		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.oVSessionService.hasWebcamAudioActive();
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
 
@@ -426,13 +432,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		return this.utilsSrv.isFF() ? ScreenType.WINDOW : ScreenType.SCREEN;
 	}
 
-	private getRemoteUserByConnectionId(connectionId): UserModel{
-		return this.remoteUsers.filter((u) => u.getConnectionId() === connectionId)[0];
+	private getRemoteUserByConnectionId(connectionId): UserModel {
+		return this.remoteUsers.filter(u => u.getConnectionId() === connectionId)[0];
 	}
 
 	private sendNicknameSignal(nickname) {
 		const signalOptions: SignalOptions = {
-			data: JSON.stringify({nickname}),
+			data: JSON.stringify({ nickname }),
 			type: 'nicknameChanged'
 		};
 		this.session.signal(signalOptions);

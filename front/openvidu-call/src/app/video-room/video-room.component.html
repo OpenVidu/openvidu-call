@@ -8,14 +8,16 @@
     (leaveSession)="exitSession()"
   ></app-room-config>
 
-  <div *ngIf="localUsers && localUsers[0]">
+  <div *ngIf="localUsers && localUsers.length > 0">
     <app-toolbar
       [lightTheme]="lightTheme"
       [newMessagesNum]="newMessages"
       [compact]="compact"
-      [localUser]="localUsers[0]"
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
+      [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
+      [isWebcamAudioEnabled]="oVSessionService.hasWebcamAudioActive()"
+      [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
       (screenShareClicked)="toggleScreenShare()"
@@ -59,26 +61,14 @@
             class="OT_root OT_publisher custom-class"
             id="localUser"
             *ngFor="let localUser of localUsers"
-            (dblclick)="enlargeElement($event)"
           >
             <stream-component
               *ngIf="localUser.getStreamManager()"
-              #videoStream
               [user]="localUser"
-              [localUser]="localUsers[0]"
-              [lightTheme]="lightTheme"
-              [newMessagesNum]="newMessages"
-              [compact]="compact"
-              [chatOpened]="chatOpened"
               [canEditNickname]="true"
               (nicknameClicked)="onNicknameUpdate($event)"
-              (camButtonClicked)="toggleCam()"
-              (micButtonClicked)="toggleMic()"
-              (exitButtonClicked)="exitSession()"
-              (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="toggleScreenShare()"
-              (stopScreenSharingClicked)="toggleScreenShare()"
-              (replaceScreenTrackClicked)="replaceScreenTrack()"
+              (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
+              (enlargeVideoClicked)="onEnlargeVideo($event)"
             ></stream-component>
           </div>
 
@@ -86,24 +76,12 @@
             *ngFor="let user of this.remoteUsers"
             class="OT_root OT_publisher custom-class"
             id="remoteUsers"
-            (dblclick)="enlargeElement($event)"
           >
             <stream-component
-              #videoStream
               [user]="user"
-              [localUser]="localUsers[0]"
-              [lightTheme]="lightTheme"
-              [newMessagesNum]="newMessages"
-              [compact]="compact"
-              [chatOpened]="chatOpened"
               [canEditNickname]="false"
-              (camButtonClicked)="toggleCam()"
-              (micButtonClicked)="toggleMic()"
-              (exitButtonClicked)="exitSession()"
-              (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="toggleScreenShare()"
-              (stopScreenSharingClicked)="toggleScreenShare()"
               (replaceScreenTrackClicked)="replaceScreenTrack()"
+              (enlargeVideoClicked)="onEnlargeVideo($event)"
             ></stream-component>
           </div>
         </div>

@@ -265,7 +265,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private initScreenPublisher() {
 		const videoSource = this.utilsSrv.isFF() ? 'window' : 'screen';
-		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebCamVideoActive();
+		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.isAudioActive;
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
 

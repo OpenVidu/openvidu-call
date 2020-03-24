@@ -13,18 +13,21 @@ export class ToolbarComponent implements OnInit {
 
 	@Input() lightTheme: boolean;
 	@Input() mySessionId: boolean;
-	@Input() localUser: UserModel;
 	@Input() compact: boolean;
 	@Input() showNotification: boolean;
 	@Input() newMessagesNum: number;
 	@Input() ovSettings: OvSettings;
+
+	@Input() isWebcamVideoEnabled: boolean;
+	@Input() isWebcamAudioEnabled: boolean;
+	@Input() isScreenEnabled: boolean;
+
 
 	@Output() micButtonClicked = new EventEmitter<any>();
 	@Output() camButtonClicked = new EventEmitter<any>();
 	@Output() screenShareClicked = new EventEmitter<any>();
 	@Output() exitButtonClicked = new EventEmitter<any>();
 	@Output() chatButtonClicked = new EventEmitter<any>();
-	@Output() stopScreenSharingClicked = new EventEmitter<any>();
 
 	constructor(private utilsSrv: UtilsService) {}
 
@@ -49,12 +52,8 @@ export class ToolbarComponent implements OnInit {
 		this.camButtonClicked.emit();
 	}
 
-	screenShare() {
+	toggleScreenShare() {
 		this.screenShareClicked.emit();
-	}
-
-	stopScreenSharing() {
-		this.stopScreenSharingClicked.emit();
 	}
 
 	exitSession() {
