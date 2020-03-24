@@ -108,7 +108,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
 		// !! Refactor these methods
-		// this.subscribeToUserChanged();
 		this.subscribeToStreamCreated();
 		this.subscribedToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
@@ -132,6 +131,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	onNicknameUpdate(nickname: string) {
+
 		this.oVSessionService.setWebcamName(nickname);
 		this.sendNicknameSignal(nickname);
 	}
@@ -164,6 +164,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.oVSessionService.publishVideo(isVideoActive);
 			this.oVSessionService.disableWebcamUser();
 			this.oVSessionService.unpublishWebcam();
+			this.updateOpenViduLayout();
 			return;
 		}
 		if (this.oVSessionService.isOnlyScreenConnected()) {
@@ -171,28 +172,44 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			await this.oVSessionService.publishWebcam();
 		}
 		this.oVSessionService.publishVideo(isVideoActive);
+		this.updateOpenViduLayout();
 	}
 
 	toggleScreenShare() {
-		if (this.oVSessionService.isScreenShareEnabled()) {
-			if (this.oVSessionService.isOnlyScreenConnected()) {
-				this.oVSessionService.enableWebcamUser();
-				this.oVSessionService.publishWebcam();
-			}
+
+		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
 			this.oVSessionService.unpublishScreenSession();
-		} else {
+			return;
+		}
+
+		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
-			screenPublisher.on('accessAllowed', event => {
+
+			screenPublisher.once('accessAllowed', event => {
 				console.log('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				this.oVSessionService.publishScreen();
+				if (!this.oVSessionService.hasWebcamVideoActive()) {
+					// Unpublishing webcam user
+					this.oVSessionService.disableWebcamUser();
+					this.oVSessionService.unpublishWebcam();
+				}
 			});
 
-			screenPublisher.on('accessDenied', event => {
+			screenPublisher.once('accessDenied', event => {
 				console.warn('ScreenShare: Access Denied');
 			});
+			return;
 		}
+
+		// if (this.oVSessionService.isOnlyScreenConnected()) {
+			this.oVSessionService.enableWebcamUser();
+			this.oVSessionService.publishWebcam();
+		// }
+		this.oVSessionService.disableScreenUser();
+		this.oVSessionService.unpublishScreenSession();
+
 	}
 
 	toggleDialogExtension() {
@@ -222,7 +239,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private async connectToSession(): Promise<void> {
 		if (this.tokens) {
-			// Retrieves tokens from subcomponent or library
+			// ! Retrieves tokens from subcomponent or library
 			// this.localUsers.forEach((user, index) => {
 			// 	if (user.isLocal()) {
 			// 		this.connect(this.tokens[index]);
@@ -232,7 +249,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// });
 		} else {
 			// Normal behaviour - OpenVidu Call
-
 			const webcamToken = await this.getToken();
 			const screenToken = await this.getToken();
 			await this.connectBothSessions(webcamToken, screenToken);
@@ -253,9 +269,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		try {
 			await this.oVSessionService.connectWebcamSession(webcamToken);
 			await this.oVSessionService.connectScreenSession(screenToken);
-
-			// this.sendSignalUserChanged(this.localUsers[0]);
-			// ! this.joinSession.emit(); Webcomponent
+			// ! Webcomponent
+			// this.joinSession.emit();
 
 			this.localUsers[0].getStreamManager().on('streamPlaying', () => {
 				this.updateOpenViduLayout();
@@ -289,12 +304,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const newUser = new UserModel(connectionId, subscriber, null, null, nickname, type);
 
 			this.remoteUsers.push(newUser);
-
-			// !Refactor
-			// this.localUsers.forEach(user => {
-			// 	this.sendSignalUserChanged(user);
-			// });
-
 			this.updateOpenViduLayout();
 		});
 	}
@@ -319,7 +328,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
 				return;
 			}
-
 			const user = this.getRemoteUserByConnectionId(connectionId);
 
 			if (event.changedProperty === 'videoActive') {

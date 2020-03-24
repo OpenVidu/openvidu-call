@@ -156,14 +156,30 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	toggleScreenShare() {
-		if (this.oVSessionService.isScreenShareEnabled()) {
-			if (this.oVSessionService.isOnlyScreenConnected()) {
-				this.oVSessionService.enableWebcamUser();
-			}
+
+		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
-		} else {
-			this.initScreenPublisher();
+			return;
 		}
+
+		if (this.oVSessionService.isOnlyWebcamConnected()) {
+			const screenPublisher = this.initScreenPublisher();
+
+			screenPublisher.on('accessAllowed', event => {
+				this.oVSessionService.enableScreenUser(screenPublisher);
+				if (!this.oVSessionService.hasWebcamVideoActive()) {
+					this.oVSessionService.disableWebcamUser();
+				}
+			});
+
+			screenPublisher.on('accessDenied', event => {
+				console.warn('ScreenShare: Access Denied');
+			});
+			return;
+		}
+
+		this.oVSessionService.enableWebcamUser();
+		this.oVSessionService.disableScreenUser();
 	}
 
 	toggleMic() {
@@ -263,21 +279,14 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.avatarSelected = AvatarType.RANDOM;
 	}
 
-	private initScreenPublisher() {
+	private initScreenPublisher(): Publisher {
 		const videoSource = this.utilsSrv.isFF() ? 'window' : 'screen';
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.isAudioActive;
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
 
 		try {
-			const screenPublisher = this.oVSessionService.initScreenPublisher(undefined, properties);
-			screenPublisher.on('accessAllowed', event => {
-				this.oVSessionService.enableScreenUser(screenPublisher);
-			});
-
-			screenPublisher.on('accessDenied', event => {
-				console.warn('ScreenShare: Access Denied');
-			});
+			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
 			console.error(error);
 			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
