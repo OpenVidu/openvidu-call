@@ -183,21 +183,17 @@ export class OpenViduSessionService {
 
 	}
 
-	replaceScreenTrack() {
+	async replaceScreenTrack() {
 		const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
 		const hasAudio = !this.isWebCamEnabled();
 		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
-		const publisher = this.OVScreen.initPublisher(undefined, properties);
-
-		publisher.once('accessAllowed', () => {
-			this.screenSession.unpublish(<Publisher>this.screenUser.getStreamManager());
-			this.screenUser.setStreamManager(publisher);
-			this.screenSession.publish(publisher);
-		});
+		const mediaStream = await this.OVScreen.getUserMedia(properties);
+		(<Publisher>this.screenUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
+		console.log("init screen properties", properties);
 		const publisher = this.initPublisher(targetElement, properties);
 		return publisher;
 	}
