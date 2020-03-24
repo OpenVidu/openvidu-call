@@ -24,9 +24,6 @@ export class StreamComponent implements OnInit {
 	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
 	@Output() enlargeVideoClicked = new EventEmitter<any>();
 
-	@ViewChild('videoReference') htmlVideoElement: ElementRef;
-	@ViewChild('nicknameInput') nicknameInput: ElementRef;
-
 	@ViewChild('streamComponent', { read: ViewContainerRef }) streamComponent: ViewContainerRef;
 
 	constructor() {}
@@ -53,19 +50,21 @@ export class StreamComponent implements OnInit {
 		this.enlargeVideoClicked.emit(this.streamComponent.element.nativeElement.parentElement.parentElement);
 	}
 
-	toggleSound(): void {
+	toggleSound() {
 		this.mutedSound = !this.mutedSound;
 	}
 
-	toggleNicknameForm(): void {
+	toggleNicknameForm() {
 		if (this.canEditNickname) {
 			this.toggleNickname = !this.toggleNickname;
-			setTimeout(() => {
-				if (this.nicknameInput.nativeElement) {
-					this.nicknameInput.nativeElement.focus();
-				}
-			});
 		}
+	}
+
+	@ViewChild('nicknameInput')
+	set nicknameInputElement(element: ElementRef) {
+		setTimeout(() => {
+			element?.nativeElement.focus();
+		});
 	}
 
 	eventKeyPress(event) {
