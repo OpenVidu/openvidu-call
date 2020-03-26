@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ISessionCongif } from '../shared/models/webcomponent-config';
+import { ISessionCongif } from '../shared/types/webcomponent-config';
 import { VideoRoomComponent } from '../video-room/video-room.component';
-import { OvSettings } from '../shared/models/ov-settings';
+import { OvSettings } from '../shared/types/ov-settings';
 
 @Component({
 	selector: 'app-web-component',

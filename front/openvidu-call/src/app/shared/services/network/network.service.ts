@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { OvSettings } from '../../models/ov-settings';
+import { OvSettings } from '../../types/ov-settings';
 
 @Injectable({
 	providedIn: 'root'

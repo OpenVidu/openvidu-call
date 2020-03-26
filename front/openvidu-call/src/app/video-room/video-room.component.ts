@@ -7,7 +7,7 @@ import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu
 import { UserModel } from '../shared/models/user-model';
 import { NetworkService } from '../shared/services/network/network.service';
 import { ChatComponent } from '../shared/components/chat/chat.component';
-import { OvSettings } from '../shared/models/ov-settings';
+import { OvSettings } from '../shared/types/ov-settings';
 import { UtilsService } from '../shared/services/utils/utils.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
 import { Subscription } from 'rxjs';

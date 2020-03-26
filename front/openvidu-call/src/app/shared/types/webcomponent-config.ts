@@ -1,4 +1,4 @@
-import { OvSettings } from './ov-settings';
+import { OvSettings } from '../types/ov-settings';
 
 export interface ISessionCongif {
 	sessionName: string;

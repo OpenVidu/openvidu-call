@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { UtilsService } from '../../services/utils/utils.service';
-import { OvSettings } from '../../models/ov-settings';
+import { OvSettings } from '../../types/ov-settings';
 
 @Component({
 	selector: 'app-toolbar',

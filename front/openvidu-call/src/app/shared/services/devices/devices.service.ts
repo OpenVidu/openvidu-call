@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OpenVidu, Device, Publisher } from 'openvidu-browser';
-import { IDevice, CameraType } from '../../models/device-type';
+import { IDevice, CameraType } from '../../types/device-type';
 
 @Injectable({
 	providedIn: 'root'
