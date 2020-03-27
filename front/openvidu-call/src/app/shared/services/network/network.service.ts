@@ -4,6 +4,8 @@ import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { OvSettings } from '../../types/ov-settings';
+import { LoggerService } from '../logger/logger.service';
+import { ILogger } from '../../types/logger-type';
 
 @Injectable({
 	providedIn: 'root'
@@ -24,8 +26,11 @@ export class NetworkService {
 			exit: true
 		}
 	};
+	private log: ILogger;
 
-	constructor(private http: HttpClient) {}
+	constructor(private http: HttpClient, private loggSrv: LoggerService) {
+		this.log = this.loggSrv.get('NetworkService');
+	}
 
 	getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
@@ -82,7 +87,7 @@ export class NetworkService {
 					})
 				)
 				.subscribe(response => {
-					console.log(response);
+					this.log.d(response);
 					resolve(response.token);
 				});
 		});
@@ -92,8 +97,8 @@ export class NetworkService {
 		return new Promise(resolve => {
 			this.http.get(this.SETTINGS_FILE_NAME).subscribe(
 				(data: any) => {
-					console.log('FILE', data);
-					console.log(data.openviduSettings);
+					this.log.d('FILE', data);
+					this.log.d(data.openviduSettings);
 					this.ovSettings = data.openviduSettings ? data.openviduSettings : this.ovSettings;
 					if (data.openviduCredentials) {
 						this.URL_OV = data.openviduCredentials.openvidu_url ? data.openviduCredentials.openvidu_url : this.URL_OV;
@@ -101,17 +106,17 @@ export class NetworkService {
 							? data.openviduCredentials.openvidu_secret
 							: this.MY_SECRET;
 					}
-					console.log('URL Environment', this.URL_OV);
+					this.log.d('URL Environment', this.URL_OV);
 					resolve(data.openviduSettings);
 				},
 				error => {
-					console.warn('Credentials file not found ');
+					this.log.w('Credentials file not found ');
 					if (environment.openvidu_url) {
-						console.warn('Getting from environment ');
+						this.log.w('Getting from environment ');
 						this.URL_OV = environment.openvidu_url;
 						this.MY_SECRET = environment.openvidu_secret;
 					}
-					console.log('URL Environment', this.URL_OV);
+					this.log.d('URL Environment', this.URL_OV);
 					resolve(this.ovSettings);
 				}
 			);

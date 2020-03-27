@@ -12,6 +12,8 @@ import { UtilsService } from '../shared/services/utils/utils.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
 import { Subscription } from 'rxjs';
 import { ScreenType, VideoType } from '../shared/types/video-type';
+import { LoggerService } from '../shared/services/logger/logger.service';
+import { ILogger } from '../shared/types/logger-type';
 
 @Component({
 	selector: 'app-video-room',
@@ -55,7 +57,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	remoteUsers: UserModel[] = [];
 	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 	newMessages = 0;
-
+	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 
 	constructor(
@@ -63,8 +65,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		private router: Router,
 		public dialog: MatDialog,
 		private utilsSrv: UtilsService,
-		private oVSessionService: OpenViduSessionService
-	) {}
+		private oVSessionService: OpenViduSessionService,
+		private loggerSrv: LoggerService
+	) {
+		this.log = this.loggerSrv.get('VideoRoomComponent');
+	}
 
 	@HostListener('window:beforeunload')
 	beforeunloadHandler() {
@@ -180,7 +185,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleScreenShare() {
-
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
 			this.oVSessionService.unpublishScreenSession();
@@ -191,7 +195,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const screenPublisher = this.initScreenPublisher();
 
 			screenPublisher.once('accessAllowed', event => {
-				console.log('ACCESS ALOWED screenPublisher');
+				this.log.d('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				this.oVSessionService.publishScreen();
 				if (!this.oVSessionService.hasWebcamVideoActive()) {
@@ -202,18 +206,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			});
 
 			screenPublisher.once('accessDenied', event => {
-				console.warn('ScreenShare: Access Denied');
+				this.log.w('ScreenShare: Access Denied');
 			});
 			return;
 		}
 
 		// if (this.oVSessionService.isOnlyScreenConnected()) {
-			this.oVSessionService.enableWebcamUser();
-			this.oVSessionService.publishWebcam();
+		this.oVSessionService.enableWebcamUser();
+		this.oVSessionService.publishWebcam();
 		// }
 		this.oVSessionService.disableScreenUser();
 		this.oVSessionService.unpublishScreenSession();
-
 	}
 
 	toggleDialogExtension() {
@@ -229,10 +232,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	onEnlargeVideo(event: HTMLElement ) {
-		console.log('EVENT ENLARGE', event);
-		const element = event;
-
+	onEnlargeVideo(element: HTMLElement) {
+		this.log.d('Enlarging video');
 		if (element.className.includes(this.BIG_ELEMENT_CLASS)) {
 			element.classList.remove(this.BIG_ELEMENT_CLASS);
 		} else {
@@ -282,7 +283,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			});
 		} catch (error) {
 			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
-			console.log('There was an error connecting to the session:', error.code, error.message);
+			this.log.d('There was an error connecting to the session:', error.code, error.message);
 			this.openDialogError('There was an error connecting to the session:', error.message);
 		}
 	}
@@ -357,7 +358,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toolbarMicIconEnabled(): boolean {
-		if ( this.oVSessionService.isWebCamEnabled()) {
+		if (this.oVSessionService.isWebCamEnabled()) {
 			return this.oVSessionService.hasWebcamAudioActive();
 		}
 		return this.oVSessionService.hasScreenAudioActive();
@@ -418,14 +419,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private checkSomeoneShareScreen() {
-		let isScreenShared: boolean;
-		// return true if at least one passes the test
-		isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.oVSessionService.isScreenShareEnabled();
-		this.openviduLayoutOptions.fixedRatio = isScreenShared;
-		this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
-		this.updateOpenViduLayout();
-	}
+	// private checkSomeoneShareScreen() {
+	// 	let isScreenShared: boolean;
+	// 	// return true if at least one passes the test
+	// 	isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.oVSessionService.isScreenShareEnabled();
+	// 	this.openviduLayoutOptions.fixedRatio = isScreenShared;
+	// 	this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
+	// 	this.updateOpenViduLayout();
+	// }
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = this.getScreenVideoSource();
@@ -436,7 +437,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		try {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
-			console.error(error);
+			this.log.e(error);
 			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
 				this.toggleDialogExtension();
 			} else {
@@ -450,7 +451,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			return await this.networkSrv.getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret);
 		} catch (error) {
 			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
-			console.log('There was an error getting the token:', error.code, error.message);
+			this.log.e('There was an error getting the token:', error.code, error.message);
 			this.openDialogError('There was an error getting the token:', error.message);
 		}
 	}

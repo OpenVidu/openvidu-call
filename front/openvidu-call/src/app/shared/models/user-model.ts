@@ -225,7 +225,6 @@ export class UserModel {
 				const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
 				const avatar = this.videoAvatar.getContext('2d');
 				avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 100, 100);
-				console.log('Photo was taken: ', this.videoAvatar);
 				resolve();
 			} else {
 				this.randomAvatar = img;

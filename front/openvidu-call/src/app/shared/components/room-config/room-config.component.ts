@@ -11,6 +11,8 @@ import { IDevice, CameraType } from '../../types/device-type';
 import { DevicesService } from '../../services/devices/devices.service';
 import { Subscription } from 'rxjs';
 import { AvatarType } from '../../types/chat-type';
+import { LoggerService } from '../../services/logger/logger.service';
+import { ILogger } from '../../types/logger-type';
 
 @Component({
 	selector: 'app-room-config',
@@ -48,13 +50,17 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
 	matcher = new NicknameMatcher();
+	private log: ILogger;
 
 	constructor(
 		private route: ActivatedRoute,
 		private utilsSrv: UtilsService,
 		private oVSessionService: OpenViduSessionService,
-		private oVDevicesService: DevicesService
-	) {}
+		private oVDevicesService: DevicesService,
+		private loggerSrv: LoggerService
+	) {
+		this.log = this.loggerSrv.get('RoomConfigComponent');
+	}
 
 	@HostListener('window:beforeunload')
 	beforeunloadHandler() {
@@ -156,7 +162,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	toggleScreenShare() {
-
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
 			return;
@@ -173,7 +178,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			});
 
 			screenPublisher.on('accessDenied', event => {
-				console.warn('ScreenShare: Access Denied');
+				this.log.w('ScreenShare: Access Denied');
 			});
 			return;
 		}
@@ -288,7 +293,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		try {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
-			console.error(error);
+			this.log.e(error);
 			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
 				this.toggleDialogExtension();
 			} else {

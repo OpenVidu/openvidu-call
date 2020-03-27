@@ -4,6 +4,8 @@ import { OpenVidu, PublisherProperties, Publisher, Session } from 'openvidu-brow
 import { BehaviorSubject, Observable } from 'rxjs';
 import { VideoType } from '../../types/video-type';
 import { AvatarType } from '../../types/chat-type';
+import { LoggerService } from '../logger/logger.service';
+import { ILogger } from '../../types/logger-type';
 
 @Injectable({
 	providedIn: 'root'
@@ -23,10 +25,11 @@ export class OpenViduSessionService {
 
 	private videoSource = '';
 	private audioSource = '';
-
 	private sessionId = '';
+	private log: ILogger;
 
-	constructor() {
+	constructor(private loggSrv: LoggerService) {
+		this.log = this.loggSrv.get('OpenViduSessionService');
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
 
@@ -73,7 +76,7 @@ export class OpenViduSessionService {
 			}
 			return;
 		}
-		console.warn('User cannot publish');
+		this.log.w('User cannot publish');
 	}
 
 	async publishScreen(): Promise<any> {
@@ -87,7 +90,7 @@ export class OpenViduSessionService {
 			}
 			return;
 		}
-		console.warn('User cannot publish');
+		this.log.w('User cannot publish');
 	}
 
 	unpublishWebcam() {
@@ -138,7 +141,7 @@ export class OpenViduSessionService {
 			return;
 		}
 
-		console.log('ENABLED SCREEN SHARE');
+		this.log.d('ENABLED SCREEN SHARE');
 		this._OVUsers.next([this.screenUser]);
 	}
 
@@ -194,7 +197,7 @@ export class OpenViduSessionService {
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
-		console.log('init screen properties', properties);
+		this.log.d('init screen properties', properties);
 		const publisher = this.initPublisher(targetElement, properties);
 		return publisher;
 	}
@@ -257,9 +260,9 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-		// console.log('CONNECTION ID', connectionId);
-		// console.log('CONNECTION WBCAM', this.webcamUser?.getConnectionId());
-		// console.log('CONNECTION SCREEN', this.screenUser?.getConnectionId());
+		// this.log.d('CONNECTION ID', connectionId);
+		// this.log.d('CONNECTION WBCAM', this.webcamUser?.getConnectionId());
+		// this.log.d('CONNECTION SCREEN', this.screenUser?.getConnectionId());
 		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 
@@ -336,7 +339,6 @@ export class OpenViduSessionService {
 	}
 
 	private publishWebcamAudio(audio: boolean) {
-		console.log("AUDIO => ", audio);
 		const publisher = <Publisher>this.webcamUser?.getStreamManager();
 		if (!!publisher) {
 			this.webcamUser.setAudioActive(audio);

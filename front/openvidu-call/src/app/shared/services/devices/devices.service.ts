@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { OpenVidu, Device, Publisher } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
+import { ILogger } from '../../types/logger-type';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -14,13 +16,14 @@ export class DevicesService {
 
 	private camSelected: IDevice;
 	private micSelected: IDevice;
+	private log: ILogger;
 
-	constructor() {
+	constructor(private loggerSrv: LoggerService) {
 		this.OV = new OpenVidu();
 	}
 
 	async initDevices(publisher: Publisher) {
-		console.log('Devices: ', this.devices);
+		this.log.d('Devices: ', this.devices);
 		this.resetDevicesArray();
 		const defaultId = publisher.stream
 			.getMediaStream()
@@ -103,7 +106,7 @@ export class DevicesService {
 		this.devices = await this.getDevices();
 
 		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
-		console.log('Is webcam available? ', videoDevices.length > 0);
+		this.log.d('Is webcam available? ', videoDevices.length > 0);
 		return videoDevices.length > 0;
 	}
 
