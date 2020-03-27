@@ -67,8 +67,8 @@ export class UserModel {
 		type?: VideoType
 	) {
 		this.connectionId = connectionId || '';
-		this.audioActive = audioActive || true;
-		this.videoActive = videoActive || true;
+		this.audioActive = typeof audioActive === 'boolean' ? audioActive : true;
+		this.videoActive = typeof videoActive === 'boolean' ? videoActive : true;
 		this.screenShareActive = false;
 		this.nickname = nickname || 'OpenVidu';
 		this.streamManager = streamManager || null;
