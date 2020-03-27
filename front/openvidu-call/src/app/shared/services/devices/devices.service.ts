@@ -19,6 +19,7 @@ export class DevicesService {
 	private log: ILogger;
 
 	constructor(private loggerSrv: LoggerService) {
+		this.log = this.loggerSrv.get('DevicesService');
 		this.OV = new OpenVidu();
 	}
 
