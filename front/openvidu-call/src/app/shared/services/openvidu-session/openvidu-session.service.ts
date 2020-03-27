@@ -163,7 +163,7 @@ export class OpenViduSessionService {
 		this.isWebCamEnabled() ? this.publishWebcamAudio(audio) : this.publishScreenAudio(audio);
 	}
 
-	replaceTrack(videoSource: string, audioSource: string) {
+	async replaceTrack(videoSource: string, audioSource: string) {
 		if (!!videoSource) {
 			this.videoSource = videoSource;
 		}
@@ -179,10 +179,8 @@ export class OpenViduSessionService {
 			true
 		);
 
-		this.OV.getUserMedia(properties).then(mediaStream => {
-			const track = mediaStream.getVideoTracks()[0];
-			(<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
-		});
+		const mediaStream = await this.OV.getUserMedia(properties);
+		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
 
 	}
 
@@ -192,11 +190,11 @@ export class OpenViduSessionService {
 		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
 		const mediaStream = await this.OVScreen.getUserMedia(properties);
-		(<Publisher>this.screenUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
+		await (<Publisher>this.screenUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
-		console.log("init screen properties", properties);
+		console.log('init screen properties', properties);
 		const publisher = this.initPublisher(targetElement, properties);
 		return publisher;
 	}
@@ -259,6 +257,9 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
+		// console.log('CONNECTION ID', connectionId);
+		// console.log('CONNECTION WBCAM', this.webcamUser?.getConnectionId());
+		// console.log('CONNECTION SCREEN', this.screenUser?.getConnectionId());
 		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 
