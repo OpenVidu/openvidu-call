@@ -9,7 +9,6 @@ import { AvatarType } from '../../types/chat-type';
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
-
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -66,7 +65,11 @@ export class OpenViduSessionService {
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
 			if (!!publisher) {
-				return await this.webcamSession.publish(publisher);
+				const hasAudio = this.isScreenShareEnabled() ? this.screenUser.isAudioActive() : this.webcamUser.isAudioActive();
+				this.publishScreenAudio(false);
+				await this.webcamSession.publish(publisher);
+				// Set current audio value
+				this.publishWebcamAudio(hasAudio);
 			}
 			return;
 		}
@@ -90,6 +93,7 @@ export class OpenViduSessionService {
 	unpublishWebcam() {
 		const publisher = <Publisher>this.webcamUser.getStreamManager();
 		if (!!publisher) {
+			this.publishScreenAudio(this.webcamUser.isAudioActive());
 			this.webcamSession.unpublish(publisher);
 		}
 	}
@@ -155,9 +159,8 @@ export class OpenViduSessionService {
 		(<Publisher>this.webcamUser.getStreamManager()).publishVideo(isVideoActive);
 	}
 
-	publishAudio(isAudioActive: boolean) {
-		this.webcamUser.setAudioActive(isAudioActive);
-		(<Publisher>this.webcamUser.getStreamManager()).publishAudio(isAudioActive);
+	publishAudio(audio: boolean) {
+		this.isWebCamEnabled() ? this.publishWebcamAudio(audio) : this.publishScreenAudio(audio);
 	}
 
 	replaceTrack(videoSource: string, audioSource: string) {
@@ -233,6 +236,10 @@ export class OpenViduSessionService {
 
 	hasWebcamAudioActive(): boolean {
 		return this.webcamUser.isAudioActive();
+	}
+
+	hasScreenAudioActive(): boolean {
+		return this.screenUser.isAudioActive();
 	}
 
 	areBothConnected(): boolean {
@@ -324,6 +331,23 @@ export class OpenViduSessionService {
 			this.webcamUser.getStreamManager().off('streamAudioVolumeChange');
 			this.webcamUser.getStreamManager().stream.disposeWebRtcPeer();
 			this.webcamUser.getStreamManager().stream.disposeMediaStream();
+		}
+	}
+
+	private publishWebcamAudio(audio: boolean) {
+		console.log("AUDIO => ", audio);
+		const publisher = <Publisher>this.webcamUser?.getStreamManager();
+		if (!!publisher) {
+			this.webcamUser.setAudioActive(audio);
+			publisher.publishAudio(audio);
+		}
+	}
+
+	private publishScreenAudio(audio: boolean) {
+		const publisher = <Publisher>this.screenUser?.getStreamManager();
+		if (!!publisher) {
+			this.screenUser.setAudioActive(audio);
+			publisher.publishAudio(audio);
 		}
 	}
 }

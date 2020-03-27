@@ -131,7 +131,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	onNicknameUpdate(nickname: string) {
-
 		this.oVSessionService.setWebcamName(nickname);
 		this.sendNicknameSignal(nickname);
 	}
@@ -148,8 +147,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleMic(): void {
-		const isVideoActive = !this.oVSessionService.hasWebcamAudioActive();
-		this.oVSessionService.publishAudio(isVideoActive);
+		let isAudioActive: boolean;
+		if (this.oVSessionService.isWebCamEnabled()) {
+			isAudioActive = !this.oVSessionService.hasWebcamAudioActive();
+		} else {
+			isAudioActive = !this.oVSessionService.hasScreenAudioActive();
+		}
+		this.oVSessionService.publishAudio(isAudioActive);
 	}
 
 	// ? ChatService
@@ -350,6 +354,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const nickname = JSON.parse(event.data).nickname;
 			user.setNickname(nickname);
 		});
+	}
+
+	toolbarMicIconEnabled(): boolean {
+		if ( this.oVSessionService.isWebCamEnabled()) {
+			return this.oVSessionService.hasWebcamAudioActive();
+		}
+		return this.oVSessionService.hasScreenAudioActive();
 	}
 
 	private subscribeToUserChanged() {

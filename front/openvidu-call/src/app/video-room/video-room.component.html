@@ -16,7 +16,7 @@
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
       [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
-      [isWebcamAudioEnabled]="oVSessionService.hasWebcamAudioActive()"
+      [isWebcamAudioEnabled]="toolbarMicIconEnabled()"
       [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
