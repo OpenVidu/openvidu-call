@@ -28,6 +28,9 @@ export class OpenViduSessionService {
 	private sessionId = '';
 	private log: ILogger;
 
+	private screenMediaStream: MediaStream;
+	private webcamMediaStream: MediaStream;
+
 	constructor(private loggSrv: LoggerService) {
 		this.log = this.loggSrv.get('OpenViduSessionService');
 		this.OV = new OpenVidu();
@@ -182,8 +185,8 @@ export class OpenViduSessionService {
 			true
 		);
 
-		const mediaStream = await this.OV.getUserMedia(properties);
-		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
+		this.webcamMediaStream = await this.OV.getUserMedia(properties);
+		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(this.webcamMediaStream.getVideoTracks()[0]);
 
 	}
 
@@ -192,8 +195,8 @@ export class OpenViduSessionService {
 		const hasAudio = !this.isWebCamEnabled();
 		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
-		const mediaStream = await this.OVScreen.getUserMedia(properties);
-		await (<Publisher>this.screenUser.getStreamManager()).replaceTrack(mediaStream.getVideoTracks()[0]);
+		this.screenMediaStream = await this.OVScreen.getUserMedia(properties);
+		await (<Publisher>this.screenUser.getStreamManager()).replaceTrack(this.screenMediaStream.getVideoTracks()[0]);
 	}
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
@@ -212,10 +215,12 @@ export class OpenViduSessionService {
 	disconnect() {
 		if (this.screenSession) {
 			this.screenSession.disconnect();
+			this.stopScreenTracks();
 			this.screenSession = null;
 		}
 		if (this.webcamSession) {
 			this.webcamSession.disconnect();
+			this.stopWebcamTracks();
 			this.webcamSession = null;
 		}
 		this.screenUser = null;
@@ -351,6 +356,21 @@ export class OpenViduSessionService {
 		if (!!publisher) {
 			this.screenUser.setAudioActive(audio);
 			publisher.publishAudio(audio);
+		}
+	}
+
+	private stopScreenTracks() {
+		if (this.screenMediaStream) {
+			this.screenMediaStream.getTracks().forEach(track => {
+				track.stop();
+			});
+		}
+	}
+	private stopWebcamTracks() {
+		if (this.webcamMediaStream) {
+			this.webcamMediaStream.getTracks().forEach(track => {
+				track.stop();
+			});
 		}
 	}
 }
