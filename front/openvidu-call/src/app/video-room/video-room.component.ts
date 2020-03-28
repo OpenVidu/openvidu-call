@@ -429,7 +429,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	// }
 
 	private initScreenPublisher(): Publisher {
-		const videoSource = this.getScreenVideoSource();
+		const videoSource = ScreenType.SCREEN;
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.oVSessionService.hasWebcamAudioActive();
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
@@ -454,10 +454,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.log.e('There was an error getting the token:', error.code, error.message);
 			this.openDialogError('There was an error getting the token:', error.message);
 		}
-	}
-
-	private getScreenVideoSource(): string {
-		return this.utilsSrv.isFF() ? ScreenType.WINDOW : ScreenType.SCREEN;
 	}
 
 	private getRemoteUserByConnectionId(connectionId): UserModel {

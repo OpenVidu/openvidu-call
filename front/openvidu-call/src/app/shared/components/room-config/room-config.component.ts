@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../../services/logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { ScreenType } from '../../types/video-type';
 
 @Component({
 	selector: 'app-room-config',
@@ -285,7 +286,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private initScreenPublisher(): Publisher {
-		const videoSource = this.utilsSrv.isFF() ? 'window' : 'screen';
+		const videoSource = ScreenType.SCREEN;
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.isAudioActive;
 		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenVidu, PublisherProperties, Publisher, Session } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { VideoType } from '../../types/video-type';
+import { VideoType, ScreenType } from '../../types/video-type';
 import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
@@ -188,7 +188,7 @@ export class OpenViduSessionService {
 	}
 
 	async replaceScreenTrack() {
-		const videoSource = navigator.userAgent.indexOf('Firefox') !== -1 ? 'window' : 'screen';
+		const videoSource = ScreenType.SCREEN;
 		const hasAudio = !this.isWebCamEnabled();
 		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
