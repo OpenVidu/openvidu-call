@@ -9,6 +9,7 @@
   ></app-room-config>
 
   <div *ngIf="localUsers && localUsers.length > 0">
+    <div *ngIf="isConnectionLost" class="reconnecting-container"></div>
     <app-toolbar
       [lightTheme]="lightTheme"
       [newMessagesNum]="newMessages"
@@ -18,6 +19,7 @@
       [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
       [isWebcamAudioEnabled]="toolbarMicIconEnabled()"
       [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
+      [isConnectionLost]="isConnectionLost"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
       (screenShareClicked)="toggleScreenShare()"
@@ -80,7 +82,6 @@
             <stream-component
               [user]="user"
               [canEditNickname]="false"
-              (replaceScreenTrackClicked)="replaceScreenTrack()"
               (enlargeVideoClicked)="onEnlargeVideo($event)"
             ></stream-component>
           </div>

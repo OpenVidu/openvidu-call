@@ -21,6 +21,7 @@ export class ToolbarComponent implements OnInit {
 	@Input() isWebcamVideoEnabled: boolean;
 	@Input() isWebcamAudioEnabled: boolean;
 	@Input() isScreenEnabled: boolean;
+	@Input() isConnectionLost: boolean;
 
 
 	@Output() micButtonClicked = new EventEmitter<any>();

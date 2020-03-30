@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Publisher, Subscriber, Session, SignalOptions, StreamEvent, StreamPropertyChangedEvent } from 'openvidu-browser';
+import { Publisher, Subscriber, Session, SignalOptions, StreamEvent, StreamPropertyChangedEvent, SessionDisconnectedEvent } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -57,6 +57,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	remoteUsers: UserModel[] = [];
 	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 	newMessages = 0;
+	isConnectionLost: boolean;
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 
@@ -114,10 +115,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sessionScreen = this.oVSessionService.getScreenSession();
 		// !! Refactor these methods
 		this.subscribeToStreamCreated();
-		this.subscribedToStreamDestroyed();
+		this.subscribeToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
-		this.subscribedToChat();
+		this.subscribeToChat();
+		this.subscribeToReconnection();
 		this.connectToSession();
 	}
 
@@ -313,7 +315,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private subscribedToStreamDestroyed() {
+	private subscribeToStreamDestroyed() {
 		this.session.on('streamDestroyed', (event: StreamEvent) => {
 			const connectionId = event.stream.connection.connectionId;
 			const user = this.getRemoteUserByConnectionId(connectionId);
@@ -391,7 +393,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	// ! Create chat service
-	private subscribedToChat() {
+	private subscribeToChat() {
 		this.session.on('signal:chat', (event: any) => {
 			const connectionId = event.from.connectionId;
 			const data = JSON.parse(event.data);
@@ -409,6 +411,23 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			});
 			this.checkNotification();
 			this.chatComponent.scrollToBottom();
+		});
+	}
+
+	private subscribeToReconnection() {
+		this.session.on('reconnecting', () => {
+			this.log.w('Connection lost: Reconnecting');
+			this.isConnectionLost = true;
+		});
+		this.session.on('reconnected', () => {
+			this.log.w('Connection lost: Reconnected');
+			this.isConnectionLost = false;
+		});
+		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
+			if (event.reason === 'networkDisconnect') {
+				this.exitSession();
+				// this.oVSessionService.disconnect();
+			}
 		});
 	}
 

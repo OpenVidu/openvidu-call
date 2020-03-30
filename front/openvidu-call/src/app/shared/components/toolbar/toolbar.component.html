@@ -1,38 +1,88 @@
 <mat-toolbar id="header" role="heading" [class.headerLight]="lightTheme">
+	<div id="navSessionInfo">
+		<a>
+			<img
+				id="header_img"
+				*ngIf="!lightTheme"
+				alt="OpenVidu Logo"
+				src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png"
+			/>
+			<img
+				id="header_img"
+				*ngIf="lightTheme"
+				alt="OpenVidu Logo"
+				src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png"
+			/>
+		</a>
+		<div id="titleContent" *ngIf="!compact && mySessionId" [class.titleContentLight]="lightTheme">
+			<span id="session-title">{{ mySessionId }}</span>
+		</div>
+	</div>
 
-  <div id="navSessionInfo">
-    <a>
-      <img id="header_img" *ngIf="!lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png">
-      <img id="header_img" *ngIf="lightTheme" alt="OpenVidu Logo" src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png">
-    </a>
-    <div id="titleContent" *ngIf="!compact && mySessionId" [class.titleContentLight]="lightTheme">
-      <span id="session-title">{{mySessionId}}</span>
-    </div>
-  </div>
-
-  <div id="navButtons" align="center">
-    <button mat-icon-button (click)="micStatusChanged()" id="navMicButton"  *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.audio)">
-      <mat-icon *ngIf="isWebcamAudioEnabled" matTooltip="Mute your audio">mic</mat-icon>
-      <mat-icon *ngIf="!isWebcamAudioEnabled" color="warn" matTooltip="Unmute your audio">mic_off</mat-icon>
-    </button>
-    <button mat-icon-button (click)="camStatusChanged()" id="navCamButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.video)">
-      <mat-icon *ngIf="isWebcamVideoEnabled" matTooltip="Mute your cam">videocam</mat-icon>
-      <mat-icon *ngIf="!isWebcamVideoEnabled" color="warn" matTooltip="Unmute your cam">videocam_off</mat-icon>
-    </button>
-    <button mat-icon-button (click)="toggleScreenShare()" id="navScreenButton" *ngIf="!isScreenEnabled && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare))">
-      <mat-icon matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
-    </button>
-    <button mat-icon-button (click)="toggleScreenShare()" *ngIf="isScreenEnabled">
-      <mat-icon matTooltip="Stop sharing">screen_share</mat-icon>
-    </button>
-    <button mat-icon-button (click)="toggleFullscreen()" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.fullscreen)">
-      <mat-icon matTooltip="Fullscreen">{{fullscreenIcon}}</mat-icon>
-    </button>
-    <button mat-icon-button (click)="exitSession()" id="navLeaveButton" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.exit)">
-      <mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
-    </button>
-    <button mat-icon-button id="navChatButton" (click)="toggleChat()" *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)">
-        <mat-icon matBadge="{{newMessagesNum}}" [matBadgeHidden]="newMessagesNum === 0"  matBadgePosition="above before" matTooltip="Chat" matBadgeColor="accent">chat</mat-icon>
-    </button>
-  </div>
+	<div id="navButtons" align="center">
+		<button
+			mat-icon-button
+			(click)="micStatusChanged()"
+			[disabled]="isConnectionLost"
+			id="navMicButton"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.audio)"
+		>
+			<mat-icon *ngIf="isWebcamAudioEnabled" matTooltip="Mute your audio">mic</mat-icon>
+			<mat-icon *ngIf="!isWebcamAudioEnabled" color="warn" matTooltip="Unmute your audio">mic_off</mat-icon>
+		</button>
+		<button
+			mat-icon-button
+			(click)="camStatusChanged()"
+			[disabled]="isConnectionLost"
+			id="navCamButton"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.video)"
+		>
+			<mat-icon *ngIf="isWebcamVideoEnabled" matTooltip="Mute your cam">videocam</mat-icon>
+			<mat-icon *ngIf="!isWebcamVideoEnabled" color="warn" matTooltip="Unmute your cam">videocam_off</mat-icon>
+		</button>
+		<button
+			mat-icon-button
+			(click)="toggleScreenShare()"
+			[disabled]="isConnectionLost"
+			id="navScreenButton"
+			*ngIf="!isScreenEnabled && (!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare))"
+		>
+			<mat-icon matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
+		</button>
+		<button mat-icon-button (click)="toggleScreenShare()" [disabled]="isConnectionLost" *ngIf="isScreenEnabled">
+			<mat-icon matTooltip="Stop sharing">screen_share</mat-icon>
+		</button>
+		<button
+			mat-icon-button
+			(click)="toggleFullscreen()"
+			[disabled]="isConnectionLost"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.fullscreen)"
+		>
+			<mat-icon matTooltip="Fullscreen">{{ fullscreenIcon }}</mat-icon>
+		</button>
+		<button
+			mat-icon-button
+			(click)="exitSession()"
+			id="navLeaveButton"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.exit)"
+		>
+			<mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
+		</button>
+		<button
+			mat-icon-button
+			id="navChatButton"
+      (click)="toggleChat()"
+      [disabled]="isConnectionLost"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)"
+		>
+			<mat-icon
+				matBadge="{{ newMessagesNum }}"
+				[matBadgeHidden]="newMessagesNum === 0"
+				matBadgePosition="above before"
+				matTooltip="Chat"
+				matBadgeColor="accent"
+				>chat</mat-icon
+			>
+		</button>
+	</div>
 </mat-toolbar>
