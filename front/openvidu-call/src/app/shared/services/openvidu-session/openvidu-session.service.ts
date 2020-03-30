@@ -201,8 +201,7 @@ export class OpenViduSessionService {
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		this.log.d('init screen properties', properties);
-		const publisher = this.initPublisher(targetElement, properties);
-		return publisher;
+		return  this.initPublisher(targetElement, properties);
 	}
 
 	destroyUsers() {
