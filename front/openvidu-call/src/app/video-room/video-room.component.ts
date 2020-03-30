@@ -110,7 +110,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	joinToSession() {
-		this.oVSessionService.initSession();
+		this.oVSessionService.initSessions();
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
 		// !! Refactor these methods

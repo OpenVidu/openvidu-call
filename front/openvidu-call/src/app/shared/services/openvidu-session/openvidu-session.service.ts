@@ -41,7 +41,7 @@ export class OpenViduSessionService {
 		this._OVUsers.next([this.webcamUser]);
 	}
 
-	initSession() {
+	initSessions() {
 		this.webcamSession = this.OV.initSession();
 		this.screenSession = this.OVScreen.initSession();
 	}
