@@ -11,7 +11,7 @@ import { OvSettings } from '../shared/types/ov-settings';
 import { UtilsService } from '../shared/services/utils/utils.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
 import { Subscription } from 'rxjs';
-import { ScreenType, VideoType } from '../shared/types/video-type';
+import { ScreenType } from '../shared/types/video-type';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
 
@@ -306,9 +306,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// });
 
 			const nickname = JSON.parse(event.stream.connection.data)?.clientData;
-			const type = event.stream.typeOfVideo === 'SCREEN' ? VideoType.SCREEN : VideoType.REMOTE;
 
-			const newUser = new UserModel(connectionId, subscriber, null, null, nickname, type);
+			const newUser = new UserModel(connectionId, subscriber, nickname);
 
 			this.remoteUsers.push(newUser);
 			this.updateOpenViduLayout();
@@ -331,18 +330,18 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	subscribeToStreamPropertyChange() {
 		this.session.on('streamPropertyChanged', (event: StreamPropertyChangedEvent) => {
-			const connectionId = event.stream.connection.connectionId;
-			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
-				return;
-			}
-			const user = this.getRemoteUserByConnectionId(connectionId);
+			// const connectionId = event.stream.connection.connectionId;
+			// if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+			// 	return;
+			// }
+			// const user = this.getRemoteUserByConnectionId(connectionId);
 
-			if (event.changedProperty === 'videoActive') {
-				user.setVideoActive(<boolean>event.newValue);
-			}
-			if (event.changedProperty === 'audioActive') {
-				user.setAudioActive(<boolean>event.newValue);
-			}
+			// if (event.changedProperty === 'videoActive') {
+			// 	user.setVideoActive(<boolean>event.newValue);
+			// }
+			// if (event.changedProperty === 'audioActive') {
+			// 	user.setAudioActive(<boolean>event.newValue);
+			// }
 		});
 	}
 

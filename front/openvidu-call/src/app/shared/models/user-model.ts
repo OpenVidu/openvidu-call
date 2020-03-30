@@ -1,4 +1,4 @@
-import { StreamManager } from 'openvidu-browser';
+import { StreamManager, Publisher } from 'openvidu-browser';
 import { VideoType } from '../types/video-type';
 
 /**
@@ -9,16 +9,6 @@ export class UserModel {
 	 * The Connection ID that is publishing the stream
 	 */
 	private connectionId: string;
-
-	/**
-	 * Whether the user has a audio track active or not
-	 */
-	private audioActive: boolean;
-
-	/**
-	 * Whether the user has a video track active or not
-	 */
-	private videoActive: boolean;
 
 	/**
 	 * Whether the user is sharing the screen or not
@@ -34,11 +24,6 @@ export class UserModel {
 	 * StreamManager object ([[Publisher]] or [[Subscriber]])
 	 */
 	private streamManager: StreamManager;
-
-	/**
-	 * User type (`local` or  `remote`)
-	 */
-	private type: VideoType;
 
 	/**
 	 * @hidden
@@ -61,32 +46,26 @@ export class UserModel {
 	constructor(
 		connectionId?: string,
 		streamManager?: StreamManager,
-		audioActive?: boolean,
-		videoActive?: boolean,
 		nickname?: string,
-		type?: VideoType
 	) {
 		this.connectionId = connectionId || '';
-		this.audioActive = typeof audioActive === 'boolean' ? audioActive : true;
-		this.videoActive = typeof videoActive === 'boolean' ? videoActive : true;
 		this.screenShareActive = false;
 		this.nickname = nickname || 'OpenVidu';
 		this.streamManager = streamManager || null;
-		this.type = type || VideoType.LOCAL;
 	}
 
 	/**
 	 * Return `true` if audio track is active and `false` if audio track is muted
 	 */
 	public isAudioActive(): boolean {
-		return this.audioActive;
+		return (<Publisher>this.streamManager).stream.audioActive;
 	}
 
 	/**
 	 * Return `true` if video track is active and `false` if video track is muted
 	 */
 	public isVideoActive(): boolean {
-		return this.videoActive;
+		return (<Publisher>this.streamManager).stream.videoActive;
 	}
 
 	/**
@@ -102,13 +81,6 @@ export class UserModel {
 	public getConnectionId(): string {
 		return this.connectionId;
 	}
-
-	/**
-	 * @hidden
-	 */
-	// public getLocalConnectionId(): string {
-	// 	return this.localConnectionId;
-	// }
 
 	/**
 	 * Return the user nickname
@@ -135,7 +107,7 @@ export class UserModel {
 	 * Return `true` if user has a local role and `false` if not
 	 */
 	public isLocal(): boolean {
-		return this.type === 'local';
+		return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.CAMERA;
 	}
 
 	/**
@@ -149,24 +121,9 @@ export class UserModel {
 	 * Return `true` if user has a screen role and `false` if not
 	 */
 	public isScreen(): boolean {
-		return this.type === 'screen';
+		return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.SCREEN;
 	}
 
-	/**
-	 * Set the audioActive value
-	 * @param isAudioActive value of audioActive
-	 */
-	public setAudioActive(isAudioActive: boolean) {
-		this.audioActive = isAudioActive;
-	}
-
-	/**
-	 * Set the videoActive value
-	 * @param isVideoActive value of videoActive
-	 */
-	public setVideoActive(isVideoActive: boolean) {
-		this.videoActive = isVideoActive;
-	}
 
 	/**
 	 * Set the screenShare value
@@ -193,26 +150,11 @@ export class UserModel {
 	}
 
 	/**
-	 * @hidden
-	 */
-	// public setLocalConnectionId(connectionId: string) {
-	// 	this.localConnectionId = connectionId;
-	// }
-
-	/**
 	 * Set the user nickname value
 	 * @param nickname value of user nickname
 	 */
 	public setNickname(nickname: string) {
 		this.nickname = nickname;
-	}
-
-	/**
-	 * Set the user type value
-	 * @param type value of user type
-	 */
-	public setType(type: VideoType) {
-		this.type = type;
 	}
 
 	/**

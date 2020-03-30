@@ -1,5 +1,6 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { StreamManager } from 'openvidu-browser';
+import { VideoType } from '../../types/video-type';
 
 @Component({
 	selector: 'ov-video',
@@ -29,7 +30,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
 	set streamManager(streamManager: StreamManager) {
 		this._streamManager = streamManager;
 		if (!!this.elementRef && this._streamManager) {
-			if (this._streamManager.stream.typeOfVideo === 'SCREEN') {
+			if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
 				this.elementRef.nativeElement.style.objectFit = 'contain';
 				this.elementRef.nativeElement.style.background = '#878787';
 			} else {

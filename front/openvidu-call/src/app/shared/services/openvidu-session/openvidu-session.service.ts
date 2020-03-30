@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { OpenVidu, PublisherProperties, Publisher, Session } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { VideoType, ScreenType } from '../../types/video-type';
+import { ScreenType } from '../../types/video-type';
 import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
@@ -122,11 +122,9 @@ export class OpenViduSessionService {
 	}
 
 	enableScreenUser(screenPublisher: Publisher) {
-		const hasAudio = this.webcamUser.isVideoActive() ? false : this.webcamUser.isAudioActive();
-		const hasVideo = true;
 		const connectionId = this.screenSession?.connection?.connectionId;
 
-		this.screenUser = new UserModel(connectionId, screenPublisher, hasAudio, hasVideo, this.getScreenUserName(), VideoType.SCREEN);
+		this.screenUser = new UserModel(connectionId, screenPublisher, this.getScreenUserName());
 
 		// ! REFACTOR, check if it's necessary
 		this.screenUser.setScreenShareActive(true);
@@ -161,7 +159,6 @@ export class OpenViduSessionService {
 	}
 
 	publishVideo(isVideoActive: boolean) {
-		this.webcamUser.setVideoActive(isVideoActive);
 		(<Publisher>this.webcamUser.getStreamManager()).publishVideo(isVideoActive);
 	}
 
@@ -345,7 +342,6 @@ export class OpenViduSessionService {
 	private publishWebcamAudio(audio: boolean) {
 		const publisher = <Publisher>this.webcamUser?.getStreamManager();
 		if (!!publisher) {
-			this.webcamUser.setAudioActive(audio);
 			publisher.publishAudio(audio);
 		}
 	}
@@ -353,7 +349,6 @@ export class OpenViduSessionService {
 	private publishScreenAudio(audio: boolean) {
 		const publisher = <Publisher>this.screenUser?.getStreamManager();
 		if (!!publisher) {
-			this.screenUser.setAudioActive(audio);
 			publisher.publishAudio(audio);
 		}
 	}

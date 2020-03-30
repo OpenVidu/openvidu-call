@@ -1,7 +1,7 @@
 export enum VideoType {
-	LOCAL = 'local',
-	SCREEN = 'screen',
-	REMOTE = 'remote'
+	CAMERA = 'CAMERA',
+	SCREEN = 'SCREEN',
+	CUSTOM = 'CUSTOM'
 }
 
 export enum ScreenType {
