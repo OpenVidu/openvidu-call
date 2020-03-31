@@ -100,7 +100,7 @@ export class OpenViduSessionService {
 		}
 	}
 
-	unpublishScreenSession() {
+	unpublishScreen() {
 		const publisher = <Publisher>this.screenUser.getStreamManager();
 		if (!!publisher) {
 			this.screenSession.unpublish(publisher);
@@ -129,11 +129,6 @@ export class OpenViduSessionService {
 		// !
 
 		if (this.isWebCamEnabled()) {
-			// this.disableWebcamUser();
-			// this.unpublishWebcam();
-			// Enabling webcam user audio
-			// this.webcamUser.setAudioActive(true);
-			// (<Publisher>this.webcamUser.getStreamManager()).publishAudio(true);
 			this._OVUsers.next([this.webcamUser, this.screenUser]);
 			return;
 		}
@@ -157,11 +152,6 @@ export class OpenViduSessionService {
 	publishVideo(isVideoActive: boolean) {
 		(<Publisher>this.webcamUser.getStreamManager()).publishVideo(isVideoActive);
 	}
-
-	publishAudio(audio: boolean) {
-		this.isWebCamEnabled() ? this.publishWebcamAudio(audio) : this.publishScreenAudio(audio);
-	}
-
 
 	publishWebcamAudio(audio: boolean) {
 		const publisher = <Publisher>this.webcamUser?.getStreamManager();

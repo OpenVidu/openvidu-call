@@ -201,8 +201,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	toggleScreenShare() {
 		// Disabling screenShare
 		if (this.oVSessionService.areBothConnected()) {
-			this.oVSessionService.disableScreenUser();
-			this.oVSessionService.unpublishScreenSession();
+			this.removeScreen();
 			return;
 		}
 
@@ -233,8 +232,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.publishScreenAudio(false);
 		this.oVSessionService.publishWebcamAudio(hasAudio);
 		this.oVSessionService.enableWebcamUser();
-		this.oVSessionService.disableScreenUser();
-		this.oVSessionService.unpublishScreenSession();
+		this.removeScreen();
 	}
 
 	toggleDialogExtension() {
@@ -378,6 +376,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			return this.oVSessionService.hasWebcamAudioActive();
 		}
 		return this.oVSessionService.hasScreenAudioActive();
+	}
+
+	private removeScreen() {
+		this.oVSessionService.disableScreenUser();
+		this.oVSessionService.unpublishScreen();
 	}
 
 	private subscribeToUserChanged() {

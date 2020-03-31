@@ -140,11 +140,11 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 				this.oVDevicesService.setMicSelected(audioSource);
 			}
 			// Publish microphone
-			this.oVSessionService.publishAudio(true);
+			this.publishAudio(true);
 			this.isAudioActive = true;
 		} else {
 			// Unpublish microhpone
-			this.oVSessionService.publishAudio(false);
+			this.publishAudio(false);
 			this.isAudioActive = false;
 		}
 	}
@@ -190,7 +190,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	toggleMic() {
 		this.isAudioActive = !this.isAudioActive;
-		this.oVSessionService.publishAudio(this.isAudioActive);
+		this.publishAudio(this.isAudioActive);
 	}
 
 	takePhoto() {
@@ -230,10 +230,10 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	joinSession() {
 		if (this.nicknameFormControl.valid) {
-			this.localUsers.forEach(user => {
-				user.getStreamManager().off('streamAudioVolumeChange');
-				user.setNickname(this.nicknameFormControl.value);
-			});
+			// this.localUsers.forEach(user => {
+			// 	user.getStreamManager().off('streamAudioVolumeChange');
+			// 	user.setNickname(this.nicknameFormControl.value);
+			// });
 			// if (this.avatarSelected === AVATAR_TYPE.RANDOM) {
 			// 	this.localUsers[0].removeVideoAvatar();
 			// }
@@ -301,5 +301,11 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 				this.utilsSrv.handlerScreenShareError(error);
 			}
 		}
+	}
+
+	private publishAudio(audio: boolean) {
+		this.oVSessionService.isWebCamEnabled()
+			? this.oVSessionService.publishWebcamAudio(audio)
+			: this.oVSessionService.publishScreenAudio(audio);
 	}
 }
