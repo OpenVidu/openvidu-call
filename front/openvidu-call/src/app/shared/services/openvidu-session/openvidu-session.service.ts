@@ -71,11 +71,7 @@ export class OpenViduSessionService {
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
 			if (!!publisher) {
-				const hasAudio = this.isScreenShareEnabled() ? this.screenUser.isAudioActive() : this.webcamUser.isAudioActive();
-				this.publishScreenAudio(false);
 				await this.webcamSession.publish(publisher);
-				// Set current audio value
-				this.publishWebcamAudio(hasAudio);
 			}
 			return;
 		}
@@ -99,7 +95,7 @@ export class OpenViduSessionService {
 	unpublishWebcam() {
 		const publisher = <Publisher>this.webcamUser.getStreamManager();
 		if (!!publisher) {
-			this.publishScreenAudio(this.webcamUser.isAudioActive());
+			this.publishScreenAudio(this.hasWebcamAudioActive());
 			this.webcamSession.unpublish(publisher);
 		}
 	}
@@ -166,6 +162,21 @@ export class OpenViduSessionService {
 		this.isWebCamEnabled() ? this.publishWebcamAudio(audio) : this.publishScreenAudio(audio);
 	}
 
+
+	publishWebcamAudio(audio: boolean) {
+		const publisher = <Publisher>this.webcamUser?.getStreamManager();
+		if (!!publisher) {
+			publisher.publishAudio(audio);
+		}
+	}
+
+	publishScreenAudio(audio: boolean) {
+		const publisher = <Publisher>this.screenUser?.getStreamManager();
+		if (!!publisher) {
+			publisher.publishAudio(audio);
+		}
+	}
+
 	async replaceTrack(videoSource: string, audioSource: string) {
 		if (!!videoSource) {
 			this.videoSource = videoSource;
@@ -177,8 +188,8 @@ export class OpenViduSessionService {
 		const properties = this.createProperties(
 			this.videoSource,
 			this.audioSource,
-			this.webcamUser.isVideoActive(),
-			this.webcamUser.isAudioActive(),
+			this.hasWebcamVideoActive(),
+			this.hasWebcamAudioActive(),
 			true
 		);
 
@@ -229,7 +240,11 @@ export class OpenViduSessionService {
 	}
 
 	isWebCamEnabled(): boolean {
-		return this._OVUsers.value[0].isLocal();
+		return this._OVUsers.value[0].isCamera();
+	}
+
+	isOnlyScreenConnected(): boolean {
+		return this._OVUsers.value[0].isScreen();
 	}
 
 	hasWebcamVideoActive(): boolean {
@@ -250,10 +265,6 @@ export class OpenViduSessionService {
 
 	isOnlyWebcamConnected(): boolean {
 		return this.isWebCamEnabled() && !this.areBothConnected();
-	}
-
-	isOnlyScreenConnected(): boolean {
-		return this._OVUsers.value[0].isScreen();
 	}
 
 	isScreenShareEnabled(): boolean {
@@ -339,19 +350,6 @@ export class OpenViduSessionService {
 		}
 	}
 
-	private publishWebcamAudio(audio: boolean) {
-		const publisher = <Publisher>this.webcamUser?.getStreamManager();
-		if (!!publisher) {
-			publisher.publishAudio(audio);
-		}
-	}
-
-	private publishScreenAudio(audio: boolean) {
-		const publisher = <Publisher>this.screenUser?.getStreamManager();
-		if (!!publisher) {
-			publisher.publishAudio(audio);
-		}
-	}
 
 	private stopScreenTracks() {
 		if (this.screenMediaStream) {

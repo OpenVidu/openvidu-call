@@ -1,7 +1,15 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Publisher, Subscriber, Session, SignalOptions, StreamEvent, StreamPropertyChangedEvent, SessionDisconnectedEvent } from 'openvidu-browser';
+import {
+	Publisher,
+	Subscriber,
+	Session,
+	SignalOptions,
+	StreamEvent,
+	StreamPropertyChangedEvent,
+	SessionDisconnectedEvent
+} from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -46,7 +54,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	lightTheme: boolean;
 	chatOpened: boolean;
 	showDialogExtension = false;
-	showDialogChooseRoom = true;
+	showConfigRoomCard = true;
 	session: Session;
 	sessionScreen: Session;
 	openviduLayout: OpenViduLayout;
@@ -94,7 +102,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.exitSession();
 	}
 	onConfigRoomJoin() {
-		this.showDialogChooseRoom = false;
+		this.showConfigRoomCard = false;
 		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
 			this.localUsers = users;
 		});
@@ -113,7 +121,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.initSessions();
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
-		// !! Refactor these methods
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
@@ -154,13 +161,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleMic(): void {
-		let isAudioActive: boolean;
 		if (this.oVSessionService.isWebCamEnabled()) {
-			isAudioActive = !this.oVSessionService.hasWebcamAudioActive();
-		} else {
-			isAudioActive = !this.oVSessionService.hasScreenAudioActive();
+			this.oVSessionService.publishWebcamAudio(!this.oVSessionService.hasWebcamAudioActive());
+			return;
 		}
-		this.oVSessionService.publishAudio(isAudioActive);
+		this.oVSessionService.publishScreenAudio(!this.oVSessionService.hasScreenAudioActive());
 	}
 
 	// ? ChatService
@@ -171,6 +176,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	async toggleCam() {
 		const isVideoActive = !this.oVSessionService.hasWebcamVideoActive();
 
+		// Disabling webcam
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.publishVideo(isVideoActive);
 			this.oVSessionService.disableWebcamUser();
@@ -178,21 +184,29 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.updateOpenViduLayout();
 			return;
 		}
+		// Enabling webcam
 		if (this.oVSessionService.isOnlyScreenConnected()) {
-			this.oVSessionService.enableWebcamUser();
+			const hasAudio = this.oVSessionService.hasScreenAudioActive();
+
 			await this.oVSessionService.publishWebcam();
+			this.oVSessionService.publishScreenAudio(false);
+			this.oVSessionService.publishWebcamAudio(hasAudio);
+			this.oVSessionService.enableWebcamUser();
 		}
+		// Muting/unmuting webcam
 		this.oVSessionService.publishVideo(isVideoActive);
 		this.updateOpenViduLayout();
 	}
 
 	toggleScreenShare() {
+		// Disabling screenShare
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
 			this.oVSessionService.unpublishScreenSession();
 			return;
 		}
 
+		// Enabling screenShare
 		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
@@ -201,7 +215,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				this.oVSessionService.publishScreen();
 				if (!this.oVSessionService.hasWebcamVideoActive()) {
-					// Unpublishing webcam user
+					// Disabling webcam
 					this.oVSessionService.disableWebcamUser();
 					this.oVSessionService.unpublishWebcam();
 				}
@@ -213,10 +227,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		// if (this.oVSessionService.isOnlyScreenConnected()) {
-		this.oVSessionService.enableWebcamUser();
+		// Disabling screnShare and enabling webcam
+		const hasAudio = this.oVSessionService.hasScreenAudioActive();
 		this.oVSessionService.publishWebcam();
-		// }
+		this.oVSessionService.publishScreenAudio(false);
+		this.oVSessionService.publishWebcamAudio(hasAudio);
+		this.oVSessionService.enableWebcamUser();
 		this.oVSessionService.disableScreenUser();
 		this.oVSessionService.unpublishScreenSession();
 	}
@@ -335,7 +351,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// 	return;
 			// }
 			// const user = this.getRemoteUserByConnectionId(connectionId);
-
 			// if (event.changedProperty === 'videoActive') {
 			// 	user.setVideoActive(<boolean>event.newValue);
 			// }
