@@ -4,5 +4,6 @@
     "javascript.preferences.quoteStyle": "single",
     "typescript.preferences.quoteStyle": "single",
     "editor.insertSpaces": false,
-    "prettier.useTabs": true
+    "prettier.useTabs": true,
+    "typescript.referencesCodeLens.enabled": true
 }
