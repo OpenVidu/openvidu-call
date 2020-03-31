@@ -198,7 +198,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.updateOpenViduLayout();
 	}
 
-	toggleScreenShare() {
+	async toggleScreenShare() {
 		// Disabling screenShare
 		if (this.oVSessionService.areBothConnected()) {
 			this.removeScreen();
@@ -228,7 +228,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 		// Disabling screnShare and enabling webcam
 		const hasAudio = this.oVSessionService.hasScreenAudioActive();
-		this.oVSessionService.publishWebcam();
+		await this.oVSessionService.publishWebcam();
 		this.oVSessionService.publishScreenAudio(false);
 		this.oVSessionService.publishWebcamAudio(hasAudio);
 		this.oVSessionService.enableWebcamUser();
