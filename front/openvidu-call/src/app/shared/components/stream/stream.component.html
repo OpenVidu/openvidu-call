@@ -5,11 +5,11 @@
 	(dblclick)="enlargeVideo()"
 >
 	<mat-chip-list class="nickname" [class.fullscreen]="isFullscreen">
-		<mat-chip (click)="toggleNicknameForm()" [color]="canEditNickname ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
+		<mat-chip (click)="toggleNicknameForm()" [color]="this.user.isLocal() ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
 			<span id="nickname">{{ this.user.getNickname() }}</span>
-			<span *ngIf="canEditNickname"> (edit)</span>
+			<span *ngIf="this.user.isLocal()"> (edit)</span>
 		</mat-chip>
-		<div *ngIf="toggleNickname && canEditNickname" [class.fullscreen]="isFullscreen" id="dialogNickname">
+		<div *ngIf="toggleNickname && this.user.isLocal()" [class.fullscreen]="isFullscreen" id="dialogNickname">
 			<button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
 				<mat-icon matTooltip="Close">highlight_off</mat-icon>
 			</button>
@@ -52,7 +52,7 @@
 		(click)="replaceScreenTrack()"
 		class="streamButtons"
 		id="changeScreenButton"
-		*ngIf="this.user.isRemote() && canEditNickname"
+		*ngIf="this.user.isLocal() && this.user.isScreen()"
 	>
 		<mat-icon matTooltip="Choose screen">picture_in_picture</mat-icon>
 	</button>

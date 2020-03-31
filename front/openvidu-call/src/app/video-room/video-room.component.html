@@ -67,7 +67,6 @@
             <stream-component
               *ngIf="localUser.getStreamManager()"
               [user]="localUser"
-              [canEditNickname]="true"
               (nicknameClicked)="onNicknameUpdate($event)"
               (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
               (enlargeVideoClicked)="onEnlargeVideo($event)"
@@ -81,7 +80,6 @@
           >
             <stream-component
               [user]="user"
-              [canEditNickname]="false"
               (enlargeVideoClicked)="onEnlargeVideo($event)"
             ></stream-component>
           </div>

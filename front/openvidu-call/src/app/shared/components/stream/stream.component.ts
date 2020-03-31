@@ -19,7 +19,6 @@ export class StreamComponent implements OnInit {
 	matcher: NicknameMatcher;
 
 	@Input() user: UserModel;
-	@Input() canEditNickname: boolean;
 	@Output() nicknameClicked = new EventEmitter<any>();
 	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
 	@Output() enlargeVideoClicked = new EventEmitter<any>();
@@ -55,7 +54,7 @@ export class StreamComponent implements OnInit {
 	}
 
 	toggleNicknameForm() {
-		if (this.canEditNickname) {
+		if (this.user.isLocal()) {
 			this.toggleNickname = !this.toggleNickname;
 		}
 	}
