@@ -248,8 +248,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	onEnlargeVideo(element: HTMLElement) {
-		this.log.d('Enlarging video');
+	onEnlargeVideo(event: {element: HTMLElement, resetAll: boolean}) {
+		const element = event.element;
+		this.log.d('Enlarging video', element);
+		if (!!event.resetAll) {
+			this.resetAllBigElements();
+		}
+
 		if (element.className.includes(this.BIG_ELEMENT_CLASS)) {
 			element.classList.remove(this.BIG_ELEMENT_CLASS);
 		} else {
@@ -320,7 +325,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// });
 
 			const nickname = JSON.parse(event.stream.connection.data)?.clientData;
-
 			const newUser = new UserModel(connectionId, subscriber, nickname);
 
 			this.remoteUsers.push(newUser);
@@ -336,7 +340,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (index > -1) {
 				this.remoteUsers.splice(index, 1);
 			}
-			// this.checkSomeoneShareScreen();
 			// event.preventDefault();
 			this.updateOpenViduLayout();
 		});
@@ -379,6 +382,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		return this.oVSessionService.hasScreenAudioActive();
 	}
 
+
+
 	private removeScreen() {
 		this.oVSessionService.disableScreenUser();
 		this.oVSessionService.unpublishScreen();
@@ -398,9 +403,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 					// if (!!data.nickname) {
 					// 	user.setNickname(data.nickname);
 					// }
-					if (!!data.isScreenShareActive) {
-						user.setScreenShareActive(data.isScreenShareActive);
-					}
+					// if (!!data.isScreenShareActive) {
+					// 	user.setScreenShareActive(data.isScreenShareActive);
+					// }
 					if (!!data.avatar) {
 						user.setUserAvatar(data.avatar);
 					}
@@ -503,5 +508,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		setTimeout(() => {
 			this.openviduLayout.updateLayout();
 		}, timeout);
+	}
+
+	private resetAllBigElements() {
+		const elements = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);
+		for (let i = 0; i < elements.length; i++) {
+			elements.item(i).classList.remove(this.BIG_ELEMENT_CLASS);
+		}
 	}
 }

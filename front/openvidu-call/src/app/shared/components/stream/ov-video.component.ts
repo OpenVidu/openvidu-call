@@ -33,7 +33,6 @@ export class OpenViduVideoComponent implements AfterViewInit {
 
 	@ViewChild('videoElement')
 	set videoElement(element: ElementRef) {
-		console.log("SET element", element);
 		this._videoElement = element;
 	}
 
@@ -45,7 +44,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
 				if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
 					this._videoElement.nativeElement.style.objectFit = 'contain';
 					this._videoElement.nativeElement.style.background = '#272727';
-					this.enlargeVideoEvent.emit();
+					this.enlargeVideoEvent.emit(true);
 				} else {
 					this._videoElement.nativeElement.style.objectFit = 'cover';
 				}

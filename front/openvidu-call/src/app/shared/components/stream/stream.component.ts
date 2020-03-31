@@ -44,9 +44,10 @@ export class StreamComponent implements OnInit {
 		this.matcher = new NicknameMatcher();
 	}
 
-	enlargeVideo() {
+	enlargeVideo(resetAll) {
 		this.fullscreenIcon = this.fullscreenIcon === EnlargeIcon.BIG ? EnlargeIcon.NORMAL : EnlargeIcon.BIG;
-		this.enlargeVideoClicked.emit(this.streamComponent.element.nativeElement.parentElement.parentElement);
+		const element = this.streamComponent.element.nativeElement.parentElement.parentElement;
+		this.enlargeVideoClicked.emit({element, resetAll});
 	}
 
 	toggleSound() {
