@@ -31,7 +31,7 @@
 		</div>
 	</mat-chip-list>
 
-	<ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound"></ov-video>
+	<ov-video [streamManager]="user.getStreamManager()" [mutedSound]="mutedSound" (enlargeVideoEvent)="enlargeVideo()"></ov-video>
 	<div class="statusIcons">
 		<div id="statusMic" *ngIf="!this.user.isAudioActive()">
 			<mat-icon>mic_off</mat-icon>

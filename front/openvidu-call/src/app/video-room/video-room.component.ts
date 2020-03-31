@@ -353,6 +353,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// 	user.setVideoActive(<boolean>event.newValue);
 			// }
 			// if (event.changedProperty === 'audioActive') {
+			// 	this.remoteUsers.some(user => user.isVideoActive());
 			// 	user.setAudioActive(<boolean>event.newValue);
 			// }
 		});
@@ -405,7 +406,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 					}
 				}
 			});
-			// this.checkSomeoneShareScreen();
 		});
 	}
 
@@ -454,15 +454,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			data: { message: message, messageError: messageError }
 		});
 	}
-
-	// private checkSomeoneShareScreen() {
-	// 	let isScreenShared: boolean;
-	// 	// return true if at least one passes the test
-	// 	isScreenShared = this.remoteUsers.some(user => user.isScreenShareActive()) || this.oVSessionService.isScreenShareEnabled();
-	// 	this.openviduLayoutOptions.fixedRatio = isScreenShared;
-	// 	this.openviduLayout.setLayoutOptions(this.openviduLayoutOptions);
-	// 	this.updateOpenViduLayout();
-	// }
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = ScreenType.SCREEN;

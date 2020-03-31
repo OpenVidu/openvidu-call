@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { StreamManager } from 'openvidu-browser';
 import { VideoType } from '../../types/video-type';
 
@@ -14,29 +14,44 @@ import { VideoType } from '../../types/video-type';
 	styleUrls: ['./stream.component.css']
 })
 export class OpenViduVideoComponent implements AfterViewInit {
-	@ViewChild('videoElement') elementRef: ElementRef;
 
 	@Input() mutedSound: boolean;
 
+	@Output() enlargeVideoEvent =  new EventEmitter<any>();
+
 	_streamManager: StreamManager;
 
+	_videoElement: ElementRef;
+
 	ngAfterViewInit() {
-		if (this._streamManager) {
-			this._streamManager.addVideoElement(this.elementRef.nativeElement);
-		}
+		setTimeout(() => {
+			if (this._streamManager && this._videoElement) {
+				this._streamManager.addVideoElement(this._videoElement.nativeElement);
+			}
+		});
+	}
+
+	@ViewChild('videoElement')
+	set videoElement(element: ElementRef) {
+		console.log("SET element", element);
+		this._videoElement = element;
 	}
 
 	@Input()
 	set streamManager(streamManager: StreamManager) {
-		this._streamManager = streamManager;
-		if (!!this.elementRef && this._streamManager) {
-			if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
-				this.elementRef.nativeElement.style.objectFit = 'contain';
-				this.elementRef.nativeElement.style.background = '#878787';
-			} else {
-				this.elementRef.nativeElement.style.objectFit = 'cover';
+		setTimeout(() => {
+			this._streamManager = streamManager;
+			if (!!this._videoElement && this._streamManager) {
+				if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
+					this._videoElement.nativeElement.style.objectFit = 'contain';
+					this._videoElement.nativeElement.style.background = '#272727';
+					this.enlargeVideoEvent.emit();
+				} else {
+					this._videoElement.nativeElement.style.objectFit = 'cover';
+				}
+				this._streamManager.addVideoElement(this._videoElement.nativeElement);
 			}
-			this._streamManager.addVideoElement(this.elementRef.nativeElement);
-		}
+		});
+
 	}
 }
