@@ -1,5 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
 	Publisher,
@@ -11,7 +10,6 @@ import {
 	SessionDisconnectedEvent,
 	PublisherSpeakingEvent
 } from 'openvidu-browser';
-import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { NetworkService } from '../shared/services/network/network.service';
@@ -72,7 +70,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	constructor(
 		private networkSrv: NetworkService,
 		private router: Router,
-		public dialog: MatDialog,
 		private utilsSrv: UtilsService,
 		private oVSessionService: OpenViduSessionService,
 		private loggerSrv: LoggerService
@@ -262,7 +259,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	onToggleVideoSize(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
 		const element = event.element;
 		if (!!event.resetAll) {
-			this.log.d("Reset all big elements");
 			this.resetAllBigElements();
 		}
 
@@ -330,7 +326,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		} catch (error) {
 			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.d('There was an error connecting to the session:', error.code, error.message);
-			this.openDialogError('There was an error connecting to the session:', error.message);
+			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error.message);
 		}
 	}
 
@@ -475,22 +471,18 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('reconnecting', () => {
 			this.log.w('Connection lost: Reconnecting');
 			this.isConnectionLost = true;
+			this.utilsSrv.showErrorMessage('Connection Problem', 'Oops! Trying to reconnect to the session ...', true);
 		});
 		this.session.on('reconnected', () => {
 			this.log.w('Connection lost: Reconnected');
 			this.isConnectionLost = false;
+			this.utilsSrv.closeDialog();
 		});
 		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
 			if (event.reason === 'networkDisconnect') {
+				this.utilsSrv.closeDialog();
 				this.exitSession();
 			}
-		});
-	}
-
-	private openDialogError(message, messageError: string) {
-		this.dialog.open(DialogErrorComponent, {
-			width: '450px',
-			data: { message: message, messageError: messageError }
 		});
 	}
 
@@ -518,7 +510,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		} catch (error) {
 			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.e('There was an error getting the token:', error.code, error.message);
-			this.openDialogError('There was an error getting the token:', error.message);
+			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.message);
 		}
 	}
 

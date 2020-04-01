@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
 
 @Injectable({
@@ -8,6 +8,8 @@ import { DialogErrorComponent } from '../../components/dialog-error/dialog-error
 })
 export class UtilsService {
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
+
+	private dialogRef: MatDialogRef<DialogErrorComponent, any>;
 
 	constructor(public dialog: MatDialog) {}
 
@@ -81,10 +83,15 @@ export class UtilsService {
 		return /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
 	}
 
-	showErrorMessage(message, messageError) {
-		this.dialog.open(DialogErrorComponent, {
-			data: { message: message, messageError: messageError }
+	showErrorMessage(header: string, message: string, disableClose: boolean = false) {
+		this.dialogRef = this.dialog.open(DialogErrorComponent, {
+			data: { header: header, message: message },
+			disableClose
 		});
+	}
+
+	closeDialog() {
+		this.dialogRef.close();
 	}
 
 	getHTMLElementByClassName(elem: HTMLElement, className: string): HTMLElement {
