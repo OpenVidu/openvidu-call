@@ -4,11 +4,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { LayoutType } from '../../types/layout-type';
-
-enum EnlargeIcon {
-	BIG = 'fullscreen',
-	NORMAL = 'fullscreen_exit'
-}
+import { VideoSizeIcon } from '../../types/video-type';
 
 @Component({
 	selector: 'stream-component',
@@ -16,7 +12,7 @@ enum EnlargeIcon {
 	templateUrl: './stream.component.html'
 })
 export class StreamComponent implements OnInit {
-	fullscreenIcon: EnlargeIcon = EnlargeIcon.BIG;
+	fullscreenIcon: VideoSizeIcon = VideoSizeIcon.BIG;
 	mutedSound: boolean;
 	toggleNickname: boolean;
 	isFullscreen: boolean;
@@ -27,7 +23,7 @@ export class StreamComponent implements OnInit {
 	@Input() user: UserModel;
 	@Output() nicknameClicked = new EventEmitter<any>();
 	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
-	@Output() enlargeVideoClicked = new EventEmitter<any>();
+	@Output() toggleVideoSizeClicked = new EventEmitter<any>();
 
 	@ViewChild('streamComponent', { read: ViewContainerRef }) streamComponent: ViewContainerRef;
 
@@ -41,7 +37,7 @@ export class StreamComponent implements OnInit {
 		const curWidth = window.innerWidth;
 		if (maxWidth !== curWidth && maxHeight !== curHeight) {
 			this.isFullscreen = false;
-			this.fullscreenIcon = EnlargeIcon.BIG;
+			this.fullscreenIcon = VideoSizeIcon.BIG;
 		}
 	}
 
@@ -57,9 +53,9 @@ export class StreamComponent implements OnInit {
 		this.matcher = new NicknameMatcher();
 	}
 
-	enlargeVideo(resetAll?) {
+	toggleVideoSize(resetAll?) {
 		const element = this.utilsSrv.getHTMLElementByClassName(this.streamComponent.element.nativeElement, LayoutType.ROOT_CLASS);
-		this.enlargeVideoClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
+		this.toggleVideoSizeClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
 	}
 
 	toggleSound() {
@@ -91,6 +87,6 @@ export class StreamComponent implements OnInit {
 	}
 
 	private checkFullscreenIcon(fullscreen: boolean) {
-		this.fullscreenIcon = fullscreen ? EnlargeIcon.NORMAL : EnlargeIcon.BIG;
+		this.fullscreenIcon = fullscreen ? VideoSizeIcon.NORMAL : VideoSizeIcon.BIG;
 	}
 }

@@ -70,7 +70,7 @@
               [fullscreen]="localUser.isFullscreen()"
               (nicknameClicked)="onNicknameUpdate($event)"
               (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
-              (enlargeVideoClicked)="onEnlargeVideo($event)"
+              (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>
 
@@ -82,7 +82,7 @@
             <stream-component
               [user]="user"
               [fullscreen]="user.isFullscreen()"
-              (enlargeVideoClicked)="onEnlargeVideo($event)"
+              (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>
         </div>

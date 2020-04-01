@@ -251,7 +251,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	onEnlargeVideo(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
+	onToggleVideoSize(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
 		const element = event.element;
 		if (!!event.resetAll) {
 			this.resetAllBigElements();
@@ -406,7 +406,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				const element = this.utilsSrv.getHTMLElementByClassName(elem, LayoutType.ROOT_CLASS);
 				this.resetAllBigElements();
 				this.getRemoteUserByConnectionId(event.connection.connectionId)?.setFullscreen(true);
-				this.onEnlargeVideo({element});
+				this.onToggleVideoSize({element});
 			}
 		});
 
@@ -531,14 +531,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private updateOpenViduLayout(timeout?: number) {
-		if (!timeout) {
-			this.openviduLayout.updateLayout();
-			return;
+		if (!!this.openviduLayout) {
+			if (!timeout) {
+				this.openviduLayout.updateLayout();
+				return;
+			}
+			setTimeout(() => {
+				this.openviduLayout.updateLayout();
+			}, timeout);
 		}
-		setTimeout(() => {
-			this.openviduLayout.updateLayout();
-		}, timeout);
 	}
+
 
 	private resetAllBigElements() {
 		const elements = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);

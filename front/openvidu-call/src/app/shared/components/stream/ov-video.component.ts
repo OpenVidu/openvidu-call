@@ -17,7 +17,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
 
 	@Input() mutedSound: boolean;
 
-	@Output() enlargeVideoEvent =  new EventEmitter<any>();
+	@Output() toggleVideoSizeEvent =  new EventEmitter<any>();
 
 	_streamManager: StreamManager;
 
@@ -44,7 +44,7 @@ export class OpenViduVideoComponent implements AfterViewInit {
 				if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
 					this._videoElement.nativeElement.style.objectFit = 'contain';
 					this._videoElement.nativeElement.style.background = '#272727';
-					this.enlargeVideoEvent.emit(true);
+					this.toggleVideoSizeEvent.emit(true);
 				} else {
 					this._videoElement.nativeElement.style.objectFit = 'cover';
 				}
