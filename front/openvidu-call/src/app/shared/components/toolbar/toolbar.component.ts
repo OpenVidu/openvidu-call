@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../types/ov-settings';
-import { VideoFullscreenIcon } from '../../types/video-type';
+import { VideoFullscreenIcon } from '../../types/icon-type';
 
 @Component({
 	selector: 'app-toolbar',
@@ -9,7 +9,6 @@ import { VideoFullscreenIcon } from '../../types/video-type';
 	styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-	fullscreenIcon = VideoFullscreenIcon.BIG;
 
 	@Input() lightTheme: boolean;
 	@Input() mySessionId: boolean;
@@ -21,14 +20,16 @@ export class ToolbarComponent implements OnInit {
 	@Input() isWebcamVideoEnabled: boolean;
 	@Input() isWebcamAudioEnabled: boolean;
 	@Input() isScreenEnabled: boolean;
+	@Input() isAutoLayout: boolean;
 	@Input() isConnectionLost: boolean;
-
-
 	@Output() micButtonClicked = new EventEmitter<any>();
 	@Output() camButtonClicked = new EventEmitter<any>();
 	@Output() screenShareClicked = new EventEmitter<any>();
+	@Output() layoutButtonClicked = new EventEmitter<any>();
 	@Output() exitButtonClicked = new EventEmitter<any>();
 	@Output() chatButtonClicked = new EventEmitter<any>();
+
+	fullscreenIcon = VideoFullscreenIcon.BIG;
 
 	constructor(private utilsSrv: UtilsService) {}
 
@@ -45,16 +46,20 @@ export class ToolbarComponent implements OnInit {
 
 	ngOnInit() {}
 
-	micStatusChanged() {
+	toggleMicrophone() {
 		this.micButtonClicked.emit();
 	}
 
-	camStatusChanged() {
+	toggleCamera() {
 		this.camButtonClicked.emit();
 	}
 
 	toggleScreenShare() {
 		this.screenShareClicked.emit();
+	}
+
+	toggleSpeakerLayout() {
+		this.layoutButtonClicked.emit();
 	}
 
 	exitSession() {

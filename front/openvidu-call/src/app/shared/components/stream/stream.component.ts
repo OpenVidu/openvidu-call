@@ -4,7 +4,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { LayoutType } from '../../types/layout-type';
-import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/video-type';
+import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/icon-type';
 
 @Component({
 	selector: 'stream-component',

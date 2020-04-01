@@ -19,11 +19,12 @@
       [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
       [isWebcamAudioEnabled]="toolbarMicIconEnabled()"
       [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
+      [isAutoLayout]="isAutoLayout"
       [isConnectionLost]="isConnectionLost"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
       (screenShareClicked)="toggleScreenShare()"
-      (stopScreenSharingClicked)="toggleScreenShare()"
+      (layoutButtonClicked)="toggleSpeakerLayout()"
       (exitButtonClicked)="exitSession()"
       (chatButtonClicked)="toggleChat()"
     ></app-toolbar>

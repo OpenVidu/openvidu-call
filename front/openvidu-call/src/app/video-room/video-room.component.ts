@@ -65,6 +65,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 	newMessages = 0;
 	isConnectionLost: boolean;
+	isAutoLayout: boolean;
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 
@@ -126,7 +127,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribeToNicknameChanged();
 		this.subscribeToChat();
 		this.subscribeToReconnection();
-		this.subscribeToSpeachDetection();
 		this.connectToSession();
 	}
 
@@ -233,6 +233,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.publishWebcamAudio(hasAudio);
 		this.oVSessionService.enableWebcamUser();
 		this.removeScreen();
+	}
+
+	toggleSpeakerLayout() {
+		this.log.d('Automatic Layout ' + this.isAutoLayout ? 'Disabled' : 'Enabled' );
+		if (this.isAutoLayout) {
+			this.session.off('publisherStartSpeaking');
+			this.isAutoLayout = !this.isAutoLayout;
+			return;
+		}
+		this.subscribeToSpeachDetection();
+		this.isAutoLayout = !this.isAutoLayout;
 	}
 
 	toggleDialogExtension() {
