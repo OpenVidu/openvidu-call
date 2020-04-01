@@ -47,9 +47,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chat: any;
 
-	// Constants
-	readonly BIG_ELEMENT_CLASS = 'OV_big';
-
 	// Variables
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
@@ -254,14 +251,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	onToggleVideoSize(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
 		const element = event.element;
 		if (!!event.resetAll) {
+			this.log.d("Reset all big elements");
 			this.resetAllBigElements();
 		}
 
-		if (element?.className.includes(this.BIG_ELEMENT_CLASS)) {
-			element?.classList.remove(this.BIG_ELEMENT_CLASS);
-		} else {
-			element.classList.add(this.BIG_ELEMENT_CLASS);
-		}
+		this.utilsSrv.toggleBigElementClass(element);
 
 		// Has been mandatory change the user fullscreen property here because of
 		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
@@ -270,7 +264,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.oVSessionService.toggleFullscreen(event.connectionId);
 			} else {
 				const user = this.getRemoteUserByConnectionId(event.connectionId);
-				user.setFullscreen(!user.isFullscreen());
+				user.setVideoSizeBig(!user.isVideoSizeBig());
 			}
 		}
 		this.updateOpenViduLayout();
@@ -405,7 +399,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				const elem = event.connection.stream.streamManager.videos[0].video;
 				const element = this.utilsSrv.getHTMLElementByClassName(elem, LayoutType.ROOT_CLASS);
 				this.resetAllBigElements();
-				this.getRemoteUserByConnectionId(event.connection.connectionId)?.setFullscreen(true);
+				this.getRemoteUserByConnectionId(event.connection.connectionId)?.setVideoSizeBig(true);
 				this.onToggleVideoSize({element});
 			}
 		});
@@ -478,7 +472,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
 			if (event.reason === 'networkDisconnect') {
 				this.exitSession();
-				// this.oVSessionService.disconnect();
 			}
 		});
 	}
@@ -542,13 +535,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-
 	private resetAllBigElements() {
-		const elements = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);
-		for (let i = 0; i < elements.length; i++) {
-			elements.item(i).classList.remove(this.BIG_ELEMENT_CLASS);
-		}
-		this.remoteUsers.forEach(u => u.setFullscreen(false));
+		this.utilsSrv.removeAllBigElementClass();
+		this.remoteUsers.forEach(u => u.setVideoSizeBig(false));
 		this.oVSessionService.resetUsersFullscreen();
 	}
 }

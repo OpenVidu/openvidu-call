@@ -99,4 +99,19 @@ export class UtilsService {
 		}
 		return null;
 	}
+
+	toggleBigElementClass(element: HTMLElement) {
+		if (element?.className.includes(this.BIG_ELEMENT_CLASS)) {
+			element?.classList.remove(this.BIG_ELEMENT_CLASS);
+		} else {
+			element.classList.add(this.BIG_ELEMENT_CLASS);
+		}
+	}
+
+	removeAllBigElementClass() {
+		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);
+		while (elements.length > 0) {
+			elements[0].classList.remove(this.BIG_ELEMENT_CLASS);
+		}
+	}
 }

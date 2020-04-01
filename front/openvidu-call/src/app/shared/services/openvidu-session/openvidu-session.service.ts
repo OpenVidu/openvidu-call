@@ -315,16 +315,16 @@ export class OpenViduSessionService {
 	}
 
 	resetUsersFullscreen() {
-		this.webcamUser?.setFullscreen(false);
-		this.screenUser?.setFullscreen(false);
+		this.webcamUser?.setVideoSizeBig(false);
+		this.screenUser?.setVideoSizeBig(false);
 	}
 
 	toggleFullscreen(connectionId: string) {
 		if (this.webcamUser.getConnectionId() === connectionId) {
-			this.webcamUser.setFullscreen(!this.webcamUser.isFullscreen());
+			this.webcamUser.setVideoSizeBig(!this.webcamUser.isVideoSizeBig());
 			return;
 		}
-		this.screenUser.setFullscreen(!this.screenUser.isFullscreen());
+		this.screenUser.setVideoSizeBig(!this.screenUser.isVideoSizeBig());
 	}
 
 	private initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {

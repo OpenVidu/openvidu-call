@@ -12,7 +12,7 @@ import { VideoSizeIcon } from '../../types/video-type';
 	templateUrl: './stream.component.html'
 })
 export class StreamComponent implements OnInit {
-	fullscreenIcon: VideoSizeIcon = VideoSizeIcon.BIG;
+	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
 	mutedSound: boolean;
 	toggleNickname: boolean;
 	isFullscreen: boolean;
@@ -37,15 +37,15 @@ export class StreamComponent implements OnInit {
 		const curWidth = window.innerWidth;
 		if (maxWidth !== curWidth && maxHeight !== curHeight) {
 			this.isFullscreen = false;
-			this.fullscreenIcon = VideoSizeIcon.BIG;
+			this.videoSizeIcon = VideoSizeIcon.BIG;
 		}
 	}
 
 	// Has been mandatory fullscreen Input because of Input user did not fire changing
 	// the fullscreen user property in publisherStartSpeaking event in VideoRoom Component
 	@Input()
-	set fullscreen(fullscreen: boolean) {
-		this.checkFullscreenIcon(fullscreen);
+	set videoSizeBig(videoSizeBig: boolean) {
+		this.checkVideoSizeBigIcon(videoSizeBig);
 	}
 
 	ngOnInit() {
@@ -86,7 +86,7 @@ export class StreamComponent implements OnInit {
 		this.replaceScreenTrackClicked.emit();
 	}
 
-	private checkFullscreenIcon(fullscreen: boolean) {
-		this.fullscreenIcon = fullscreen ? VideoSizeIcon.NORMAL : VideoSizeIcon.BIG;
+	private checkVideoSizeBigIcon(videoSizeBig: boolean) {
+		this.videoSizeIcon = videoSizeBig ? VideoSizeIcon.NORMAL : VideoSizeIcon.BIG;
 	}
 }

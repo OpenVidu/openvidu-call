@@ -67,7 +67,7 @@
             <stream-component
               *ngIf="localUser.getStreamManager()"
               [user]="localUser"
-              [fullscreen]="localUser.isFullscreen()"
+              [videoSizeBig]="localUser.isVideoSizeBig()"
               (nicknameClicked)="onNicknameUpdate($event)"
               (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
               (toggleVideoSizeClicked)="onToggleVideoSize($event)"
@@ -81,7 +81,7 @@
           >
             <stream-component
               [user]="user"
-              [fullscreen]="user.isFullscreen()"
+              [videoSizeBig]="user.isVideoSizeBig()"
               (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>

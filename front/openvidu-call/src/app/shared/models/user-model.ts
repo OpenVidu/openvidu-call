@@ -33,7 +33,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	private fullscreen: boolean;
+	private videoSizeBig: boolean;
 
 	/**
 	 * @hidden
@@ -143,15 +143,15 @@ export class UserModel {
 		this.nickname = nickname;
 	}
 
-	public isFullscreen(): boolean {
-		return this.fullscreen;
+	public isVideoSizeBig(): boolean {
+		return this.videoSizeBig;
 	}
 
 	/**
 	 * @hidden
 	 */
-	setFullscreen(fullscreen: boolean) {
-		this.fullscreen = fullscreen;
+	public setVideoSizeBig(big: boolean) {
+		this.videoSizeBig = big;
 	}
 
 	/**
