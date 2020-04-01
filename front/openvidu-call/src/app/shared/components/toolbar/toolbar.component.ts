@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
-import { UserModel } from '../../models/user-model';
 import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../types/ov-settings';
+import { VideoFullscreenIcon } from '../../types/video-type';
 
 @Component({
 	selector: 'app-toolbar',
@@ -9,7 +9,7 @@ import { OvSettings } from '../../types/ov-settings';
 	styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-	fullscreenIcon = 'fullscreen';
+	fullscreenIcon = VideoFullscreenIcon.BIG;
 
 	@Input() lightTheme: boolean;
 	@Input() mySessionId: boolean;
@@ -39,7 +39,7 @@ export class ToolbarComponent implements OnInit {
 		const curHeight = window.innerHeight;
 		const curWidth = window.innerWidth;
 		if (maxWidth !== curWidth && maxHeight !== curHeight) {
-			this.fullscreenIcon = 'fullscreen';
+			this.fullscreenIcon = VideoFullscreenIcon.BIG;
 		}
 	}
 
@@ -66,11 +66,7 @@ export class ToolbarComponent implements OnInit {
 	}
 
 	toggleFullscreen() {
-		const state = this.utilsSrv.toggleFullscreen('videoRoomNavBar');
-		if (state === 'fullscreen') {
-			this.fullscreenIcon = 'fullscreen_exit';
-		} else {
-			this.fullscreenIcon = 'fullscreen';
-		}
+		this.utilsSrv.toggleFullscreen('videoRoomNavBar');
+		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
 	}
 }

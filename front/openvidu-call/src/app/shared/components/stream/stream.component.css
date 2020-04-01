@@ -52,10 +52,18 @@ video {
   color: #ffffff;
 }
 
-.statusIcons mat-icon {
+.statusIcons mat-icon, .videoButtons mat-icon {
   vertical-align: -webkit-baseline-middle;
   vertical-align: -moz-middle-with-baseline;
+}
+
+.statusIcons mat-icon {
   font-size: 20px;
+}
+
+.videoButtons mat-icon {
+  line-height: 4px;
+  font-size: 24px;
 }
 
 #camStatus {
@@ -71,18 +79,23 @@ video {
   margin: 5px auto;
 }
 
-.streamButtons {
+.videoButtons button {
   position: absolute;
   z-index: 1000;
   background-color: #000000c4;
   right: 1px;
+  width: 30px;
+  height: 30px;
 }
 
 #fullscreenButton {
   bottom: 1px;
 }
+#videoZoomButton{
+  bottom: 35px;
+}
 #volumeButton {
-  bottom: 45px;
+  bottom: 70px;
 }
 /* Contains the video element, used to fix video letter-boxing */
 .OT_widget-container {

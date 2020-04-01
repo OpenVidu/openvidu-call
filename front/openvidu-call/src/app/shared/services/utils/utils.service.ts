@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
@@ -10,9 +9,9 @@ import { DialogErrorComponent } from '../../components/dialog-error/dialog-error
 export class UtilsService {
 	readonly BIG_ELEMENT_CLASS = 'OV_big';
 
-	constructor(private http: HttpClient, public dialog: MatDialog) {}
+	constructor(public dialog: MatDialog) {}
 
-	toggleFullscreen(elementId: string): string {
+	toggleFullscreen(elementId: string) {
 		const document: any = window.document;
 		const fs = document.getElementById(elementId);
 		if (
@@ -30,7 +29,6 @@ export class UtilsService {
 			} else if (fs.webkitRequestFullscreen) {
 				fs.webkitRequestFullscreen();
 			}
-			return 'fullscreen';
 		} else {
 			if (document.exitFullscreen) {
 				document.exitFullscreen();
@@ -41,7 +39,6 @@ export class UtilsService {
 			} else if (document.webkitExitFullscreen) {
 				document.webkitExitFullscreen();
 			}
-			return 'fullscreen_exit';
 		}
 	}
 

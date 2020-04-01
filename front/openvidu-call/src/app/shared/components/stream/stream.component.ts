@@ -4,7 +4,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { LayoutType } from '../../types/layout-type';
-import { VideoSizeIcon } from '../../types/video-type';
+import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/video-type';
 
 @Component({
 	selector: 'stream-component',
@@ -13,6 +13,7 @@ import { VideoSizeIcon } from '../../types/video-type';
 })
 export class StreamComponent implements OnInit {
 	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
+	fullscreenIcon: VideoFullscreenIcon = VideoFullscreenIcon.BIG;
 	mutedSound: boolean;
 	toggleNickname: boolean;
 	isFullscreen: boolean;
@@ -48,6 +49,13 @@ export class StreamComponent implements OnInit {
 		this.checkVideoSizeBigIcon(videoSizeBig);
 	}
 
+	@ViewChild('nicknameInput')
+	set nicknameInputElement(element: ElementRef) {
+		setTimeout(() => {
+			element?.nativeElement.focus();
+		});
+	}
+
 	ngOnInit() {
 		this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
 		this.matcher = new NicknameMatcher();
@@ -58,6 +66,11 @@ export class StreamComponent implements OnInit {
 		this.toggleVideoSizeClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
 	}
 
+	toggleFullscreen() {
+		this.utilsSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
+		this.toggleFullscreenIcon();
+	  }
+
 	toggleSound() {
 		this.mutedSound = !this.mutedSound;
 	}
@@ -66,13 +79,6 @@ export class StreamComponent implements OnInit {
 		if (this.user.isLocal()) {
 			this.toggleNickname = !this.toggleNickname;
 		}
-	}
-
-	@ViewChild('nicknameInput')
-	set nicknameInputElement(element: ElementRef) {
-		setTimeout(() => {
-			element?.nativeElement.focus();
-		});
 	}
 
 	eventKeyPress(event) {
@@ -88,5 +94,9 @@ export class StreamComponent implements OnInit {
 
 	private checkVideoSizeBigIcon(videoSizeBig: boolean) {
 		this.videoSizeIcon = videoSizeBig ? VideoSizeIcon.NORMAL : VideoSizeIcon.BIG;
+	}
+
+	private toggleFullscreenIcon() {
+		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
 	}
 }
