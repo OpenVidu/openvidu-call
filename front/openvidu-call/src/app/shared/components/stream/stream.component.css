@@ -2,7 +2,7 @@
   padding: 5px !important;
   position: absolute;
   z-index: 999;
-  border-radius: 5px; 
+  border-radius: 5px;
   color: #313131;
   font-family: 'Ubuntu', sans-serif;
 }
@@ -53,17 +53,22 @@ video {
 }
 
 .statusIcons mat-icon {
-  padding: 8px;
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: -moz-middle-with-baseline;
+  font-size: 20px;
 }
 
 #camStatus {
   bottom: 43px;
 }
 
-#statusCam, #statusMic { 
+#statusCam, #statusMic {
+  text-align: center;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #c71100;
-  margin: 5px 0px;
+  margin: 5px auto;
 }
 
 .streamButtons {
