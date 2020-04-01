@@ -2,7 +2,13 @@ import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, 
 import { UserModel } from '../../models/user-model';
 import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
-enum EnlargeIcon  {	BIG = 'view_carousel', NORMAL = 'view_module' }
+import { UtilsService } from '../../services/utils/utils.service';
+import { LayoutType } from '../../types/layout-type';
+
+enum EnlargeIcon {
+	BIG = 'fullscreen',
+	NORMAL = 'fullscreen_exit'
+}
 
 @Component({
 	selector: 'stream-component',
@@ -25,7 +31,7 @@ export class StreamComponent implements OnInit {
 
 	@ViewChild('streamComponent', { read: ViewContainerRef }) streamComponent: ViewContainerRef;
 
-	constructor() {}
+	constructor(private utilsSrv: UtilsService) {}
 
 	@HostListener('window:resize', ['$event'])
 	sizeChange(event) {
@@ -39,15 +45,21 @@ export class StreamComponent implements OnInit {
 		}
 	}
 
+	// Has been mandatory fullscreen Input because of Input user did not fire changing
+	// the fullscreen user property in publisherStartSpeaking event in VideoRoom Component
+	@Input()
+	set fullscreen(fullscreen: boolean) {
+		this.checkFullscreenIcon(fullscreen);
+	}
+
 	ngOnInit() {
 		this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
 		this.matcher = new NicknameMatcher();
 	}
 
-	enlargeVideo(resetAll) {
-		this.fullscreenIcon = this.fullscreenIcon === EnlargeIcon.BIG ? EnlargeIcon.NORMAL : EnlargeIcon.BIG;
-		const element = this.streamComponent.element.nativeElement.parentElement.parentElement;
-		this.enlargeVideoClicked.emit({element, resetAll});
+	enlargeVideo(resetAll?) {
+		const element = this.utilsSrv.getHTMLElementByClassName(this.streamComponent.element.nativeElement, LayoutType.ROOT_CLASS);
+		this.enlargeVideoClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
 	}
 
 	toggleSound() {
@@ -76,5 +88,9 @@ export class StreamComponent implements OnInit {
 
 	replaceScreenTrack() {
 		this.replaceScreenTrackClicked.emit();
+	}
+
+	private checkFullscreenIcon(fullscreen: boolean) {
+		this.fullscreenIcon = fullscreen ? EnlargeIcon.NORMAL : EnlargeIcon.BIG;
 	}
 }

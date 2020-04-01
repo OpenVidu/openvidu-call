@@ -8,7 +8,8 @@ import {
 	SignalOptions,
 	StreamEvent,
 	StreamPropertyChangedEvent,
-	SessionDisconnectedEvent
+	SessionDisconnectedEvent,
+	PublisherSpeakingEvent
 } from 'openvidu-browser';
 import { DialogErrorComponent } from '../shared/components/dialog-error/dialog-error.component';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
@@ -22,6 +23,7 @@ import { Subscription } from 'rxjs';
 import { ScreenType } from '../shared/types/video-type';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
+import { LayoutType } from '../shared/types/layout-type';
 
 @Component({
 	selector: 'app-video-room',
@@ -127,6 +129,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribeToNicknameChanged();
 		this.subscribeToChat();
 		this.subscribeToReconnection();
+		this.subscribeToSpeachDetection();
 		this.connectToSession();
 	}
 
@@ -248,19 +251,36 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	onEnlargeVideo(event: {element: HTMLElement, resetAll: boolean}) {
+	onEnlargeVideo(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
 		const element = event.element;
-		this.log.d('Enlarging video', element);
 		if (!!event.resetAll) {
 			this.resetAllBigElements();
 		}
 
-		if (element.className.includes(this.BIG_ELEMENT_CLASS)) {
-			element.classList.remove(this.BIG_ELEMENT_CLASS);
+		if (element?.className.includes(this.BIG_ELEMENT_CLASS)) {
+			element?.classList.remove(this.BIG_ELEMENT_CLASS);
 		} else {
 			element.classList.add(this.BIG_ELEMENT_CLASS);
 		}
+
+		// Has been mandatory change the user fullscreen property here because of
+		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
+		if (!!event?.connectionId) {
+			if (this.oVSessionService.isMyOwnConnection(event.connectionId)) {
+				this.oVSessionService.toggleFullscreen(event.connectionId);
+			} else {
+				const user = this.getRemoteUserByConnectionId(event.connectionId);
+				user.setFullscreen(!user.isFullscreen());
+			}
+		}
 		this.updateOpenViduLayout();
+	}
+
+	toolbarMicIconEnabled(): boolean {
+		if (this.oVSessionService.isWebCamEnabled()) {
+			return this.oVSessionService.hasWebcamAudioActive();
+		}
+		return this.oVSessionService.hasScreenAudioActive();
 	}
 
 	private async connectToSession(): Promise<void> {
@@ -345,7 +365,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	subscribeToStreamPropertyChange() {
+	private subscribeToStreamPropertyChange() {
 		this.session.on('streamPropertyChanged', (event: StreamPropertyChangedEvent) => {
 			// const connectionId = event.stream.connection.connectionId;
 			// if (this.oVSessionService.isMyOwnConnection(connectionId)) {
@@ -362,7 +382,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	subscribeToNicknameChanged() {
+	private subscribeToNicknameChanged() {
 		this.session.on('signal:nicknameChanged', (event: any) => {
 			const connectionId = event.from.connectionId;
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
@@ -375,14 +395,24 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	toolbarMicIconEnabled(): boolean {
-		if (this.oVSessionService.isWebCamEnabled()) {
-			return this.oVSessionService.hasWebcamAudioActive();
-		}
-		return this.oVSessionService.hasScreenAudioActive();
+
+	private subscribeToSpeachDetection() {
+		// Has been mandatory change the user fullscreen property here because of
+		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
+		this.session.on('publisherStartSpeaking', (event: PublisherSpeakingEvent) => {
+			const someoneIsSharingScreen = this.remoteUsers.some(user => user.isScreen());
+			if (!this.oVSessionService.isScreenShareEnabled() && !someoneIsSharingScreen) {
+				const elem = event.connection.stream.streamManager.videos[0].video;
+				const element = this.utilsSrv.getHTMLElementByClassName(elem, LayoutType.ROOT_CLASS);
+				this.resetAllBigElements();
+				this.getRemoteUserByConnectionId(event.connection.connectionId)?.setFullscreen(true);
+				this.onEnlargeVideo({element});
+			}
+		});
+
+		// this.session.on('publisherStopSpeaking', (event: PublisherSpeakingEvent) => {
+		// });
 	}
-
-
 
 	private removeScreen() {
 		this.oVSessionService.disableScreenUser();
@@ -515,5 +545,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		for (let i = 0; i < elements.length; i++) {
 			elements.item(i).classList.remove(this.BIG_ELEMENT_CLASS);
 		}
+		this.remoteUsers.forEach(u => u.setFullscreen(false));
+		this.oVSessionService.resetUsersFullscreen();
 	}
 }

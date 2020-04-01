@@ -45,11 +45,11 @@ export class UtilsService {
 		}
 	}
 
-	public getOpeViduAvatar(): string {
+	getOpeViduAvatar(): string {
 		return 'https://openvidu.io/img/logos/openvidu_globe_bg_transp_cropped.png';
 	}
 
-	public handlerScreenShareError(error: any) {
+	handlerScreenShareError(error: any) {
 		if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
 			alert('Your browser does not support screen sharing');
 		} else if (error && error.name === 'SCREEN_EXTENSION_DISABLED') {
@@ -59,7 +59,7 @@ export class UtilsService {
 		}
 	}
 
-	public getOpenviduLayoutOptions(): OpenViduLayoutOptions {
+	getOpenviduLayoutOptions(): OpenViduLayoutOptions {
 		const options = {
 			maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
 			minRatio: 9 / 15, // The widest ratio that will be used (default 16x9)
@@ -88,5 +88,15 @@ export class UtilsService {
 		this.dialog.open(DialogErrorComponent, {
 			data: { message: message, messageError: messageError }
 		});
+	}
+
+	getHTMLElementByClassName(elem: HTMLElement, className: string): HTMLElement {
+		while (!!elem && elem !== document.body) {
+			if (elem.className.includes(className)) {
+				return elem;
+			}
+			elem = elem.parentElement;
+		}
+		return null;
 	}
 }

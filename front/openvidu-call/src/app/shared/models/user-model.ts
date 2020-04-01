@@ -11,11 +11,6 @@ export class UserModel {
 	private connectionId: string;
 
 	/**
-	 * Whether the user is sharing the screen or not
-	 */
-	private screenShareActive: boolean;
-
-	/**
 	 * The user nickname
 	 */
 	private nickname: string;
@@ -38,7 +33,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	// private localConnectionId: string;
+	private fullscreen: boolean;
 
 	/**
 	 * @hidden
@@ -49,7 +44,6 @@ export class UserModel {
 		nickname?: string,
 	) {
 		this.connectionId = connectionId || '';
-		this.screenShareActive = false;
 		this.nickname = nickname || 'OpenVidu';
 		this.streamManager = streamManager || null;
 	}
@@ -66,13 +60,6 @@ export class UserModel {
 	 */
 	public isVideoActive(): boolean {
 		return (<Publisher>this.streamManager).stream.videoActive;
-	}
-
-	/**
-	 * Return `true` if user is sharing the screen and `false` if not
-	 */
-	public isScreenShareActive(): boolean {
-		return this.screenShareActive;
 	}
 
 	/**
@@ -132,15 +119,6 @@ export class UserModel {
 		return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.CAMERA;
 	}
 
-
-	/**
-	 * Set the screenShare value
-	 * @param isScreenShareActive value of isScreenShareActive
-	 */
-	public setScreenShareActive(isScreenShareActive: boolean) {
-		this.screenShareActive = isScreenShareActive;
-	}
-
 	/**
 	 * Set the streamManager value object
 	 * @param streamManager value of streamManager
@@ -163,6 +141,17 @@ export class UserModel {
 	 */
 	public setNickname(nickname: string) {
 		this.nickname = nickname;
+	}
+
+	public isFullscreen(): boolean {
+		return this.fullscreen;
+	}
+
+	/**
+	 * @hidden
+	 */
+	setFullscreen(fullscreen: boolean) {
+		this.fullscreen = fullscreen;
 	}
 
 	/**

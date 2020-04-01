@@ -11,6 +11,7 @@ import { ILogger } from '../../types/logger-type';
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
+
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -114,19 +115,13 @@ export class OpenViduSessionService {
 	disableWebcamUser() {
 		// this.destryowebcamUser();
 		this._OVUsers.next([this.screenUser]);
-		this.webcamUser.setScreenShareActive(true);
 	}
 
 	enableScreenUser(screenPublisher: Publisher) {
 		const connectionId = this.screenSession?.connection?.connectionId;
 
 		this.screenUser = new UserModel(connectionId, screenPublisher, this.getScreenUserName());
-
-		// ! REFACTOR, check if it's necessary
-		this.screenUser.setScreenShareActive(true);
-		this.webcamUser.setScreenShareActive(false);
 		this.screenUser.setUserAvatar(this.webcamUser.getAvatar());
-		// !
 
 		if (this.isWebCamEnabled()) {
 			this._OVUsers.next([this.webcamUser, this.screenUser]);
@@ -139,7 +134,6 @@ export class OpenViduSessionService {
 
 	disableScreenUser() {
 		this.destryoScreenUser();
-		this.webcamUser.setScreenShareActive(false);
 		this._OVUsers.next([this.webcamUser]);
 	}
 
@@ -318,6 +312,19 @@ export class OpenViduSessionService {
 
 	getScreenUserName() {
 		return this.getWebcamUserName() + '_SCREEN';
+	}
+
+	resetUsersFullscreen() {
+		this.webcamUser?.setFullscreen(false);
+		this.screenUser?.setFullscreen(false);
+	}
+
+	toggleFullscreen(connectionId: string) {
+		if (this.webcamUser.getConnectionId() === connectionId) {
+			this.webcamUser.setFullscreen(!this.webcamUser.isFullscreen());
+			return;
+		}
+		this.screenUser.setFullscreen(!this.screenUser.isFullscreen());
 	}
 
 	private initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
