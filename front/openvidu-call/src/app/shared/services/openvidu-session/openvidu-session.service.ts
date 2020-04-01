@@ -24,8 +24,8 @@ export class OpenViduSessionService {
 	private webcamUser: UserModel = null;
 	private screenUser: UserModel = null;
 
-	private videoSource = '';
-	private audioSource = '';
+	private videoSource = undefined;
+	private audioSource = undefined;
 	private sessionId = '';
 	private log: ILogger;
 
@@ -162,6 +162,8 @@ export class OpenViduSessionService {
 	}
 
 	async replaceTrack(videoSource: string, audioSource: string) {
+		this.log.d('Replacing ' + !!videoSource ? 'video' : 'audio' + ' track: ' + !!videoSource ? videoSource : audioSource);
+		let track: MediaStreamTrack;
 		if (!!videoSource) {
 			this.videoSource = videoSource;
 		}
@@ -178,8 +180,8 @@ export class OpenViduSessionService {
 		);
 
 		this.webcamMediaStream = await this.OV.getUserMedia(properties);
-		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(this.webcamMediaStream.getVideoTracks()[0]);
-
+		track = !!videoSource ? track = this.webcamMediaStream.getVideoTracks()[0] : this.webcamMediaStream.getAudioTracks()[0];
+		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
 	}
 
 	async replaceScreenTrack() {
@@ -215,8 +217,8 @@ export class OpenViduSessionService {
 			this.webcamSession = null;
 		}
 		this.screenUser = null;
-		this.videoSource = '';
-		this.audioSource = '';
+		this.videoSource = undefined;
+		this.audioSource = undefined;
 		this.sessionId = '';
 
 		this.webcamUser = new UserModel();
@@ -333,7 +335,7 @@ export class OpenViduSessionService {
 
 	private destryoScreenUser() {
 		if (this.screenUser?.getStreamManager()) {
-			this.screenUser.getStreamManager().off('streamAudioVolumeChange');
+			// this.screenUser.getStreamManager().off('streamAudioVolumeChange');
 			this.screenUser.getStreamManager().stream.disposeWebRtcPeer();
 			this.screenUser.getStreamManager().stream.disposeMediaStream();
 		}
@@ -341,7 +343,7 @@ export class OpenViduSessionService {
 
 	private destryoWebcamUser() {
 		if (this.webcamUser?.getStreamManager()) {
-			this.webcamUser.getStreamManager().off('streamAudioVolumeChange');
+			// this.webcamUser.getStreamManager().off('streamAudioVolumeChange');
 			this.webcamUser.getStreamManager().stream.disposeWebRtcPeer();
 			this.webcamUser.getStreamManager().stream.disposeMediaStream();
 		}

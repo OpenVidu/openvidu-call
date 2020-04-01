@@ -113,8 +113,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	async onCameraSelected(event: any) {
 		const videoSource = event?.value;
-
-		if (this.oVDevicesService.deviceHasValue(videoSource)) {
+		if (!!videoSource) {
 			// Is New deviceId different from the old one?
 			if (this.oVDevicesService.needUpdateVideoTrack(videoSource)) {
 				await this.oVSessionService.replaceTrack(videoSource, null);
@@ -123,17 +122,18 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// Publish Webcam
 			this.oVSessionService.publishVideo(true);
 			this.isVideoActive = true;
-		} else {
-			// Unpublish webcam
-			this.oVSessionService.publishVideo(false);
-			this.isVideoActive = false;
+			return;
 		}
+		// Unpublish webcam
+		this.oVSessionService.publishVideo(false);
+		this.isVideoActive = false;
+
 	}
 
 	async onMicrophoneSelected(event: any) {
 		const audioSource = event?.value;
 
-		if (this.oVDevicesService.deviceHasValue(audioSource)) {
+		if (!!audioSource) {
 			// Is New deviceId different than older?
 			if (this.oVDevicesService.needUpdateAudioTrack(audioSource)) {
 				await this.oVSessionService.replaceTrack(null, audioSource);
@@ -142,11 +142,12 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// Publish microphone
 			this.publishAudio(true);
 			this.isAudioActive = true;
-		} else {
-			// Unpublish microhpone
-			this.publishAudio(false);
-			this.isAudioActive = false;
+			return;
 		}
+		// Unpublish microhpone
+		this.publishAudio(false);
+		this.isAudioActive = false;
+
 	}
 
 	toggleCam() {
