@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
+import { Stream } from 'openvidu-browser';
+import { LayoutType } from '../../types/layout-type';
 
 @Injectable({
 	providedIn: 'root'
@@ -94,17 +96,17 @@ export class UtilsService {
 		this.dialogRef.close();
 	}
 
-	getHTMLElementByClassName(elem: HTMLElement, className: string): HTMLElement {
-		while (!!elem && elem !== document.body) {
-			if (elem.className.includes(className)) {
-				return elem;
+	getHTMLElementByClassName(element: HTMLElement, className: string): HTMLElement {
+		while (!!element && element !== document.body) {
+			if (element.className.includes(className)) {
+				return element;
 			}
-			elem = elem.parentElement;
+			element = element.parentElement;
 		}
 		return null;
 	}
 
-	toggleBigElementClass(element: HTMLElement) {
+	toggleBigElementClass(element: HTMLElement | Element) {
 		if (element?.className.includes(this.BIG_ELEMENT_CLASS)) {
 			element?.classList.remove(this.BIG_ELEMENT_CLASS);
 		} else {
@@ -115,7 +117,7 @@ export class UtilsService {
 	removeAllBigElementClass() {
 		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);
 		while (elements.length > 0) {
-			elements[0].classList.remove(this.BIG_ELEMENT_CLASS);
+			this.toggleBigElementClass(elements[0]);
 		}
 	}
 }

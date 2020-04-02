@@ -63,7 +63,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
 	newMessages = 0;
 	isConnectionLost: boolean;
-	isAutoLayout: boolean;
+	isAutoLayout = false;
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 
@@ -233,8 +233,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleSpeakerLayout() {
-		this.log.d('Automatic Layout ' + this.isAutoLayout ? 'Disabled' : 'Enabled' );
+		this.log.d('Automatic Layout ', this.isAutoLayout ? 'Disabled' : 'Enabled' );
 		if (this.isAutoLayout) {
+			this.log.d('Unsubscribe to speach detection');
 			this.session.off('publisherStartSpeaking');
 			this.isAutoLayout = !this.isAutoLayout;
 			return;
@@ -398,6 +399,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 
 	private subscribeToSpeachDetection() {
+		this.log.d('Subscribe to speach detection');
 		// Has been mandatory change the user fullscreen property here because of
 		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
 		this.session.on('publisherStartSpeaking', (event: PublisherSpeakingEvent) => {

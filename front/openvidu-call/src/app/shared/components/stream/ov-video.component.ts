@@ -44,13 +44,20 @@ export class OpenViduVideoComponent implements AfterViewInit {
 				if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
 					this._videoElement.nativeElement.style.objectFit = 'contain';
 					this._videoElement.nativeElement.style.background = '#272727';
-					this.toggleVideoSizeEvent.emit(true);
+					this.enableVideoSizeBig();
 				} else {
 					this._videoElement.nativeElement.style.objectFit = 'cover';
 				}
 				this._streamManager.addVideoElement(this._videoElement.nativeElement);
 			}
 		});
+	}
 
+	enableVideoSizeBig() {
+		// Doing video size bigger.
+		// Timeout because of connectionId is null and icon doesnot change
+		setTimeout(() => {
+			this.toggleVideoSizeEvent.emit(true);
+		}, 560);
 	}
 }
