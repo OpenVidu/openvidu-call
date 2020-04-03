@@ -23,46 +23,61 @@ export class DevicesService {
 		this.OV = new OpenVidu();
 	}
 
-	async initDevices(publisher: Publisher) {
+	async initDevices() {
+		this.devices = await this.getDevices();
 		this.log.d('Devices: ', this.devices);
 		this.resetDevicesArray();
-		const defaultId = publisher.stream
-			.getMediaStream()
-			.getVideoTracks()[0]
-			.getSettings().deviceId;
+		this.initAudioDevices();
+		if (this.hasVideoDeviceAvailable()) {
+			this.initVideoDevices();
+			return;
+		}
+		this.log.w('No video devices found!');
+	}
 
-		this.devices.forEach((device: any) => {
-			// Microphones
-			if (device.kind === 'audioinput') {
-				// Don't add default device
-				if (device.deviceId !== 'default') {
-					this.microphones.push({ label: device.label, device: device.deviceId });
-				}
-			}
-
-			// Cameras
-			if (device.kind === 'videoinput') {
-				const cameraType: CameraType = defaultId === device.deviceId ? CameraType.FRONT : CameraType.BACK;
-				const element: IDevice = {
-					label: device.label,
-					device: device.deviceId,
-					type: cameraType
-				};
-				if (device.deviceId === defaultId) {
-					this.camSelected = element;
-				}
-				this.cameras.push(element);
+	private initAudioDevices() {
+		const audioDevices = this.devices.filter(device => device.kind === 'audioinput');
+		audioDevices.forEach((device: any) => {
+			// Don't add default device
+			if (device.deviceId !== 'default') {
+				this.microphones.push({ label: device.label, device: device.deviceId });
 			}
 		});
 		this.micSelected = this.getMicSelected();
 	}
 
+	private initVideoDevices() {
+		const FIRST_POSITION = 0;
+		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
+		videoDevices.forEach((device: any, index: number) => {
+			const element: IDevice = {
+				label: device.label,
+				device: device.deviceId,
+				type:  CameraType.BACK
+			};
+			// We assume first device is front camera
+			if (index === FIRST_POSITION) {
+				element.type = CameraType.FRONT;
+				this.camSelected = element;
+			}
+			this.cameras.push(element);
+		});
+	}
+
 	getCamSelected(): IDevice {
+		if (this.cameras.length === 0) {
+			this.log.w('No video devices found!');
+			return;
+		}
 		// ! TODO: check other way
 		return this.camSelected ? this.camSelected : this.cameras[0];
 	}
 
 	getMicSelected(): IDevice {
+		if (this.microphones.length === 0) {
+			this.log.w('No audio devices found!');
+			return;
+		}
 		// ! TODO: check other way
 		return this.microphones[1] ? this.microphones[1] : this.microphones[0];
 	}
@@ -103,11 +118,8 @@ export class DevicesService {
 		return this.microphones;
 	}
 
-	async isWebcamAvailable(): Promise<boolean> {
-		this.devices = await this.getDevices();
-
+	hasVideoDeviceAvailable(): boolean {
 		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
-		this.log.d('Is webcam available? ', videoDevices.length > 0);
 		return videoDevices.length > 0;
 	}
 

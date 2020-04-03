@@ -22,6 +22,7 @@ export class ToolbarComponent implements OnInit {
 	@Input() isScreenEnabled: boolean;
 	@Input() isAutoLayout: boolean;
 	@Input() isConnectionLost: boolean;
+	@Input() hasVideoDevices: boolean;
 	@Output() micButtonClicked = new EventEmitter<any>();
 	@Output() camButtonClicked = new EventEmitter<any>();
 	@Output() screenShareClicked = new EventEmitter<any>();

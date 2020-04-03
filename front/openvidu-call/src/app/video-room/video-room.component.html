@@ -16,6 +16,7 @@
       [compact]="compact"
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
+      [hasVideoDevices]="hasVideoDevices"
       [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
       [isWebcamAudioEnabled]="toolbarMicIconEnabled()"
       [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
@@ -44,7 +45,7 @@
         fixedInViewport="true"
         fixedTopGap="40"
         fixedBottomGap="0"
-        *ngIf="localUsers && (localUsers[0].getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
+        *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)"
       >
         <chat-component
           #chatComponent
@@ -63,10 +64,10 @@
           <div
             class="OT_root OT_publisher custom-class"
             id="localUser"
-            *ngFor="let localUser of localUsers"
+            *ngFor="let localUser of localUsersFiltered"
           >
+          <!-- Only webcam video will be shown if webcamera is available -->
             <stream-component
-              *ngIf="localUser.getStreamManager()"
               [user]="localUser"
               [videoSizeBig]="localUser.isVideoSizeBig()"
               (nicknameClicked)="onNicknameUpdate($event)"
@@ -76,7 +77,7 @@
           </div>
 
           <div
-            *ngFor="let user of this.remoteUsers"
+            *ngFor="let user of this.remoteUsersFiltered"
             class="OT_root OT_publisher custom-class"
             id="remoteUsers"
           >

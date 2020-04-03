@@ -26,8 +26,8 @@
 					<div fxFlex="45" fxFlex.sm="25" fxFlex.lt-sm="25" class="volume-theme">
 						<h3 id="sessionInfo">Session : {{ mySessionId }}</h3>
 
-						<div id="videoContainer" *ngIf="localUsers && localUsers.length > 0">
-							<mat-slider
+						<div id="videoContainer">
+							<!-- <mat-slider
 								class="volumeSlider"
 								*ngIf="volumeValue < 100"
 								[max]="0"
@@ -36,19 +36,20 @@
 								[ngModel]="volumeValue"
 								[vertical]="true"
 							>
-							</mat-slider>
-							<ov-video
-								[streamManager]="localUsers[0].getStreamManager()"
-								id="ovVideo"
-								[className]="localUsers[1] ? 'smallVideo' : ''"
-							></ov-video>
-							<ov-video
-								*ngIf="localUsers[1] && localUsers[1].getStreamManager()"
-								[streamManager]="localUsers[1].getStreamManager()"
-								id="ovVideoScreen"
-							></ov-video>
+							</mat-slider> -->
+							<div *ngFor="let localUser of localUsers;  let i = index">
+								<!-- Only webcam video will be shown if webcamera is available -->
+								<ov-video
+									*ngIf="(localUser.isCamera() && hasVideoDevices) || localUser.isScreen()"
+									[streamManager]="localUser.getStreamManager()"
+									[id]="localUser.isCamera() ? 'ovVideo' : 'ovVideoScreen'"
+									[className]="localUsers.length > 1 && i === 0 ? 'smallVideo' : ''"
+								></ov-video>
+								<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && !hasVideoDevices">Oops! Camera is not available </div>
+
+							</div>
 						</div>
-						<div id="photoButton">
+						<div id="photoButton" *ngIf="hasVideDevices">
 							<button mat-stroked-button (click)="takePhoto()" id="avatarButton">
 								<mat-icon matTooltip="Take Photo">photo_camera</mat-icon>
 								<span style="margin-left: 5px">Capture Avatar</span>
@@ -57,7 +58,7 @@
 					</div>
 					<!--  right section -->
 					<div fxFlex="55" fxFlex.sm="65" fxFlex.lt-sm="65" class="sec3">
-						<div fxLayout="row" fxFill id="avatarSection">
+						<div fxLayout="row" fxFill id="avatarSection" *ngIf="hasVideDevices">
 							<div fxLayout fxFlex>
 								<div class="" fxFlex="30" fxLayoutAlign="center center">
 									<h3 style="margin: auto;">Avatar</h3>
@@ -110,7 +111,7 @@
 							</div>
 						</div>
 						<!-- Devices section / Camera-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.video">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && ovSettings && ovSettings.toolbarButtons.video">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">

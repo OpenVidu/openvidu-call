@@ -49,6 +49,12 @@ button {
   display: inline-block;
 }
 
+.cameraMessageContainer {
+  padding: 100px;
+  border: 2px solid;
+  font-size: large;
+}
+
 .smallVideo {
   position: absolute;
   bottom: 0;

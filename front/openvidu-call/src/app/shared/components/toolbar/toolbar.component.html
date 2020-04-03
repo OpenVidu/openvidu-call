@@ -37,7 +37,7 @@
 			(click)="toggleCamera()"
 			[disabled]="isConnectionLost"
 			id="navCamButton"
-			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.video)"
+			*ngIf="!this.ovSettings || (hasVideoDevices && this.ovSettings && this.ovSettings.toolbarButtons.video)"
 		>
 			<mat-icon *ngIf="isWebcamVideoEnabled" matTooltip="Mute your cam">videocam</mat-icon>
 			<mat-icon *ngIf="!isWebcamVideoEnabled" color="warn" matTooltip="Unmute your cam">videocam_off</mat-icon>

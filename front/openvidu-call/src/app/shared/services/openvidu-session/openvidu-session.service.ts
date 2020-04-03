@@ -65,9 +65,10 @@ export class OpenViduSessionService {
 
 	async publishWebcam(): Promise<any> {
 		if (!this.webcamUser.getConnectionId()) {
-			this.webcamUser.setConnectionId(this.webcamSession.connection.connectionId);
+			this.webcamUser.setConnectionId(this.webcamSession.connection?.connectionId);
 			// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
 		}
+		console.log("WEBCAM SESSION", this.webcamSession);
 
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
@@ -145,6 +146,8 @@ export class OpenViduSessionService {
 
 	publishVideo(isVideoActive: boolean) {
 		(<Publisher>this.webcamUser.getStreamManager()).publishVideo(isVideoActive);
+		// Send event to subscribers because of viedeo has changed and view must update
+		this._OVUsers.next(this._OVUsers.getValue());
 	}
 
 	publishWebcamAudio(audio: boolean) {
@@ -226,11 +229,11 @@ export class OpenViduSessionService {
 	}
 
 	isWebCamEnabled(): boolean {
-		return this._OVUsers.value[0].isCamera();
+		return this._OVUsers.getValue()[0].isCamera();
 	}
 
 	isOnlyScreenConnected(): boolean {
-		return this._OVUsers.value[0].isScreen();
+		return this._OVUsers.getValue()[0].isScreen();
 	}
 
 	hasWebcamVideoActive(): boolean {
@@ -238,15 +241,15 @@ export class OpenViduSessionService {
 	}
 
 	hasWebcamAudioActive(): boolean {
-		return this.webcamUser.isAudioActive();
+		return this.webcamUser?.isAudioActive();
 	}
 
 	hasScreenAudioActive(): boolean {
-		return this.screenUser.isAudioActive();
+		return this.screenUser?.isAudioActive();
 	}
 
 	areBothConnected(): boolean {
-		return this._OVUsers.value.length === 2;
+		return this._OVUsers.getValue().length === 2;
 	}
 
 	isOnlyWebcamConnected(): boolean {
@@ -316,12 +319,12 @@ export class OpenViduSessionService {
 		return this.getWebcamUserName() + '_SCREEN';
 	}
 
-	resetUsersFullscreen() {
+	resetUsersZoom() {
 		this.webcamUser?.setVideoSizeBig(false);
 		this.screenUser?.setVideoSizeBig(false);
 	}
 
-	toggleFullscreen(connectionId: string) {
+	toggleZoom(connectionId: string) {
 		if (this.webcamUser.getConnectionId() === connectionId) {
 			this.webcamUser.setVideoSizeBig(!this.webcamUser.isVideoSizeBig());
 			return;

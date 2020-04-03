@@ -22,6 +22,8 @@ import { ScreenType } from '../shared/types/video-type';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
 import { LayoutType } from '../shared/types/layout-type';
+import { DevicesService } from '../shared/services/devices/devices.service';
+import { RemoteUsersService } from '../shared/services/remote-users/remote-users.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -45,7 +47,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chat: any;
 
-	// Variables
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
 	lightTheme: boolean;
@@ -64,14 +65,20 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	newMessages = 0;
 	isConnectionLost: boolean;
 	isAutoLayout = false;
+	hasVideoDevices: boolean;
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
+	private remoteUsersSubscription: Subscription;
+	private localUsersFiltered: UserModel[];
+	private remoteUsersFiltered: UserModel[];
 
 	constructor(
 		private networkSrv: NetworkService,
 		private router: Router,
 		private utilsSrv: UtilsService,
+		private remoteUsersService: RemoteUsersService,
 		private oVSessionService: OpenViduSessionService,
+		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService
 	) {
 		this.log = this.loggerSrv.get('VideoRoomComponent');
@@ -99,10 +106,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.exitSession();
 	}
 	onConfigRoomJoin() {
+		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
 		this.showConfigRoomCard = false;
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
-			this.localUsers = users;
-		});
+		this.subscribeToLocalUsers();
+		this.subscribeToRemoteUsers();
 		this.mySessionId = this.oVSessionService.getSessionId();
 
 		setTimeout(() => {
@@ -132,6 +139,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.oVUsersSubscription) {
 			this.oVUsersSubscription.unsubscribe();
 		}
+		if (this.remoteUsersSubscription) {
+			this.remoteUsersSubscription.unsubscribe();
+		}
 		this.session = null;
 		this.sessionScreen = null;
 		this.localUsers = [];
@@ -157,7 +167,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	toggleMic(): void {
+	toggleMic() {
 		if (this.oVSessionService.isWebCamEnabled()) {
 			this.oVSessionService.publishWebcamAudio(!this.oVSessionService.hasWebcamAudioActive());
 			return;
@@ -178,7 +188,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.oVSessionService.publishVideo(isVideoActive);
 			this.oVSessionService.disableWebcamUser();
 			this.oVSessionService.unpublishWebcam();
-			this.updateOpenViduLayout();
+			// this.updateOpenViduLayout();
 			return;
 		}
 		// Enabling webcam
@@ -192,7 +202,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 		// Muting/unmuting webcam
 		this.oVSessionService.publishVideo(isVideoActive);
-		this.updateOpenViduLayout();
+		// this.updateOpenViduLayout();
 	}
 
 	async toggleScreenShare() {
@@ -233,7 +243,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleSpeakerLayout() {
-		this.log.d('Automatic Layout ', this.isAutoLayout ? 'Disabled' : 'Enabled' );
+		this.log.d('Automatic Layout ', this.isAutoLayout ? 'Disabled' : 'Enabled');
 		if (this.isAutoLayout) {
 			this.log.d('Unsubscribe to speach detection');
 			this.session.off('publisherStartSpeaking');
@@ -257,7 +267,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
-	onToggleVideoSize(event: {element: HTMLElement, connectionId?: string, resetAll?: boolean}) {
+	onToggleVideoSize(event: { element: HTMLElement; connectionId?: string; resetAll?: boolean }) {
 		const element = event.element;
 		if (!!event.resetAll) {
 			this.resetAllBigElements();
@@ -265,14 +275,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 		this.utilsSrv.toggleBigElementClass(element);
 
-		// Has been mandatory change the user fullscreen property here because of
-		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
+		// Has been mandatory change the user zoom property here because of
+		// zoom icons and cannot handle publisherStartSpeaking event in other component
 		if (!!event?.connectionId) {
 			if (this.oVSessionService.isMyOwnConnection(event.connectionId)) {
-				this.oVSessionService.toggleFullscreen(event.connectionId);
+				this.oVSessionService.toggleZoom(event.connectionId);
 			} else {
-				const user = this.getRemoteUserByConnectionId(event.connectionId);
-				user.setVideoSizeBig(!user.isVideoSizeBig());
+				this.remoteUsersService.toggleUserZoom(event.connectionId);
 			}
 		}
 		this.updateOpenViduLayout();
@@ -321,7 +330,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// this.joinSession.emit();
 
 			this.localUsers[0].getStreamManager().on('streamPlaying', () => {
-				this.updateOpenViduLayout();
+				// this.updateOpenViduLayout();
 				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
 			});
 		} catch (error) {
@@ -336,51 +345,38 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const connectionId = event.stream.connection.connectionId;
 
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
-				this.updateOpenViduLayout(500);
+				// this.updateOpenViduLayout(500);
 				return;
 			}
 
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
+			this.remoteUsersService.add(event, subscriber);
+			// this.updateOpenViduLayout();
 
 			// subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
 			// 	this.checkSomeoneShareScreen();
 			// });
-
-			const nickname = JSON.parse(event.stream.connection.data)?.clientData;
-			const newUser = new UserModel(connectionId, subscriber, nickname);
-
-			this.remoteUsers.push(newUser);
-			this.updateOpenViduLayout();
 		});
 	}
 
 	private subscribeToStreamDestroyed() {
 		this.session.on('streamDestroyed', (event: StreamEvent) => {
 			const connectionId = event.stream.connection.connectionId;
-			const user = this.getRemoteUserByConnectionId(connectionId);
-			const index = this.remoteUsers.indexOf(user, 0);
-			if (index > -1) {
-				this.remoteUsers.splice(index, 1);
-			}
+			this.remoteUsersService.removeUserByConnectionId(connectionId);
 			// event.preventDefault();
-			this.updateOpenViduLayout();
+			// this.updateOpenViduLayout();
 		});
 	}
 
 	private subscribeToStreamPropertyChange() {
 		this.session.on('streamPropertyChanged', (event: StreamPropertyChangedEvent) => {
-			// const connectionId = event.stream.connection.connectionId;
-			// if (this.oVSessionService.isMyOwnConnection(connectionId)) {
-			// 	return;
-			// }
-			// const user = this.getRemoteUserByConnectionId(connectionId);
-			// if (event.changedProperty === 'videoActive') {
-			// 	user.setVideoActive(<boolean>event.newValue);
-			// }
-			// if (event.changedProperty === 'audioActive') {
-			// 	this.remoteUsers.some(user => user.isVideoActive());
-			// 	user.setAudioActive(<boolean>event.newValue);
-			// }
+			const connectionId = event.stream.connection.connectionId;
+			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
+				return;
+			}
+			if (event.changedProperty === 'videoActive') {
+				this.remoteUsersService.updateUsers();
+			}
 		});
 	}
 
@@ -391,25 +387,24 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			const user = this.getRemoteUserByConnectionId(connectionId);
+			const user = this.remoteUsersService.getRemoteUserByConnectionId(connectionId);
 			const nickname = JSON.parse(event.data).nickname;
 			user.setNickname(nickname);
 		});
 	}
 
-
 	private subscribeToSpeachDetection() {
-		this.log.d('Subscribe to speach detection');
-		// Has been mandatory change the user fullscreen property here because of
-		// fullscreen icons and cannot handle publisherStartSpeaking event in other component
+		this.log.d('Subscribe to speach detection', this.session);
+		// Has been mandatory change the user zoom property here because of
+		// zoom icons and cannot handle publisherStartSpeaking event in other component
 		this.session.on('publisherStartSpeaking', (event: PublisherSpeakingEvent) => {
-			const someoneIsSharingScreen = this.remoteUsers.some(user => user.isScreen());
+			const someoneIsSharingScreen = this.remoteUsersService.someoneIsSharingScreen();
 			if (!this.oVSessionService.isScreenShareEnabled() && !someoneIsSharingScreen) {
 				const elem = event.connection.stream.streamManager.videos[0].video;
 				const element = this.utilsSrv.getHTMLElementByClassName(elem, LayoutType.ROOT_CLASS);
 				this.resetAllBigElements();
-				this.getRemoteUserByConnectionId(event.connection.connectionId)?.setVideoSizeBig(true);
-				this.onToggleVideoSize({element});
+				this.remoteUsersService.setUserZoom(event.connection.connectionId, true);
+				this.onToggleVideoSize({ element });
 			}
 		});
 
@@ -422,31 +417,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.unpublishScreen();
 	}
 
-	private subscribeToUserChanged() {
-		this.session.on('signal:userChanged', (event: any) => {
-			const data = JSON.parse(event.data);
-			this.remoteUsers.forEach((user: UserModel) => {
-				if (user.getConnectionId() === event.from.connectionId) {
-					// if (!!data.isAudioActive) {
-					// 	user.setAudioActive(data.isAudioActive);
-					// }
-					// if (!!data.isVideoActive) {
-					// 	user.setVideoActive(data.isVideoActive);
-					// }
-					// if (!!data.nickname) {
-					// 	user.setNickname(data.nickname);
-					// }
-					// if (!!data.isScreenShareActive) {
-					// 	user.setScreenShareActive(data.isScreenShareActive);
-					// }
-					if (!!data.avatar) {
-						user.setUserAvatar(data.avatar);
-					}
-				}
-			});
-		});
-	}
-
 	// ! Create chat service
 	private subscribeToChat() {
 		this.session.on('signal:chat', (event: any) => {
@@ -456,7 +426,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
 				owner = this.localUsers.filter(u => u.getConnectionId() === connectionId)[0];
 			} else {
-				owner = this.getRemoteUserByConnectionId(connectionId);
+				owner = this.remoteUsersService.getRemoteUserByConnectionId(connectionId);
 			}
 			this.messageList.push({
 				connectionId: data.connectionId,
@@ -516,10 +486,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private getRemoteUserByConnectionId(connectionId): UserModel {
-		return this.remoteUsers.filter(u => u.getConnectionId() === connectionId)[0];
-	}
-
 	private sendNicknameSignal(nickname) {
 		const signalOptions: SignalOptions = {
 			data: JSON.stringify({ nickname }),
@@ -542,7 +508,37 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private resetAllBigElements() {
 		this.utilsSrv.removeAllBigElementClass();
-		this.remoteUsers.forEach(u => u.setVideoSizeBig(false));
-		this.oVSessionService.resetUsersFullscreen();
+		this.remoteUsersService.resetUsersZoom();
+		this.oVSessionService.resetUsersZoom();
+	}
+
+	private subscribeToLocalUsers() {
+		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
+			this.localUsers = users;
+			// Showing only the users with videoDevice and video active
+			this.filterLocalUsers();
+		});
+	}
+
+	private filterLocalUsers() {
+		this.localUsersFiltered = this.localUsers.filter(user => {
+			return (user.isCamera() && this.hasVideoDevices && user.isVideoActive()) || user.isScreen();
+		});
+		this.updateOpenViduLayout();
+	}
+
+	private subscribeToRemoteUsers() {
+		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe(users => {
+			this.remoteUsers = users;
+			// Showing only the users with video active
+			this.filterRemoteUsers();
+		});
+	}
+
+	private filterRemoteUsers() {
+		this.remoteUsersFiltered = this.remoteUsers.filter(user => {
+			return user.isCamera() && user.isVideoActive() || user.isScreen();
+		});
+		this.updateOpenViduLayout();
 	}
 }

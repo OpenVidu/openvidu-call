@@ -52,14 +52,14 @@ export class UserModel {
 	 * Return `true` if audio track is active and `false` if audio track is muted
 	 */
 	public isAudioActive(): boolean {
-		return (<Publisher>this.streamManager).stream.audioActive;
+		return (<Publisher>this.streamManager)?.stream?.audioActive;
 	}
 
 	/**
 	 * Return `true` if video track is active and `false` if video track is muted
 	 */
 	public isVideoActive(): boolean {
-		return (<Publisher>this.streamManager).stream.videoActive;
+		return (<Publisher>this.streamManager)?.stream?.videoActive;
 	}
 
 	/**
@@ -94,7 +94,6 @@ export class UserModel {
 	 * Return `true` if user has a local role and `false` if not
 	 */
 	public isLocal(): boolean {
-		// return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.CAMERA;
 		return !this.isRemote();
 	}
 
@@ -102,21 +101,21 @@ export class UserModel {
 	 * Return `true` if user has a remote role and `false` if not
 	 */
 	public isRemote(): boolean {
-		return (<Publisher>this.streamManager).remote;
+		return (<Publisher>this.streamManager)?.remote;
 	}
 
 	/**
 	 * Return `true` if user has a screen role and `false` if not
 	 */
 	public isScreen(): boolean {
-		return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.SCREEN;
+		return (<Publisher>this.streamManager)?.stream?.typeOfVideo === VideoType.SCREEN;
 	}
 
 	/**
 	 * Return `true` if user has a camera role and `false` if not
 	 */
 	public isCamera(): boolean {
-		return (<Publisher>this.streamManager).stream.typeOfVideo === VideoType.CAMERA;
+		return (<Publisher>this.streamManager)?.stream?.typeOfVideo === VideoType.CAMERA || (this.isLocal() && !this.isScreen());
 	}
 
 	/**
