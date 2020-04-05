@@ -24,6 +24,8 @@ import { ILogger } from '../shared/types/logger-type';
 import { LayoutType } from '../shared/types/layout-type';
 import { DevicesService } from '../shared/services/devices/devices.service';
 import { RemoteUsersService } from '../shared/services/remote-users/remote-users.service';
+import { WebComponentModel } from '../shared/models/webcomponent-model';
+import { Theme } from '../shared/types/webcomponent-config';
 
 @Component({
 	selector: 'app-video-room',
@@ -31,22 +33,14 @@ import { RemoteUsersService } from '../shared/services/remote-users/remote-users
 	styleUrls: ['./video-room.component.css']
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
-	// webComponent's inputs and outputs
-	@Input() ovSettings: OvSettings;
-	@Input() sessionName: string;
-	@Input() user: string;
-	@Input() openviduServerUrl: string;
-	@Input() openviduSecret: string;
-	@Input() tokens: string[];
-	@Input() theme: string;
-	@Input() isWebComponent: boolean;
+	@Input() webComponent: WebComponentModel;
 	@Output() joinSession = new EventEmitter<any>();
 	@Output() leaveSession = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
-
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chat: any;
 
+	ovSettings: OvSettings;
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
 	lightTheme: boolean;
@@ -54,7 +48,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	showDialogExtension = false;
 	showConfigRoomCard = true;
 	session: Session;
-	sessionScreen: Session;
+	// sessionScreen: Session;
 	openviduLayout: OpenViduLayout;
 	openviduLayoutOptions: OpenViduLayoutOptions;
 	mySessionId: string;
@@ -98,8 +92,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-		this.lightTheme = this.theme === 'light';
-		this.ovSettings = this.ovSettings ? this.ovSettings : await this.networkSrv.getOvSettingsData();
+		this.lightTheme = this.webComponent?.getTheme() === Theme.LIGHT;
+		this.ovSettings = !!this.webComponent ? this.webComponent.getOvSettings() : await this.networkSrv.getOvSettingsData();
 	}
 
 	ngOnDestroy() {
@@ -124,7 +118,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	joinToSession() {
 		this.oVSessionService.initSessions();
 		this.session = this.oVSessionService.getWebcamSession();
-		this.sessionScreen = this.oVSessionService.getScreenSession();
+		// this.sessionScreen = this.oVSessionService.getScreenSession();
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
@@ -143,7 +137,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.remoteUsersSubscription.unsubscribe();
 		}
 		this.session = null;
-		this.sessionScreen = null;
+		// this.sessionScreen = null;
 		this.localUsers = [];
 		this.remoteUsers = [];
 		this.openviduLayout = null;
@@ -162,7 +156,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.chatOpened) {
 				this.newMessages = 0;
 			}
-			const timeout = this.isWebComponent ? 300 : 0;
+			const timeout = this.webComponent ? 300 : 0;
 			this.updateOpenViduLayout(timeout);
 		});
 	}
@@ -216,7 +210,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
-			screenPublisher.once('accessAllowed', event => {
+			screenPublisher.once('accessAllowed', (event) => {
 				this.log.d('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				this.oVSessionService.publishScreen();
@@ -227,7 +221,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				}
 			});
 
-			screenPublisher.once('accessDenied', event => {
+			screenPublisher.once('accessDenied', (event) => {
 				this.log.w('ScreenShare: Access Denied');
 			});
 			return;
@@ -295,30 +289,29 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private async connectToSession(): Promise<void> {
-		if (this.tokens) {
-			// ! Retrieves tokens from subcomponent or library
-			// this.localUsers.forEach((user, index) => {
-			// 	if (user.isLocal()) {
-			// 		this.connect(this.tokens[index]);
-			// 	} else if (user.isScreen()) {
-			// 		this.startScreenSharing(index);
-			// 	}
-			// });
-		} else {
-			// Normal behaviour - OpenVidu Call
-			const webcamToken = await this.getToken();
-			const screenToken = await this.getToken();
-			await this.connectBothSessions(webcamToken, screenToken);
-
-			if (this.oVSessionService.areBothConnected()) {
-				this.oVSessionService.publishWebcam();
-				this.oVSessionService.publishScreen();
-			} else if (this.oVSessionService.isOnlyScreenConnected()) {
-				this.oVSessionService.publishScreen();
-			} else {
-				this.oVSessionService.publishWebcam();
+		let webcamToken;
+		let screenToken;
+		if (!!this.webComponent) {
+			if (this.webComponent.hasTokens()) {
+				this.log.d('Received token from webcomponent');
+				webcamToken = this.webComponent.getWebcamToken();
+				screenToken = this.webComponent.getScreenToken();
 			}
+		} // else {
+		// Normal behaviour - OpenVidu Call
+		webcamToken = webcamToken ? webcamToken : await this.getToken();
+		screenToken = screenToken ? screenToken : await this.getToken();
+		await this.connectBothSessions(webcamToken, screenToken);
+
+		if (this.oVSessionService.areBothConnected()) {
+			this.oVSessionService.publishWebcam();
+			this.oVSessionService.publishScreen();
+		} else if (this.oVSessionService.isOnlyScreenConnected()) {
+			this.oVSessionService.publishScreen();
+		} else {
+			this.oVSessionService.publishWebcam();
 		}
+		// }
 		this.updateOpenViduLayout();
 	}
 
@@ -424,7 +417,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const data = JSON.parse(event.data);
 			let owner: UserModel;
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
-				owner = this.localUsers.filter(u => u.getConnectionId() === connectionId)[0];
+				owner = this.localUsers.filter((u) => u.getConnectionId() === connectionId)[0];
 			} else {
 				owner = this.remoteUsersService.getRemoteUserByConnectionId(connectionId);
 			}
@@ -477,8 +470,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private async getToken(): Promise<string> {
+		this.log.d('Generating tokens...');
 		try {
-			return await this.networkSrv.getToken(this.mySessionId, this.openviduServerUrl, this.openviduSecret);
+			return await this.networkSrv.getToken(this.mySessionId, this.webComponent?.getOvUrl(), this.webComponent?.getOvSecret());
 		} catch (error) {
 			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.e('There was an error getting the token:', error.code, error.message);
@@ -513,7 +507,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private subscribeToLocalUsers() {
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
+		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users) => {
 			this.localUsers = users;
 			// Showing only the users with videoDevice and video active
 			this.filterLocalUsers();
@@ -521,14 +515,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private filterLocalUsers() {
-		this.localUsersFiltered = this.localUsers.filter(user => {
+		this.localUsersFiltered = this.localUsers.filter((user) => {
 			return (user.isCamera() && this.hasVideoDevices && user.isVideoActive()) || user.isScreen();
 		});
 		this.updateOpenViduLayout();
 	}
 
 	private subscribeToRemoteUsers() {
-		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe(users => {
+		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users) => {
 			this.remoteUsers = users;
 			// Showing only the users with video active
 			this.filterRemoteUsers();
@@ -536,8 +530,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private filterRemoteUsers() {
-		this.remoteUsersFiltered = this.remoteUsers.filter(user => {
-			return user.isCamera() && user.isVideoActive() || user.isScreen();
+		this.remoteUsersFiltered = this.remoteUsers.filter((user) => {
+			return (user.isCamera() && user.isVideoActive()) || user.isScreen();
 		});
 		this.updateOpenViduLayout();
 	}

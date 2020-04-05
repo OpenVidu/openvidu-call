@@ -56,11 +56,15 @@ export class OpenViduSessionService {
 	}
 
 	async connectWebcamSession(token: string): Promise<any> {
-		await this.webcamSession.connect(token, { clientData: this.getWebcamUserName() });
+		if (!!token) {
+			await this.webcamSession.connect(token, { clientData: this.getWebcamUserName() });
+		}
 	}
 
 	async connectScreenSession(token: string): Promise<any> {
-		await this.screenSession.connect(token, { clientData: this.getScreenUserName() });
+		if (!!token) {
+			await this.screenSession.connect(token, { clientData: this.getScreenUserName() });
+		}
 	}
 
 	async publishWebcam(): Promise<any> {

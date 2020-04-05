@@ -1,9 +1,8 @@
 <div *ngIf="!!ovSettings" id="videoRoomNavBar" [class.boundsLight]="lightTheme">
   <app-room-config
     *ngIf="showConfigRoomCard"
-    [userNickname]="user"
-    [sessionName]="sessionName"
     [ovSettings]="ovSettings"
+    [webComponent]="webComponent"
     (join)="onConfigRoomJoin($event)"
     (leaveSession)="exitSession()"
   ></app-room-config>

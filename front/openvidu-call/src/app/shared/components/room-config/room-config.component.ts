@@ -14,6 +14,7 @@ import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../../services/logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { ScreenType } from '../../types/video-type';
+import { WebComponentModel } from '../../models/webcomponent-model';
 
 @Component({
 	selector: 'app-room-config',
@@ -21,9 +22,8 @@ import { ScreenType } from '../../types/video-type';
 	styleUrls: ['./room-config.component.css']
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
-	@Input() userNickname: string;
-	@Input() sessionName: string;
 	@Input() ovSettings: OvSettings;
+	@Input() webComponent: WebComponentModel;
 	@Output() join = new EventEmitter<any>();
 	@Output() leaveSession = new EventEmitter<any>();
 
@@ -177,8 +177,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	setNicknameForm() {
-		if (this.userNickname) {
-			this.nicknameFormControl.setValue(this.userNickname);
+		if (this.webComponent) {
+			this.nicknameFormControl.setValue(this.webComponent.getNickname());
 			return;
 		}
 		this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
@@ -209,7 +209,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (this.nicknameFormControl.valid) {
 			// this.localUsers.forEach(user => {
 			// 	user.getStreamManager().off('streamAudioVolumeChange');
-			// 	user.setNickname(this.nicknameFormControl.value);
 			// });
 			// if (this.avatarSelected === AVATAR_TYPE.RANDOM) {
 			// 	this.localUsers[0].removeVideoAvatar();
@@ -217,6 +216,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// if (this.localUsers[1]) {
 			// 	this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
 			// }
+			this.oVSessionService.setWebcamName(this.nicknameFormControl.value);
 			this.join.emit();
 		}
 	}
@@ -250,7 +250,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private setSessionName() {
 		this.route.params.subscribe((params: Params) => {
-			this.mySessionId = this.sessionName ? this.sessionName : params.roomName;
+			this.mySessionId = this.webComponent ? this.webComponent.getSessionName() : params.roomName;
 			this.oVSessionService.setSessionId(this.mySessionId);
 		});
 	}

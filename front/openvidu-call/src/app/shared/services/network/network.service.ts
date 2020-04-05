@@ -34,8 +34,8 @@ export class NetworkService {
 
 	getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const ov_url = openviduServerUrl !== undefined ? openviduServerUrl : this.URL_OV;
-			const ov_secret = openviduSecret !== undefined ? openviduSecret : this.MY_SECRET;
+			const ov_url = !!openviduServerUrl ? openviduServerUrl : this.URL_OV;
+			const ov_secret = !!openviduSecret ? openviduSecret : this.MY_SECRET;
 			this.createSession(mySessionId, ov_url, ov_secret)
 				.then((sessionId: string) => {
 					this.createToken(sessionId, ov_url, ov_secret)
