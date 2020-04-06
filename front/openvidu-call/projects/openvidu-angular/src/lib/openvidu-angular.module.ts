@@ -23,6 +23,10 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppRoutingModule } from './app-routing.module';
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+
+// Pipes
+import { LinkifyPipe } from './shared/pipes/linkfy';
 
 // Components
 import { VideoRoomComponent } from './video-room/video-room.component';
@@ -32,55 +36,56 @@ import { DialogExtensionComponent } from './shared/components/dialog-extension/d
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
-import { OpenViduService } from './shared/services/open-vidu.service';
-import { ApiService } from './shared/services/api.service';
-import { LinkifyPipe } from './shared/pipes/linkfy';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { RoomConfigComponent } from './shared/components/room-config/room-config.component';
 
+// Services
+import { NetworkService } from './shared/services/network/network.service';
+import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
+import { UtilsService } from './shared/services/utils/utils.service';
+import { DevicesService } from './shared/services/devices/devices.service';
+import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
+
 @NgModule({
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    MatTooltipModule,
-    MatBadgeModule,
-    MatGridListModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatProgressSpinnerModule,
-    MatSliderModule,
-    MatSidenavModule,
-    AppRoutingModule,
-    MatChipsModule,
-    NgxLinkifyjsModule.forRoot()
-  ],
-  declarations: [
-    OpenviduSessionComponent,
-    VideoRoomComponent,
-    StreamComponent,
-    ChatComponent,
-    DialogExtensionComponent,
-    OpenViduVideoComponent,
-    DialogErrorComponent,
-    RoomConfigComponent,
-    ToolbarComponent,
-    LinkifyPipe
-  ],
-  entryComponents: [
-    DialogErrorComponent,
-  ],
-  providers: [OpenViduService, ApiService],
-  exports: [OpenviduSessionComponent],
+	imports: [
+		CommonModule,
+		HttpClientModule,
+		FormsModule,
+		ReactiveFormsModule,
+		BrowserModule,
+		BrowserAnimationsModule,
+		MatButtonModule,
+		MatCardModule,
+		MatToolbarModule,
+		MatIconModule,
+		MatInputModule,
+		MatFormFieldModule,
+		MatDialogModule,
+		MatTooltipModule,
+		MatBadgeModule,
+		MatGridListModule,
+		MatSelectModule,
+		MatOptionModule,
+		MatProgressSpinnerModule,
+		MatSliderModule,
+		MatSidenavModule,
+		AppRoutingModule,
+		MatChipsModule,
+		NgxLinkifyjsModule.forRoot()
+	],
+	declarations: [
+		OpenviduSessionComponent,
+		VideoRoomComponent,
+		StreamComponent,
+		ChatComponent,
+		DialogExtensionComponent,
+		OpenViduVideoComponent,
+		DialogErrorComponent,
+		RoomConfigComponent,
+		ToolbarComponent,
+		LinkifyPipe
+	],
+	entryComponents: [DialogErrorComponent],
+	providers: [NetworkService, OpenViduSessionService, UtilsService, RemoteUsersService, DevicesService],
+	exports: [OpenviduSessionComponent]
 })
 export class OpenviduSessionModule {}
