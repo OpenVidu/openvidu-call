@@ -37,21 +37,27 @@ async function copyFiles() {
           if (err) return console.log(err);
         });
         // openvidu-service environments path
-        fs.readFile(sharedDest + 'services/open-vidu.service.ts', 'utf8', (err, data) => {
-          if (err) {
-            return console.log(err);
-          }
-          const result = data.replace('../../../environments/environment', '../../environments/environment');
+        replaceEnvironmentPath(sharedDest + 'services/logger/logger.service.ts');
+        replaceEnvironmentPath(sharedDest + 'services/network/network.service.ts');
 
-          fs.writeFile(sharedDest + 'services/open-vidu.service.ts', result, 'utf8', (err) => {
-            if (err) return console.log(err);
-          });
-        });
       });
     });
   } catch (err) {
     console.error('Error executing copy function in openvidu-angular-build.js', err);
   }
+}
+
+function replaceEnvironmentPath(file){
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      return console.log(err);
+    }
+    const result = data.replace('../../../environments/environment', '../../environments/environment');
+
+    fs.writeFile(file, result, 'utf8', (err) => {
+      if (err) return console.log(err);
+    });
+  });
 }
 
 async function cleanLibrary() {
