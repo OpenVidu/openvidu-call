@@ -230,8 +230,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.leaveSession.emit();
 	}
 
-	setAvatar(avatarType: AvatarType) {
+	setAvatar(avatar: string) {
 		// !! REFACTOR
+		const avatarType = avatar === AvatarType.VIDEO ? AvatarType.VIDEO : AvatarType.RANDOM;
 		if ((avatarType === AvatarType.RANDOM && this.randomAvatar) || (avatarType === AvatarType.VIDEO && this.videoAvatar)) {
 			this.avatarSelected = avatarType;
 			// if (avatarType === AVATAR_TYPE.RANDOM) {
