@@ -71,7 +71,7 @@
 			(click)="toggleSpeakerLayout()"
 			[disabled]="isConnectionLost"
 			id="navScreenButton"
-			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.screenShare)"
+			*ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.toolbarButtons.layoutSpeaking)"
 		>
 			<mat-icon matTooltip="Enable speaker layout" color="warn" *ngIf="!isAutoLayout">voice_over_off</mat-icon>
 			<mat-icon matTooltip="Disable speaker layout" *ngIf="isAutoLayout">record_voice_over</mat-icon>

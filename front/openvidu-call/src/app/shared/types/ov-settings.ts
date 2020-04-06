@@ -6,6 +6,7 @@ export interface OvSettings {
 		video: boolean;
 		screenShare: boolean;
 		fullscreen: boolean;
+		layoutSpeaking: boolean;
 		exit: boolean;
 	};
 }

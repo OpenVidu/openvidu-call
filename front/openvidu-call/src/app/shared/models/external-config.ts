@@ -19,6 +19,7 @@ export class ExternalConfigModel {
 				audio: true,
 				fullscreen: true,
 				screenShare: true,
+				layoutSpeaking: true,
 				exit: true
 			}
 		};
