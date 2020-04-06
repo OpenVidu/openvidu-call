@@ -55,9 +55,9 @@ export class OpenViduVideoComponent implements AfterViewInit {
 
 	enableVideoSizeBig() {
 		// Doing video size bigger.
-		// Timeout because of connectionId is null and icon doesnot change
+		// Timeout because of connectionId is null and icon does not change
 		setTimeout(() => {
 			this.toggleVideoSizeEvent.emit(true);
-		}, 560);
+		}, 590);
 	}
 }
