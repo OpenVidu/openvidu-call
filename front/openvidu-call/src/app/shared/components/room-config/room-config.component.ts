@@ -14,7 +14,7 @@ import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../../services/logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { ScreenType } from '../../types/video-type';
-import { WebComponentModel } from '../../models/webcomponent-model';
+import { ExternalConfigModel } from '../../models/external-config';
 
 @Component({
 	selector: 'app-room-config',
@@ -22,8 +22,8 @@ import { WebComponentModel } from '../../models/webcomponent-model';
 	styleUrls: ['./room-config.component.css']
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
+	@Input() externalConfig: ExternalConfigModel;
 	@Input() ovSettings: OvSettings;
-	@Input() webComponent: WebComponentModel;
 	@Output() join = new EventEmitter<any>();
 	@Output() leaveSession = new EventEmitter<any>();
 
@@ -54,7 +54,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	constructor(
 		private route: ActivatedRoute,
 		private utilsSrv: UtilsService,
-		private oVSessionService: OpenViduSessionService,
+		public oVSessionService: OpenViduSessionService,
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService
 	) {
@@ -149,14 +149,14 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
-			screenPublisher.on('accessAllowed', event => {
+			screenPublisher.on('accessAllowed', (event) => {
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				if (!this.oVSessionService.hasWebcamVideoActive()) {
 					this.oVSessionService.disableWebcamUser();
 				}
 			});
 
-			screenPublisher.on('accessDenied', event => {
+			screenPublisher.on('accessDenied', (event) => {
 				this.log.w('ScreenShare: Access Denied');
 			});
 			return;
@@ -177,8 +177,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	setNicknameForm() {
-		if (this.webComponent) {
-			this.nicknameFormControl.setValue(this.webComponent.getNickname());
+		if (this.externalConfig) {
+			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
 			return;
 		}
 		this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
@@ -251,7 +251,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private setSessionName() {
 		this.route.params.subscribe((params: Params) => {
-			this.mySessionId = this.webComponent ? this.webComponent.getSessionName() : params.roomName;
+			this.mySessionId = this.externalConfig ? this.externalConfig.getSessionName() : params.roomName;
 			this.oVSessionService.setSessionId(this.mySessionId);
 		});
 	}
@@ -287,7 +287,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private subscribeToUsers() {
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe(users => {
+		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users) => {
 			this.localUsers = users;
 		});
 	}

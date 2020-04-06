@@ -45,6 +45,8 @@ import { AppComponent } from './app.component';
 import { NetworkService } from './shared/services/network/network.service';
 import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
 import { UtilsService } from './shared/services/utils/utils.service';
+import { DevicesService } from './shared/services/devices/devices.service';
+import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
 
 @NgModule({
 	declarations: [
@@ -88,7 +90,7 @@ import { UtilsService } from './shared/services/utils/utils.service';
 		NgxLinkifyjsModule.forRoot()
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
-	providers: [NetworkService, OpenViduSessionService, UtilsService],
+	providers: [NetworkService, OpenViduSessionService, UtilsService, RemoteUsersService, DevicesService],
 	bootstrap: [AppComponent]
 })
 export class AppModule {
