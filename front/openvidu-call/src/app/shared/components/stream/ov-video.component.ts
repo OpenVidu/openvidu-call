@@ -1,41 +1,63 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { StreamManager } from 'openvidu-browser';
+import { VideoType } from '../../types/video-type';
 
 @Component({
-  selector: 'ov-video',
-  template: `
-    <video
-      #videoElement
-      [attr.id]="streamManager && _streamManager.stream ? 'video-' + _streamManager.stream.streamId : 'video-undefined'"
-      [muted]="mutedSound"
-    ></video>
-  `,
-  styleUrls: ['./stream.component.css'],
+	selector: 'ov-video',
+	template: `
+		<video
+			#videoElement
+			[attr.id]="streamManager && _streamManager.stream ? 'video-' + _streamManager.stream.streamId : 'video-undefined'"
+			[muted]="mutedSound"
+		></video>
+	`,
+	styleUrls: ['./stream.component.css']
 })
 export class OpenViduVideoComponent implements AfterViewInit {
-  @ViewChild('videoElement') elementRef: ElementRef;
 
-  @Input() mutedSound: boolean;
+	@Input() mutedSound: boolean;
 
-  _streamManager: StreamManager;
+	@Output() toggleVideoSizeEvent =  new EventEmitter<any>();
 
-  ngAfterViewInit() {
-    if (this._streamManager) {
-      this._streamManager.addVideoElement(this.elementRef.nativeElement);
-    }
-  }
+	_streamManager: StreamManager;
 
-  @Input()
-  set streamManager(streamManager: StreamManager) {
-    this._streamManager = streamManager;
-    if (!!this.elementRef && this._streamManager) {
-      if (this._streamManager.stream.typeOfVideo === 'SCREEN') {
-        this.elementRef.nativeElement.style.objectFit = 'contain';
-        this.elementRef.nativeElement.style.background = '#878787';
-      } else {
-        this.elementRef.nativeElement.style.objectFit = 'cover';
-      }
-      this._streamManager.addVideoElement(this.elementRef.nativeElement);
-    }
-  }
+	_videoElement: ElementRef;
+
+	ngAfterViewInit() {
+		setTimeout(() => {
+			if (this._streamManager && this._videoElement) {
+				this._streamManager.addVideoElement(this._videoElement.nativeElement);
+			}
+		});
+	}
+
+	@ViewChild('videoElement')
+	set videoElement(element: ElementRef) {
+		this._videoElement = element;
+	}
+
+	@Input()
+	set streamManager(streamManager: StreamManager) {
+		setTimeout(() => {
+			this._streamManager = streamManager;
+			if (!!this._videoElement && this._streamManager) {
+				if (this._streamManager.stream.typeOfVideo === VideoType.SCREEN) {
+					this._videoElement.nativeElement.style.objectFit = 'contain';
+					this._videoElement.nativeElement.style.background = '#272727';
+					this.enableVideoSizeBig();
+				} else {
+					this._videoElement.nativeElement.style.objectFit = 'cover';
+				}
+				this._streamManager.addVideoElement(this._videoElement.nativeElement);
+			}
+		});
+	}
+
+	enableVideoSizeBig() {
+		// Doing video size bigger.
+		// Timeout because of connectionId is null and icon does not change
+		setTimeout(() => {
+			this.toggleVideoSizeEvent.emit(true);
+		}, 590);
+	}
 }

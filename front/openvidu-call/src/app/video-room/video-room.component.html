@@ -1,25 +1,30 @@
 <div *ngIf="!!ovSettings" id="videoRoomNavBar" [class.boundsLight]="lightTheme">
-  <app-dialog-choose-room
-    *ngIf="showDialogChooseRoom"
-    [userNickname]="user"
-    [sessionName]="sessionName"
+  <app-room-config
+    *ngIf="showConfigRoomCard"
     [ovSettings]="ovSettings"
-    (join)="toggleDialogChooseRoom($event)"
+    [externalConfig]="externalConfig"
+    (join)="onConfigRoomJoin()"
     (leaveSession)="exitSession()"
-  ></app-dialog-choose-room>
+  ></app-room-config>
 
-  <div *ngIf="localUsers && localUsers[0]">
+  <div *ngIf="localUsers && localUsers.length > 0">
+    <div *ngIf="isConnectionLost" class="reconnecting-container"></div>
     <app-toolbar
       [lightTheme]="lightTheme"
       [newMessagesNum]="newMessages"
       [compact]="compact"
-      [localUser]="localUsers[0]"
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
+      [hasVideoDevices]="hasVideoDevices"
+      [isWebcamVideoEnabled]="oVSessionService.hasWebcamVideoActive()"
+      [isWebcamAudioEnabled]="toolbarMicIconEnabled()"
+      [isScreenEnabled]="oVSessionService.isScreenShareEnabled()"
+      [isAutoLayout]="isAutoLayout"
+      [isConnectionLost]="isConnectionLost"
       (camButtonClicked)="toggleCam()"
       (micButtonClicked)="toggleMic()"
-      (screenShareClicked)="screenShareAndChangeScreen()"
-      (stopScreenSharingClicked)="stopScreenSharing()"
+      (screenShareClicked)="toggleScreenShare()"
+      (layoutButtonClicked)="toggleSpeakerLayout()"
       (exitButtonClicked)="exitSession()"
       (chatButtonClicked)="toggleChat()"
     ></app-toolbar>
@@ -39,7 +44,7 @@
         fixedInViewport="true"
         fixedTopGap="40"
         fixedBottomGap="0"
-        *ngIf="localUsers && (localUsers[0].getStreamManager() && (!this.ovSettings || (this.ovSettings && this.ovSettings.chat)))"
+        *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)"
       >
         <chat-component
           #chatComponent
@@ -58,50 +63,27 @@
           <div
             class="OT_root OT_publisher custom-class"
             id="localUser"
-            *ngFor="let localUser of localUsers"
-            (dblclick)="enlargeElement($event)"
+            *ngFor="let localUser of localUsersFiltered"
           >
+          <!-- Only webcam video will be shown if webcamera is available -->
             <stream-component
-              *ngIf="localUser.getStreamManager()"
-              #videoStream
               [user]="localUser"
-              [localUser]="localUsers[0]"
-              [lightTheme]="lightTheme"
-              [newMessagesNum]="newMessages"
-              [compact]="compact"
-              [chatOpened]="chatOpened"
-              [canEditNickname]="true"
-              (nicknameClicked)="nicknameChanged($event)"
-              (camButtonClicked)="toggleCam()"
-              (micButtonClicked)="toggleMic()"
-              (exitButtonClicked)="exitSession()"
-              (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="screenShareAndChangeScreen()"
-              (stopScreenSharingClicked)="stopScreenSharing()"
+              [videoSizeBig]="localUser.isVideoSizeBig()"
+              (nicknameClicked)="onNicknameUpdate($event)"
+              (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
+              (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>
 
           <div
-            *ngFor="let user of this.remoteUsers"
+            *ngFor="let user of this.remoteUsersFiltered"
             class="OT_root OT_publisher custom-class"
             id="remoteUsers"
-            (dblclick)="enlargeElement($event)"
           >
             <stream-component
-              #videoStream
               [user]="user"
-              [localUser]="localUsers[0]"
-              [lightTheme]="lightTheme"
-              [newMessagesNum]="newMessages"
-              [compact]="compact"
-              [chatOpened]="chatOpened"
-              [canEditNickname]="false"
-              (camButtonClicked)="toggleCam()"
-              (micButtonClicked)="toggleMic()"
-              (exitButtonClicked)="exitSession()"
-              (chatButtonClicked)="toggleChat()"
-              (screenShareClicked)="screenShareAndChangeScreen()"
-              (stopScreenSharingClicked)="stopScreenSharing()"
+              [videoSizeBig]="user.isVideoSizeBig()"
+              (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>
         </div>

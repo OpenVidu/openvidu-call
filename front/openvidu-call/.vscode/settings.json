@@ -1,2 +1,9 @@
 {
+    "prettier.jsxSingleQuote": true,
+    "prettier.singleQuote": true,
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "editor.insertSpaces": false,
+    "prettier.useTabs": true,
+    "typescript.referencesCodeLens.enabled": true
 }

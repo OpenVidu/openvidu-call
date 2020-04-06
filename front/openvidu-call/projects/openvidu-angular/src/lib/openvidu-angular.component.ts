@@ -2,103 +2,97 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angu
 import { VideoRoomComponent } from './video-room/video-room.component';
 import { Session } from 'openvidu-browser';
 import { UserModel } from './shared/models/user-model';
+import { AngularLibraryModel } from './shared/models/angular-library';
 import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-layout';
-import { OvSettings } from './shared/models/ov-settings';
+import { OvSettings } from './shared/types/ov-settings';
 
 @Component({
-  selector: 'opv-session',
-  template: `
-    <app-video-room
-      #videoRoom
-      [theme]="theme"
-      [sessionName]="sessionName"
-      [user]="user"
-      [openviduServerUrl]="openviduServerUrl"
-      [openviduSecret]="openviduSecret"
-      [tokens]="tokens"
-      [ovSettings]="ovSettings"
-      (leaveSession)="emitLeaveSessionEvent($event)"
-      (joinSession)="emitJoinSessionEvent($event)"
-      (error)="emitErrorEvent($event)">
-    </app-video-room>
-  `,
-  styles: [],
+	selector: 'opv-session',
+	template: `
+		<app-video-room
+			#videoRoom
+			*ngIf="display"
+			[externalConfig]="angularLibrary"
+			(leaveSession)="emitLeaveSessionEvent($event)"
+			(joinSession)="emitJoinSessionEvent($event)"
+			(error)="emitErrorEvent($event)"
+		>
+		</app-video-room>
+	`,
+	styles: []
 })
 export class OpenviduSessionComponent implements OnInit {
-  // webComponent's inputs and outputs
-  @Input() ovSettings: OvSettings;
-  @Input()
-  sessionName: string;
-  @Input()
-  user: string;
-  @Input()
-  openviduServerUrl: string;
-  @Input()
-  openviduSecret: string;
-  @Input()
-  tokens: string[];
-  @Input()
-  theme: string;
-  @Output()
-  joinSession = new EventEmitter<any>();
-  @Output()
-  leaveSession = new EventEmitter<any>();
-  @Output()
-  error = new EventEmitter<any>();
 
-  @ViewChild('videoRoom')
-  public videoRoom: VideoRoomComponent;
+  angularLibrary: AngularLibraryModel;
+  display = false;
 
-  constructor() {}
+	@Input()
+	ovSettings: OvSettings;
+	@Input()
+	sessionName: string;
+	@Input()
+	user: string;
+	@Input()
+	openviduServerUrl: string;
+	@Input()
+	openviduSecret: string;
+	@Input()
+	tokens: string[];
+	@Input()
+	theme: string;
+	@Output()
+	joinSession = new EventEmitter<any>();
+	@Output()
+	leaveSession = new EventEmitter<any>();
+	@Output()
+	error = new EventEmitter<any>();
 
-  ngOnInit() {
-    if (this.tokens.length === 1) {
-      if (this.ovSettings) {
-        this.ovSettings.toolbarButtons.screenShare = false;
-      } else {
-        this.ovSettings = {
-          chat: true,
-          autopublish: false,
-          toolbarButtons: {
-            video: true,
-            audio: true,
-            fullscreen: true,
-            screenShare: false,
-            exit: true,
-          },
-        };
-      }
-      console.warn('Screen share funcionality has been disabled. OpenVidu Angular has received only one token.');
-    }
-  }
+	@ViewChild('videoRoom')
+	public videoRoom: VideoRoomComponent;
 
-  emitJoinSessionEvent(event: any): void {
-    this.joinSession.emit(event);
-    this.videoRoom.checkSizeComponent();
-  }
+	constructor() {}
 
-  emitLeaveSessionEvent(event: any): void {
-    this.leaveSession.emit(event);
-    // this.display = false;
-  }
+	ngOnInit() {
+		this.angularLibrary = new AngularLibraryModel();
+		this.angularLibrary.setOvSettings(this.ovSettings);
+		this.angularLibrary.setSessionName(this.sessionName);
+		this.angularLibrary.setOvServerUrl(this.openviduServerUrl);
+		this.angularLibrary.setOvSecret(this.openviduSecret);
+		this.angularLibrary.setTheme(this.theme);
+		this.angularLibrary.setNickname(this.user);
+		this.angularLibrary.setTokens(this.tokens);
+		if (this.angularLibrary.canJoinToSession()) {
+			this.display = true;
+		}
+	}
 
-  emitErrorEvent(event): void {
-    setTimeout(() => this.error.emit(event), 20);
-  }
+	emitJoinSessionEvent(event: any): void {
+		this.joinSession.emit(event);
+		this.videoRoom.checkSizeComponent();
+	}
 
-  getSession(): Session {
-    return this.videoRoom.session;
-  }
+	emitLeaveSessionEvent(event: any): void {
+		this.leaveSession.emit(event);
+		// this.display = false;
+	}
 
-  getLocalUsers(): UserModel[] {
-    return this.videoRoom.localUsers;
-  }
+	emitErrorEvent(event): void {
+		setTimeout(() => this.error.emit(event), 20);
+	}
 
-  getOpenviduLayout(): OpenViduLayout {
-    return this.videoRoom.openviduLayout;
-  }
+	getSession(): Session {
+		return this.videoRoom.session;
+	}
 
-  getOpenviduLayoutOptions(): OpenViduLayoutOptions {
-    return this.videoRoom.openviduLayoutOptions;
-  }
+	getLocalUsers(): UserModel[] {
+		return this.videoRoom.localUsers;
+	}
+
+	getOpenviduLayout(): OpenViduLayout {
+		return this.videoRoom.openviduLayout;
+	}
+
+	getOpenviduLayoutOptions(): OpenViduLayoutOptions {
+		return this.videoRoom.openviduLayoutOptions;
+	}
 }

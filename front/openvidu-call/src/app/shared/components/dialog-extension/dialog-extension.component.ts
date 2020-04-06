@@ -1,32 +1,31 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-dialog-extension',
-  templateUrl: './dialog-extension.component.html',
-  styleUrls: ['./dialog-extension.component.css'],
+	selector: 'app-dialog-extension',
+	templateUrl: './dialog-extension.component.html',
+	styleUrls: ['./dialog-extension.component.css']
 })
 export class DialogExtensionComponent implements OnInit {
+	@Input() nickname = '';
+	@Output() cancel = new EventEmitter<any>();
 
-  @Input() nickname = '';
-  @Output() cancel = new EventEmitter<any>();
+	openviduExtensionUrl = 'https://chrome.google.com/webstore/detail/openvidu-screensharing/lfcgfepafnobdloecchnfaclibenjold';
+	isInstalled: boolean;
 
-  openviduExtensionUrl = 'https://chrome.google.com/webstore/detail/openvidu-screensharing/lfcgfepafnobdloecchnfaclibenjold';
-  isInstalled: boolean;
+	constructor() {}
 
-  constructor() {}
+	ngOnInit() {}
 
-  ngOnInit() {}
+	onNoClick(): void {
+		this.cancel.emit();
+	}
 
-  onNoClick(): void {
-    this.cancel.emit();
-  }
+	goToChromePage(): void {
+		window.open(this.openviduExtensionUrl);
+		this.isInstalled = true;
+	}
 
-  goToChromePage(): void {
-    window.open(this.openviduExtensionUrl);
-    this.isInstalled = true;
-  }
-
-  refreshBrowser(): void {
-    window.location.reload();
-  }
+	refreshBrowser(): void {
+		window.location.reload();
+	}
 }

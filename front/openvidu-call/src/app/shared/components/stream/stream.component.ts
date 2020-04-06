@@ -1,121 +1,102 @@
-import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
-import { ApiService } from '../../services/api.service';
+import { UtilsService } from '../../services/utils/utils.service';
+import { LayoutType } from '../../types/layout-type';
+import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/icon-type';
 
 @Component({
-  selector: 'stream-component',
-  styleUrls: ['./stream.component.css'],
-  templateUrl: './stream.component.html',
+	selector: 'stream-component',
+	styleUrls: ['./stream.component.css'],
+	templateUrl: './stream.component.html'
 })
 export class StreamComponent implements OnInit {
-  fullscreenIcon = 'fullscreen';
-  mutedSound: boolean;
-  toggleNickname: boolean;
-  isFullscreen: boolean;
+	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
+	fullscreenIcon: VideoFullscreenIcon = VideoFullscreenIcon.BIG;
+	mutedSound: boolean;
+	toggleNickname: boolean;
+	isFullscreen: boolean;
 
-  nicknameFormControl: FormControl;
-  matcher: NicknameMatcher;
+	nicknameFormControl: FormControl;
+	matcher: NicknameMatcher;
 
-  @Input() user: UserModel;
-  @Input() localUser: UserModel;
-  @Input() lightTheme: boolean;
-  @Input() compact: boolean;
-  @Input() chatOpened: boolean;
-  @Input() newMessagesNum: number;
-  @Input() canEditNickname: boolean;
-  @Output() nicknameClicked = new EventEmitter<any>();
-  @Output() micButtonClicked = new EventEmitter<any>();
-  @Output() camButtonClicked = new EventEmitter<any>();
-  @Output() screenShareClicked = new EventEmitter<any>();
-  @Output() stopScreenSharingClicked = new EventEmitter<any>();
-  @Output() exitButtonClicked = new EventEmitter<any>();
-  @Output() chatButtonClicked = new EventEmitter<any>();
+	@Input() user: UserModel;
+	@Output() nicknameClicked = new EventEmitter<any>();
+	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
+	@Output() toggleVideoSizeClicked = new EventEmitter<any>();
 
-  @ViewChild('videoReference') htmlVideoElement: ElementRef;
-  @ViewChild('nicknameInput') nicknameInput: ElementRef;
+	@ViewChild('streamComponent', { read: ViewContainerRef }) streamComponent: ViewContainerRef;
 
+	constructor(private utilsSrv: UtilsService) {}
 
-  constructor(private apiSrv: ApiService) {}
+	@HostListener('window:resize', ['$event'])
+	sizeChange(event) {
+		const maxHeight = window.screen.height;
+		const maxWidth = window.screen.width;
+		const curHeight = window.innerHeight;
+		const curWidth = window.innerWidth;
+		if (maxWidth !== curWidth && maxHeight !== curHeight) {
+			this.isFullscreen = false;
+			this.videoSizeIcon = VideoSizeIcon.BIG;
+		}
+	}
 
-  @HostListener('window:resize', ['$event'])
-  sizeChange(event) {
-    const maxHeight = window.screen.height;
-    const maxWidth = window.screen.width;
-    const curHeight = window.innerHeight;
-    const curWidth = window.innerWidth;
-    if (maxWidth !== curWidth && maxHeight !== curHeight) {
-      this.isFullscreen = false;
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	// Has been mandatory fullscreen Input because of Input user did not fire changing
+	// the fullscreen user property in publisherStartSpeaking event in VideoRoom Component
+	@Input()
+	set videoSizeBig(videoSizeBig: boolean) {
+		this.checkVideoSizeBigIcon(videoSizeBig);
+	}
 
-  ngOnInit() {
-    this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
-    this.matcher = new NicknameMatcher();
-  }
+	@ViewChild('nicknameInput')
+	set nicknameInputElement(element: ElementRef) {
+		setTimeout(() => {
+			element?.nativeElement.focus();
+		});
+	}
 
-  toggleFullscreen() {
-    const state = this.apiSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
-    if (state === 'fullscreen') {
-      this.isFullscreen = true;
-      this.fullscreenIcon = 'fullscreen_exit';
-      if (this.chatOpened) {
-        this.chatButtonClicked.emit();
-      }
-    } else {
-      this.isFullscreen = false;
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	ngOnInit() {
+		this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
+		this.matcher = new NicknameMatcher();
+	}
 
-  toggleSound(): void {
-    this.mutedSound = !this.mutedSound;
-  }
+	toggleVideoSize(resetAll?) {
+		const element = this.utilsSrv.getHTMLElementByClassName(this.streamComponent.element.nativeElement, LayoutType.ROOT_CLASS);
+		this.toggleVideoSizeClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
+	}
 
-  toggleNicknameForm(): void {
-    if (this.canEditNickname) {
-      this.toggleNickname = !this.toggleNickname;
-      setTimeout(() => {
-        if (this.nicknameInput.nativeElement) {
-          this.nicknameInput.nativeElement.focus();
-        }
-      });
-    }
-  }
+	toggleFullscreen() {
+		this.utilsSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
+		this.toggleFullscreenIcon();
+	  }
 
-  eventKeyPress(event) {
-    if (event && event.keyCode === 13 && this.nicknameFormControl.valid) {
-      this.nicknameClicked.emit(this.nicknameFormControl.value);
-      this.toggleNicknameForm();
-    }
-  }
+	toggleSound() {
+		this.mutedSound = !this.mutedSound;
+	}
 
-  toggleMic() {
-    this.micButtonClicked.emit();
-  }
+	toggleNicknameForm() {
+		if (this.user.isLocal()) {
+			this.toggleNickname = !this.toggleNickname;
+		}
+	}
 
-  toggleCam() {
-    this.camButtonClicked.emit();
-  }
+	eventKeyPress(event) {
+		if (event && event.keyCode === 13 && this.nicknameFormControl.valid) {
+			this.nicknameClicked.emit(this.nicknameFormControl.value);
+			this.toggleNicknameForm();
+		}
+	}
 
-  screenShare() {
-    this.screenShareClicked.emit();
-  }
+	replaceScreenTrack() {
+		this.replaceScreenTrackClicked.emit();
+	}
 
-  stopScreenSharing() {
-    this.stopScreenSharingClicked.emit();
-  }
+	private checkVideoSizeBigIcon(videoSizeBig: boolean) {
+		this.videoSizeIcon = videoSizeBig ? VideoSizeIcon.NORMAL : VideoSizeIcon.BIG;
+	}
 
-  exitSession() {
-    this.exitButtonClicked.emit();
-  }
-
-  toggleChat() {
-    this.toggleFullscreen();
-    if (!this.chatOpened) {
-      this.chatButtonClicked.emit();
-    }
-  }
+	private toggleFullscreenIcon() {
+		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
+	}
 }

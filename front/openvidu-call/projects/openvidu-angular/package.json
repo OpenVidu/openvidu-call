@@ -1,22 +1,22 @@
 {
-    "author": "OpenVidu", 
+    "author": "OpenVidu",
     "dependencies": {
-        "@angular/animations": "7.2.14", 
-        "@angular/cdk": "7.3.7", 
-        "@angular/material": "7.3.7", 
-        "ngx-linkifyjs": "1.3.0", 
+        "@angular/animations": "9.1.0",
+        "@angular/cdk": "9.2.0",
+        "@angular/material": "9.2.0",
+        "ngx-linkifyjs": "1.3.0",
         "openvidu-browser": "2.12.0"
-    }, 
-    "description": "OpenVidu Angular", 
-    "license": "Apache-2.0", 
-    "name": "openvidu-angular", 
+    },
+    "description": "OpenVidu Angular",
+    "license": "Apache-2.0",
+    "name": "openvidu-angular",
     "peerDependencies": {
-        "@angular/common": "7.2.14", 
-        "@angular/core": "7.2.14"
-    }, 
+        "@angular/common": "9.1.0",
+        "@angular/core": "9.1.0"
+    },
     "repository": {
-        "type": "git", 
+        "type": "git",
         "url": "git://github.com/OpenVidu/openvidu-call"
-    }, 
+    },
     "version": "2.12.0"
 }

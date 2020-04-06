@@ -1,76 +1,78 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
-import { UserModel } from '../../models/user-model';
-import { ApiService } from '../../services/api.service';
-import { OvSettings } from '../../models/ov-settings';
+import { UtilsService } from '../../services/utils/utils.service';
+import { OvSettings } from '../../types/ov-settings';
+import { VideoFullscreenIcon } from '../../types/icon-type';
 
 @Component({
-  selector: 'app-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css'],
+	selector: 'app-toolbar',
+	templateUrl: './toolbar.component.html',
+	styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-  fullscreenIcon = 'fullscreen';
 
-  @Input() lightTheme: boolean;
-  @Input() mySessionId: boolean;
-  @Input() localUser: UserModel;
-  @Input() compact: boolean;
-  @Input() showNotification: boolean;
-  @Input() newMessagesNum: number;
-  @Input() ovSettings: OvSettings;
+	@Input() lightTheme: boolean;
+	@Input() mySessionId: boolean;
+	@Input() compact: boolean;
+	@Input() showNotification: boolean;
+	@Input() newMessagesNum: number;
+	@Input() ovSettings: OvSettings;
 
-  @Output() micButtonClicked = new EventEmitter<any>();
-  @Output() camButtonClicked = new EventEmitter<any>();
-  @Output() screenShareClicked = new EventEmitter<any>();
-  @Output() exitButtonClicked = new EventEmitter<any>();
-  @Output() chatButtonClicked = new EventEmitter<any>();
-  @Output() stopScreenSharingClicked = new EventEmitter<any>();
+	@Input() isWebcamVideoEnabled: boolean;
+	@Input() isWebcamAudioEnabled: boolean;
+	@Input() isScreenEnabled: boolean;
+	@Input() isAutoLayout: boolean;
+	@Input() isConnectionLost: boolean;
+	@Input() hasVideoDevices: boolean;
+	@Output() micButtonClicked = new EventEmitter<any>();
+	@Output() camButtonClicked = new EventEmitter<any>();
+	@Output() screenShareClicked = new EventEmitter<any>();
+	@Output() layoutButtonClicked = new EventEmitter<any>();
+	@Output() exitButtonClicked = new EventEmitter<any>();
+	@Output() chatButtonClicked = new EventEmitter<any>();
 
-  constructor(private apiSrv: ApiService) {}
+	fullscreenIcon = VideoFullscreenIcon.BIG;
 
-  @HostListener('window:resize', ['$event'])
-  sizeChange(event) {
-    const maxHeight = window.screen.height;
-    const maxWidth = window.screen.width;
-    const curHeight = window.innerHeight;
-    const curWidth = window.innerWidth;
-    if (maxWidth !== curWidth && maxHeight !== curHeight) {
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	constructor(private utilsSrv: UtilsService) {}
 
-  ngOnInit() {}
+	@HostListener('window:resize', ['$event'])
+	sizeChange(event) {
+		const maxHeight = window.screen.height;
+		const maxWidth = window.screen.width;
+		const curHeight = window.innerHeight;
+		const curWidth = window.innerWidth;
+		if (maxWidth !== curWidth && maxHeight !== curHeight) {
+			this.fullscreenIcon = VideoFullscreenIcon.BIG;
+		}
+	}
 
-  micStatusChanged() {
-    this.micButtonClicked.emit();
-  }
+	ngOnInit() {}
 
-  camStatusChanged() {
-    this.camButtonClicked.emit();
-  }
+	toggleMicrophone() {
+		this.micButtonClicked.emit();
+	}
 
-  screenShare() {
-    this.screenShareClicked.emit();
-  }
+	toggleCamera() {
+		this.camButtonClicked.emit();
+	}
 
-  stopScreenSharing() {
-    this.stopScreenSharingClicked.emit();
-  }
+	toggleScreenShare() {
+		this.screenShareClicked.emit();
+	}
 
-  exitSession() {
-    this.exitButtonClicked.emit();
-  }
+	toggleSpeakerLayout() {
+		this.layoutButtonClicked.emit();
+	}
 
-  toggleChat() {
-    this.chatButtonClicked.emit();
-  }
+	exitSession() {
+		this.exitButtonClicked.emit();
+	}
 
-  toggleFullscreen() {
-    const state = this.apiSrv.toggleFullscreen('videoRoomNavBar');
-    if (state === 'fullscreen') {
-      this.fullscreenIcon = 'fullscreen_exit';
-    } else {
-      this.fullscreenIcon = 'fullscreen';
-    }
-  }
+	toggleChat() {
+		this.chatButtonClicked.emit();
+	}
+
+	toggleFullscreen() {
+		this.utilsSrv.toggleFullscreen('videoRoomNavBar');
+		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
+	}
 }
