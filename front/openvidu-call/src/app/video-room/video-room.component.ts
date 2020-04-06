@@ -310,6 +310,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		// Normal behaviour - OpenVidu Call
 		webcamToken = webcamToken ? webcamToken : await this.getToken();
 		screenToken = screenToken ? screenToken : await this.getToken();
+		// if (!screenToken) {
+		// 	if (this.ovSettings?.toolbarButtons.screenShare) {
+		// 		screenToken = await this.getToken();
+		// 	}
+		// }
 		await this.connectBothSessions(webcamToken, screenToken);
 
 		if (this.oVSessionService.areBothConnected()) {
