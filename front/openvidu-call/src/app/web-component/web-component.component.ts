@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { VideoRoomComponent } from '../video-room/video-room.component';
 import { OvSettings } from '../shared/types/ov-settings';
 import { WebComponentModel } from '../shared/models/webcomponent-model';
@@ -11,7 +11,7 @@ import { ILogger } from '../shared/types/logger-type';
 		<app-video-room
 			#videoRoom
 			*ngIf="display"
-			[webComponent]="webComponent"
+			[externalConfig]="webComponent"
 			(leaveSession)="emitLeaveSessionEvent($event)"
 			(joinSession)="emitJoinSessionEvent($event)"
 			(error)="emitErrorEvent($event)"
@@ -32,7 +32,7 @@ export class WebComponentComponent {
 	wc_username: string;
 	wc_tokens: string[];
 
-	private webComponent: WebComponentModel = new WebComponentModel();
+	webComponent: WebComponentModel = new WebComponentModel();
 
 	private log: ILogger;
 
