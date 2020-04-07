@@ -1,23 +1,5 @@
 <mat-toolbar id="header" role="heading" [class.headerLight]="lightTheme">
-	<div id="navSessionInfo">
-		<a>
-			<img
-				id="header_img"
-				*ngIf="!lightTheme"
-				alt="OpenVidu Logo"
-				src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png"
-			/>
-			<img
-				id="header_img"
-				*ngIf="lightTheme"
-				alt="OpenVidu Logo"
-				src="https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo_grey.png"
-			/>
-		</a>
-		<div id="titleContent" *ngIf="!compact && mySessionId" [class.titleContentLight]="lightTheme">
-			<span id="session-title">{{ mySessionId }}</span>
-		</div>
-	</div>
+	<app-toolbar-logo id="navSessionInfo" [lightTheme]="lightTheme" [sessionId]="mySessionId" [compact]="compact" [logoUrl]="logoUrl"></app-toolbar-logo>
 
 	<div id="navButtons" align="center">
 		<button

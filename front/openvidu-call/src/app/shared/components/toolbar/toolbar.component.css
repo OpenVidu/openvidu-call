@@ -46,10 +46,9 @@
   top: none;
 }
 
-#titleContent {
+.titleContent {
   font-family: 'Ubuntu', sans-serif;
   max-width: 100px;
-  background-color: #494949;
   margin: 5px -18px;
   padding: 0px 15px;
   font-size: 16px;
@@ -57,9 +56,14 @@
   text-overflow: ellipsis;
 }
 
+.titleContentDark {
+  background-color: #494949;
+  color: #ffffff;
+}
+
 .titleContentLight {
   background-color: #dfdfdf !important;
-  color: #000;
+  color: #000000;
 }
 
 #header_img {

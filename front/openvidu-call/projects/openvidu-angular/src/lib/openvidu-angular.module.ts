@@ -36,6 +36,8 @@ import { DialogExtensionComponent } from './shared/components/dialog-extension/d
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
+import { ToolbarLogoComponent } from './shared/components/toolbar/logo.component';
+
 import { RoomConfigComponent } from './shared/components/room-config/room-config.component';
 
 // Services
@@ -82,6 +84,7 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		DialogErrorComponent,
 		RoomConfigComponent,
 		ToolbarComponent,
+		ToolbarLogoComponent,
 		LinkifyPipe
 	],
 	entryComponents: [DialogErrorComponent],

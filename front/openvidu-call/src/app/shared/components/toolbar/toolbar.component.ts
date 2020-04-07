@@ -31,6 +31,7 @@ export class ToolbarComponent implements OnInit {
 	@Output() chatButtonClicked = new EventEmitter<any>();
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
+	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/';
 
 	constructor(private utilsSrv: UtilsService) {}
 
@@ -45,7 +46,13 @@ export class ToolbarComponent implements OnInit {
 		}
 	}
 
-	ngOnInit() {}
+	ngOnInit() {
+		if (this.lightTheme) {
+			this.logoUrl += 'openvidu_logo_grey.png';
+			return;
+		}
+		this.logoUrl += 'openvidu_logo.png';
+	}
 
 	toggleMicrophone() {
 		this.micButtonClicked.emit();
