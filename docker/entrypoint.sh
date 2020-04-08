@@ -17,6 +17,7 @@ cat>/var/www/openvidu-call/ov-settings.json<<EOF
                         "video": true,
                         "screenShare": true,
                         "fullscreen": true,
+                        "layoutSpeaking": true,
                         "exit": true
                 }
         },
