@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { OvSettings } from '../../types/ov-settings';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { OvSettingsModel } from '../../models/ovSettings';
 
 @Injectable({
 	providedIn: 'root'
@@ -15,18 +15,8 @@ export class NetworkService {
 	private MY_SECRET = 'MY_SECRET';
 	private SETTINGS_FILE_NAME = 'ov-settings.json';
 
-	private ovSettings: OvSettings = {
-		chat: true,
-		autopublish: false,
-		toolbarButtons: {
-			video: true,
-			audio: true,
-			fullscreen: true,
-			screenShare: true,
-			layoutSpeaking: true,
-			exit: true
-		}
-	};
+	private ovSettings: OvSettingsModel = new OvSettingsModel();
+
 	private log: ILogger;
 
 	constructor(private http: HttpClient, private loggSrv: LoggerService) {
@@ -94,13 +84,15 @@ export class NetworkService {
 		});
 	}
 
-	getOvSettingsData(): Promise<OvSettings> {
+	getOvSettingsData(): Promise<OvSettingsModel> {
 		return new Promise(resolve => {
 			this.http.get(this.SETTINGS_FILE_NAME).subscribe(
 				(data: any) => {
 					this.log.d('FILE', data);
-					this.log.d(data.openviduSettings);
-					this.ovSettings = data.openviduSettings ? data.openviduSettings : this.ovSettings;
+					this.log.d('OvSettings:', data.openviduSettings);
+					if (data.openviduSettings) {
+						this.ovSettings.set(data.openviduSettings);
+					}
 					if (data.openviduCredentials) {
 						this.URL_OV = data.openviduCredentials.openvidu_url ? data.openviduCredentials.openvidu_url : this.URL_OV;
 						this.MY_SECRET = data.openviduCredentials.openvidu_secret
@@ -108,7 +100,7 @@ export class NetworkService {
 							: this.MY_SECRET;
 					}
 					this.log.d('URL Environment', this.URL_OV);
-					resolve(data.openviduSettings);
+					resolve(this.ovSettings);
 				},
 				error => {
 					this.log.w('Credentials file not found ');

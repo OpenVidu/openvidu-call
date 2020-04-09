@@ -21,6 +21,4 @@ export class ToolbarLogoComponent {
 	@Input() logoUrl: string;
 
 	constructor() {}
-
-	//'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/openvidu_logo.png'
 }

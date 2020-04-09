@@ -1,8 +1,9 @@
 import { Theme } from '../types/webcomponent-config';
 import { OvSettings } from '../types/ov-settings';
+import { OvSettingsModel } from './ovSettings';
 
 export class ExternalConfigModel {
-	protected ovSettings: OvSettings;
+	protected ovSettings: OvSettingsModel;
 	protected sessionName: string;
 	protected ovServerUrl: string;
 	protected ovSecret: string;
@@ -11,23 +12,12 @@ export class ExternalConfigModel {
 	protected tokens: string[];
 
 	constructor() {
-		this.ovSettings = {
-			chat: true,
-			autopublish: false,
-			toolbarButtons: {
-				video: true,
-				audio: true,
-				fullscreen: true,
-				screenShare: true,
-				layoutSpeaking: true,
-				exit: true
-			}
-		};
+		this.ovSettings = new OvSettingsModel();
 	}
 
 	public getComponentName() {}
 
-	public getOvSettings(): OvSettings {
+	public getOvSettings(): OvSettingsModel {
 		return this.ovSettings;
 	}
 	public getSessionName(): string {
@@ -58,7 +48,7 @@ export class ExternalConfigModel {
 
 	public setOvSettings(ovSettings: OvSettings) {
 		if (!!ovSettings) {
-			this.ovSettings = ovSettings;
+			this.ovSettings.set(ovSettings);
 		}
 	}
 	public setSessionName(sessionName: string) {

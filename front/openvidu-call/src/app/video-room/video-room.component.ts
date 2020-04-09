@@ -14,7 +14,7 @@ import {
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { ChatComponent } from '../shared/components/chat/chat.component';
-import { OvSettings } from '../shared/types/ov-settings';
+import { OvSettingsModel } from '../shared/models/ovSettings';
 import { ScreenType } from '../shared/types/video-type';
 import { ILogger } from '../shared/types/logger-type';
 import { LayoutType } from '../shared/types/layout-type';
@@ -45,7 +45,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chat: any;
 
-	ovSettings: OvSettings;
+	ovSettings: OvSettingsModel;
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
 	lightTheme: boolean;
@@ -303,15 +303,15 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.externalConfig.hasTokens()) {
 				this.log.d('Received external tokens from ' + this.externalConfig.getComponentName());
 				webcamToken = this.externalConfig.getWebcamToken();
-				screenToken = this.externalConfig.getScreenToken();
+				// Only connect screen if screen sharing feature is available
+				screenToken = this.ovSettings?.hasScreenSharing() ? this.externalConfig.getScreenToken() : undefined;
 			}
 		}
 
-		// Normal behaviour - OpenVidu Call
 		webcamToken = webcamToken ? webcamToken : await this.getToken();
-		// screenToken = screenToken ? screenToken : await this.getToken();
+		// Only connect screen if screen sharing feature is available
 		if (!screenToken) {
-			if (this.ovSettings?.toolbarButtons.screenShare) {
+			if (this.ovSettings?.hasScreenSharing()) {
 				screenToken = await this.getToken();
 			}
 		}

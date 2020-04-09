@@ -2,6 +2,7 @@ import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@a
 import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../types/ov-settings';
 import { VideoFullscreenIcon } from '../../types/icon-type';
+import { OvSettingsModel } from '../../models/ovSettings';
 
 @Component({
 	selector: 'app-toolbar',
@@ -15,7 +16,7 @@ export class ToolbarComponent implements OnInit {
 	@Input() compact: boolean;
 	@Input() showNotification: boolean;
 	@Input() newMessagesNum: number;
-	@Input() ovSettings: OvSettings;
+	@Input() ovSettings: OvSettingsModel;
 
 	@Input() isWebcamVideoEnabled: boolean;
 	@Input() isWebcamAudioEnabled: boolean;

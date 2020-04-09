@@ -72,8 +72,6 @@ export class OpenViduSessionService {
 			this.webcamUser.setConnectionId(this.webcamSession.connection?.connectionId);
 			// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
 		}
-		console.log("WEBCAM SESSION", this.webcamSession);
-
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
 			if (!!publisher) {

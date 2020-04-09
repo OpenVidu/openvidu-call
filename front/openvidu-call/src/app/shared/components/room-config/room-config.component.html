@@ -1,4 +1,4 @@
-<div id="dialogChooseRoom" [ngStyle]="{ display: ovSettings.autopublish ? 'none' : 'block' }">
+<div id="dialogChooseRoom" [ngStyle]="{ display: ovSettings.isAutoPublish() ? 'none' : 'block' }">
 	<app-dialog-extension
 		*ngIf="showDialogExtension"
 		[nickname]="localUsers[0].getNickname()"
@@ -87,7 +87,7 @@
 						</div>
 
 						<!-- Devices section / Microphone-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.audio">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.hasAudio()">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleMic()" id="micDeviceButton">
@@ -111,7 +111,7 @@
 							</div>
 						</div>
 						<!-- Devices section / Camera-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && ovSettings && ovSettings.toolbarButtons.video">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && ovSettings && ovSettings.hasVideo()">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
@@ -136,7 +136,7 @@
 						</div>
 
 						<!-- Devices section / ScreenShare-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.toolbarButtons.screenShare">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.hasScreenSharing()">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">

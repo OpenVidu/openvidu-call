@@ -10,10 +10,14 @@ export class WebComponentModel extends ExternalConfigModel {
 	}
 
 	setSessionConfig(config: any) {
+
+		// if (!this.isCorrectType(config)){
+		// 	console.error('Error: Session config retrieved is not correct', config);
+		// }
+
+		this.sessionConfig = config;
 		if (typeof config === 'string') {
 			this.sessionConfig = JSON.parse(config);
-		} else {
-			this.sessionConfig = config;
 		}
 
 		if (!!this.sessionConfig) {
@@ -21,12 +25,11 @@ export class WebComponentModel extends ExternalConfigModel {
 			this.nickname = this.sessionConfig.user;
 			this.tokens = this.sessionConfig.tokens;
 			if (this.sessionConfig.ovSettings && this.isOvSettingsType(this.sessionConfig.ovSettings)) {
-				this.ovSettings = this.sessionConfig.ovSettings;
-				this.ovSettings.toolbarButtons.screenShare = this.tokens?.length > 1;
+				this.ovSettings.set(this.sessionConfig.ovSettings);
 			}
 			// Allow screen sharing only if two tokens are received
 			console.warn('Screen share funcionality has been disabled. OpenVidu Angular has received only one token.');
-			this.ovSettings.toolbarButtons.screenShare = this.tokens?.length > 1;
+			this.ovSettings.setScreenSharing(this.ovSettings.hasScreenSharing() && this.tokens?.length > 1);
 		}
 	}
 	public getComponentName() {
@@ -51,6 +54,8 @@ export class WebComponentModel extends ExternalConfigModel {
 			typeof obj.toolbarButtons['screenShare'] === 'boolean' &&
 			'fullscreen' in obj.toolbarButtons &&
 			typeof obj.toolbarButtons['fullscreen'] === 'boolean' &&
+			'layoutSpeaking' in obj.toolbarButtons &&
+			typeof obj.toolbarButtons['layoutSpeaking'] === 'boolean' &&
 			'exit' in obj.toolbarButtons &&
 			typeof obj.toolbarButtons['exit'] === 'boolean'
 		);

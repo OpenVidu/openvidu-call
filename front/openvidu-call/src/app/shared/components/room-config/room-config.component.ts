@@ -5,7 +5,6 @@ import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
-import { OvSettings } from '../../types/ov-settings';
 import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice, CameraType } from '../../types/device-type';
 import { DevicesService } from '../../services/devices/devices.service';
@@ -15,6 +14,7 @@ import { LoggerService } from '../../services/logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { ScreenType } from '../../types/video-type';
 import { ExternalConfigModel } from '../../models/external-config';
+import { OvSettingsModel } from '../../models/ovSettings';
 
 @Component({
 	selector: 'app-room-config',
@@ -23,7 +23,7 @@ import { ExternalConfigModel } from '../../models/external-config';
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
 	@Input() externalConfig: ExternalConfigModel;
-	@Input() ovSettings: OvSettings;
+	@Input() ovSettings: OvSettingsModel;
 	@Output() join = new EventEmitter<any>();
 	@Output() leaveSession = new EventEmitter<any>();
 
@@ -75,7 +75,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 		this.initwebcamPublisher();
 
-		if (this.ovSettings.autopublish) {
+		if (this.ovSettings.isAutoPublish()) {
 			this.joinSession();
 		}
 		// publisher.on('streamAudioVolumeChange', (event: any) => {

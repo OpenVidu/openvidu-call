@@ -42,7 +42,7 @@ export class WebComponentComponent {
 
 	@Input('sessionConfig')
 	set sessionConfig(config: any) {
-		this.log.d('Session config input ', config);
+		this.log.d('Webcomponent sessionConfig: ', config);
 		setTimeout(() => {
 			this.webComponent.setSessionConfig(config);
 			if (this.webComponent.canJoinToSession()) {
