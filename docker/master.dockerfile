@@ -1,31 +1,21 @@
 # Build OpenVidu Call for production
-FROM node:latest as build
+FROM node:13.12.0-alpine as build
+
 WORKDIR /openvidu-call
-RUN apt-get update && \
-    apt-get install -y wget unzip && \
-    apt-get clean && \
-    apt-get autoclean && \
-    rm -Rf /tmp/* && \
-    rm -Rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add wget unzip
 
 RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
     unzip openvidu-call.zip && \
     rm openvidu-call.zip && \
-    folder=openvidu-call-master/front/openvidu-call/* && \
-    mv $folder .
+    mv openvidu-call-master/front/openvidu-call/* .
 
 RUN npm install && \
-    npm run build-prod
+    npm run build-prod && \
+    rm -rf -v !"dist"
 
 # Serving OpenVidu Call with Nginx
 FROM nginx:1.17.9
-
-RUN apt-get update && \
-    apt-get install -y curl wget && \
-    apt-get clean && \
-    apt-get autoclean && \
-    rm -Rf /tmp/* && \
-    rm -Rf /var/lib/apt/lists/*
 
 # Install openvidu-call
 RUN mkdir -p /var/www/openvidu-call
