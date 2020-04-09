@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { VideoRoomComponent } from './video-room/video-room.component';
-import { Session, ConnectionEvent, StreamEvent, StreamManagerEvent, SessionDisconnectedEvent } from 'openvidu-browser';
+import { Session, ConnectionEvent, Publisher } from 'openvidu-browser';
 import { UserModel } from './shared/models/user-model';
 import { AngularLibraryModel } from './shared/models/angular-library';
 import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-layout';
@@ -13,11 +13,8 @@ import { OvSettings } from './shared/types/ov-settings';
 			#videoRoom
 			*ngIf="display"
 			[externalConfig]="angularLibrary"
-			(_connectionCreated)="emitConnectionCreatedEvent($event)"
-			(_streamCreated)="emitStreamCreatedEvent($event)"
-			(_streamPlaying)="emitStreamPlayingEvent($event)"
-			(_streamDestroyed)="emitStreamDestroyedEvent($event)"
-			(_sessionDisconnected)="emitSessionDisconnectedEvent($event)"
+			(_session)="emitSession($event)"
+			(_publisher)="emitPublisher($event)"
 			(_error)="emitErrorEvent($event)"
 		>
 		</app-video-room>
@@ -25,9 +22,8 @@ import { OvSettings } from './shared/types/ov-settings';
 	styles: []
 })
 export class OpenviduSessionComponent implements OnInit {
-
-  angularLibrary: AngularLibraryModel;
-  display = false;
+	angularLibrary: AngularLibraryModel;
+	display = false;
 
 	@Input()
 	ovSettings: OvSettings;
@@ -43,11 +39,6 @@ export class OpenviduSessionComponent implements OnInit {
 	tokens: string[];
 	@Input()
 	theme: string;
-	@Output() connectionCreated = new EventEmitter<any>();
-	@Output() streamCreated = new EventEmitter<any>();
-	@Output() streamPlaying = new EventEmitter<any>();
-	@Output() streamDestroyed = new EventEmitter<any>();
-	@Output() sessionDisconnected = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
 
 	@ViewChild('videoRoom')
@@ -69,29 +60,17 @@ export class OpenviduSessionComponent implements OnInit {
 		}
 	}
 
-
-	emitConnectionCreatedEvent(event: {event: ConnectionEvent, isLocal: boolean}): void {
-		this.connectionCreated.emit(event.event);
-		if (event.isLocal) {
-			this.videoRoom.checkSizeComponent();
-		}
+	emitSession(session: Session) {
+		session.on('sessionDisconnected', (e) => this.display = false);
+		session.on('connectionCreated', (e: ConnectionEvent) => {
+			if (!e.connection.stream.streamManager.remote) {
+				this.videoRoom.checkSizeComponent();
+			}
+		});
+		// this.sessionCreated.emit(session);
 	}
-
-	emitStreamCreatedEvent(event: StreamEvent) {
-		this.streamCreated.emit(event);
-	}
-
-	emitStreamPlayingEvent(event: StreamManagerEvent) {
-		this.streamPlaying.emit(event);
-	}
-
-	emitStreamDestroyedEvent(event: StreamEvent) {
-		this.streamDestroyed.emit(event);
-	}
-
-	emitSessionDisconnectedEvent(event: SessionDisconnectedEvent) {
-		this.sessionDisconnected.emit(event);
-		// this.display = false;
+	emitPublisher(publisher: Publisher) {
+		// this.publisherCreated.emit(publisher);
 	}
 
 	emitErrorEvent(event) {

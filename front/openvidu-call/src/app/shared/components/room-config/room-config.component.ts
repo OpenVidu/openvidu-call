@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
-import { Publisher } from 'openvidu-browser';
+import { Publisher, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice, CameraType } from '../../types/device-type';
@@ -26,6 +26,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	@Input() ovSettings: OvSettingsModel;
 	@Output() join = new EventEmitter<any>();
 	@Output() leaveSession = new EventEmitter<any>();
+
+	// Webcomponent event
+	@Output() publisherCreated = new EventEmitter<any>();
 
 	mySessionId: string;
 
@@ -50,6 +53,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	matcher = new NicknameMatcher();
 	hasVideoDevices: boolean;
 	private log: ILogger;
+
 
 	constructor(
 		private route: ActivatedRoute,
@@ -302,6 +306,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;
 		const properties = this.oVSessionService.createProperties(videoSource, audioSource, publishVideo, publishAudio, mirror);
-		const pub = this.oVSessionService.initCamPublisher(undefined, properties);
+		const publisher = this.oVSessionService.initCamPublisher(undefined, properties);
+
+		// Emit publisher to webcomponent and angular-library
+		this.emitPublisher(publisher);
+	}
+
+	private emitPublisher(publisher) {
+		this.publisherCreated.emit(publisher);
 	}
 }

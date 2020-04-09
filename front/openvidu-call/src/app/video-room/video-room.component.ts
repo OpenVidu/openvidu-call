@@ -9,9 +9,7 @@ import {
 	StreamEvent,
 	StreamPropertyChangedEvent,
 	SessionDisconnectedEvent,
-	PublisherSpeakingEvent,
-	StreamManagerEvent,
-	ConnectionEvent
+	PublisherSpeakingEvent
 } from 'openvidu-browser';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -40,11 +38,8 @@ import { MatSidenav } from '@angular/material/sidenav';
 export class VideoRoomComponent implements OnInit, OnDestroy {
 	// Config from webcomponent or angular-library
 	@Input() externalConfig: ExternalConfigModel;
-	@Output() _connectionCreated = new EventEmitter<any>();
-	@Output() _streamCreated = new EventEmitter<any>();
-	@Output() _streamPlaying = new EventEmitter<any>();
-	@Output() _streamDestroyed = new EventEmitter<any>();
-	@Output() _sessionDisconnected = new EventEmitter<any>();
+	@Output() _session = new EventEmitter<any>();
+	@Output() _publisher = new EventEmitter<any>();
 	@Output() _error = new EventEmitter<any>();
 
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
@@ -128,11 +123,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	joinToSession() {
 		this.oVSessionService.initSessions();
 		this.session = this.oVSessionService.getWebcamSession();
+		this._session.emit(this.session);
 		this.sessionScreen = this.oVSessionService.getScreenSession();
-		this.subscribeToConnectionCreated();
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
-		this.subscribeToSessionDisconnected();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
 		this.subscribeToChat();
@@ -351,17 +345,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private subscribeToConnectionCreated() {
-		this.session.on('connectionCreated', (event: ConnectionEvent) => {
-			const connectionId = event.connection.connectionId;
-			const isLocal = this.oVSessionService.isMyOwnConnection(connectionId);
-			this._connectionCreated.emit({ event, isLocal });
-		});
-	}
-
 	private subscribeToStreamCreated() {
 		this.session.on('streamCreated', (event: StreamEvent) => {
-			this._streamCreated.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
@@ -371,25 +356,22 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 			this.remoteUsersService.add(event, subscriber);
 
-			subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
-				this._streamPlaying.emit(e);
-			});
+			// subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
+			// });
 		});
 	}
 
 	private subscribeToStreamDestroyed() {
 		this.session.on('streamDestroyed', (event: StreamEvent) => {
-			this._streamDestroyed.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 			this.remoteUsersService.removeUserByConnectionId(connectionId);
 			// event.preventDefault();
 		});
 	}
 
-	private subscribeToSessionDisconnected() {
-		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
-			this._sessionDisconnected.emit(event);
-		});
+	// Emit publisher to webcomponent
+	emitPublisher(publisher: Publisher) {
+		this._publisher.emit(publisher);
 	}
 
 	private subscribeToStreamPropertyChange() {

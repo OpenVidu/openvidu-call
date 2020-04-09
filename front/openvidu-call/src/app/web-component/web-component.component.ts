@@ -4,7 +4,7 @@ import { OvSettings } from '../shared/types/ov-settings';
 import { WebComponentModel } from '../shared/models/webcomponent-model';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
-import { SessionDisconnectedEvent, StreamEvent, StreamManagerEvent, ConnectionEvent } from 'openvidu-browser';
+import { ConnectionEvent, Session, Publisher } from 'openvidu-browser';
 
 @Component({
 	selector: 'app-web-component',
@@ -13,24 +13,19 @@ import { SessionDisconnectedEvent, StreamEvent, StreamManagerEvent, ConnectionEv
 			#videoRoom
 			*ngIf="display"
 			[externalConfig]="webComponent"
-			(_connectionCreated)="emitConnectionCreatedEvent($event)"
-			(_streamCreated)="emitStreamCreatedEvent($event)"
-			(_streamPlaying)="emitStreamPlayingEvent($event)"
-			(_streamDestroyed)="emitStreamDestroyedEvent($event)"
-			(_sessionDisconnected)="emitSessionDisconnectedEvent($event)"
 			(_error)="emitErrorEvent($event)"
+			(_session)="emitSession($event)"
+			(_publisher)="emitPublisher($event)"
 		>
 		</app-video-room>
 	`,
 	styleUrls: ['./web-component.component.css']
 })
 export class WebComponentComponent {
+
 	@Input() ovSettings: OvSettings;
-	@Output() connectionCreated = new EventEmitter<any>();
-	@Output() streamCreated = new EventEmitter<any>();
-	@Output() streamPlaying = new EventEmitter<any>();
-	@Output() streamDestroyed = new EventEmitter<any>();
-	@Output() sessionDisconnected = new EventEmitter<any>();
+	@Output() sessionCreated = new EventEmitter<any>();
+	@Output() publisherCreated = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
 	@ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
@@ -80,33 +75,17 @@ export class WebComponentComponent {
 		this.webComponent.setOvSecret(secret);
 	}
 
-	emitConnectionCreatedEvent(event: {event: ConnectionEvent, isLocal: boolean}): void {
-		this.connectionCreated.emit(event.event);
-		if (event.isLocal) {
-			this.videoRoom.checkSizeComponent();
-		}
-	}
-
-	emitStreamCreatedEvent(event: StreamEvent) {
-		this.log.d("STREAM CREATED EVENT", event);
-		this.streamCreated.emit(event);
-	}
-
-	emitStreamPlayingEvent(event: StreamManagerEvent) {
-		this.streamPlaying.emit(event);
-	}
-
-	emitStreamDestroyedEvent(event: StreamEvent) {
-		this.streamDestroyed.emit(event);
-	}
-
-	emitSessionDisconnectedEvent(event: SessionDisconnectedEvent) {
-		this.sessionDisconnected.emit(event);
-		this.display = false;
-	}
-
 	emitErrorEvent(event) {
 		setTimeout(() => this.error.emit(event), 20);
+	}
+
+	emitSession(session: Session) {
+		session.on('sessionDisconnected', (e) => this.display = false);
+		this.sessionCreated.emit(session);
+	}
+	emitPublisher(publisher: Publisher) {
+		publisher.on('streamPlaying', () => this.videoRoom.checkSizeComponent());
+		this.publisherCreated.emit(publisher);
 	}
 
 	private isEmpty(obj: any): boolean {

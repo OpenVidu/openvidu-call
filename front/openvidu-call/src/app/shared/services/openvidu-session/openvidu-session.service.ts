@@ -263,9 +263,6 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-		// this.log.d('CONNECTION ID', connectionId);
-		// this.log.d('CONNECTION WBCAM', this.webcamUser?.getConnectionId());
-		// this.log.d('CONNECTION SCREEN', this.screenUser?.getConnectionId());
 		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
 	}
 

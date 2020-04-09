@@ -5,6 +5,7 @@
     [externalConfig]="externalConfig"
     (join)="onConfigRoomJoin()"
     (leaveSession)="exitSession()"
+    (publisherCreated)="emitPublisher($event)"
   ></app-room-config>
 
   <div *ngIf="localUsers && localUsers.length > 0">
