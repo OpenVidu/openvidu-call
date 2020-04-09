@@ -19,7 +19,7 @@ export class LoggerService implements ILogService {
 	}
 
 	public get(prefix: string) {
-		const isDebugMode = !environment.production;
+		const isDebugMode = environment.logs;
 		if (isDebugMode) {
 			// this.LOG_FNS[0].call(this.log, '[' + prefix + '] Logger created');
 		}
