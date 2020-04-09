@@ -4,6 +4,7 @@ import { OvSettings } from '../shared/types/ov-settings';
 import { WebComponentModel } from '../shared/models/webcomponent-model';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
+import { SessionDisconnectedEvent, StreamEvent, StreamManagerEvent, ConnectionEvent } from 'openvidu-browser';
 
 @Component({
 	selector: 'app-web-component',
@@ -12,9 +13,12 @@ import { ILogger } from '../shared/types/logger-type';
 			#videoRoom
 			*ngIf="display"
 			[externalConfig]="webComponent"
-			(leaveSession)="emitLeaveSessionEvent($event)"
-			(joinSession)="emitJoinSessionEvent($event)"
-			(error)="emitErrorEvent($event)"
+			(_connectionCreated)="emitConnectionCreatedEvent($event)"
+			(_streamCreated)="emitStreamCreatedEvent($event)"
+			(_streamPlaying)="emitStreamPlayingEvent($event)"
+			(_streamDestroyed)="emitStreamDestroyedEvent($event)"
+			(_sessionDisconnected)="emitSessionDisconnectedEvent($event)"
+			(_error)="emitErrorEvent($event)"
 		>
 		</app-video-room>
 	`,
@@ -22,8 +26,11 @@ import { ILogger } from '../shared/types/logger-type';
 })
 export class WebComponentComponent {
 	@Input() ovSettings: OvSettings;
-	@Output() joinSession = new EventEmitter<any>();
-	@Output() leaveSession = new EventEmitter<any>();
+	@Output() connectionCreated = new EventEmitter<any>();
+	@Output() streamCreated = new EventEmitter<any>();
+	@Output() streamPlaying = new EventEmitter<any>();
+	@Output() streamDestroyed = new EventEmitter<any>();
+	@Output() sessionDisconnected = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
 	@ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
@@ -69,17 +76,31 @@ export class WebComponentComponent {
 		this.webComponent.setOvSecret(secret);
 	}
 
-	emitJoinSessionEvent(event): void {
-		this.joinSession.emit(event);
-		this.videoRoom.checkSizeComponent();
+	emitConnectionCreatedEvent(event: {event: ConnectionEvent, isLocal: boolean}): void {
+		this.connectionCreated.emit(event.event);
+		if (event.isLocal) {
+			this.videoRoom.checkSizeComponent();
+		}
 	}
 
-	emitLeaveSessionEvent(event): void {
-		this.leaveSession.emit(event);
+	emitStreamCreatedEvent(event: StreamEvent) {
+		this.streamCreated.emit(event);
+	}
+
+	emitStreamPlayingEvent(event: StreamManagerEvent) {
+		this.streamPlaying.emit(event);
+	}
+
+	emitStreamDestroyedEvent(event: StreamEvent) {
+		this.streamDestroyed.emit(event);
+	}
+
+	emitSessionDisconnectedEvent(event: SessionDisconnectedEvent) {
+		this.sessionDisconnected.emit(event);
 		this.display = false;
 	}
 
-	emitErrorEvent(event): void {
+	emitErrorEvent(event) {
 		setTimeout(() => this.error.emit(event), 20);
 	}
 }

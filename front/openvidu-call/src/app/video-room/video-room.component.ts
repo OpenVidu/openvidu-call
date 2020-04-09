@@ -9,7 +9,9 @@ import {
 	StreamEvent,
 	StreamPropertyChangedEvent,
 	SessionDisconnectedEvent,
-	PublisherSpeakingEvent
+	PublisherSpeakingEvent,
+	StreamManagerEvent,
+	ConnectionEvent
 } from 'openvidu-browser';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -39,9 +41,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	// Config from webcomponent or angular-library
 	@Input() externalConfig: ExternalConfigModel;
-	@Output() joinSession = new EventEmitter<any>();
-	@Output() leaveSession = new EventEmitter<any>();
-	@Output() error = new EventEmitter<any>();
+	@Output() _connectionCreated = new EventEmitter<any>();
+	@Output() _streamCreated = new EventEmitter<any>();
+	@Output() _streamPlaying = new EventEmitter<any>();
+	@Output() _streamDestroyed = new EventEmitter<any>();
+	@Output() _sessionDisconnected = new EventEmitter<any>();
+	@Output() _error = new EventEmitter<any>();
+
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chat: any;
 
@@ -124,8 +130,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.initSessions();
 		this.session = this.oVSessionService.getWebcamSession();
 		this.sessionScreen = this.oVSessionService.getScreenSession();
+		this.subscribeToConnectionCreated();
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
+		this.subscribeToSessionDisconnected();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
 		this.subscribeToChat();
@@ -147,7 +155,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.remoteUsers = [];
 		this.openviduLayout = null;
 		this.router.navigate(['']);
-		this.leaveSession.emit();
 	}
 
 	onNicknameUpdate(nickname: string) {
@@ -332,20 +339,28 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		try {
 			await this.oVSessionService.connectWebcamSession(webcamToken);
 			await this.oVSessionService.connectScreenSession(screenToken);
-			this.joinSession.emit();
 
 			this.localUsers[0].getStreamManager().on('streamPlaying', () => {
 				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
 			});
 		} catch (error) {
-			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
+			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.d('There was an error connecting to the session:', error.code, error.message);
 			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error.message);
 		}
 	}
 
+	private subscribeToConnectionCreated() {
+		this.session.on('connectionCreated', (event: ConnectionEvent) => {
+			const connectionId = event.connection.connectionId;
+			const isLocal = this.oVSessionService.isMyOwnConnection(connectionId);
+			this._connectionCreated.emit({event, isLocal});
+		});
+	}
+
 	private subscribeToStreamCreated() {
 		this.session.on('streamCreated', (event: StreamEvent) => {
+			this._streamCreated.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
@@ -355,17 +370,24 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 			this.remoteUsersService.add(event, subscriber);
 
-			// subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
-			// 	this.checkSomeoneShareScreen();
-			// });
+			subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
+				this._streamPlaying.emit(e);
+			});
 		});
 	}
 
 	private subscribeToStreamDestroyed() {
 		this.session.on('streamDestroyed', (event: StreamEvent) => {
+			this._streamDestroyed.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 			this.remoteUsersService.removeUserByConnectionId(connectionId);
 			// event.preventDefault();
+		});
+	}
+
+	private subscribeToSessionDisconnected() {
+		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
+			this._sessionDisconnected.emit(event);
 		});
 	}
 
@@ -482,7 +504,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		try {
 			return await this.networkSrv.getToken(this.mySessionId, this.externalConfig?.getOvServerUrl(), this.externalConfig?.getOvSecret());
 		} catch (error) {
-			this.error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
+			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.e('There was an error getting the token:', error.code, error.message);
 			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.message);
 		}
