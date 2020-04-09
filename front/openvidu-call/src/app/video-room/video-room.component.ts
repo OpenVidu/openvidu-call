@@ -149,6 +149,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.remoteUsersSubscription) {
 			this.remoteUsersSubscription.unsubscribe();
 		}
+		this.remoteUsersService.clean();
 		this.session = null;
 		this.sessionScreen = null;
 		this.localUsers = [];
