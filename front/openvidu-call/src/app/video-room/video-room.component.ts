@@ -142,6 +142,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	exitSession() {
+		this.log.d('Leaving session...');
 		this.oVSessionService.disconnect();
 		if (this.oVUsersSubscription) {
 			this.oVUsersSubscription.unsubscribe();

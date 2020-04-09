@@ -51,13 +51,17 @@ export class WebComponentComponent {
 	set sessionConfig(config: any) {
 		this.log.d('Webcomponent sessionConfig: ', config);
 		setTimeout(() => {
-			this.webComponent.setSessionConfig(config);
-			if (this.webComponent.canJoinToSession()) {
-				this.display = true;
+			// Leave session when sessionConfig is undefined
+			if (this.isEmpty(config)) {
+				this.log.w('Parameters received are incorrect.', config);
+				this.log.w('Exit session');
+				this.videoRoom?.exitSession();
 				return;
 			}
-			this.log.e('Parameters received are incorrect. Exit session');
-			this.videoRoom?.exitSession();
+
+			this.webComponent.setSessionConfig(config);
+			this.display = this.webComponent.canJoinToSession();
+
 		}, 200);
 	}
 
@@ -84,6 +88,7 @@ export class WebComponentComponent {
 	}
 
 	emitStreamCreatedEvent(event: StreamEvent) {
+		this.log.d("STREAM CREATED EVENT", event);
 		this.streamCreated.emit(event);
 	}
 
@@ -102,5 +107,9 @@ export class WebComponentComponent {
 
 	emitErrorEvent(event) {
 		setTimeout(() => this.error.emit(event), 20);
+	}
+
+	private isEmpty(obj: any): boolean {
+		return Object.keys(obj).length === 0;
 	}
 }
