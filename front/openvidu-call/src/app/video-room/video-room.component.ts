@@ -361,7 +361,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private subscribeToStreamCreated() {
 		this.session.on('streamCreated', (event: StreamEvent) => {
-			this.log.w('STREAM CREATED EVENT');
 			this._streamCreated.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 
