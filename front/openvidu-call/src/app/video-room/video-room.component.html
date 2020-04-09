@@ -44,7 +44,7 @@
         fixedInViewport="true"
         fixedTopGap="40"
         fixedBottomGap="0"
-        *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.chat)"
+        *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.hasChat())"
       >
         <chat-component
           #chatComponent

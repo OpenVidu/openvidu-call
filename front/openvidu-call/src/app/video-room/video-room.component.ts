@@ -30,7 +30,7 @@ import { NetworkService } from '../shared/services/network/network.service';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { RemoteUsersService } from '../shared/services/remote-users/remote-users.service';
 import { UtilsService } from '../shared/services/utils/utils.service';
-
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
 	selector: 'app-video-room',
@@ -38,7 +38,6 @@ import { UtilsService } from '../shared/services/utils/utils.service';
 	styleUrls: ['./video-room.component.css']
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
-
 	// Config from webcomponent or angular-library
 	@Input() externalConfig: ExternalConfigModel;
 	@Output() _connectionCreated = new EventEmitter<any>();
@@ -49,7 +48,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@Output() _error = new EventEmitter<any>();
 
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
-	@ViewChild('sidenav') chat: any;
+	@ViewChild('sidenav') chatSidenav: MatSidenav;
 
 	ovSettings: OvSettingsModel;
 	compact = false;
@@ -164,8 +163,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	toggleChat() {
-		this.chat.toggle().then(() => {
-			this.chatOpened = this.chat.opened;
+		this.chatSidenav.toggle().then(() => {
+			this.chatOpened = this.chatSidenav.opened;
 			if (this.chatOpened) {
 				this.newMessages = 0;
 			}
@@ -355,12 +354,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('connectionCreated', (event: ConnectionEvent) => {
 			const connectionId = event.connection.connectionId;
 			const isLocal = this.oVSessionService.isMyOwnConnection(connectionId);
-			this._connectionCreated.emit({event, isLocal});
+			this._connectionCreated.emit({ event, isLocal });
 		});
 	}
 
 	private subscribeToStreamCreated() {
 		this.session.on('streamCreated', (event: StreamEvent) => {
+			this.log.w('STREAM CREATED EVENT');
 			this._streamCreated.emit(event);
 			const connectionId = event.stream.connection.connectionId;
 
@@ -503,7 +503,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private async getToken(): Promise<string> {
 		this.log.d('Generating tokens...');
 		try {
-			return await this.networkSrv.getToken(this.mySessionId, this.externalConfig?.getOvServerUrl(), this.externalConfig?.getOvSecret());
+			return await this.networkSrv.getToken(
+				this.mySessionId,
+				this.externalConfig?.getOvServerUrl(),
+				this.externalConfig?.getOvSecret()
+			);
 		} catch (error) {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.e('There was an error getting the token:', error.code, error.message);
