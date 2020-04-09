@@ -8,7 +8,6 @@
     "@angular/elements": "9.1.0",
     "@angular/flex-layout": "9.0.0-beta.29",
     "@angular/forms": "9.1.0",
-    "@angular/http": "7.2.16",
     "@angular/material": "9.2.0",
     "@angular/platform-browser": "9.1.0",
     "@angular/platform-browser-dynamic": "9.1.0",
