@@ -8,22 +8,22 @@ export class UserModel {
 	/**
 	 * The Connection ID that is publishing the stream
 	 */
-	private connectionId: string;
+	connectionId: string;
 
 	/**
 	 * The user nickname
 	 */
-	private nickname: string;
+	nickname: string;
 
 	/**
 	 * StreamManager object ([[Publisher]] or [[Subscriber]])
 	 */
-	private streamManager: StreamManager;
+	streamManager: StreamManager;
 
 	/**
 	 * @hidden
 	 */
-	private videoAvatar: HTMLCanvasElement;
+	videoAvatar: HTMLCanvasElement;
 
 	/**
 	 * @hidden

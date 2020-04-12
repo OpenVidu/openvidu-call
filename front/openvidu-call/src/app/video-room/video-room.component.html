@@ -32,7 +32,7 @@
 
     <app-dialog-extension
       *ngIf="showDialogExtension"
-      [nickname]="localUsers[0].getNickname()"
+      [nickname]="localUsers[0].nickname"
       (cancel)="toggleDialogExtension()"
     ></app-dialog-extension>
     <mat-sidenav-container class="sidenav-container" id="room-container" [class.boundsLight]="lightTheme" fullscreen>
@@ -45,7 +45,7 @@
         fixedInViewport="true"
         fixedTopGap="40"
         fixedBottomGap="0"
-        *ngIf="!this.ovSettings || (this.ovSettings && this.ovSettings.hasChat())"
+        *ngIf=" ovSettings | hasChat"
       >
         <chat-component
           #chatComponent
@@ -69,7 +69,7 @@
           <!-- Only webcam video will be shown if webcamera is available -->
             <stream-component
               [user]="localUser"
-              [videoSizeBig]="localUser.isVideoSizeBig()"
+              [videoSizeBig]="localUser.videoSizeBig"
               (nicknameClicked)="onNicknameUpdate($event)"
               (replaceScreenTrackClicked)="onReplaceScreenTrack($event)"
               (toggleVideoSizeClicked)="onToggleVideoSize($event)"
@@ -83,7 +83,7 @@
           >
             <stream-component
               [user]="user"
-              [videoSizeBig]="user.isVideoSizeBig()"
+              [videoSizeBig]="user.videoSizeBig"
               (toggleVideoSizeClicked)="onToggleVideoSize($event)"
             ></stream-component>
           </div>

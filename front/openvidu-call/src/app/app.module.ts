@@ -27,6 +27,16 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
+import {
+	HasChatPipe,
+	HasAudioPipe,
+	HasVideoPipe,
+	IsAutoPublishPipe,
+	HasScreenSharingPipe,
+	HasFullscreenPipe,
+	HasLayoutSpeakingPipe,
+	HasExitPipe
+} from './shared/pipes/ovSettings.pipe';
 
 // Components
 import { StreamComponent } from './shared/components/stream/stream.component';
@@ -63,7 +73,15 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		WebComponentComponent,
 		ToolbarComponent,
 		ToolbarLogoComponent,
-		LinkifyPipe
+		LinkifyPipe,
+		HasChatPipe,
+		HasAudioPipe,
+		HasVideoPipe,
+		IsAutoPublishPipe,
+		HasScreenSharingPipe,
+		HasFullscreenPipe,
+		HasLayoutSpeakingPipe,
+		HasExitPipe
 	],
 	imports: [
 		FormsModule,

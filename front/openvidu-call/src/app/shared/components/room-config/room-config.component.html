@@ -1,11 +1,11 @@
-<div id="dialogChooseRoom" [ngStyle]="{ display: ovSettings.isAutoPublish() ? 'none' : 'block' }">
+<div id="dialogChooseRoom" [ngStyle]="{ display: (ovSettings | isAutoPublish) ? 'none' : 'block' }">
 	<app-dialog-extension
 		*ngIf="showDialogExtension"
-		[nickname]="localUsers[0].getNickname()"
+		[nickname]="localUsers[0].nickname"
 		(cancel)="toggleDialogExtension()"
 	></app-dialog-extension>
 
-	<mat-card *ngIf="localUsers.length > 0 && localUsers[0].getStreamManager()">
+	<mat-card *ngIf="localUsers.length > 0 && localUsers[0].streamManager">
 		<mat-card-title>
 			<div id="img_content">
 				<img
@@ -37,22 +37,23 @@
 								[vertical]="true"
 							>
 							</mat-slider> -->
-							<div *ngFor="let localUser of localUsers;  let i = index">
+							<div *ngFor="let localUser of localUsers; let i = index">
 								<!-- Only webcam video will be shown if webcamera is available -->
 								<ov-video
 									*ngIf="(localUser.isCamera() && hasVideoDevices) || localUser.isScreen()"
-									[streamManager]="localUser.getStreamManager()"
+									[streamManager]="localUser.streamManager"
 									[id]="localUser.isCamera() ? 'ovVideo' : 'ovVideoScreen'"
 									[className]="localUsers.length > 1 && i === 0 ? 'smallVideo' : ''"
 								></ov-video>
-								<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && !hasVideoDevices">Oops! Camera is not available </div>
-
+								<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && !hasVideoDevices">
+									Oops! Camera is not available
+								</div>
 							</div>
 						</div>
 						<div id="photoButton" *ngIf="hasVideoDevices">
 							<button mat-stroked-button (click)="takePhoto()" id="avatarButton">
 								<mat-icon matTooltip="Take Photo">photo_camera</mat-icon>
-								<span style="margin-left: 5px">Capture Avatar</span>
+								<span style="margin-left: 5px;">Capture Avatar</span>
 							</button>
 						</div>
 					</div>
@@ -87,7 +88,7 @@
 						</div>
 
 						<!-- Devices section / Microphone-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.hasAudio()">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings | hasAudio">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleMic()" id="micDeviceButton">
@@ -103,15 +104,15 @@
 											(selectionChange)="onMicrophoneSelected($event)"
 										>
 											<mat-option *ngFor="let microphone of microphones" [value]="microphone.device">
-                        {{microphone.label}}
-                      </mat-option>
+												{{ microphone.label }}
+											</mat-option>
 										</mat-select>
 									</mat-form-field>
 								</div>
 							</div>
 						</div>
 						<!-- Devices section / Camera-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && ovSettings && ovSettings.hasVideo()">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && (ovSettings | hasVideo)">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleCam()" id="camDeviceButton">
@@ -127,8 +128,8 @@
 											(selectionChange)="onCameraSelected($event)"
 										>
 											<mat-option *ngFor="let camera of cameras" [value]="camera.device">
-                        {{camera.label}}
-                      </mat-option>
+												{{ camera.label }}
+											</mat-option>
 										</mat-select>
 									</mat-form-field>
 								</div>
@@ -136,7 +137,7 @@
 						</div>
 
 						<!-- Devices section / ScreenShare-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings && ovSettings.hasScreenSharing()">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings | hasScreenSharing">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleScreenShare()" id="screenShareButton">
