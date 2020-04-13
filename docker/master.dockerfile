@@ -8,7 +8,8 @@ RUN apk update && \
 RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
     unzip openvidu-call.zip && \
     rm openvidu-call.zip && \
-    mv openvidu-call-master/front/openvidu-call/* .
+    mv openvidu-call-master/front/openvidu-call/* . && \
+    rm -rf package-lock.json
 
 RUN npm install && \
     npm run build-prod && \
