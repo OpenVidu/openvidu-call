@@ -43,13 +43,15 @@ async function buildElement() {
 
 async function copyFiles() {
   const destination = '../../../openvidu-tutorials/openvidu-webcomponent/web';
-  try {
-    console.log("Copying openvidu-webcomponent files from: ./openvidu-webcomponent to: " + destination);
-    await fs.ensureDir('openvidu-webcomponent');
-    await fs.copy('./openvidu-webcomponent/', destination);
-  } catch (err) {
-    console.error('Error executing copy function in webcomponent-builds.js', err);
-    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
+  if (fs.existsSync(destination)) {
+    try {
+      console.log("Copying openvidu-webcomponent files from: ./openvidu-webcomponent to: " + destination);
+      await fs.ensureDir('openvidu-webcomponent');
+      await fs.copy('./openvidu-webcomponent/', destination);
+    } catch (err) {
+      console.error('Error executing copy function in webcomponent-builds.js', err);
+      replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
+    }
   }
 }
 
