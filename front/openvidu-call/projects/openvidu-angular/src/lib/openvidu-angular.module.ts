@@ -27,6 +27,16 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
+import {
+	HasChatPipe,
+	HasAudioPipe,
+	HasVideoPipe,
+	IsAutoPublishPipe,
+	HasScreenSharingPipe,
+	HasFullscreenPipe,
+	HasLayoutSpeakingPipe,
+	HasExitPipe
+} from './shared/pipes/ovSettings.pipe';
 
 // Components
 import { VideoRoomComponent } from './video-room/video-room.component';
@@ -85,7 +95,15 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		RoomConfigComponent,
 		ToolbarComponent,
 		ToolbarLogoComponent,
-		LinkifyPipe
+		LinkifyPipe,
+		HasChatPipe,
+		HasAudioPipe,
+		HasVideoPipe,
+		IsAutoPublishPipe,
+		HasScreenSharingPipe,
+		HasFullscreenPipe,
+		HasLayoutSpeakingPipe,
+		HasExitPipe
 	],
 	entryComponents: [DialogErrorComponent],
 	providers: [NetworkService, OpenViduSessionService, UtilsService, RemoteUsersService, DevicesService],

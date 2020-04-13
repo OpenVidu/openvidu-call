@@ -39,6 +39,8 @@ export class OpenviduSessionComponent implements OnInit {
 	tokens: string[];
 	@Input()
 	theme: string;
+	@Output() sessionCreated = new EventEmitter<any>();
+	@Output() publisherCreated = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
 
 	@ViewChild('videoRoom')
@@ -63,22 +65,21 @@ export class OpenviduSessionComponent implements OnInit {
 	emitSession(session: Session) {
 		session.on('sessionDisconnected', (e) => this.display = false);
 		session.on('connectionCreated', (e: ConnectionEvent) => {
-			if (!e.connection.stream.streamManager.remote) {
-				this.videoRoom.checkSizeComponent();
-			}
+			setTimeout(() => {
+				if (!e.connection.stream.streamManager.remote) {
+					this.videoRoom.checkSizeComponent();
+				}
+			}, 700);
 		});
-		// this.sessionCreated.emit(session);
+		this.sessionCreated.emit(session);
 	}
 	emitPublisher(publisher: Publisher) {
-		// this.publisherCreated.emit(publisher);
+		// publisher.on('streamPlaying', () => this.videoRoom.checkSizeComponent());
+		this.publisherCreated.emit(publisher);
 	}
 
 	emitErrorEvent(event) {
 		setTimeout(() => this.error.emit(event), 20);
-	}
-
-	getSession(): Session {
-		return this.videoRoom.session;
 	}
 
 	getLocalUsers(): UserModel[] {
