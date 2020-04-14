@@ -52,6 +52,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	nicknameFormControl = new FormControl('', [Validators.maxLength(25), Validators.required]);
 	matcher = new NicknameMatcher();
 	hasVideoDevices: boolean;
+	hasAudioDevices: boolean;
+
 	private log: ILogger;
 
 
@@ -73,6 +75,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	async ngOnInit() {
 		await this.initDevices();
 		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
+		this.hasAudioDevices = this.oVDevicesService.hasAudioDeviceAvailable();
 		this.subscribeToUsers();
 		this.setNicknameForm();
 		this.setSessionName();
@@ -298,10 +301,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private initwebcamPublisher() {
 		let videoSource: any = false;
+		let audioSource: any = false;
 		if (this.hasVideoDevices) {
 			videoSource = this.camSelected ? this.camSelected.device : undefined;
 		}
-		const audioSource = this.micSelected ? this.micSelected.device : undefined;
+		if (this.hasAudioDevices) {
+			audioSource = this.micSelected ? this.micSelected.device : undefined;
+		}
 		const publishAudio = this.isAudioActive;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;

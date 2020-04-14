@@ -9,7 +9,7 @@ import { LoggerService } from '../logger/logger.service';
 })
 export class DevicesService {
 	private OV: OpenVidu = null;
-	private devices: Device[];
+	private devices: Device[] = [];
 
 	private cameras: IDevice[];
 	private microphones: IDevice[];
@@ -119,8 +119,13 @@ export class DevicesService {
 	}
 
 	hasVideoDeviceAvailable(): boolean {
-		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
-		return videoDevices.length > 0;
+		const videoDevices = this.devices?.filter(device => device.kind === 'videoinput');
+		return videoDevices?.length > 0;
+	}
+
+	hasAudioDeviceAvailable(): boolean {
+		const audioDevice = this.devices?.filter(device => device.kind === 'audioinput');
+		return audioDevice?.length > 0;
 	}
 
 	private getDevices(): Promise<Device[]> {

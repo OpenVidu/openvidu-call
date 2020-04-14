@@ -7,7 +7,7 @@
 			(click)="toggleMicrophone()"
 			[disabled]="isConnectionLost"
 			id="navMicButton"
-			*ngIf="ovSettings | hasAudio"
+			*ngIf="hasAudioDevices && (ovSettings | hasAudio)"
 		>
 			<mat-icon *ngIf="isWebcamAudioEnabled" matTooltip="Mute your audio">mic</mat-icon>
 			<mat-icon *ngIf="!isWebcamAudioEnabled" color="warn" matTooltip="Unmute your audio">mic_off</mat-icon>

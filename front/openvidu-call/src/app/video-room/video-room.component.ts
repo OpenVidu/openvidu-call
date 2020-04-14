@@ -65,6 +65,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	isConnectionLost: boolean;
 	isAutoLayout = false;
 	hasVideoDevices: boolean;
+	hasAudioDevices: boolean;
 	localUsersFiltered: UserModel[];
 	remoteUsersFiltered: UserModel[];
 	private log: ILogger;
@@ -106,6 +107,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 	onConfigRoomJoin() {
 		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
+		this.hasAudioDevices = this.oVDevicesService.hasAudioDeviceAvailable();
 		this.showConfigRoomCard = false;
 		this.subscribeToLocalUsers();
 		this.subscribeToRemoteUsers();

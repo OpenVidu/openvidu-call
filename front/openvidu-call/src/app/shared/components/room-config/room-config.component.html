@@ -88,7 +88,7 @@
 						</div>
 
 						<!-- Devices section / Microphone-->
-						<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings | hasAudio">
+						<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasAudioDevices && (ovSettings | hasAudio)">
 							<div fxLayout fxFlex>
 								<div class="one" fxFlex="20" fxLayoutAlign="center center">
 									<button mat-stroked-button (click)="toggleMic()" id="micDeviceButton">
