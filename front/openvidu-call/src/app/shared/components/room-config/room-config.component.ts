@@ -308,7 +308,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (this.hasAudioDevices) {
 			audioSource = this.micSelected ? this.micSelected.device : undefined;
 		}
-		const publishAudio = this.isAudioActive;
+		const publishAudio = this.hasAudioDevices ? this.isAudioActive : false;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;
 		const properties = this.oVSessionService.createProperties(videoSource, audioSource, publishVideo, publishAudio, mirror);
