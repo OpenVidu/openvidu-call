@@ -4,7 +4,9 @@ import { Session, ConnectionEvent, Publisher } from 'openvidu-browser';
 import { UserModel } from './shared/models/user-model';
 import { AngularLibraryModel } from './shared/models/angular-library';
 import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-layout';
-import { OvSettings } from './shared/types/ov-settings';
+import { LoggerService } from './shared/services/logger/logger.service';
+import { ILogger } from './shared/types/logger-type';
+import { OvSettingsModel } from './shared/models/ovSettings';
 
 @Component({
 	selector: 'opv-session',
@@ -26,7 +28,7 @@ export class OpenviduSessionComponent implements OnInit {
 	display = false;
 
 	@Input()
-	ovSettings: OvSettings;
+	ovSettings: OvSettingsModel;
 	@Input()
 	sessionName: string;
 	@Input()
@@ -46,11 +48,15 @@ export class OpenviduSessionComponent implements OnInit {
 	@ViewChild('videoRoom')
 	public videoRoom: VideoRoomComponent;
 
-	constructor() {}
+	private log: ILogger;
+
+	constructor(private loggerSrv: LoggerService) {
+		this.log = this.loggerSrv.get('OpenviduSessionComponent');
+	}
 
 	ngOnInit() {
 		this.angularLibrary = new AngularLibraryModel();
-		this.angularLibrary.setOvSettings(this.ovSettings);
+		this.angularLibrary.setOvSettingsModel(this.ovSettings);
 		this.angularLibrary.setSessionName(this.sessionName);
 		this.angularLibrary.setOvServerUrl(this.openviduServerUrl);
 		this.angularLibrary.setOvSecret(this.openviduSecret);
@@ -59,7 +65,9 @@ export class OpenviduSessionComponent implements OnInit {
 		this.angularLibrary.setTokens(this.tokens);
 		if (this.angularLibrary.canJoinToSession()) {
 			this.display = true;
+			return;
 		}
+		this.log.e('Cannot join to session.');
 	}
 
 	emitSession(session: Session) {

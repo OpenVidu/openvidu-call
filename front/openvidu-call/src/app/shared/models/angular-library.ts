@@ -1,4 +1,5 @@
 import { ExternalConfigModel } from './external-config';
+import { OvSettingsModel } from './ovSettings';
 
 export class AngularLibraryModel extends ExternalConfigModel {
 	private readonly NAME = 'Angular Library';
@@ -11,6 +12,12 @@ export class AngularLibraryModel extends ExternalConfigModel {
 		if (tokens) {
 			this.ovSettings.setScreenSharing(this.ovSettings.hasScreenSharing() && this.tokens?.length > 1);
 			super.setTokens(tokens);
+		}
+	}
+
+	public setOvSettingsModel(ovSettings: OvSettingsModel) {
+		if (!!ovSettings) {
+			this.ovSettings = ovSettings;
 		}
 	}
 
