@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
-import { Publisher, StreamEvent, StreamManagerEvent } from 'openvidu-browser';
+import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice, CameraType } from '../../types/device-type';
