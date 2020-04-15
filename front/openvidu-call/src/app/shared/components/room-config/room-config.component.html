@@ -1,4 +1,4 @@
-<div id="dialogChooseRoom" [ngStyle]="{ display: (ovSettings | isAutoPublish) ? 'none' : 'block' }">
+<div id="roomConfig" [ngStyle]="{ display: (ovSettings | isAutoPublish) ? 'none' : 'block' }">
 	<app-dialog-extension
 		*ngIf="showDialogExtension"
 		[nickname]="localUsers[0].nickname"

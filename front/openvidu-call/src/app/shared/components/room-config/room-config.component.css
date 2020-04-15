@@ -8,13 +8,13 @@ button {
   font-family: 'Ubuntu', sans-serif;
 }
 
-#dialogChooseRoom {
+#roomConfig {
   position: absolute;
   width: 100%;
   height: 100%;
 }
 
-#dialogChooseRoom h1 {
+#roomConfig h1 {
   text-align: center;
 }
 
