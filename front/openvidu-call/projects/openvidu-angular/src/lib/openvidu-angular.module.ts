@@ -22,7 +22,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AppRoutingModule } from './app-routing.module';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
 // Pipes
@@ -80,7 +79,6 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		MatProgressSpinnerModule,
 		MatSliderModule,
 		MatSidenavModule,
-		AppRoutingModule,
 		MatChipsModule,
 		NgxLinkifyjsModule.forRoot()
 	],
