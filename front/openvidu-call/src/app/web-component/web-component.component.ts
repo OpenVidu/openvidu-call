@@ -81,10 +81,13 @@ export class WebComponentComponent {
 
 	emitSession(session: Session) {
 		session.on('sessionDisconnected', (e) => this.display = false);
+		session.on('connectionCreated', (e: ConnectionEvent) => {
+			this.videoRoom.checkSizeComponent();
+		});
+
 		this.sessionCreated.emit(session);
 	}
 	emitPublisher(publisher: Publisher) {
-		publisher.on('streamPlaying', () => this.videoRoom.checkSizeComponent());
 		this.publisherCreated.emit(publisher);
 	}
 

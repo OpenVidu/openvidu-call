@@ -268,7 +268,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	checkSizeComponent() {
-		this.compact = document.getElementById('room-container').offsetWidth <= 790;
+		this.compact = document.getElementById('room-container')?.offsetWidth <= 790;
 		this.sidenavMode = this.compact ? 'over' : 'side';
 	}
 
