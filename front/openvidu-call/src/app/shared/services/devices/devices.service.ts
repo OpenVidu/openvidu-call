@@ -11,8 +11,8 @@ export class DevicesService {
 	private OV: OpenVidu = null;
 	private devices: Device[] = [];
 
-	private cameras: IDevice[];
-	private microphones: IDevice[];
+	private cameras: IDevice[] = [];
+	private microphones: IDevice[] = [];
 
 	private camSelected: IDevice;
 	private micSelected: IDevice;
@@ -25,14 +25,15 @@ export class DevicesService {
 
 	async initDevices() {
 		this.devices = await this.getDevices();
-		this.log.d('Devices: ', this.devices);
+		this.devices.length > 0 ? this.log.d('Devices found: ', this.devices) : this.log.w('No devices found!');
 		this.resetDevicesArray();
-		this.initAudioDevices();
+		if (this.hasAudioDeviceAvailable()) {
+			this.initAudioDevices();
+		}
 		if (this.hasVideoDeviceAvailable()) {
 			this.initVideoDevices();
 			return;
 		}
-		this.log.w('No video devices found!');
 	}
 
 	private initAudioDevices() {
@@ -128,8 +129,14 @@ export class DevicesService {
 		return audioDevice?.length > 0;
 	}
 
-	private getDevices(): Promise<Device[]> {
-		return this.OV.getDevices();
+	private async getDevices(): Promise<Device[]> {
+		try {
+			await this.OV.getUserMedia({audioSource: undefined, videoSource: undefined});
+			return this.OV.getDevices();
+		} catch (e) {
+			e.name === 'DEVICE_ACCESS_DENIED' ? this.log.e(e.name + ': Access to media devices was not allowed') : this.log.e(e);
+			return [];
+		}
 	}
 
 	private resetDevicesArray() {

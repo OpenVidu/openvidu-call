@@ -5,7 +5,6 @@ import { OvSettingsModel } from '../models/ovSettings';
 export class HasChatPipe implements PipeTransform {
 	constructor() {}
 	transform(ovSettings: OvSettingsModel): boolean {
-		console.log('pipe');
 		return !ovSettings || ovSettings.hasChat();
 	}
 }
