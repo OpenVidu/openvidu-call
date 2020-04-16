@@ -16,6 +16,8 @@ import { ConnectionEvent, Session, Publisher } from 'openvidu-browser';
 			(_error)="emitErrorEvent($event)"
 			(_session)="emitSession($event)"
 			(_publisher)="emitPublisher($event)"
+			(_leaveSession)="emitLeaveSessionEvent($event)"
+			(_joinSession)="emitJoinSessionEvent($event)"
 		>
 		</app-video-room>
 	`,
@@ -27,6 +29,11 @@ export class WebComponentComponent {
 	@Output() sessionCreated = new EventEmitter<any>();
 	@Output() publisherCreated = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
+
+	// !Deprecated
+	@Output() joinSession = new EventEmitter<any>();
+	// !Deprecated
+	@Output() leaveSession = new EventEmitter<any>();
 	@ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
 	display = false;
@@ -84,12 +91,24 @@ export class WebComponentComponent {
 		session.on('connectionCreated', (e: ConnectionEvent) => {
 			this.videoRoom.checkSizeComponent();
 		});
-
 		this.sessionCreated.emit(session);
 	}
+
 	emitPublisher(publisher: Publisher) {
 		this.publisherCreated.emit(publisher);
 	}
+
+	// !Deprecated
+	emitJoinSessionEvent(event): void {
+		this.log.w('joinSession event is DEPRECATED. Please consider to use sessionCreated event');
+		this.joinSession.emit(event);
+	  }
+
+	  // !Deprecated
+	  emitLeaveSessionEvent(event): void {
+		this.log.w('leaveSession event is DEPRECATED. Please consider to use sessionCreated event');
+		this.leaveSession.emit(event);
+	  }
 
 	private isEmpty(obj: any): boolean {
 		return Object.keys(obj).length === 0;

@@ -15,12 +15,6 @@ export class AngularLibraryModel extends ExternalConfigModel {
 		}
 	}
 
-	public setOvSettingsModel(ovSettings: OvSettingsModel) {
-		if (!!ovSettings) {
-			this.ovSettings = ovSettings;
-		}
-	}
-
 	public getComponentName() {
 		return this.NAME;
 	}

@@ -6,7 +6,7 @@ import { AngularLibraryModel } from './shared/models/angular-library';
 import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-layout';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { ILogger } from './shared/types/logger-type';
-import { OvSettingsModel } from './shared/models/ovSettings';
+import { OvSettings } from './shared/types/ov-settings';
 
 @Component({
 	selector: 'opv-session',
@@ -18,6 +18,8 @@ import { OvSettingsModel } from './shared/models/ovSettings';
 			(_session)="emitSession($event)"
 			(_publisher)="emitPublisher($event)"
 			(_error)="emitErrorEvent($event)"
+			(_leaveSession)="emitLeaveSessionEvent($event)"
+			(_joinSession)="emitJoinSessionEvent($event)"
 		>
 		</app-video-room>
 	`,
@@ -28,7 +30,7 @@ export class OpenviduSessionComponent implements OnInit {
 	display = false;
 
 	@Input()
-	ovSettings: OvSettingsModel;
+	ovSettings: OvSettings;
 	@Input()
 	sessionName: string;
 	@Input()
@@ -45,6 +47,11 @@ export class OpenviduSessionComponent implements OnInit {
 	@Output() publisherCreated = new EventEmitter<any>();
 	@Output() error = new EventEmitter<any>();
 
+	// !Deprecated
+	@Output() joinSession = new EventEmitter<any>();
+	// !Deprecated
+	@Output() leaveSession = new EventEmitter<any>();
+
 	@ViewChild('videoRoom')
 	public videoRoom: VideoRoomComponent;
 
@@ -56,7 +63,7 @@ export class OpenviduSessionComponent implements OnInit {
 
 	ngOnInit() {
 		this.angularLibrary = new AngularLibraryModel();
-		this.angularLibrary.setOvSettingsModel(this.ovSettings);
+		this.angularLibrary.setOvSettings(this.ovSettings);
 		this.angularLibrary.setSessionName(this.sessionName);
 		this.angularLibrary.setOvServerUrl(this.openviduServerUrl);
 		this.angularLibrary.setOvSecret(this.openviduSecret);
@@ -71,7 +78,7 @@ export class OpenviduSessionComponent implements OnInit {
 	}
 
 	emitSession(session: Session) {
-		session.on('sessionDisconnected', (e) => this.display = false);
+		session.on('sessionDisconnected', (e) => (this.display = false));
 		session.on('connectionCreated', (e: ConnectionEvent) => {
 			setTimeout(() => {
 				if (!e.connection.stream.streamManager.remote) {
@@ -90,6 +97,12 @@ export class OpenviduSessionComponent implements OnInit {
 		setTimeout(() => this.error.emit(event), 20);
 	}
 
+	// !Deprecated
+	getSession(): Session {
+		this.log.w('getSession method is DEPRECATED. Please consider to use sessionCreated event');
+		return this.videoRoom.session;
+	}
+
 	getLocalUsers(): UserModel[] {
 		return this.videoRoom.localUsers;
 	}
@@ -100,5 +113,17 @@ export class OpenviduSessionComponent implements OnInit {
 
 	getOpenviduLayoutOptions(): OpenViduLayoutOptions {
 		return this.videoRoom.openviduLayoutOptions;
+	}
+
+	// !Deprecated
+	emitJoinSessionEvent(event: any): void {
+		this.log.w('joinSession event is DEPRECATED. Please consider to use sessionCreated event');
+		this.joinSession.emit(event);
+	}
+
+	// !Deprecated
+	emitLeaveSessionEvent(event: any): void {
+		this.log.w('leaveSession event is DEPRECATED. Please consider to use sessionCreated event');
+		this.leaveSession.emit(event);
 	}
 }

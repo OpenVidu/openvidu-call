@@ -42,6 +42,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	@Output() _publisher = new EventEmitter<any>();
 	@Output() _error = new EventEmitter<any>();
 
+	// !Deprecated
+	@Output() _joinSession = new EventEmitter<any>();
+	// !Deprecated
+  	@Output() _leaveSession = new EventEmitter<any>();
+
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chatSidenav: MatSidenav;
 
@@ -152,6 +157,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.remoteUsers = [];
 		this.openviduLayout = null;
 		this.router.navigate(['']);
+		this._leaveSession.emit();
 	}
 
 	onNicknameUpdate(nickname: string) {
@@ -329,6 +335,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		} else {
 			this.oVSessionService.publishWebcam();
 		}
+		// !Deprecated
+		this._joinSession.emit();
+
 		this.updateOpenViduLayout();
 	}
 
