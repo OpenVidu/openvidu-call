@@ -1,4 +1,3 @@
-import { Request, Response} from 'express';
 import axios, { AxiosRequestConfig } from 'axios';
 import https from 'https';
 import btoa from 'btoa';
@@ -20,10 +19,6 @@ export class HttpClientService {
 		};
 
         return axios.post<string>(openviduUrl, body, this.options);
-    }
-
-    get(req: Request, res: Response): void {
-        throw new Error("Method not implemented.");
     }
 
 }
