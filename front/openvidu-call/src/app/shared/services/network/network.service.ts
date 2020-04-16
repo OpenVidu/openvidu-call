@@ -23,21 +23,15 @@ export class NetworkService {
 		this.log = this.loggSrv.get('NetworkService');
 	}
 
-	getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			const ov_url = !!openviduServerUrl ? openviduServerUrl : this.URL_OV;
-			const ov_secret = !!openviduSecret ? openviduSecret : this.MY_SECRET;
-			this.createSession(mySessionId, ov_url, ov_secret)
-				.then((sessionId: string) => {
-					this.createToken(sessionId, ov_url, ov_secret)
-						.then(token => resolve(token))
-						.catch(error => reject(error));
-				})
-				.catch(error => reject(error));
-		});
+	async getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
+		const ov_url = !!openviduServerUrl ? openviduServerUrl : this.URL_OV;
+		const ov_secret = !!openviduSecret ? openviduSecret : this.MY_SECRET;
+		const sessionId = await this.createSession(mySessionId, ov_url, ov_secret);
+		const token = await this.createToken(sessionId, ov_url, ov_secret);
+		return token;
 	}
 
-	createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string) {
+	createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const body = JSON.stringify({ customSessionId: sessionId });
 			const options = {
