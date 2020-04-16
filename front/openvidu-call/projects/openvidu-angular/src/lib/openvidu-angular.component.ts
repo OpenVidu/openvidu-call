@@ -117,13 +117,17 @@ export class OpenviduSessionComponent implements OnInit {
 
 	// !Deprecated
 	emitJoinSessionEvent(event: any): void {
-		this.log.w('joinSession event is DEPRECATED. Please consider to use sessionCreated event');
+		if (this.joinSession.observers.length > 0) {
+			this.log.w('joinSession event is DEPRECATED. Please consider to use sessionCreated event');
+		}
 		this.joinSession.emit(event);
 	}
 
 	// !Deprecated
 	emitLeaveSessionEvent(event: any): void {
-		this.log.w('leaveSession event is DEPRECATED. Please consider to use sessionCreated event');
+		if (this.leaveSession.observers.length > 0) {
+			this.log.w('leaveSession event is DEPRECATED. Please consider to use sessionCreated event');
+		}
 		this.leaveSession.emit(event);
 	}
 }
