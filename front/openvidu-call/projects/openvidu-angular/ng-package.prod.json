@@ -2,7 +2,11 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/openvidu-angular",
   "lib": {
-    "entryFile": "src/public_api.ts"
+    "entryFile": "src/public_api.ts",
+    "umdModuleIds": {
+      "openvidu-browser": "openvidu-browser",
+      "ngx-linkifyjs": "ngx-linkifyjs"
+    }
   },
   "whitelistedNonPeerDependencies": [
     "tslib",
@@ -11,6 +15,5 @@
     "@angular/material",
     "@angular/cdk",
     "@angular/animations"
-
    ]
 }
