@@ -167,12 +167,13 @@ export class OpenViduSessionService {
 	}
 
 	async replaceTrack(videoSource: string, audioSource: string) {
-		this.log.d('Replacing ' + !!videoSource ? 'video' : 'audio' + ' track: ' + !!videoSource ? videoSource : audioSource);
 		let track: MediaStreamTrack;
 		if (!!videoSource) {
+			this.log.d('Replacing video track ' + videoSource);
 			this.videoSource = videoSource;
 		}
 		if (!!audioSource) {
+			this.log.d('Replacing audio track ' + videoSource);
 			this.audioSource = audioSource;
 		}
 
@@ -185,7 +186,7 @@ export class OpenViduSessionService {
 		);
 
 		this.webcamMediaStream = await this.OV.getUserMedia(properties);
-		track = !!videoSource ? track = this.webcamMediaStream.getVideoTracks()[0] : this.webcamMediaStream.getAudioTracks()[0];
+		track = !!videoSource ? this.webcamMediaStream.getVideoTracks()[0] : this.webcamMediaStream.getAudioTracks()[0];
 		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
 	}
 
