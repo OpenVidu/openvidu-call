@@ -55,7 +55,7 @@
   "private": true,
   "scripts": {
     "build": "./node_modules/@angular/cli/bin/ng build",
-    "build-prod": "./node_modules/@angular/cli/bin/ng build --prod",
+    "build-prod": "./node_modules/@angular/cli/bin/ng build --prod && cp -a dist/openvidu-call/. ../../openvidu-call-server/public/",
     "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
     "build:openvidu-webcomponent": "node -e \"require('./openvidu-webcomponent-build.js').prepareWebcomponent()\" && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node -e \"require('./openvidu-webcomponent-build.js').buildWebcomponent()\"",
     "e2e": "ng e2e",
