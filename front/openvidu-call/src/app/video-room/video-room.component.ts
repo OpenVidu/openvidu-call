@@ -424,9 +424,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.onToggleVideoSize({ element });
 			}
 		});
-
-		// this.session.on('publisherStopSpeaking', (event: PublisherSpeakingEvent) => {
-		// });
 	}
 
 	private removeScreen() {
