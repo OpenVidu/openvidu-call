@@ -17,16 +17,22 @@ app.post('/', async (req: Request, res: Response) => {
 		sessionId = (await openviduService.createSession(sessionId, OPENVIDU_URL, OPENVIDU_SECRET)).data;
 
 	} catch (error) {
-		const statusCode = error.response.status;
-		if (statusCode !== 409)  {
-			res.status(statusCode).send('Error creating OpenVidu session');
+		const statusCode = error.response?.status;
+		if (statusCode && statusCode !== 409)  {
+			res.status(statusCode).send('ERROR: Cannot create OpenVidu session');
+			return;
+		}
+		if (error.code === 'ECONNREFUSED'){
+			log.error('ERROR: Cannot connect with OpenVidu Server')
+			res.status(504).send('ECONNREFUSED: Cannot connect with OpenVidu Server');
 			return;
 		}
 	}
 	try {
-		const token = (await openviduService.createToken(sessionId, OPENVIDU_URL, OPENVIDU_SECRET)).data;
-		res.status(200).send(token);
+		const response= (await openviduService.createToken(sessionId, OPENVIDU_URL, OPENVIDU_SECRET)).data;
+		res.status(200).send(response);
 	} catch (error) {
+		log.error('Error creating OpenVidu token')
 		res.status(error.response.status).send('Error creating OpenVidu token');
 	}
 });
