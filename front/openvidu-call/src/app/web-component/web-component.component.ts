@@ -57,7 +57,7 @@ export class WebComponentComponent {
 			if (this.isEmpty(config)) {
 				this.log.w('Parameters received are incorrect.', config);
 				this.log.w('Exit session');
-				this.videoRoom?.exitSession();
+				this.videoRoom?.leaveSession();
 				return;
 			}
 

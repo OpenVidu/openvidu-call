@@ -29,7 +29,7 @@ export class ToolbarComponent implements OnInit {
 	@Output() camButtonClicked = new EventEmitter<any>();
 	@Output() screenShareClicked = new EventEmitter<any>();
 	@Output() layoutButtonClicked = new EventEmitter<any>();
-	@Output() exitButtonClicked = new EventEmitter<any>();
+	@Output() leaveSessionButtonClicked = new EventEmitter<any>();
 	@Output() chatButtonClicked = new EventEmitter<any>();
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
@@ -72,8 +72,8 @@ export class ToolbarComponent implements OnInit {
 		this.layoutButtonClicked.emit();
 	}
 
-	exitSession() {
-		this.exitButtonClicked.emit();
+	leaveSession() {
+		this.leaveSessionButtonClicked.emit();
 	}
 
 	toggleChat() {

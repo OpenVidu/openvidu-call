@@ -4,7 +4,7 @@
     [ovSettings]="ovSettings"
     [externalConfig]="externalConfig"
     (join)="onConfigRoomJoin()"
-    (leaveSession)="exitSession()"
+    (leaveSession)="leaveSession()"
     (publisherCreated)="emitPublisher($event)"
   ></app-room-config>
 
@@ -27,7 +27,7 @@
       (micButtonClicked)="toggleMic()"
       (screenShareClicked)="toggleScreenShare()"
       (layoutButtonClicked)="toggleSpeakerLayout()"
-      (exitButtonClicked)="exitSession()"
+      (leaveSessionButtonClicked)="leaveSession()"
       (chatButtonClicked)="toggleChat()"
     ></app-toolbar>
 

@@ -91,7 +91,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	@HostListener('window:beforeunload')
 	beforeunloadHandler() {
-		this.exitSession();
+		this.leaveSession();
 	}
 
 	@HostListener('window:resize')
@@ -108,7 +108,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.exitSession();
+		this.leaveSession();
 	}
 	onConfigRoomJoin() {
 		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
@@ -141,7 +141,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.connectToSession();
 	}
 
-	exitSession() {
+	leaveSession() {
 		this.log.d('Leaving session...');
 		this.oVSessionService.disconnect();
 		if (this.oVUsersSubscription) {
@@ -466,7 +466,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session.on('sessionDisconnected', (event: SessionDisconnectedEvent) => {
 			if (event.reason === 'networkDisconnect') {
 				this.utilsSrv.closeDialog();
-				this.exitSession();
+				this.leaveSession();
 			}
 		});
 	}
