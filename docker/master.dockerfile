@@ -27,7 +27,7 @@ RUN npm install --prefix openvidu-browser && \
     npm install --prefix openvidu-call && \
     npm run build-prod --prefix openvidu-call && \
     mv openvidu-call/dist . && \
-    rm -rf -v !("dist")
+    rm -rf -v !"dist"
 
 # Serving OpenVidu Call with Nginx
 FROM nginx:1.17.9
