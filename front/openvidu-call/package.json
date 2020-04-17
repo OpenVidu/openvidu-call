@@ -65,5 +65,5 @@
     "start": "ng serve",
     "test": "ng test"
   },
-  "version": "2.13.0-beta4"
+  "version": "2.13.0-beta5"
 }
