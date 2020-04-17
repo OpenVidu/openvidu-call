@@ -185,6 +185,7 @@ export class OpenViduSessionService {
 			true
 		);
 
+		this.stopWebcamTracks();
 		this.webcamMediaStream = await this.OV.getUserMedia(properties);
 		track = !!videoSource ? this.webcamMediaStream.getVideoTracks()[0] : this.webcamMediaStream.getAudioTracks()[0];
 		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
@@ -195,6 +196,7 @@ export class OpenViduSessionService {
 		const hasAudio = !this.isWebCamEnabled();
 		const properties = this.createProperties(videoSource, undefined, true, hasAudio, false);
 
+		this.stopScreenTracks();
 		this.screenMediaStream = await this.OVScreen.getUserMedia(properties);
 		await (<Publisher>this.screenUser.getStreamManager()).replaceTrack(this.screenMediaStream.getVideoTracks()[0]);
 	}

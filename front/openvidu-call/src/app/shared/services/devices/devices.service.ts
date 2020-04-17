@@ -131,7 +131,9 @@ export class DevicesService {
 
 	private async getDevices(): Promise<Device[]> {
 		try {
-			await this.OV.getUserMedia({audioSource: undefined, videoSource: undefined});
+			// Wait until media devices permissions are accepted or rejected
+			const mediaStream = await this.OV.getUserMedia({audioSource: undefined, videoSource: undefined});
+			mediaStream.getTracks().forEach((track) => track.stop());
 			return this.OV.getDevices();
 		} catch (e) {
 			e.name === 'DEVICE_ACCESS_DENIED' ? this.log.e(e.name + ': Access to media devices was not allowed') : this.log.e(e);
