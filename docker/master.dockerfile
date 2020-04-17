@@ -5,15 +5,29 @@ WORKDIR /openvidu-call
 RUN apk update && \
     apk add wget unzip
 
+    # Download openvidu-call from master
 RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
     unzip openvidu-call.zip && \
     rm openvidu-call.zip && \
-    mv openvidu-call-master/front/openvidu-call/* . && \
-    rm -rf package-lock.json
+    mv openvidu-call-master/front/openvidu-call/ . && \
+    rm -rf openvidu-call/package-lock.json && \
+    rm -rf openvidu-call-master && \
+    # Download openvidu-browser from master
+    wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-browser.zip && \
+    unzip  openvidu-browser.zip openvidu-master/openvidu-browser/* && \
+    rm openvidu-browser.zip && \
+    mv openvidu-master/openvidu-browser/ . && \
+    rm -rf openvidu-master
 
-RUN npm install && \
-    npm run build-prod && \
-    rm -rf -v !"dist"
+    # Compile openvidu-browser, install it in openvidu-call and build it for production
+RUN npm install --prefix openvidu-browser && \
+    npm run build --prefix openvidu-browser/ && \
+    npm pack openvidu-browser/ && \
+    npm i --prefix openvidu-call openvidu-browser*.tgz && \
+    npm install --prefix openvidu-call && \
+    npm run build-prod --prefix openvidu-call && \
+    mv openvidu-call/dist . && \
+    rm -rf -v !("dist")
 
 # Serving OpenVidu Call with Nginx
 FROM nginx:1.17.9
