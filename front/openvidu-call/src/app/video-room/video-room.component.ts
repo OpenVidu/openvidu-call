@@ -319,26 +319,25 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 
 		webcamToken = webcamToken ? webcamToken : await this.getToken();
-		// Only connect screen if screen sharing feature is available
-		if (!screenToken) {
-			if (this.ovSettings?.hasScreenSharing()) {
-				screenToken = await this.getToken();
+		// Only get screentoken if screen sharing feature is available
+		screenToken = !screenToken && this.ovSettings?.hasScreenSharing() && await this.getToken();
+
+		if (webcamToken || screenToken) {
+			await this.connectBothSessions(webcamToken, screenToken);
+
+			if (this.oVSessionService.areBothConnected()) {
+				this.oVSessionService.publishWebcam();
+				this.oVSessionService.publishScreen();
+			} else if (this.oVSessionService.isOnlyScreenConnected()) {
+				this.oVSessionService.publishScreen();
+			} else {
+				this.oVSessionService.publishWebcam();
 			}
-		}
-		await this.connectBothSessions(webcamToken, screenToken);
+			// !Deprecated
+			this._joinSession.emit();
 
-		if (this.oVSessionService.areBothConnected()) {
-			this.oVSessionService.publishWebcam();
-			this.oVSessionService.publishScreen();
-		} else if (this.oVSessionService.isOnlyScreenConnected()) {
-			this.oVSessionService.publishScreen();
-		} else {
-			this.oVSessionService.publishWebcam();
+			this.updateOpenViduLayout();
 		}
-		// !Deprecated
-		this._joinSession.emit();
-
-		this.updateOpenViduLayout();
 	}
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
