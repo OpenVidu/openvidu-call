@@ -108,8 +108,20 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.leaveSession();
+		this.remoteUsersService.clean();
+		this.session = null;
+		this.sessionScreen = null;
+		this.localUsers = [];
+		this.remoteUsers = [];
+		this.openviduLayout = null;
+		if (this.oVUsersSubscription) {
+			this.oVUsersSubscription.unsubscribe();
+		}
+		if (this.remoteUsersSubscription) {
+			this.remoteUsersSubscription.unsubscribe();
+		}
 	}
+
 	onConfigRoomJoin() {
 		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
 		this.hasAudioDevices = this.oVDevicesService.hasAudioDeviceAvailable();
@@ -144,18 +156,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	leaveSession() {
 		this.log.d('Leaving session...');
 		this.oVSessionService.disconnect();
-		if (this.oVUsersSubscription) {
-			this.oVUsersSubscription.unsubscribe();
-		}
-		if (this.remoteUsersSubscription) {
-			this.remoteUsersSubscription.unsubscribe();
-		}
-		this.remoteUsersService.clean();
-		this.session = null;
-		this.sessionScreen = null;
-		this.localUsers = [];
-		this.remoteUsers = [];
-		this.openviduLayout = null;
 		this.router.navigate(['']);
 		this._leaveSession.emit();
 	}

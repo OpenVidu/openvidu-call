@@ -233,7 +233,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	close() {
-		this.oVSessionService.destroyUsers();
 		this.leaveSession.emit();
 	}
 

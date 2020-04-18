@@ -209,26 +209,30 @@ export class OpenViduSessionService {
 	destroyUsers() {
 		this.destryoScreenUser();
 		this.destryoWebcamUser();
-		// Initial state
-		this._OVUsers.next([this.webcamUser]);
 	}
 
 	disconnect() {
-		if (this.screenSession) {
-			this.screenSession.disconnect();
-			this.stopScreenTracks();
-			this.screenSession = null;
-		}
 		if (this.webcamSession) {
+			this.log.d('Disconnecting screen session');
 			this.webcamSession.disconnect();
 			this.stopWebcamTracks();
 			this.webcamSession = null;
 		}
+		if (this.screenSession) {
+			// Timeout neccessary to avoid race conditin error:
+			// OpenVidu Error Remote connection unknown when 'onParticipantLeft'. Existing remote connections: []
+			setTimeout(() => {
+				this.log.d('Disconnecting screen session');
+				this.screenSession.disconnect();
+				this.stopScreenTracks();
+				this.screenSession = null;
+			}, 50);
+		}
+		this.destroyUsers();
 		this.screenUser = null;
 		this.videoSource = undefined;
 		this.audioSource = undefined;
 		this.sessionId = '';
-
 		this.webcamUser = new UserModel();
 		this._OVUsers.next([this.webcamUser]);
 	}
