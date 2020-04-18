@@ -66,7 +66,7 @@ export class UserModel {
 	 * Return the connection ID
 	 */
 	public getConnectionId(): string {
-		return this.connectionId;
+		return this.streamManager?.stream?.connection?.connectionId;
 	}
 
 	/**
@@ -124,14 +124,6 @@ export class UserModel {
 	 */
 	public setStreamManager(streamManager: StreamManager) {
 		this.streamManager = streamManager;
-	}
-
-	/**
-	 * Set the connectionId value
-	 * @param conecctionId value of connectionId
-	 */
-	public setConnectionId(conecctionId: string) {
-		this.connectionId = conecctionId;
 	}
 
 	/**

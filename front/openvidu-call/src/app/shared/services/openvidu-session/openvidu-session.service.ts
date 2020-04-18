@@ -68,10 +68,6 @@ export class OpenViduSessionService {
 	}
 
 	async publishWebcam(): Promise<any> {
-		if (!this.webcamUser.getConnectionId()) {
-			this.webcamUser.setConnectionId(this.webcamSession.connection?.connectionId);
-			// this.webcamUser.setLocalConnectionId(this.webcamSession.connection.connectionId);
-		}
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
 			if (!!publisher) {
@@ -83,9 +79,6 @@ export class OpenViduSessionService {
 	}
 
 	async publishScreen(): Promise<any> {
-		if (!this.screenUser.getConnectionId()) {
-			this.screenUser.setConnectionId(this.screenSession.connection.connectionId);
-		}
 		if (this.screenSession.capabilities.publish) {
 			const publisher = <Publisher>this.screenUser.getStreamManager();
 			if (!!publisher) {
