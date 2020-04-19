@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 
 @Component({
 	selector: 'app-dashboard',
@@ -14,8 +15,10 @@ export class DashboardComponent implements OnInit {
 	constructor(private router: Router, public formBuilder: FormBuilder) {}
 
 	ngOnInit() {
+
+		const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', });
 		this.roomForm = this.formBuilder.group({
-			roomName: ['', Validators.compose([Validators.required])]
+			roomName: [randomName, Validators.compose([Validators.required])]
 		});
 	}
 
