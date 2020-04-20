@@ -320,7 +320,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 		webcamToken = webcamToken ? webcamToken : await this.getToken();
 		// Only get screentoken if screen sharing feature is available
-		screenToken = !screenToken && this.ovSettings?.hasScreenSharing() && await this.getToken();
+		if (!screenToken && this.ovSettings?.hasScreenSharing()) {
+			screenToken = await this.getToken();
+		}
 
 		// Connect only if exist a token
 		if (webcamToken || screenToken) {

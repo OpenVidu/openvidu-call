@@ -25,11 +25,12 @@ export class NetworkService {
 	}
 
 	async getToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
-		if (!!openviduServerUrl && openviduSecret) {
+		if (!!openviduServerUrl && !!openviduSecret) {
 			const _sessionId = await this.createSession(sessionId, openviduServerUrl, openviduSecret);
 			return await this.createToken(_sessionId, openviduServerUrl, openviduSecret);
 		}
-		return (await this.http.post<any>('/call/', {sessionId}).toPromise()).token;
+		this.log.d('Getting token from backend');
+		return await this.http.post<any>('/call', {sessionId}).toPromise();
 	}
 
 	createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
