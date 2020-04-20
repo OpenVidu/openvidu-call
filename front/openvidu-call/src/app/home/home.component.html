@@ -12,16 +12,22 @@
 			<img class="ovLogo" alt="OpenVidu Logo" src="assets/images/openvidu_vert_white_bg_trans_cropped.png" />
 			<h4>Videoconference rooms in one click</h4>
 		</div>
-
 		<div class="formContainer">
+			<div class="roomError" *ngIf="roomForm.hasError('required')">
+				Room name is <strong>required</strong>
+			</div>
+			<div class="roomError" *ngIf="roomForm.hasError('minlength')">
+				Room name is <strong>too short!</strong>
+			</div>
 			<form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
 				<div class="joinForm">
-					<input matInput class="inputForm" type="text" formControlName="roomName"  autocomplete="off" />
+					<input matInput class="inputForm" type="text" [formControl]="roomForm"  autocomplete="off" />
 					<input type="submit" class="joinButton" value="Join" />
 				</div>
 			</form>
 		</div>
 	</div>
+
 
 	<mat-toolbar class="footer">
 		<span>

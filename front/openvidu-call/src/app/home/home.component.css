@@ -11,6 +11,11 @@
   background-color: transparent;
   color: #ffffff;
 }
+
+.roomError{
+  font-size: 16px;
+  color: #c01515;
+}
 .footer {
   position: absolute;
   bottom: 0;

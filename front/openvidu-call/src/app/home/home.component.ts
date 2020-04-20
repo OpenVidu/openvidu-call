@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 
@@ -9,22 +9,20 @@ import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-
 	styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-	public roomForm: FormGroup;
+	public roomForm: FormControl;
 	public version = require('../../../package.json').version;
 
 	constructor(private router: Router, public formBuilder: FormBuilder) {}
 
 	ngOnInit() {
-
 		const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', });
-		this.roomForm = this.formBuilder.group({
-			roomName: [randomName, [Validators.minLength(4), Validators.required]]
-		});
+		this.roomForm = new FormControl(randomName, [Validators.minLength(4), Validators.required]);
 	}
 
 	public goToVideoCall() {
 		if (this.roomForm.valid) {
-			const roomName = this.roomForm.value.roomName.replace(/ /g, '-'); // replace white spaces by -
+			const roomName = this.roomForm.value.replace(/ /g, '-'); // replace white spaces by -
+			this.roomForm.setValue(roomName);
 			this.router.navigate(['/', roomName]);
 		}
 	}
