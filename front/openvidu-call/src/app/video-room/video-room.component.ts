@@ -251,15 +251,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	toggleSpeakerLayout() {
 		if (!this.oVSessionService.isScreenShareEnabled()) {
+			this.isAutoLayout = !this.isAutoLayout;
+
 			this.log.d('Automatic Layout ', this.isAutoLayout ? 'Disabled' : 'Enabled');
 			if (this.isAutoLayout) {
-				this.log.d('Unsubscribe to speach detection');
-				this.session.off('publisherStartSpeaking');
-				this.isAutoLayout = !this.isAutoLayout;
+				this.subscribeToSpeachDetection();
 				return;
 			}
-			this.subscribeToSpeachDetection();
-			this.isAutoLayout = !this.isAutoLayout;
+			this.log.d('Unsubscribe to speach detection');
+			this.session.off('publisherStartSpeaking');
+			this.resetAllBigElements();
+			this.updateOpenViduLayout();
 			return;
 		}
 		this.log.w('Screen is enabled. Speach detection has been rejected');
