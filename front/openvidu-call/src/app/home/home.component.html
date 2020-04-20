@@ -1,0 +1,45 @@
+<div class="section1">
+	<mat-toolbar id="header">
+		<a [routerLink]="['']">
+			<img id="header_img" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png" />
+		</a>
+		<div class="ovVersion">
+			<span>{{ version }}</span>
+		</div>
+	</mat-toolbar>
+	<div class="container">
+		<div class="ovInfo">
+			<img class="ovLogo" alt="OpenVidu Logo" src="assets/images/openvidu_vert_white_bg_trans_cropped.png" />
+			<h4>Videoconference rooms in one click</h4>
+		</div>
+
+		<div class="formContainer">
+			<form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
+				<div class="joinForm">
+					<input matInput class="inputForm" type="text" formControlName="roomName"  autocomplete="off" />
+					<input type="submit" class="joinButton" value="Join" />
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<mat-toolbar class="footer">
+		<span>
+			Photo by
+			<a
+				rel="noopener noreferrer"
+				target="_blank"
+				href="https://unsplash.com/@danielleone?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+			>
+				Daniel Leone
+			</a>
+			on
+			<a
+				href="https://unsplash.com/s/photos/mountain?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+				target="_blank"
+			>
+				Unsplash
+			</a></span
+		>
+	</mat-toolbar>
+</div>

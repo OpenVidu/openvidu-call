@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 
 @Component({
-	selector: 'app-dashboard',
-	templateUrl: './dashboard.component.html',
-	styleUrls: ['./dashboard.component.css']
+	selector: 'app-home',
+	templateUrl: './home.component.html',
+	styleUrls: ['./home.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class HomeComponent implements OnInit {
 	public roomForm: FormGroup;
 	public version = require('../../../package.json').version;
 
@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
 
 		const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', });
 		this.roomForm = this.formBuilder.group({
-			roomName: [randomName, Validators.compose([Validators.required])]
+			roomName: [randomName, [Validators.minLength(4), Validators.required]]
 		});
 	}
 

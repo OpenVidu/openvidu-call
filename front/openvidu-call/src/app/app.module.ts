@@ -49,7 +49,7 @@ import { ToolbarLogoComponent } from './shared/components/toolbar/logo.component
 import { RoomConfigComponent } from './shared/components/room-config/room-config.component';
 import { WebComponentComponent } from './web-component/web-component.component';
 import { VideoRoomComponent } from './video-room/video-room.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { HomeComponent } from './home/home.component';
 import { AppComponent } from './app.component';
 
 // Services
@@ -63,7 +63,7 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 	declarations: [
 		AppComponent,
 		VideoRoomComponent,
-		DashboardComponent,
+		HomeComponent,
 		StreamComponent,
 		ChatComponent,
 		DialogExtensionComponent,
