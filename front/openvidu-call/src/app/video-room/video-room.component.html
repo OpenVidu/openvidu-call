@@ -65,7 +65,8 @@
           <div
             class="OT_root OT_publisher custom-class"
             id="localUser"
-            *ngFor="let localUser of localUsersFiltered"
+            *ngFor="let localUser of localUsers"
+            [style.display]="!localUser.streamManager?.stream?.videoActive ? 'none' : 'block'"
           >
           <!-- Only webcam video will be shown if webcamera is available -->
             <stream-component
@@ -78,9 +79,10 @@
           </div>
 
           <div
-            *ngFor="let user of this.remoteUsersFiltered"
+            *ngFor="let user of remoteUsers"
             class="OT_root OT_publisher custom-class"
             id="remoteUsers"
+            [style.display]="!user.streamManager?.stream?.videoActive ? 'none' : 'block'"
           >
             <stream-component
               [user]="user"

@@ -71,8 +71,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	isAutoLayout = false;
 	hasVideoDevices: boolean;
 	hasAudioDevices: boolean;
-	localUsersFiltered: UserModel[];
-	remoteUsersFiltered: UserModel[];
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 	private remoteUsersSubscription: Subscription;
@@ -537,30 +535,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private subscribeToLocalUsers() {
 		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users) => {
 			this.localUsers = users;
-			// Showing only the users with videoDevice and video active
-			this.filterLocalUsers();
+			this.updateOpenViduLayout();
 		});
-	}
-
-	private filterLocalUsers() {
-		this.localUsersFiltered = this.localUsers.filter((user) => {
-			return (user.isCamera() && this.hasVideoDevices && user.isVideoActive()) || user.isScreen();
-		});
-		this.updateOpenViduLayout();
 	}
 
 	private subscribeToRemoteUsers() {
 		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users) => {
 			this.remoteUsers = users;
-			// Showing only the users with video active
-			this.filterRemoteUsers();
+			this.updateOpenViduLayout();
 		});
-	}
-
-	private filterRemoteUsers() {
-		this.remoteUsersFiltered = this.remoteUsers.filter((user) => {
-			return (user.isCamera() && user.isVideoActive()) || user.isScreen();
-		});
-		this.updateOpenViduLayout();
 	}
 }
