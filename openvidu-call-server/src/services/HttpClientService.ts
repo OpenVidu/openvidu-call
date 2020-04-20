@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import https from 'https';
 import btoa from 'btoa';
+import { DEV_MODE } from '../config';
 
 export class HttpClientService {
 
@@ -8,17 +9,26 @@ export class HttpClientService {
 
 	constructor(){}
 
-	public post(body: string, openviduUrl: string, openviduSecret: string): Promise<AxiosRequestConfig> {
+	public async post(body: string, openviduUrl: string, openviduSecret: string): Promise<any> {
 
-		this.options.httpsAgent = new https.Agent({
-			rejectUnauthorized: false
-		});
+		if(DEV_MODE){
+			this.options.httpsAgent = new https.Agent({
+				rejectUnauthorized: false
+			});
+		}
+
 		this.options.headers = {
 			Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
 		};
 
-        return axios.post<string>(openviduUrl, body, this.options);
+		try {
+			const response = await axios.post<any>(openviduUrl, body, this.options);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			throw error;
+		}
     }
 
 }

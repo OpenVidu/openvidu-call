@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { HttpClientService } from './HttpClientService';
 import bunyan from 'bunyan';
 
@@ -12,20 +11,21 @@ export class OpenViduService {
         this.httpClientService = new HttpClientService();
     }
 
-	public createSession(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<AxiosRequestConfig> {
+	public async createSession(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<any> {
         const url = openviduUrl + '/api/sessions';
         log.info("Requesting session to ", url);
         const body: string = JSON.stringify({ customSessionId: sessionId});
 
-        return this.httpClientService.post(body, url, openviduSecret)
+        const response = await this.httpClientService.post(body, url, openviduSecret);
+        return response;
 	}
 
-	public createToken(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<AxiosRequestConfig> {
+	public async createToken(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<any> {
 		const url = openviduUrl + '/api/tokens';
         log.info("Requesting token to ", url);
-		const body: string = JSON.stringify({ session: sessionId});
+        const body: string = JSON.stringify({ session: sessionId });
 
-        return this.httpClientService.post(body, url, openviduSecret)
+        const response = await this.httpClientService.post(body, url, openviduSecret);
+        return response;
     }
-
 }
