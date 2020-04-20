@@ -159,7 +159,7 @@ export class OpenViduSessionService {
 		}
 	}
 
-	async replaceTrack(videoSource: string, audioSource: string) {
+	async replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true) {
 		let track: MediaStreamTrack;
 		if (!!videoSource) {
 			this.log.d('Replacing video track ' + videoSource);
@@ -175,7 +175,7 @@ export class OpenViduSessionService {
 			this.audioSource,
 			this.hasWebcamVideoActive(),
 			this.hasWebcamAudioActive(),
-			true
+			mirror
 		);
 
 		this.stopWebcamTracks();

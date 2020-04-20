@@ -38,8 +38,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	micSelected: IDevice;
 	isVideoActive = true;
 	isAudioActive = true;
-	isScreenShareActive = false;
-	volumeValue = 100;
+	// volumeValue = 100;
 	showDialogExtension = false;
 
 	oVUsersSubscription: Subscription;
@@ -102,7 +101,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (!!videoSource) {
 			// Is New deviceId different from the old one?
 			if (this.oVDevicesService.needUpdateVideoTrack(videoSource)) {
-				await this.oVSessionService.replaceTrack(videoSource, null);
+				const mirror = this.oVDevicesService.cameraNeedsMirror(videoSource);
+				await this.oVSessionService.replaceTrack(videoSource, null, mirror);
 				this.oVDevicesService.setCamSelected(videoSource);
 			}
 			// Publish Webcam

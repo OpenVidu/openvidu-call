@@ -129,6 +129,10 @@ export class DevicesService {
 		return audioDevice?.length > 0;
 	}
 
+	cameraNeedsMirror(VideoSource: string): boolean {
+		return this.getCameraByVideoSource(VideoSource).type === CameraType.FRONT;
+	}
+
 	private async getDevices(): Promise<Device[]> {
 		try {
 			// Wait until media devices permissions are accepted or rejected
