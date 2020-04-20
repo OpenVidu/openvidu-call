@@ -3,6 +3,7 @@ import { OpenVidu, Device, Publisher } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
 import { ILogger } from '../../types/logger-type';
 import { LoggerService } from '../logger/logger.service';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -18,7 +19,7 @@ export class DevicesService {
 	private micSelected: IDevice;
 	private log: ILogger;
 
-	constructor(private loggerSrv: LoggerService) {
+	constructor(private loggerSrv: LoggerService, private utilSrv: UtilsService) {
 		this.log = this.loggerSrv.get('DevicesService');
 		this.OV = new OpenVidu();
 	}
@@ -51,18 +52,28 @@ export class DevicesService {
 		const FIRST_POSITION = 0;
 		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
 		videoDevices.forEach((device: any, index: number) => {
-			const element: IDevice = {
+			const myDevice: IDevice = {
 				label: device.label,
 				device: device.deviceId,
 				type:  CameraType.BACK
 			};
-			// We assume first device is front camera
-			if (index === FIRST_POSITION) {
-				element.type = CameraType.FRONT;
-				this.camSelected = element;
+			if (this.utilSrv.isAndroid() || this.utilSrv.isIos()) {
+				// We assume front video device has 'front' in its label in Mobile devices
+				if (myDevice.label.toLowerCase().includes(CameraType.FRONT.toLowerCase())) {
+					myDevice.type = CameraType.FRONT;
+					this.camSelected = myDevice;
+				}
+			} else {
+				// We assume first device is web camera in Browser Desktop
+				if (index === FIRST_POSITION) {
+					myDevice.type = CameraType.FRONT;
+					this.camSelected = myDevice;
+				}
 			}
-			this.cameras.push(element);
+
+			this.cameras.push(myDevice);
 		});
+		this.log.d('Camera selected', this.camSelected);
 	}
 
 	getCamSelected(): IDevice {

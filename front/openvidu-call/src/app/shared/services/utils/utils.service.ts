@@ -83,6 +83,14 @@ export class UtilsService {
 		return /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
 	}
 
+	isAndroid(): boolean {
+		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
+	}
+
+	isIos(): boolean {
+		return /\b(\w*iOS\w*)\b/.test(navigator.userAgent);
+	}
+
 	showErrorMessage(header: string, message: string, disableClose: boolean = false) {
 		this.dialogRef = this.dialog.open(DialogErrorComponent, {
 			data: { header: header, message: message },
