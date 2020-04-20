@@ -344,6 +344,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
 		try {
+			console.log(webcamToken, screenToken)
 			await this.oVSessionService.connectWebcamSession(webcamToken);
 			await this.oVSessionService.connectScreenSession(screenToken);
 
@@ -352,8 +353,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			});
 		} catch (error) {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
-			this.log.d('There was an error connecting to the session:', error.code, error.message);
-			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error.message);
+			this.log.e('There was an error connecting to the session:', error.code, error.message);
+			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error?.error || error?.message);
 		}
 	}
 
@@ -501,8 +502,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			);
 		} catch (error) {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
-			this.log.e('There was an error getting the token:', error.code, error.message);
-			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.message);
+			this.log.e('There was an error getting the token:', error.status, error.message);
+			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.error || error.message);
 		}
 	}
 

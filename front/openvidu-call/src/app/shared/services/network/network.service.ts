@@ -6,13 +6,14 @@ import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { OvSettingsModel } from '../../models/ovSettings';
+import { LocationStrategy } from '@angular/common';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NetworkService {
-	private URL_OV = 'https://' + location.hostname + ':4443';
-	private MY_SECRET = 'MY_SECRET';
+	// private URL_OV = 'https://' + location.hostname + ':4443';
+	// private MY_SECRET = 'MY_SECRET';
 	private SETTINGS_FILE_NAME = 'ov-settings.json';
 
 	private ovSettings: OvSettingsModel = new OvSettingsModel();
@@ -23,12 +24,13 @@ export class NetworkService {
 		this.log = this.loggSrv.get('NetworkService');
 	}
 
-	async getToken(mySessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
-		const ov_url = !!openviduServerUrl ? openviduServerUrl : this.URL_OV;
-		const ov_secret = !!openviduSecret ? openviduSecret : this.MY_SECRET;
-		const sessionId = await this.createSession(mySessionId, ov_url, ov_secret);
-		const token = await this.createToken(sessionId, ov_url, ov_secret);
-		return token;
+	async getToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
+		if (!!openviduServerUrl && !!openviduSecret) {
+			const _sessionId = await this.createSession(sessionId, openviduServerUrl, openviduSecret);
+			return await this.createToken(_sessionId, openviduServerUrl, openviduSecret);
+		}
+		this.log.d('Getting token from backend');
+		return await this.http.post<any>('/call', {sessionId}).toPromise();
 	}
 
 	createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
@@ -87,23 +89,10 @@ export class NetworkService {
 					if (data.openviduSettings) {
 						this.ovSettings.set(data.openviduSettings);
 					}
-					if (data.openviduCredentials) {
-						this.URL_OV = data.openviduCredentials.openvidu_url ? data.openviduCredentials.openvidu_url : this.URL_OV;
-						this.MY_SECRET = data.openviduCredentials.openvidu_secret
-							? data.openviduCredentials.openvidu_secret
-							: this.MY_SECRET;
-					}
-					this.log.d('URL Environment', this.URL_OV);
 					resolve(this.ovSettings);
 				},
 				error => {
 					this.log.w('Credentials file not found ');
-					if (environment.openvidu_url) {
-						this.log.w('Getting from environment ');
-						this.URL_OV = environment.openvidu_url;
-						this.MY_SECRET = environment.openvidu_secret;
-					}
-					this.log.d('URL Environment', this.URL_OV);
 					resolve(this.ovSettings);
 				}
 			);
