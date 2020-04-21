@@ -52,6 +52,7 @@ export class UserModel {
 	 * Return `true` if audio track is active and `false` if audio track is muted
 	 */
 	public isAudioActive(): boolean {
+		// console.log("isAudioActive");
 		return (<Publisher>this.streamManager)?.stream?.audioActive;
 	}
 
@@ -59,6 +60,7 @@ export class UserModel {
 	 * Return `true` if video track is active and `false` if video track is muted
 	 */
 	public isVideoActive(): boolean {
+		// console.log("isVideoActive");
 		return (<Publisher>this.streamManager)?.stream?.videoActive;
 	}
 
@@ -108,6 +110,7 @@ export class UserModel {
 	 * Return `true` if user has a screen role and `false` if not
 	 */
 	public isScreen(): boolean {
+		// console.log("isScreen");
 		return (<Publisher>this.streamManager)?.stream?.typeOfVideo === VideoType.SCREEN;
 	}
 
@@ -115,6 +118,7 @@ export class UserModel {
 	 * Return `true` if user has a camera role and `false` if not
 	 */
 	public isCamera(): boolean {
+		// console.log("CCC");
 		return (<Publisher>this.streamManager)?.stream?.typeOfVideo === VideoType.CAMERA || (this.isLocal() && !this.isScreen());
 	}
 
