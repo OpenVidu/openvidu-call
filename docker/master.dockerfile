@@ -6,14 +6,16 @@ RUN apk update && \
     apk add wget unzip
 
     # Download openvidu-call from master
-RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
+RUN wget "https://github.com/OpenVidu/openvidu-call/archive/ov_backend.zip" -O openvidu-call.zip && \
     unzip openvidu-call.zip && \
     rm openvidu-call.zip && \
-    mv openvidu-call-master/front/openvidu-call/ . && \
+    mv openvidu-call-ov_backend/openvidu-call-front/ . && \
+    mv openvidu-call-ov_backend/openvidu-call-back/ . && \
     rm -rf openvidu-call/package-lock.json && \
-    rm -rf openvidu-call-master && \
+    rm -rf openvidu-call-ov_backend
+
     # Download openvidu-browser from master
-    wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-browser.zip && \
+RUN wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-browser.zip && \
     unzip  openvidu-browser.zip openvidu-master/openvidu-browser/* && \
     rm openvidu-browser.zip && \
     mv openvidu-master/openvidu-browser/ . && \
@@ -23,22 +25,16 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openv
 RUN npm install --prefix openvidu-browser && \
     npm run build --prefix openvidu-browser/ && \
     npm pack openvidu-browser/ && \
-    npm i --prefix openvidu-call openvidu-browser*.tgz && \
-    npm install --prefix openvidu-call && \
-    npm run build-prod --prefix openvidu-call && \
-    mv openvidu-call/dist . && \
-    rm -rf -v !"dist"
+    npm install --prefix openvidu-call-front openvidu-browser*.tgz && \
+    npm install --prefix openvidu-call-front && \
+    npm run build-prod --prefix openvidu-call-front && \
+    npm install --prefix openvidu-call-back && \
+    npm run build --prefix openvidu-call-back && \
+    mv openvidu-call-back/dist openvidu-call-back/node_modules openvidu-call-back/public . && \
+    rm -rf openvidu-**
 
-# Serving OpenVidu Call with Nginx
-FROM nginx:1.17.9
-
-# Install openvidu-call
-RUN mkdir -p /var/www/openvidu-call
-COPY --from=build /openvidu-call/dist/openvidu-call/ /var/www/openvidu-call
-RUN chown -R www-data:www-data /var/www/openvidu-call && ls /var/www/openvidu-call
-
-# Nginx conf
-COPY ./openvidu-call.conf /etc/nginx/conf.d/default.conf
+RUN mv /openvidu-call /opt/
+RUN ls /opt/openvidu-call/
 
 # Entrypoint
 COPY ./entrypoint.sh /usr/local/bin

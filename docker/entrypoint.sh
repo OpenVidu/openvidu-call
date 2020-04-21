@@ -5,30 +5,6 @@
 
 echo "OPENVIDU URL: ${OPENVIDU_URL}"
 echo "OPENVIDU SECRET: ${OPENVIDU_SECRET}"
+echo "OPENVIDU CALL SERVER PORT: ${SERVER_PORT}"
 
-# openvidu-call configuration
-cat>/var/www/openvidu-call/ov-settings.json<<EOF
-{
-        "openviduSettings": {
-                "chat": true,
-                "autopublish": false,
-                "toolbarButtons": {
-                        "audio": true,
-                        "video": true,
-                        "screenShare": true,
-                        "fullscreen": true,
-                        "layoutSpeaking": true,
-                        "exit": true
-                }
-        },
-        "openviduCredentials": {
-                "openvidu_url": "${OPENVIDU_URL}",
-                "openvidu_secret": "${OPENVIDU_SECRET}"
-        }
-}
-EOF
-
-chown www-data:www-data /var/www/openvidu-call/ov-settings.json
-service nginx restart
-
-tail -f /var/log/nginx/*.log
+OPENVIDU_URL=${OPENVIDU_URL} OPENVIDU_SECRET=${OPENVIDU_SECRET} SERVER_PORT=${SERVER_PORT} node /opt/openvidu-call/dist/app.js
