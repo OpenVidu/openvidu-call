@@ -26,7 +26,6 @@ export class HttpClientService {
 			const response = await axios.post<any>(openviduUrl, body, this.options);
 			return response.data;
 		} catch (error) {
-			console.log(error);
 			throw error;
 		}
     }

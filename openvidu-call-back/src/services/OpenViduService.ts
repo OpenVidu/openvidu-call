@@ -16,8 +16,7 @@ export class OpenViduService {
         log.info("Requesting session to ", url);
         const body: string = JSON.stringify({ customSessionId: sessionId});
 
-        const response = await this.httpClientService.post(body, url, openviduSecret);
-        return response;
+        return await this.httpClientService.post(body, url, openviduSecret);
 	}
 
 	public async createToken(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<any> {
@@ -25,7 +24,6 @@ export class OpenViduService {
         log.info("Requesting token to ", url);
         const body: string = JSON.stringify({ session: sessionId });
 
-        const response = await this.httpClientService.post(body, url, openviduSecret);
-        return response;
+        return await this.httpClientService.post(body, url, openviduSecret);
     }
 }
