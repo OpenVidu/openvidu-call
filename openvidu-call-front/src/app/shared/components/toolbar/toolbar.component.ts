@@ -33,7 +33,7 @@ export class ToolbarComponent implements OnInit {
 	@Output() chatButtonClicked = new EventEmitter<any>();
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
-	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/front/openvidu-call/src/assets/images/';
+	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/openvidu-call-front/src/assets/images/';
 
 	constructor(private utilsSrv: UtilsService) {}
 
