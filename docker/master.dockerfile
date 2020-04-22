@@ -32,7 +32,7 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openv
     # Install openvidu-call-back dependencies and build it for production
     npm i --prefix openvidu-call-back && \
     npm run build --prefix openvidu-call-back && \
-    rm -rf -v !"openvidu-call-back" && \
+    rm -rf openvidu-call-front && \
     mv openvidu-call-back /opt/openvidu-call/
 
 # Entrypoint
