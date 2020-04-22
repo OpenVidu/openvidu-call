@@ -5,7 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "test": "jest",
-    "start": "node -r dotenv/config dist/app.js",
+    "start": "nodemon -r dotenv/config dist/app.js",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.prod.json",
     "dev": "DEV_MODE=true nodemon src/app.ts"
   },
