@@ -11,7 +11,6 @@ import { ILogger } from '../../types/logger-type';
 	providedIn: 'root'
 })
 export class OpenViduSessionService {
-
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -29,8 +28,8 @@ export class OpenViduSessionService {
 	private sessionId = '';
 	private log: ILogger;
 
-	private screenMediaStream: MediaStream;
-	private webcamMediaStream: MediaStream;
+	private screenMediaStream: MediaStream = null;
+	private webcamMediaStream: MediaStream = null;
 
 	constructor(private loggSrv: LoggerService) {
 		this.log = this.loggSrv.get('OpenViduSessionService');
@@ -71,9 +70,8 @@ export class OpenViduSessionService {
 		if (this.webcamSession.capabilities.publish) {
 			const publisher = <Publisher>this.webcamUser.getStreamManager();
 			if (!!publisher) {
-				await this.webcamSession.publish(publisher);
+				return await this.webcamSession.publish(publisher);
 			}
-			return;
 		}
 		this.log.w('User cannot publish');
 	}
@@ -84,7 +82,6 @@ export class OpenViduSessionService {
 			if (!!publisher) {
 				return await this.screenSession.publish(publisher);
 			}
-			return;
 		}
 		this.log.w('User cannot publish');
 	}
@@ -160,28 +157,34 @@ export class OpenViduSessionService {
 	}
 
 	async replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true) {
-		let track: MediaStreamTrack;
 		if (!!videoSource) {
 			this.log.d('Replacing video track ' + videoSource);
 			this.videoSource = videoSource;
+			this.stopVideoTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
 		}
 		if (!!audioSource) {
-			this.log.d('Replacing audio track ' + videoSource);
+			this.log.d('Replacing audio track ' + audioSource);
 			this.audioSource = audioSource;
+			this.stopAudioTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
 		}
-
 		const properties = this.createProperties(
-			this.videoSource,
-			this.audioSource,
+			videoSource,
+			audioSource,
 			this.hasWebcamVideoActive(),
 			this.hasWebcamAudioActive(),
 			mirror
 		);
 
-		this.stopWebcamTracks();
 		this.webcamMediaStream = await this.OV.getUserMedia(properties);
-		track = !!videoSource ? this.webcamMediaStream.getVideoTracks()[0] : this.webcamMediaStream.getAudioTracks()[0];
-		await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
+		const track: MediaStreamTrack = !!videoSource
+			? this.webcamMediaStream.getVideoTracks()[0]
+			: this.webcamMediaStream.getAudioTracks()[0];
+
+		try {
+			await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
+		} catch (error) {
+			this.log.e('Error replacing track ', error);
+		}
 	}
 
 	async replaceScreenTrack() {
@@ -196,7 +199,7 @@ export class OpenViduSessionService {
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		this.log.d('init screen properties', properties);
-		return  this.initPublisher(targetElement, properties);
+		return this.initPublisher(targetElement, properties);
 	}
 
 	destroyUsers() {
@@ -351,19 +354,34 @@ export class OpenViduSessionService {
 		}
 	}
 
-
 	private stopScreenTracks() {
 		if (this.screenMediaStream) {
-			this.screenMediaStream.getTracks().forEach(track => {
-				track.stop();
-			});
+			this.stopAudioTracks(this.screenMediaStream);
+			this.stopVideoTracks(this.screenMediaStream);
 		}
 	}
+
 	private stopWebcamTracks() {
 		if (this.webcamMediaStream) {
-			this.webcamMediaStream.getTracks().forEach(track => {
-				track.stop();
-			});
+			this.stopAudioTracks(this.webcamMediaStream);
+			this.stopVideoTracks(this.webcamMediaStream);
 		}
+	}
+
+	private stopAudioTracks(mediaStream: MediaStream) {
+		mediaStream?.getAudioTracks().forEach((track) => {
+			track.stop();
+
+			track.enabled = false;
+		});
+		this.webcamMediaStream?.getAudioTracks().forEach(track => {
+			track.stop();
+		});
+	}
+
+	private stopVideoTracks(mediaStream: MediaStream) {
+		mediaStream?.getVideoTracks().forEach((track) => {
+			track.stop();
+		});
 	}
 }

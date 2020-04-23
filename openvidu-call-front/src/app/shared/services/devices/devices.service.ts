@@ -10,11 +10,9 @@ import { UtilsService } from '../utils/utils.service';
 })
 export class DevicesService {
 	private OV: OpenVidu = null;
-	private devices: Device[] = [];
-
+	private devices: Device[];
 	private cameras: IDevice[] = [];
 	private microphones: IDevice[] = [];
-
 	private camSelected: IDevice;
 	private micSelected: IDevice;
 	private log: ILogger;
@@ -25,7 +23,7 @@ export class DevicesService {
 	}
 
 	async initDevices() {
-		this.devices = await this.getDevices();
+		this.devices = await this.OV.getDevices();
 		this.devices.length > 0 ? this.log.d('Devices found: ', this.devices) : this.log.w('No devices found!');
 		this.resetDevicesArray();
 		if (this.hasAudioDeviceAvailable()) {
@@ -33,17 +31,13 @@ export class DevicesService {
 		}
 		if (this.hasVideoDeviceAvailable()) {
 			this.initVideoDevices();
-			return;
 		}
 	}
 
 	private initAudioDevices() {
 		const audioDevices = this.devices.filter(device => device.kind === 'audioinput');
-		audioDevices.forEach((device: any) => {
-			// Don't add default device
-			if (device.deviceId !== 'default') {
-				this.microphones.push({ label: device.label, device: device.deviceId });
-			}
+		audioDevices.forEach((device: Device) => {
+			this.microphones.push({ label: device.label, device: device.deviceId });
 		});
 		this.micSelected = this.getMicSelected();
 	}
@@ -51,7 +45,7 @@ export class DevicesService {
 	private initVideoDevices() {
 		const FIRST_POSITION = 0;
 		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
-		videoDevices.forEach((device: any, index: number) => {
+		videoDevices.forEach((device: Device, index: number) => {
 			const myDevice: IDevice = {
 				label: device.label,
 				device: device.deviceId,
@@ -81,8 +75,7 @@ export class DevicesService {
 			this.log.w('No video devices found!');
 			return;
 		}
-		// ! TODO: check other way
-		return this.camSelected ? this.camSelected : this.cameras[0];
+		return this.camSelected || this.cameras[0];
 	}
 
 	getMicSelected(): IDevice {
@@ -90,16 +83,15 @@ export class DevicesService {
 			this.log.w('No audio devices found!');
 			return;
 		}
-		// ! TODO: check other way
-		return this.microphones[1] ? this.microphones[1] : this.microphones[0];
+		return this.micSelected || this.microphones[0];
 	}
 
-	setCamSelected(videoSource: any) {
-		this.camSelected = this.getCameraByVideoSource(videoSource);
+	setCamSelected(deviceField: any) {
+		this.camSelected = this.getCameraByDeviceField(deviceField);
 	}
 
-	setMicSelected(audioSource: any) {
-		this.micSelected = this.getMicrophoneByAudioSource(audioSource);
+	setMicSelected(deviceField: any) {
+		this.micSelected = this.getMicrophoneByDeviceField(deviceField);
 	}
 
 	deviceHasValue(deviceId): boolean {
@@ -114,12 +106,12 @@ export class DevicesService {
 		return this.micSelected.device !== newAudioSource;
 	}
 
-	getCameraByVideoSource(videoSource: any): IDevice {
-		return this.cameras.filter((opt: IDevice) => opt.device === videoSource)[0];
+	getCameraByDeviceField(deviceField: any): IDevice {
+		return this.cameras.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
 	}
 
-	getMicrophoneByAudioSource(audioSource: any): IDevice {
-		return this.microphones.filter((opt: IDevice) => opt.device === audioSource)[0];
+	getMicrophoneByDeviceField(deviceField: any): IDevice {
+		return this.microphones.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
 	}
 
 	getCameras(): IDevice[] {
@@ -131,29 +123,15 @@ export class DevicesService {
 	}
 
 	hasVideoDeviceAvailable(): boolean {
-		const videoDevices = this.devices?.filter(device => device.kind === 'videoinput');
-		return videoDevices?.length > 0;
+		return !!this.devices?.find(device => device.kind === 'videoinput');
 	}
 
 	hasAudioDeviceAvailable(): boolean {
-		const audioDevice = this.devices?.filter(device => device.kind === 'audioinput');
-		return audioDevice?.length > 0;
+		return !!this.devices?.find(device => device.kind === 'audioinput');
 	}
 
-	cameraNeedsMirror(VideoSource: string): boolean {
-		return this.getCameraByVideoSource(VideoSource).type === CameraType.FRONT;
-	}
-
-	private async getDevices(): Promise<Device[]> {
-		try {
-			// Wait until media devices permissions are accepted or rejected
-			const mediaStream = await this.OV.getUserMedia({audioSource: undefined, videoSource: undefined});
-			mediaStream.getTracks().forEach((track) => track.stop());
-			return this.OV.getDevices();
-		} catch (e) {
-			e.name === 'DEVICE_ACCESS_DENIED' ? this.log.e(e.name + ': Access to media devices was not allowed') : this.log.e(e);
-			return [];
-		}
+	cameraNeedsMirror(deviceField: string): boolean {
+		return this.getCameraByDeviceField(deviceField).type === CameraType.FRONT;
 	}
 
 	private resetDevicesArray() {

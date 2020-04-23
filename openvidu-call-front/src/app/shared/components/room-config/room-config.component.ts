@@ -52,9 +52,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	matcher = new NicknameMatcher();
 	hasVideoDevices: boolean;
 	hasAudioDevices: boolean;
-
+	showConfigCard: boolean;
 	private log: ILogger;
-
 
 	constructor(
 		private route: ActivatedRoute,
@@ -72,24 +71,18 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-		await this.initDevices();
-		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
-		this.hasAudioDevices = this.oVDevicesService.hasAudioDeviceAvailable();
 		this.subscribeToUsers();
 		this.setNicknameForm();
+		this.setRandomAvatar();
+		this.columns = window.innerWidth > 900 ? 2 : 1;
 		this.setSessionName();
-
+		await this.oVDevicesService.initDevices();
+		this.setDevicesInfo();
 		this.initwebcamPublisher();
 
-		if (this.ovSettings.isAutoPublish()) {
-			this.joinSession();
-		}
 		// publisher.on('streamAudioVolumeChange', (event: any) => {
 		//   this.volumeValue = Math.round(Math.abs(event.value.newValue));
 		// });
-
-		this.setRandomAvatar();
-		this.columns = window.innerWidth > 900 ? 2 : 1;
 	}
 
 	ngOnDestroy() {
@@ -247,8 +240,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private async initDevices() {
-		await this.oVDevicesService.initDevices();
+	private setDevicesInfo() {
+		this.hasVideoDevices = this.oVDevicesService.hasVideoDeviceAvailable();
+		this.hasAudioDevices = this.oVDevicesService.hasAudioDeviceAvailable();
 		this.microphones = this.oVDevicesService.getMicrophones();
 		this.cameras = this.oVDevicesService.getCameras();
 		this.camSelected = this.oVDevicesService.getCamSelected();
@@ -299,25 +293,57 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private initwebcamPublisher() {
-		let videoSource: any = false;
-		let audioSource: any = false;
-		if (this.hasVideoDevices) {
-			videoSource = this.camSelected ? this.camSelected.device : undefined;
-		}
-		if (this.hasAudioDevices) {
-			audioSource = this.micSelected ? this.micSelected.device : undefined;
-		}
+		const videoSource =  this.hasVideoDevices ? undefined : false;
+		const audioSource = this.hasAudioDevices ? undefined : false;
 		const publishAudio = this.hasAudioDevices ? this.isAudioActive : false;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;
 		const properties = this.oVSessionService.createProperties(videoSource, audioSource, publishVideo, publishAudio, mirror);
 		const publisher = this.oVSessionService.initCamPublisher(undefined, properties);
-
-		// Emit publisher to webcomponent and angular-library
-		this.emitPublisher(publisher);
+		this.handlePublisherSuccess(publisher);
+		this.handlePublisherError(publisher);
 	}
 
 	private emitPublisher(publisher) {
 		this.publisherCreated.emit(publisher);
+	}
+
+	private handlePublisherSuccess(publisher: Publisher){
+		publisher.once('accessAllowed', async () => {
+			await this.oVDevicesService.initDevices();
+			if (this.hasAudioDevices) {
+				const audioLabel = publisher.stream.getMediaStream().getAudioTracks()[0].label;
+				this.oVDevicesService.setMicSelected(audioLabel);
+			}
+
+			if (this.hasVideoDevices) {
+				const videoLabel = publisher.stream.getMediaStream().getVideoTracks()[0].label;
+				this.oVDevicesService.setCamSelected(videoLabel);
+			}
+
+			this.setDevicesInfo();
+			// Emit publisher to webcomponent and angular-library
+			this.emitPublisher(publisher);
+
+			if (this.ovSettings.isAutoPublish()) {
+				this.joinSession();
+				return;
+			}
+			this.showConfigCard = true;
+		});
+	}
+
+	private handlePublisherError(publisher: Publisher) {
+		publisher.once('accessDenied', (e: any) => {
+			let message: string;
+			if (e.name === 'DEVICE_ACCESS_DENIED') {
+				message = 'Access to media devices was not allowed.';
+			}
+			if (e.name === 'NO_INPUT_SOURCE_SET') {
+				message = 'No video or audio devices have been found. Please, connect at least one.';
+			}
+			this.utilsSrv.showErrorMessage(e.name.replace(/_/g, ' '), message, true);
+			this.log.e(e.message);
+		});
 	}
 }

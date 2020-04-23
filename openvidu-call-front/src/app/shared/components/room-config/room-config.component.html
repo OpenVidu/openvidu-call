@@ -5,7 +5,7 @@
 		(cancel)="toggleDialogExtension()"
 	></app-dialog-extension>
 
-	<mat-card *ngIf="localUsers.length > 0 && localUsers[0].streamManager">
+	<mat-card *ngIf="showConfigCard">
 		<mat-card-title>
 			<div id="img_content">
 				<img
