@@ -6,9 +6,8 @@
   "scripts": {
     "test": "jest",
     "start": "nodemon -r dotenv/config dist/app.js",
-    "build": "./node_modules/typescript/bin/tsc -p tsconfig.prod.json",
-    "dev": "DEV_MODE=true nodemon src/app.ts",
-    "build-prod": "npm run build && webpack -p"
+    "build": "webpack",
+    "dev": "DEV_MODE=true nodemon src/app.ts"
   },
   "repository": {
     "type": "git",

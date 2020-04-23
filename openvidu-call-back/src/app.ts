@@ -1,8 +1,8 @@
 
-import express from 'express';
+import * as express from 'express';
 import { SERVER_PORT } from './config';
 import {app as callController} from './controllers/CallController';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 const app = express();

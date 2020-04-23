@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import https from 'https';
-import btoa from 'btoa';
+import * as https from 'https';
+var btoa = require('btoa');
 import { DEV_MODE } from '../config';
 
 export class HttpClientService {
