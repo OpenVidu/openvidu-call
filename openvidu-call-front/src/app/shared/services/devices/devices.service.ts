@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OpenVidu, Device, Publisher } from 'openvidu-browser';
+import { OpenVidu, Device } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
 import { ILogger } from '../../types/logger-type';
 import { LoggerService } from '../logger/logger.service';
@@ -99,7 +99,7 @@ export class DevicesService {
 	}
 
 	setMicSelected(audioSource: any) {
-		this.camSelected = this.getMicrophoneByAudioSource(audioSource);
+		this.micSelected = this.getMicrophoneByAudioSource(audioSource);
 	}
 
 	deviceHasValue(deviceId): boolean {
