@@ -35,7 +35,7 @@ export class DevicesService {
 	}
 
 	private initAudioDevices() {
-		const audioDevices = this.devices.filter(device => device.kind === 'audioinput');
+		const audioDevices = this.devices.filter((device) => device.kind === 'audioinput');
 		audioDevices.forEach((device: Device) => {
 			this.microphones.push({ label: device.label, device: device.deviceId });
 		});
@@ -44,12 +44,12 @@ export class DevicesService {
 
 	private initVideoDevices() {
 		const FIRST_POSITION = 0;
-		const videoDevices = this.devices.filter(device => device.kind === 'videoinput');
+		const videoDevices = this.devices.filter((device) => device.kind === 'videoinput');
 		videoDevices.forEach((device: Device, index: number) => {
 			const myDevice: IDevice = {
 				label: device.label,
 				device: device.deviceId,
-				type:  CameraType.BACK
+				type: CameraType.BACK
 			};
 			if (this.utilSrv.isAndroid() || this.utilSrv.isIos()) {
 				// We assume front video device has 'front' in its label in Mobile devices
@@ -94,24 +94,12 @@ export class DevicesService {
 		this.micSelected = this.getMicrophoneByDeviceField(deviceField);
 	}
 
-	deviceHasValue(deviceId): boolean {
-		return !!deviceId;
-	}
-
 	needUpdateVideoTrack(newVideoSource: string): boolean {
 		return this.camSelected.device !== newVideoSource;
 	}
 
 	needUpdateAudioTrack(newAudioSource: string): boolean {
 		return this.micSelected.device !== newAudioSource;
-	}
-
-	getCameraByDeviceField(deviceField: any): IDevice {
-		return this.cameras.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
-	}
-
-	getMicrophoneByDeviceField(deviceField: any): IDevice {
-		return this.microphones.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
 	}
 
 	getCameras(): IDevice[] {
@@ -123,15 +111,23 @@ export class DevicesService {
 	}
 
 	hasVideoDeviceAvailable(): boolean {
-		return !!this.devices?.find(device => device.kind === 'videoinput');
+		return !!this.devices?.find((device) => device.kind === 'videoinput');
 	}
 
 	hasAudioDeviceAvailable(): boolean {
-		return !!this.devices?.find(device => device.kind === 'audioinput');
+		return !!this.devices?.find((device) => device.kind === 'audioinput');
 	}
 
 	cameraNeedsMirror(deviceField: string): boolean {
 		return this.getCameraByDeviceField(deviceField).type === CameraType.FRONT;
+	}
+
+	private getCameraByDeviceField(deviceField: any): IDevice {
+		return this.cameras.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
+	}
+
+	private getMicrophoneByDeviceField(deviceField: any): IDevice {
+		return this.microphones.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
 	}
 
 	private resetDevicesArray() {
