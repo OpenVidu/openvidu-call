@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-**openvidu-call-front/dist
+**/dist
 **/tmp
 */out-tsc
 **/openvidu-webcomponent
