@@ -21,8 +21,15 @@ export class NetworkService {
 			const _sessionId = await this.createSession(sessionId, openviduServerUrl, openviduSecret);
 			return await this.createToken(_sessionId, openviduServerUrl, openviduSecret);
 		}
-		this.log.d('Getting token from backend');
-		return await this.http.post<any>('/call', {sessionId}).toPromise();
+		try {
+			this.log.d('Getting token from backend');
+			return await this.http.post<any>('/call', {sessionId}).toPromise();
+		} catch (error) {
+			if (error.status === 404) {
+				throw {status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found'};
+			}
+			throw error;
+		}
 	}
 
 	createSession(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
