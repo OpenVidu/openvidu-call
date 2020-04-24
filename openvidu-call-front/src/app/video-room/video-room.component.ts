@@ -106,6 +106,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
+		// Reconnecting session is received in Firefox
+		// To avoid 'Connection lost' message uses session.off()
+		this.session?.off('reconnecting');
 		this.remoteUsersService.clean();
 		this.session = null;
 		this.sessionScreen = null;
