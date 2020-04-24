@@ -1,6 +1,6 @@
 {
   "name": "openvidu-call-server",
-  "version": "2.13.0-beta6",
+  "version": "2.13.0-beta8",
   "description": "OpenVidu Call Server",
   "main": "app.ts",
   "scripts": {
