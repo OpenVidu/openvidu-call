@@ -5,7 +5,7 @@
         "@angular/cdk": "9.2.0",
         "@angular/material": "9.2.0",
         "ngx-linkifyjs": "1.3.0",
-        "openvidu-browser": "2.12.0"
+        "openvidu-browser": "2.13.0"
     },
     "description": "OpenVidu Angular",
     "license": "Apache-2.0",
