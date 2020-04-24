@@ -38,7 +38,12 @@ export class NetworkService {
 				.post<any>(openviduServerUrl + '/api/sessions', body, options)
 				.pipe(
 					catchError(error => {
-						error.status === 409 ? resolve(sessionId) : reject(error);
+						if (error.status === 409) {
+							resolve(sessionId);
+						}
+						if (error.statusText === 'Unknown Error') {
+							reject({status: 401, message: 'ERR_CERT_AUTHORITY_INVALID'});
+						}
 						return observableThrowError(error);
 					})
 				)
