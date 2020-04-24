@@ -2,21 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
-import { OvSettingsModel } from '../../models/ovSettings';
-import { LocationStrategy } from '@angular/common';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NetworkService {
-	// private URL_OV = 'https://' + location.hostname + ':4443';
-	// private MY_SECRET = 'MY_SECRET';
-	private SETTINGS_FILE_NAME = 'ov-settings.json';
-
-	private ovSettings: OvSettingsModel = new OvSettingsModel();
 
 	private log: ILogger;
 
@@ -77,25 +69,6 @@ export class NetworkService {
 					this.log.d(response);
 					resolve(response.token);
 				});
-		});
-	}
-
-	getOvSettingsData(): Promise<OvSettingsModel> {
-		return new Promise(resolve => {
-			this.http.get(this.SETTINGS_FILE_NAME).subscribe(
-				(data: any) => {
-					this.log.d('FILE', data);
-					this.log.d('OvSettings:', data.openviduSettings);
-					if (data.openviduSettings) {
-						this.ovSettings.set(data.openviduSettings);
-					}
-					resolve(this.ovSettings);
-				},
-				error => {
-					this.log.w('Credentials file not found ');
-					resolve(this.ovSettings);
-				}
-			);
 		});
 	}
 }

@@ -102,7 +102,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	async ngOnInit() {
 		this.lightTheme = this.externalConfig?.getTheme() === Theme.LIGHT;
-		this.ovSettings = !!this.externalConfig ? this.externalConfig.getOvSettings() : await this.networkSrv.getOvSettingsData();
+		this.ovSettings = !!this.externalConfig ? this.externalConfig.getOvSettings() : new OvSettingsModel();
 	}
 
 	ngOnDestroy() {
