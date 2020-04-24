@@ -3,7 +3,8 @@ FROM node:lts-alpine3.11
 
 WORKDIR /openvidu-call
 RUN apk update && \
-    apk add wget unzip curl
+    apk add wget unzip curl && \
+    npm install -g nodemon
 
 # Download openvidu-browser from master, compile and pack it
 RUN wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-browser.zip && \
@@ -29,11 +30,12 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openv
     npm i --prefix openvidu-call-front openvidu-browser-*.tgz && \
     npm i --prefix openvidu-call-front && \
     npm run build-prod --prefix openvidu-call-front && \
+    rm -rf openvidu-call-front && \
     # Install openvidu-call-back dependencies and build it for production
     npm i --prefix openvidu-call-back && \
     npm run build --prefix openvidu-call-back && \
-    rm -rf openvidu-call-front && \
-    mv openvidu-call-back /opt/openvidu-call/
+    mv openvidu-call-back/dist /opt/openvidu-call/ && \
+    rm -rf openvidu-call-back
 
 # Entrypoint
 COPY ./entrypoint.sh /usr/local/bin
