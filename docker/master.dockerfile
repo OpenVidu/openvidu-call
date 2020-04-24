@@ -1,10 +1,9 @@
 # Build OpenVidu Call for production
-FROM node:lts-alpine3.11
+FROM node:lts-alpine3.11 as openvidu-browser-build
 
-WORKDIR /openvidu-call
-RUN apk update && \
-    apk add wget unzip curl && \
-    npm install -g nodemon
+WORKDIR /openvidu-browser
+
+RUN apk add wget unzip
 
 # Download openvidu-browser from master, compile and pack it
 RUN wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-browser.zip && \
@@ -16,6 +15,14 @@ RUN wget "https://github.com/OpenVidu/openvidu/archive/master.zip" -O openvidu-b
     npm run build --prefix openvidu-browser/ && \
     npm pack openvidu-browser/ && \
     rm -rf openvidu-browser
+
+FROM node:lts-alpine3.11 as openvidu-call-build
+
+WORKDIR /openvidu-call
+
+COPY --from=openvidu-browser-build /openvidu-browser/openvidu-browser-*.tgz .
+
+RUN apk add wget unzip
 
 # Download openvidu-call from master, intall openvidu-browser and build for production
 RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
@@ -34,12 +41,20 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openv
     # Install openvidu-call-back dependencies and build it for production
     npm i --prefix openvidu-call-back && \
     npm run build --prefix openvidu-call-back && \
-    mv openvidu-call-back/dist /opt/openvidu-call/ && \
+    mv openvidu-call-back/dist . && \
     rm -rf openvidu-call-back
 
+
+FROM node:lts-alpine3.11
+
+WORKDIR /opt/openvidu-call
+
+COPY --from=openvidu-call-build /openvidu-call/dist .
 # Entrypoint
 COPY ./entrypoint.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN apk add curl && \
+    chmod +x /usr/local/bin/entrypoint.sh && \
+    npm install -g nodemon
 
 # CMD /usr/local/bin/entrypoint.sh
 CMD ["/usr/local/bin/entrypoint.sh"]
