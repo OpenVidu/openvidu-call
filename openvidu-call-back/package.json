@@ -5,7 +5,6 @@
   "main": "app.ts",
   "scripts": {
     "test": "jest",
-    "start": "nodemon -r dotenv/config dist/app.js",
     "build": "webpack",
     "dev": "DEV_MODE=true nodemon src/app.ts"
   },
