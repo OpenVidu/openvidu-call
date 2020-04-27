@@ -119,7 +119,7 @@ export class DevicesService {
 	}
 
 	cameraNeedsMirror(deviceField: string): boolean {
-		return this.getCameraByDeviceField(deviceField).type === CameraType.FRONT;
+		return this.getCameraByDeviceField(deviceField)?.type === CameraType.FRONT;
 	}
 
 	private getCameraByDeviceField(deviceField: any): IDevice {
