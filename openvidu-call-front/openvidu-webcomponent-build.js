@@ -42,7 +42,7 @@ async function buildElement() {
 }
 
 async function copyFiles() {
-  const destination = '../../../openvidu-tutorials/openvidu-webcomponent/web';
+  const destination = '../../openvidu-tutorials/openvidu-webcomponent/web';
   if (fs.existsSync(destination)) {
     try {
       console.log("Copying openvidu-webcomponent files from: ./openvidu-webcomponent to: " + destination);
