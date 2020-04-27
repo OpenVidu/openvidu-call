@@ -545,7 +545,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private subscribeToRemoteUsers() {
 		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users) => {
-			this.remoteUsers = users;
+			this.remoteUsers = [...users];
 			this.updateOpenViduLayout();
 		});
 	}

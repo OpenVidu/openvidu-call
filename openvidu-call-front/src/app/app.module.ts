@@ -37,6 +37,7 @@ import {
 	HasLayoutSpeakingPipe,
 	HasExitPipe
 } from './shared/pipes/ovSettings.pipe';
+import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
 // Components
 import { StreamComponent } from './shared/components/stream/stream.component';
@@ -81,7 +82,8 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		HasScreenSharingPipe,
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
-		HasExitPipe
+		HasExitPipe,
+		TooltipListPipe
 	],
 	imports: [
 		FormsModule,

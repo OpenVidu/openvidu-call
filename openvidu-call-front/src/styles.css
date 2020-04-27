@@ -32,3 +32,8 @@ body {
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+.tooltipList {
+  white-space: pre;
+  font-size: small !important;
+}

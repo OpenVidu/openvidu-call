@@ -3,6 +3,7 @@ import { UtilsService } from '../../services/utils/utils.service';
 import { OvSettings } from '../../types/ov-settings';
 import { VideoFullscreenIcon } from '../../types/icon-type';
 import { OvSettingsModel } from '../../models/ovSettings';
+import { UserModel } from 'dist/openvidu-angular/public_api';
 
 @Component({
 	selector: 'app-toolbar',
@@ -34,6 +35,8 @@ export class ToolbarComponent implements OnInit {
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
 	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/openvidu-call-front/src/assets/images/';
+
+	participantsNames: string[] = [];
 
 	constructor(private utilsSrv: UtilsService) {}
 
@@ -83,5 +86,14 @@ export class ToolbarComponent implements OnInit {
 	toggleFullscreen() {
 		this.utilsSrv.toggleFullscreen('videoRoomNavBar');
 		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
+	}
+
+	@Input()
+	set participants(participants: UserModel[]) {
+		this.participantsNames = [];
+		participants.forEach(user => {
+			this.participantsNames.push(user.getNickname());
+		});
+		this.participantsNames = [...this.participantsNames];
 	}
 }

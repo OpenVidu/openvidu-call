@@ -1,5 +1,11 @@
 <mat-toolbar id="header" role="heading" [class.headerLight]="lightTheme">
-	<app-toolbar-logo id="navSessionInfo" [lightTheme]="lightTheme" [sessionId]="mySessionId" [compact]="compact" [logoUrl]="logoUrl"></app-toolbar-logo>
+	<app-toolbar-logo
+		id="navSessionInfo"
+		[lightTheme]="lightTheme"
+		[sessionId]="mySessionId"
+		[compact]="compact"
+		[logoUrl]="logoUrl"
+	></app-toolbar-logo>
 
 	<div id="navButtons" align="center">
 		<button
@@ -38,12 +44,7 @@
 		</button>
 
 		<!-- Fullscreen button -->
-		<button
-			mat-icon-button
-			(click)="toggleFullscreen()"
-			[disabled]="isConnectionLost"
-			*ngIf="ovSettings | hasFullscreen"
-		>
+		<button mat-icon-button (click)="toggleFullscreen()" [disabled]="isConnectionLost" *ngIf="ovSettings | hasFullscreen">
 			<mat-icon matTooltip="Fullscreen">{{ fullscreenIcon }}</mat-icon>
 		</button>
 
@@ -60,22 +61,21 @@
 		</button>
 
 		<!-- Leave seassion button -->
-		<button
-			mat-icon-button
-			(click)="leaveSession()"
-			id="navLeaveButton"
-			*ngIf="ovSettings | hasExit"
-		>
+		<button mat-icon-button (click)="leaveSession()" id="navLeaveButton" *ngIf="ovSettings | hasExit">
 			<mat-icon color="warn" matTooltip="Leave the session">power_settings_new</mat-icon>
 		</button>
 
 		<button
 			mat-icon-button
-			id="navChatButton"
-			(click)="toggleChat()"
 			[disabled]="isConnectionLost"
-			*ngIf="ovSettings | hasChat"
+			class="participantsButton"
+			[matTooltip]=" participantsNames | tooltipList"
+			matTooltipClass="tooltipList"
 		>
+			<mat-icon matBadge="{{ participantsNames?.length }}" matBadgePosition="above before" matBadgeColor="accent">people</mat-icon>
+		</button>
+
+		<button mat-icon-button id="navChatButton" (click)="toggleChat()" [disabled]="isConnectionLost" *ngIf="ovSettings | hasChat">
 			<mat-icon
 				matBadge="{{ newMessagesNum }}"
 				[matBadgeHidden]="newMessagesNum === 0"

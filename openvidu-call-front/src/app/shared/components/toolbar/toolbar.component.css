@@ -22,11 +22,13 @@
 
 
 
-#navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{
+#navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content,
+.participantsButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{
   left: -17px;
 }
 
-#navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content {
+#navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content,
+.participantsButton .mat-badge-medium.mat-badge-above .mat-badge-content {
   top: -6px;
 }
 
@@ -43,6 +45,11 @@
 #navChatButton {
   position: absolute;
   right: 10px;
+  top: none;
+}
+.participantsButton {
+  position: absolute;
+  right: 50px;
   top: none;
 }
 
@@ -85,4 +92,8 @@
 }
 .pointLight {
   border: 1px solid #ffffff !important;
+}
+
+.tooltipList {
+  white-space: pre;
 }
