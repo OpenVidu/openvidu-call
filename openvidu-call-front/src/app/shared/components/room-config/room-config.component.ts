@@ -231,6 +231,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	close() {
 		this.leaveSession.emit();
+		this.showConfigCard = false;
 	}
 
 	setAvatar(avatar: string) {

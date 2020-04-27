@@ -904,3 +904,10 @@
     width: 350px;
   }
 }
+
+@media only screen and (max-width: 600px) {
+  #videoRoomNavBar {
+    width: 100%;
+    position: fixed;
+  }
+}
