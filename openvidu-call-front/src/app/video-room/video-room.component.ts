@@ -449,9 +449,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				connectionId: data.connectionId,
 				nickname: data.nickname,
 				message: data.message,
-				userAvatar: owner?.getAvatar() || this.utilsSrv.getOpeViduAvatar()
+				userAvatar: owner?.getAvatar() || this.utilsSrv.getOpenViduAvatar()
 			});
 			this.checkNotification();
+			this.notificationSrv.newMessage('New message');
 			this.chatComponent.scrollToBottom();
 		});
 	}

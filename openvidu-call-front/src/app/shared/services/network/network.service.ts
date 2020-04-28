@@ -12,8 +12,8 @@ export class NetworkService {
 
 	private log: ILogger;
 
-	constructor(private http: HttpClient, private loggSrv: LoggerService) {
-		this.log = this.loggSrv.get('NetworkService');
+	constructor(private http: HttpClient, private loggerSrv: LoggerService) {
+		this.log = this.loggerSrv.get('NetworkService');
 	}
 
 	async getToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {

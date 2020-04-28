@@ -31,8 +31,8 @@ export class OpenViduSessionService {
 	private screenMediaStream: MediaStream = null;
 	private webcamMediaStream: MediaStream = null;
 
-	constructor(private loggSrv: LoggerService) {
-		this.log = this.loggSrv.get('OpenViduSessionService');
+	constructor(private loggerSrv: LoggerService) {
+		this.log = this.loggerSrv.get('OpenViduSessionService');
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
 

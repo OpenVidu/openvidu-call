@@ -262,7 +262,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private setRandomAvatar() {
-		this.randomAvatar = this.utilsSrv.getOpeViduAvatar();
+		this.randomAvatar = this.utilsSrv.getOpenViduAvatar();
 		this.oVSessionService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
 		this.avatarSelected = AvatarType.RANDOM;
 	}
