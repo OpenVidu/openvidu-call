@@ -27,8 +27,13 @@ export class RemoteUsersService {
 	}
 
 	add(event: StreamEvent, subscriber: Subscriber) {
+		let nickname = '';
 		const connectionId = event.stream.connection.connectionId;
-		const nickname = JSON.parse(event.stream.connection.data)?.clientData;
+		try {
+			nickname = JSON.parse(event.stream.connection.data)?.clientData;
+		} catch (error) {
+			nickname = 'Unknown';
+		}
 		const newUser = new UserModel(connectionId, subscriber, nickname);
 
 		this.users.push(newUser);
@@ -63,8 +68,15 @@ export class RemoteUsersService {
 	}
 
 	getRemoteUserByConnectionId(connectionId: string): UserModel {
-		return this.users.filter(u => u.getConnectionId() === connectionId)[0];
+		return this.users.find(u => u.getConnectionId() === connectionId);
 	}
+
+	updateNickname(connectionId: any, nickname: any) {
+		const user = this.getRemoteUserByConnectionId(connectionId);
+		user.setNickname(nickname);
+		this._remoteUsers.next(this.users);
+	}
+
 
 	clean() {
 		this._remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);

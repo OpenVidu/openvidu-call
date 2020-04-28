@@ -408,10 +408,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
 				return;
 			}
-
-			const user = this.remoteUsersService.getRemoteUserByConnectionId(connectionId);
 			const nickname = JSON.parse(event.data).nickname;
-			user.setNickname(nickname);
+			this.remoteUsersService.updateNickname(connectionId, nickname);
 		});
 	}
 

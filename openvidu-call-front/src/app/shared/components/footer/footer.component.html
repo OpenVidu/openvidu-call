@@ -1,0 +1,19 @@
+<mat-toolbar
+	class="container"
+	fxLayout
+	fxLayout.xs="row"
+	fxLayoutAlign="center center"
+	fxLayoutGap="2px"
+	id="footer"
+	role="heading"
+	[class.headerLight]="lightTheme"
+>
+	<div class="participantsButtonContainer">
+		<button mat-icon-button class="" matTooltip="Remote participants">
+			<mat-icon matBadge="{{ participantsNames?.length }}" matBadgeSize="small" matBadgePosition="above after" matBadgeColor="accent">people</mat-icon>
+		</button>
+	</div>
+	<div fxFlex="calc(100% - 40px)" fxFlexOrder="2">
+		<span class="participantNames">{{ participantsNames | tooltipList }}</span>
+	</div>
+</mat-toolbar>

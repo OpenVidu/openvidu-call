@@ -1,0 +1,39 @@
+#footer {
+	color: #ffffff;
+	height: 25px;
+	background-color: #333333;
+	padding: 0 14px 0 0;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 999999;
+	min-width: 400px !important;
+}
+
+.footerLight {
+	color: #706969 !important;
+	background-color: #eeeeee !important;
+}
+
+.participantNames {
+	font-size: small;
+	height: inherit;
+}
+
+.participantsButton {
+	position: absolute;
+	left: 5px;
+	top: none;
+	height: -webkit-fill-available;
+	height: -moz-available;
+}
+
+.participantsButtonContainer {
+	height: -webkit-fill-available;
+	height: -moz-available;
+}
+
+.participantsButtonContainer .mat-icon-button i, .mat-icon-button .mat-icon {
+	line-height: 18px;
+}
+
