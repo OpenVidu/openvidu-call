@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { UserModel } from 'dist/openvidu-angular/public_api';
+import { UserModel } from '../../models/user-model';
 
 @Component({
 	selector: 'app-footer',

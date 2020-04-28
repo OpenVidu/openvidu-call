@@ -2,7 +2,6 @@ import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@a
 import { UtilsService } from '../../services/utils/utils.service';
 import { VideoFullscreenIcon } from '../../types/icon-type';
 import { OvSettingsModel } from '../../models/ovSettings';
-import { UserModel } from 'dist/openvidu-angular/public_api';
 
 @Component({
 	selector: 'app-toolbar',
