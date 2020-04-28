@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { UtilsService } from '../../services/utils/utils.service';
-import { OvSettings } from '../../types/ov-settings';
 import { VideoFullscreenIcon } from '../../types/icon-type';
 import { OvSettingsModel } from '../../models/ovSettings';
 import { UserModel } from 'dist/openvidu-angular/public_api';
@@ -86,14 +85,5 @@ export class ToolbarComponent implements OnInit {
 	toggleFullscreen() {
 		this.utilsSrv.toggleFullscreen('videoRoomNavBar');
 		this.fullscreenIcon = this.fullscreenIcon === VideoFullscreenIcon.BIG ? VideoFullscreenIcon.NORMAL : VideoFullscreenIcon.BIG;
-	}
-
-	@Input()
-	set participants(participants: UserModel[]) {
-		this.participantsNames = [];
-		participants.forEach(user => {
-			this.participantsNames.push(user.getNickname());
-		});
-		this.participantsNames = [...this.participantsNames];
 	}
 }

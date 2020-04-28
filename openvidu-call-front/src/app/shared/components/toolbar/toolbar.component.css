@@ -21,36 +21,16 @@
 }
 
 
-
-#navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content,
-.participantsButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{
+#navChatButton .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content {
   left: -17px;
 }
 
-#navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content,
-.participantsButton .mat-badge-medium.mat-badge-above .mat-badge-content {
+#navChatButton .mat-badge-medium.mat-badge-above .mat-badge-content {
   top: -6px;
 }
 
 .mat-icon-button[disabled] {
   color: #fff;
-}
-
-#navButtons {
-  position: absolute;
-  left: 0;
-  right: 0;
-  min-width: 400px;
-}
-#navChatButton {
-  position: absolute;
-  right: 10px;
-  top: none;
-}
-.participantsButton {
-  position: absolute;
-  right: 50px;
-  top: none;
 }
 
 .titleContent {
