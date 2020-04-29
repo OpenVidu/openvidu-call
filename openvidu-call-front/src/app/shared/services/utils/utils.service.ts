@@ -83,6 +83,10 @@ export class UtilsService {
 		return /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
 	}
 
+	isMobile(): boolean {
+		return this.isAndroid() || this.isIos();
+	}
+
 	isAndroid(): boolean {
 		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
 	}
