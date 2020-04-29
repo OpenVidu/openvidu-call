@@ -12,7 +12,6 @@
     <div *ngIf="isConnectionLost" class="reconnecting-container"></div>
     <app-toolbar
       [lightTheme]="lightTheme"
-      [newMessagesNum]="newMessages"
       [compact]="compact"
       [mySessionId]="mySessionId"
       [ovSettings]="ovSettings"
@@ -28,7 +27,6 @@
       (screenShareClicked)="toggleScreenShare()"
       (layoutButtonClicked)="toggleSpeakerLayout()"
       (leaveSessionButtonClicked)="leaveSession()"
-      (chatButtonClicked)="toggleChat()"
     ></app-toolbar>
 
     <app-dialog-extension
@@ -50,13 +48,7 @@
       >
         <chat-component
           #chatComponent
-          [session]="this.session"
-          [sessionScreen]="this.sessionScreen"
-          [user]="this.localUsers[0]"
-          [chatOpened]="chatOpened"
           [lightTheme]="lightTheme"
-          [messageList]="messageList"
-          (closeChat)="toggleChat()"
         ></chat-component>
       </mat-sidenav>
 

@@ -10,6 +10,7 @@ import { ILogger } from '../../types/logger-type';
 })
 export class RemoteUsersService {
 
+
 	remoteUsers: Observable<UserModel[]>;
 	private _remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 
@@ -28,14 +29,16 @@ export class RemoteUsersService {
 
 	add(event: StreamEvent, subscriber: Subscriber) {
 		let nickname = '';
+		let avatar = '';
 		const connectionId = event.stream.connection.connectionId;
 		try {
 			nickname = JSON.parse(event.stream.connection.data)?.clientData;
+			avatar = JSON.parse(event.stream.connection.data)?.avatar;
 		} catch (error) {
 			nickname = 'Unknown';
 		}
 		const newUser = new UserModel(connectionId, subscriber, nickname);
-
+		newUser.setUserAvatar(avatar);
 		this.users.push(newUser);
 		this.updateUsers();
 	}
@@ -82,5 +85,9 @@ export class RemoteUsersService {
 		this._remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 		this.remoteUsers = this._remoteUsers.asObservable();
 		this.users = [];
+	}
+
+	getUserAvatar(connectionId: string): string {
+		return this.getRemoteUserByConnectionId(connectionId).getAvatar();
 	}
 }

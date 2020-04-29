@@ -50,19 +50,23 @@ export class OpenViduSessionService {
 		return this.webcamSession;
 	}
 
+	getConnectedUserSession(): Session {
+		return this.isWebCamEnabled() ? this.getWebcamSession() : this.getScreenSession();
+	}
+
 	getScreenSession(): Session {
 		return this.screenSession;
 	}
 
 	async connectWebcamSession(token: string): Promise<any> {
 		if (!!token) {
-			await this.webcamSession.connect(token, { clientData: this.getWebcamUserName() });
+			await this.webcamSession.connect(token, { clientData: this.getWebcamUserName(), avatar: this.getWebCamAvatar() });
 		}
 	}
 
 	async connectScreenSession(token: string): Promise<any> {
 		if (!!token) {
-			await this.screenSession.connect(token, { clientData: this.getScreenUserName() });
+			await this.screenSession.connect(token, { clientData: this.getScreenUserName(), avatar: this.getWebCamAvatar() });
 		}
 	}
 
@@ -180,8 +184,6 @@ export class OpenViduSessionService {
 
 		this.webcamUser.setStreamManager(publisher);
 
-
-
 		// Reeplace track method
 		// this.webcamMediaStream = await this.OV.getUserMedia(properties);
 		// const track: MediaStreamTrack = !!videoSource
@@ -219,7 +221,7 @@ export class OpenViduSessionService {
 		if (this.webcamSession) {
 			this.log.d('Disconnecting screen session');
 			this.webcamSession.disconnect();
-			this.stopWebcamTracks();
+			// this.stopWebcamTracks();
 			this.webcamSession = null;
 		}
 		if (this.screenSession) {
@@ -369,12 +371,12 @@ export class OpenViduSessionService {
 		}
 	}
 
-	private stopWebcamTracks() {
-		if (this.webcamMediaStream) {
-			this.stopAudioTracks(this.webcamMediaStream);
-			this.stopVideoTracks(this.webcamMediaStream);
-		}
-	}
+	// private stopWebcamTracks() {
+	// 	if (this.webcamMediaStream) {
+	// 		this.stopAudioTracks(this.webcamMediaStream);
+	// 		this.stopVideoTracks(this.webcamMediaStream);
+	// 	}
+	// }
 
 	private stopAudioTracks(mediaStream: MediaStream) {
 		mediaStream?.getAudioTracks().forEach((track) => {
@@ -382,7 +384,7 @@ export class OpenViduSessionService {
 
 			track.enabled = false;
 		});
-		this.webcamMediaStream?.getAudioTracks().forEach(track => {
+		this.webcamMediaStream?.getAudioTracks().forEach((track) => {
 			track.stop();
 		});
 	}

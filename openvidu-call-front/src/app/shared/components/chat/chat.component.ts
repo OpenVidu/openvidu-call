@@ -1,75 +1,61 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, HostListener } from '@angular/core';
-import { UserModel } from '../../models/user-model';
-import { Session } from 'openvidu-browser';
+import { Component, ElementRef, Input, OnInit, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { ChatService } from '../../services/chat/chat.service';
+import { ChatMessage } from '../../types/chat-type';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
 	selector: 'chat-component',
 	templateUrl: './chat.component.html',
 	styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 	@ViewChild('chatScroll') chatScroll: ElementRef;
 	@ViewChild('chatInput') chatInput: ElementRef;
 
-	@Input() session: Session;
-	@Input() sessionScreen: Session;
-	@Input() user: UserModel;
 	@Input() lightTheme: boolean;
-	@Input()
-	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
-
-	_chatOpened: boolean;
-
-	@Output() closeChat = new EventEmitter<any>();
 
 	message: string;
 
-	constructor() {}
+	messageList: ChatMessage[] = [];
+	chatOpened: boolean;
+
+	private chatMessageSubscription: Subscription;
+	private chatToggleSubscription: Subscription;
+
+	constructor(private chatService: ChatService) {}
 
 	@HostListener('document:keydown.escape', ['$event'])
 	onKeydownHandler(event: KeyboardEvent) {
 		console.log(event);
-		if (this._chatOpened) {
+		if (this.chatOpened) {
 			this.close();
 		}
 	}
 
-	ngOnInit() {}
+	ngOnInit() {
+		this.subscribeToMessages();
+		this.subscribeToToggleChat();
+	}
 
-	@Input('chatOpened')
-	set isDisplayed(display: boolean) {
-		this._chatOpened = display;
-		if (this._chatOpened) {
-			this.scrollToBottom();
-			setTimeout(() => {
-				this.chatInput.nativeElement.focus();
-			});
+	ngOnDestroy(): void {
+		if (this.chatMessageSubscription) {
+			this.chatMessageSubscription.unsubscribe();
+		}
+		if (this.chatToggleSubscription) {
+			this.chatToggleSubscription.unsubscribe();
 		}
 	}
 
 	eventKeyPress(event) {
+		// Pressed 'Enter' key
 		if (event && event.keyCode === 13) {
-			// Press Enter
 			this.sendMessage();
 		}
 	}
 
 	sendMessage(): void {
-		if (this.user && this.message) {
-			this.message = this.message.replace(/ +(?= )/g, '');
-			if (this.message !== '' && this.message !== ' ') {
-				const data = {
-					connectionId: this.user.getConnectionId(),
-					message: this.message,
-					nickname: this.user.getNickname()
-				};
-				this.session.signal({
-					data: JSON.stringify(data),
-					type: 'chat'
-				});
-				this.message = '';
-			}
-		}
+		this.chatService.sendMessage(this.message);
+		this.message = '';
 	}
 
 	scrollToBottom(): void {
@@ -81,6 +67,24 @@ export class ChatComponent implements OnInit {
 	}
 
 	close() {
-		this.closeChat.emit();
+		this.chatService.toggleChat();
+	}
+
+	private subscribeToMessages() {
+		this.chatMessageSubscription = this.chatService.messagesObs.subscribe((messages: ChatMessage[]) => {
+			this.messageList = messages;
+		});
+	}
+
+	private subscribeToToggleChat() {
+		this.chatToggleSubscription = this.chatService.toggleChatObs.subscribe((opened) => {
+			this.chatOpened = opened;
+			if (this.chatOpened) {
+				this.scrollToBottom();
+				setTimeout(() => {
+					this.chatInput.nativeElement.focus();
+				});
+			}
+		});
 	}
 }

@@ -29,6 +29,7 @@ import { LoggerService } from '../shared/services/logger/logger.service';
 import { RemoteUsersService } from '../shared/services/remote-users/remote-users.service';
 import { UtilsService } from '../shared/services/utils/utils.service';
 import { MatSidenav } from '@angular/material/sidenav';
+import { ChatService } from '../shared/services/chat/chat.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -54,7 +55,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
 	lightTheme: boolean;
-	chatOpened: boolean;
 	showDialogExtension = false;
 	showConfigRoomCard = true;
 	session: Session;
@@ -62,11 +62,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	openviduLayout: OpenViduLayout;
 	openviduLayoutOptions: OpenViduLayoutOptions;
 	mySessionId: string;
-	myUserName: string;
 	localUsers: UserModel[] = [];
 	remoteUsers: UserModel[] = [];
-	messageList: { connectionId: string; nickname: string; message: string; userAvatar: string }[] = [];
-	newMessages = 0;
 	isConnectionLost: boolean;
 	isAutoLayout = false;
 	hasVideoDevices: boolean;
@@ -74,6 +71,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 	private remoteUsersSubscription: Subscription;
+	private chatSubscription: Subscription;
 
 	constructor(
 		private networkSrv: NetworkService,
@@ -82,7 +80,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		private remoteUsersService: RemoteUsersService,
 		public oVSessionService: OpenViduSessionService,
 		private oVDevicesService: DevicesService,
-		private loggerSrv: LoggerService
+		private loggerSrv: LoggerService,
+		private chatService: ChatService
 	) {
 		this.log = this.loggerSrv.get('VideoRoomComponent');
 	}
@@ -121,6 +120,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.remoteUsersSubscription) {
 			this.remoteUsersSubscription.unsubscribe();
 		}
+		if (this.chatSubscription) {
+			this.chatSubscription.unsubscribe();
+		}
 	}
 
 	onConfigRoomJoin() {
@@ -149,7 +151,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribeToStreamDestroyed();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
-		this.subscribeToChat();
+		this.chatService.setChatComponent(this.chatSidenav);
+		this.chatService.subscribeToChat();
+		this.subscribeToChatComponent();
 		this.subscribeToReconnection();
 		this.connectToSession();
 	}
@@ -166,28 +170,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sendNicknameSignal(nickname);
 	}
 
-	toggleChat() {
-		this.chatSidenav.toggle().then(() => {
-			this.chatOpened = this.chatSidenav.opened;
-			if (this.chatOpened) {
-				this.newMessages = 0;
-			}
-			const timeout = this.externalConfig ? 300 : 0;
-			this.updateOpenViduLayout(timeout);
-		});
-	}
-
 	toggleMic() {
 		if (this.oVSessionService.isWebCamEnabled()) {
 			this.oVSessionService.publishWebcamAudio(!this.oVSessionService.hasWebcamAudioActive());
 			return;
 		}
 		this.oVSessionService.publishScreenAudio(!this.oVSessionService.hasScreenAudioActive());
-	}
-
-	// ? ChatService
-	checkNotification() {
-		this.newMessages = this.chatOpened ? 0 : this.newMessages + 1;
 	}
 
 	async toggleCam() {
@@ -434,26 +422,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.unpublishScreen();
 	}
 
-	// ! Create chat service
-	private subscribeToChat() {
-		this.session.on('signal:chat', (event: any) => {
-			const connectionId = event.from.connectionId;
-			const data = JSON.parse(event.data);
-			let owner: UserModel;
-			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
-				owner = this.localUsers.filter((u) => u.getConnectionId() === connectionId)[0];
-			} else {
-				owner = this.remoteUsersService.getRemoteUserByConnectionId(connectionId);
-			}
-			this.messageList.push({
-				connectionId: data.connectionId,
-				nickname: data.nickname,
-				message: data.message,
-				userAvatar: owner?.getAvatar() || this.utilsSrv.getOpenViduAvatar()
-			});
-			this.checkNotification();
-			this.notificationSrv.newMessage('New message');
-			this.chatComponent.scrollToBottom();
+	subscribeToChatComponent() {
+		this.chatSubscription = this.chatService.toggleChatObs.subscribe((opened) => {
+			const timeout = this.externalConfig ? 300 : 0;
+			this.updateOpenViduLayout(timeout);
 		});
 	}
 
