@@ -137,6 +137,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableWebcamUser();
+			this.oVSessionService.publishScreenAudio(this.isAudioActive);
 			// !this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
 		} else if (this.oVSessionService.isOnlyScreenConnected()) {
 			// (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
