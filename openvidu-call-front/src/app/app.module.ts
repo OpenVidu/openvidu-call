@@ -83,7 +83,8 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
-		TooltipListPipe
+		TooltipListPipe,
+		FooterComponent
 	],
 	imports: [
 		FormsModule,
