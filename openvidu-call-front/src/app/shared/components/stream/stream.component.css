@@ -112,14 +112,13 @@ video {
   overflow: hidden;
 }
 
+mat-error,
+::ng-deep .mat-focused .mat-form-field-label,
 ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-label {
-  color: #cacaca ;
-}
-::ng-deep .mat-focused .mat-form-field-label {
   color: #cacaca !important;
 }
 
-
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline,
 ::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple {
   background-color: #cacaca !important;
 }
