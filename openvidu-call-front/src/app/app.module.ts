@@ -117,7 +117,7 @@ import { NotificationService } from './shared/services/notifications/notificatio
 		NgxLinkifyjsModule.forRoot()
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
-	providers:[
+	providers: [
 		NetworkService,
 		OpenViduSessionService,
 		UtilsService,

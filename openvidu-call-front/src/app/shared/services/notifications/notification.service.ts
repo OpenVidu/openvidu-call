@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
 	providedIn: 'root'
@@ -7,18 +7,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class NotificationService {
 	constructor(private snackBar: MatSnackBar) {}
 
-
-	newMessage(message: string) {
-		this.launchNotification(message, 'OPEN', 'messageSnackbar', 2000);
+	newMessage(nickname: string, callback) {
+		const alert = this.launchNotification(nickname + ' sent a message', 'OPEN', 'messageSnackbar', 3000);
+		alert.onAction().subscribe(() => {
+			callback();
+		  });
 	}
 
-	private launchNotification(message: string, action: string, className: string, durationTimeMs: number) {
-		this.snackBar.open(message, action, {
+	private launchNotification(message: string, action: string, className: string, durationTimeMs: number): MatSnackBarRef<SimpleSnackBar> {
+		return this.snackBar.open(message, action, {
 			duration: durationTimeMs,
 			verticalPosition: 'top',
 			horizontalPosition: 'end',
 			panelClass: className
 		});
 	}
-
 }

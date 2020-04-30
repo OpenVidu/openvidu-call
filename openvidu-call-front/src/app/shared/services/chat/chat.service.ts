@@ -6,6 +6,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { RemoteUsersService } from '../remote-users/remote-users.service';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { NotificationService } from '../notifications/notification.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -30,7 +31,8 @@ export class ChatService {
 	constructor(
 		private loggerSrv: LoggerService,
 		private oVSessionService: OpenViduSessionService,
-		private remoteUsersService: RemoteUsersService
+		private remoteUsersService: RemoteUsersService,
+		private notificationService: NotificationService
 	) {
 		this.log = this.loggerSrv.get('ChatService');
 		this.messagesObs = this._messageList.asObservable();
@@ -56,10 +58,11 @@ export class ChatService {
 					? this.oVSessionService.getWebCamAvatar()
 					: this.remoteUsersService.getUserAvatar(connectionId)
 			});
-			this._messageList.next(this.messageList);
 			if (!this.isChatOpened()) {
 				this.addMessageUnread();
+				this.notificationService.newMessage(data.nickname.toUpperCase(), this.toggleChat.bind(this));
 			}
+			this._messageList.next(this.messageList);
 		});
 	}
 
