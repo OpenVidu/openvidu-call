@@ -52,6 +52,7 @@ import { WebComponentComponent } from './web-component/web-component.component';
 import { VideoRoomComponent } from './video-room/video-room.component';
 import { HomeComponent } from './home/home.component';
 import { AppComponent } from './app.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
 
 // Services
 import { NetworkService } from './shared/services/network/network.service';
