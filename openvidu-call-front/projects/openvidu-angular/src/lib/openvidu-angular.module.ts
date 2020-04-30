@@ -54,6 +54,8 @@ import { OpenViduSessionService } from './shared/services/openvidu-session/openv
 import { UtilsService } from './shared/services/utils/utils.service';
 import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
+import { ChatService } from './shared/services/chat/chat.service';
+import { LoggerService } from './shared/services/logger/logger.service';
 
 @NgModule({
 	imports: [
@@ -102,7 +104,15 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		HasExitPipe
 	],
 	entryComponents: [DialogErrorComponent],
-	providers: [NetworkService, OpenViduSessionService, UtilsService, RemoteUsersService, DevicesService],
+	providers: [
+		NetworkService,
+		OpenViduSessionService,
+		UtilsService,
+		RemoteUsersService,
+		DevicesService,
+		LoggerService,
+		ChatService
+	],
 	exports: [OpenviduSessionComponent]
 })
 export class OpenviduSessionModule {}
