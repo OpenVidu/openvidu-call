@@ -38,3 +38,6 @@ body {
   white-space: pre;
   font-size: small !important;
 }
+.messageSnackbar {
+  margin-top: 50px !important;
+}

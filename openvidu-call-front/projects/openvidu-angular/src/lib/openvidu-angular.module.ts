@@ -16,6 +16,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
@@ -56,6 +57,7 @@ import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
 import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
+import { NotificationService } from './shared/services/notifications/notification.service';
 
 @NgModule({
 	imports: [
@@ -80,6 +82,7 @@ import { LoggerService } from './shared/services/logger/logger.service';
 		MatProgressSpinnerModule,
 		MatSliderModule,
 		MatSidenavModule,
+		MatSnackBarModule,
 		NgxLinkifyjsModule.forRoot()
 	],
 	declarations: [
@@ -111,7 +114,8 @@ import { LoggerService } from './shared/services/logger/logger.service';
 		RemoteUsersService,
 		DevicesService,
 		LoggerService,
-		ChatService
+		ChatService,
+		NotificationService
 	],
 	exports: [OpenviduSessionComponent]
 })
