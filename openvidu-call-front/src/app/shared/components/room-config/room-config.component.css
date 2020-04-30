@@ -8,6 +8,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  height: inherit;
 }
 
 .headerTitle {
@@ -84,7 +85,7 @@
 } */
 
 #header_img {
-  max-width: 165px;
+  max-width: 150px;
 }
 
 #sessionInfo {
@@ -1025,6 +1026,12 @@ mat-card {
   .modal {
     position: fixed;
   }
+  .headerTitle{
+    display: none;
+  }
+  .headerLogo {
+    right: 0;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1035,7 +1042,7 @@ mat-card {
     height: 60%;
   }
   .headerTitle{
-    display: none;
+    font-size: medium;
   }
   .modal-content {
     max-height: 100%;
