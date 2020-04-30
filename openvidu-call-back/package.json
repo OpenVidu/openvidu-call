@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "webpack",
-    "dev": "DEV_MODE=true nodemon src/app.ts"
+    "start": "DEV_MODE=true nodemon src/app.ts"
   },
   "repository": {
     "type": "git",
