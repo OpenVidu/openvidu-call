@@ -4,11 +4,11 @@
 	#streamComponent
 	(dblclick)="toggleVideoSize()"
 >
-	<mat-chip-list class="nickname" [class.fullscreen]="isFullscreen">
-		<mat-chip (click)="toggleNicknameForm()" [color]="!this.user.streamManager.remote ? 'accent' : 'primary'" selected *ngIf="!toggleNickname">
+	<div class="nickname" [class.fullscreen]="isFullscreen">
+		<div (click)="toggleNicknameForm()" class="nicknameContainer" selected *ngIf="!toggleNickname">
 			<span id="nickname">{{ this.user.nickname }}</span>
 			<span *ngIf="!this.user.streamManager.remote"> (edit)</span>
-		</mat-chip>
+		</div>
 		<div *ngIf="toggleNickname && !this.user.streamManager.remote" [class.fullscreen]="isFullscreen" id="dialogNickname">
 			<button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
 				<mat-icon matTooltip="Close">highlight_off</mat-icon>
@@ -29,7 +29,7 @@
 				</mat-form-field>
 			</form>
 		</div>
-	</mat-chip-list>
+	</div>
 
 	<ov-video
 		[streamManager]="this.user.streamManager"

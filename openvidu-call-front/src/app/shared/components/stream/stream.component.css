@@ -1,15 +1,21 @@
 .nickname {
-  padding: 5px !important;
+  padding: 0px;
   position: absolute;
   z-index: 999;
   border-radius: 5px;
-  color: #313131;
+  color: #ffffff;
   font-family: 'Ubuntu', sans-serif;
+}
+.nicknameContainer {
+  background-color: #0000005e;
+  padding: 5px;
+  color: #ffffff;
+  font-weight: bold;
 }
 
 #dialogNickname {
-  background-color:  #fffffffb;
-  border-radius: 8px;
+  background-color:  #0000005e;
+  border-radius: 5px;
 }
 
 #closeButton {
@@ -22,6 +28,7 @@
 #nicknameForm {
   padding: 10px;
 }
+
 .fullscreen {
   top: 40px;
 }
@@ -105,14 +112,16 @@ video {
   overflow: hidden;
 }
 
-::ng-deep .mat-form-field-appearance-legacy .mat-form-field-label {
-  color: #696969;
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-label,
+::ng-deep .mat-focused .mat-form-field-label {
+  color: #ffffff !important;
 }
 
-::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline{
-  background-color: #444444 !important;
+::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline,
+::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: #ffffff !important;
 }
 
-::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple{
-  background-color: #696969 !important;
+input {
+  caret-color: #ffffff !important;
 }

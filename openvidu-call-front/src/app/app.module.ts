@@ -5,7 +5,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -110,7 +109,6 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 		AppRoutingModule,
 		HttpClientModule,
 		FlexLayoutModule,
-		MatChipsModule,
 		NgxLinkifyjsModule.forRoot()
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
