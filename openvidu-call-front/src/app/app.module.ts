@@ -17,6 +17,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppRoutingModule } from './/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { createCustomElement } from '@angular/elements';
@@ -61,6 +62,7 @@ import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
 import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
+import { NotificationService } from './shared/services/notifications/notification.service';
 
 @NgModule({
 	declarations: [
@@ -108,6 +110,7 @@ import { LoggerService } from './shared/services/logger/logger.service';
 		MatProgressSpinnerModule,
 		MatSliderModule,
 		MatSidenavModule,
+		MatSnackBarModule,
 		AppRoutingModule,
 		HttpClientModule,
 		FlexLayoutModule,
@@ -121,7 +124,8 @@ import { LoggerService } from './shared/services/logger/logger.service';
 		RemoteUsersService,
 		DevicesService,
 		LoggerService,
-		ChatService
+		ChatService,
+		NotificationService
 	],
 	bootstrap: [AppComponent]
 })
