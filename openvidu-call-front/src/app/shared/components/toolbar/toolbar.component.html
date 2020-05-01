@@ -11,12 +11,11 @@
 		<app-toolbar-logo [lightTheme]="lightTheme" [sessionId]="mySessionId" [compact]="compact" [logoUrl]="logoUrl"></app-toolbar-logo>
 	</div>
 	<div fxFlex="70%" fxFlexOrder="2">
-		<div align="center">
+		<div align="center" class="buttonsContainer">
 			<button
 				mat-icon-button
 				(click)="toggleMicrophone()"
 				[disabled]="isConnectionLost"
-				id="navMicButton"
 				*ngIf="hasAudioDevices && (ovSettings | hasAudio)"
 			>
 				<mat-icon *ngIf="isWebcamAudioEnabled" matTooltip="Mute your audio">mic</mat-icon>
@@ -28,7 +27,6 @@
 				mat-icon-button
 				(click)="toggleCamera()"
 				[disabled]="isConnectionLost"
-				id="navCamButton"
 				*ngIf="!this.ovSettings || (hasVideoDevices && (this.ovSettings | hasVideo))"
 			>
 				<mat-icon *ngIf="isWebcamVideoEnabled" matTooltip="Mute your cam">videocam</mat-icon>
@@ -40,7 +38,6 @@
 				mat-icon-button
 				(click)="toggleScreenShare()"
 				[disabled]="isConnectionLost"
-				id="navScreenButton"
 				*ngIf="ovSettings | hasScreenSharing"
 			>
 				<mat-icon *ngIf="!isScreenEnabled" matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
@@ -57,7 +54,6 @@
 				mat-icon-button
 				(click)="toggleSpeakerLayout()"
 				[disabled]="isConnectionLost"
-				id="navScreenButton"
 				*ngIf="ovSettings | hasLayoutSpeaking"
 			>
 				<mat-icon matTooltip="Enable speaker layout" color="warn" *ngIf="!isAutoLayout">voice_over_off</mat-icon>

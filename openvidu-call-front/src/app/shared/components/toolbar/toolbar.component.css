@@ -10,6 +10,12 @@
   min-width: 400px !important;
 }
 
+.buttonsContainer {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
 .headerLight {
   color: #706969 !important;
   background-color: #eeeeee !important;

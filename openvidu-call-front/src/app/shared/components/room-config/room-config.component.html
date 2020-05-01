@@ -67,33 +67,37 @@
 			</div>
 
 			<div class="col-sm-6 col-md-6 col-lg-6 rightSection">
+				<div class="avatarContainer">
+					<h3>Avatar</h3>
+
+				</div>
+
 
 				<div fxLayout="row" fxFill id="avatarSection" *ngIf="hasVideoDevices">
-					<div fxLayout fxFlex>
-						<div class="" fxFlex="30" fxLayoutAlign="center center">
-							<h3 style="margin: auto;">Avatar</h3>
+
+					<div class="" fxFlex="100" fxLayoutAlign="center center">
+
+
+						<div
+							id="avatarContainer"
+							(click)="setAvatar('video')"
+							[style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'"
+						>
+							<div id="imgText" *ngIf="!videoAvatar">
+								<span>Press Avatar Button</span>
+							</div>
+							<img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
 						</div>
-						<div class="" fxFlex="70" fxLayoutAlign="center center">
-							<div
-								id="avatarContainer"
-								(click)="setAvatar('video')"
-								[style.background]="avatarSelected === 'video' ? 'lightgreen' : 'transparent'"
-							>
-								<div id="imgText" *ngIf="!videoAvatar">
-									<span>Press Avatar Button</span>
-								</div>
-								<img id="avatarImg" *ngIf="videoAvatar" [src]="videoAvatar" />
-							</div>
-							<div
-								id="avatarContainer"
-								(click)="setAvatar('random')"
-								[style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'"
-							>
-								<mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
-								<img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
-							</div>
+						<div
+							id="avatarContainer"
+							(click)="setAvatar('random')"
+							[style.background]="avatarSelected === 'random' ? 'lightgreen' : 'transparent'"
+						>
+							<mat-spinner id="imgText" [diameter]="70" *ngIf="!randomAvatar" color="accent"></mat-spinner>
+							<img id="avatarImg" *ngIf="randomAvatar" [src]="randomAvatar" />
 						</div>
 					</div>
+
 				</div>
 				<!-- Devices section / Microphone-->
 				<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasAudioDevices && (ovSettings | hasAudio)">
