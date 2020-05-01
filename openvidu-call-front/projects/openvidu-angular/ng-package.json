@@ -15,6 +15,7 @@
     "ngx-linkifyjs",
     "@angular/material",
     "@angular/cdk",
-    "@angular/animations"
+    "@angular/animations",
+    "@angular/flex-layout"
   ]
 }

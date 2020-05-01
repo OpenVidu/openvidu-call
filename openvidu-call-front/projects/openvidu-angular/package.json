@@ -4,6 +4,7 @@
         "@angular/animations": "9.1.0",
         "@angular/cdk": "9.2.0",
         "@angular/material": "9.2.0",
+        "@angular/flex-layout": "9.0.0-beta.29",
         "ngx-linkifyjs": "1.3.0",
         "openvidu-browser": "2.13.0"
     },

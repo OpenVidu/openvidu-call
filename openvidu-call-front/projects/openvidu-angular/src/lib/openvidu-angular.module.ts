@@ -23,6 +23,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
@@ -36,6 +37,7 @@ import {
 	HasLayoutSpeakingPipe,
 	HasExitPipe
 } from './shared/pipes/ovSettings.pipe';
+import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
 // Components
 import { VideoRoomComponent } from './video-room/video-room.component';
@@ -46,7 +48,7 @@ import { OpenViduVideoComponent } from './shared/components/stream/ov-video.comp
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
 import { ToolbarLogoComponent } from './shared/components/toolbar/logo.component';
-
+import { FooterComponent } from './shared/components/footer/footer.component';
 import { RoomConfigComponent } from './shared/components/room-config/room-config.component';
 
 // Services
@@ -83,6 +85,7 @@ import { NotificationService } from './shared/services/notifications/notificatio
 		MatSliderModule,
 		MatSidenavModule,
 		MatSnackBarModule,
+		FlexLayoutModule,
 		NgxLinkifyjsModule.forRoot()
 	],
 	declarations: [
@@ -94,6 +97,7 @@ import { NotificationService } from './shared/services/notifications/notificatio
 		OpenViduVideoComponent,
 		DialogErrorComponent,
 		RoomConfigComponent,
+		FooterComponent,
 		ToolbarComponent,
 		ToolbarLogoComponent,
 		LinkifyPipe,
@@ -104,7 +108,8 @@ import { NotificationService } from './shared/services/notifications/notificatio
 		HasScreenSharingPipe,
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
-		HasExitPipe
+		HasExitPipe,
+		TooltipListPipe
 	],
 	entryComponents: [DialogErrorComponent],
 	providers: [
