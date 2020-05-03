@@ -27,7 +27,7 @@
         </div>
 
         <!-- Modal body -->
-        <div class="modal-body">
+        <div class="modal-body" #bodyCard>
 
 		  <div class="row align-items-center">
 			<div class="col-sm-6 col-md-6 col-lg-6 leftSection">
@@ -186,7 +186,7 @@
 							</button>
 						</div>
 						<div class="two" fxFlex="80" fxLayoutAlign="center center">
-							<form id="nicknameDialog" class="alternate-theme">
+							<form id="nicknameForm" class="alternate-theme">
 								<mat-form-field>
 									<input
 										matInput
@@ -216,7 +216,7 @@
 
         <!-- Modal footer -->
         <div class="modal-footer" style="justify-content: center">
-			<button mat-flat-button color="accent" (click)="joinSession()" id="joinButton">JOIN</button>
+			<button mat-flat-button color="accent" (click)="joinSession()" form="nicknameForm" id="joinButton">JOIN</button>
 
         </div>
 

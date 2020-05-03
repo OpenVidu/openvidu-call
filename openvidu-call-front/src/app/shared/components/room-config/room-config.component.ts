@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../../models/user-model';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
@@ -22,6 +22,8 @@ import { OvSettingsModel } from '../../models/ovSettings';
 	styleUrls: ['./room-config.component.css']
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
+	@ViewChild('bodyCard') bodyCard: ElementRef;
+
 	@Input() externalConfig: ExternalConfigModel;
 	@Input() ovSettings: OvSettingsModel;
 	@Output() join = new EventEmitter<any>();
@@ -186,7 +188,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
 			return;
 		}
-		this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
 	}
 
 	eventKeyPress(event) {
@@ -224,6 +225,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			this.oVSessionService.setWebcamName(this.nicknameFormControl.value);
 			this.join.emit();
 		}
+		this.scrollToBottom();
 	}
 
 	toggleDialogExtension() {
@@ -266,6 +268,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.randomAvatar = this.utilsSrv.getOpenViduAvatar();
 		this.oVSessionService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
 		this.avatarSelected = AvatarType.RANDOM;
+	}
+
+	private scrollToBottom(): void {
+		try {
+			this.bodyCard.nativeElement.scrollTop = this.bodyCard.nativeElement.scrollHeight;
+		} catch (err) {
+		}
 	}
 
 	private initScreenPublisher(): Publisher {
