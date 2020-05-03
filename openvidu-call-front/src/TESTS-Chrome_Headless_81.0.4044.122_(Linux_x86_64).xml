@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<testsuite name="Chrome Headless 81.0.4044.122 (Linux x86_64)" package="" timestamp="2020-05-03T17:59:10" id="0" hostname="carlos-Aspire-F5-573G" tests="6" errors="0" failures="0" time="0.096">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/81.0.4044.122 Safari/537.36"/>
+  </properties>
+  <testcase name="WebComponentComponent should assign the theme " time="0.049" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <testcase name="WebComponentComponent should assign the default theme with unsupported theme" time="0.016" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <testcase name="WebComponentComponent should create" time="0.011" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <testcase name="WebComponentComponent should assign the default theme " time="0.006" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <testcase name="WebComponentComponent should assign openvidu secret " time="0.008" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <testcase name="WebComponentComponent should assign openvidu url " time="0.006" classname="Chrome_Headless_81_0_4044_122_(Linux_x86_64).WebComponentComponent"/>
+  <system-out>
+    <![CDATA[
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

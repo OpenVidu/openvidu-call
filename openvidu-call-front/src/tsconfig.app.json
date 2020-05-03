@@ -10,5 +10,9 @@
   ],
   "include": [
     "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.mock.ts",
+    "**/*.spec.ts"
   ]
 }

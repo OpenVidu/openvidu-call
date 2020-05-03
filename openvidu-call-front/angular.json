@@ -107,10 +107,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.css",
-              "src/theme.scss"
-            ],
+            "codeCoverage": true,
+            "styles": [],
             "scripts": [],
             "assets": [
               "src/favicon.ico",

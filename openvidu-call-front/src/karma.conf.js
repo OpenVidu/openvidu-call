@@ -10,6 +10,9 @@ module.exports = function (config) {
 			require('karma-chrome-launcher'),
 			require('karma-jasmine-html-reporter'),
 			require('karma-coverage-istanbul-reporter'),
+			require('karma-junit-reporter'),
+			require('karma-mocha-reporter'),
+			require('karma-notify-reporter'),
 			require('@angular-devkit/build-angular/plugins/karma')
 		],
 		client: {
@@ -30,12 +33,36 @@ module.exports = function (config) {
 				]
 			}
 		},
-		coverageIstanbulReporter: {
-			dir: require('path').join(__dirname, '../coverage'),
-			reports: ['html', 'lcovonly'],
-			fixWebpackSourcePaths: true
-		},
-		reporters: ['mocha', 'progress', 'kjhtml', 'dots'],
+		// coverageIstanbulReporter: {
+		// 	dir: require('path').join(__dirname, '../coverage'),
+		// 	reports: ['html', 'lcovonly', 'text-summary'],
+		// 	fixWebpackSourcePaths: true,
+		// 	verbose: true,
+		// 	thresholds: {
+		// 		emitWarning: false,
+		// 		global: {
+		// 			statements: 80,
+		// 			branches: 80,
+		// 			functions: 80,
+		// 			lines: 80
+		// 		},
+		// 		each: {
+		// 			statements: 80,
+		// 			branches: 80,
+		// 			functions: 80,
+		// 			lines: 80
+		// 		}
+		// 	}
+		// },
+		reporters: [
+			'mocha',
+			'progress',
+			'kjhtml',
+			'dots',
+			// 'coverage-istanbul', // (https://github.com/mattlewis92/karma-coverage-istanbul-reporter/issues/49, https://github.com/angular/angular-cli/issues/10940)
+			'junit',
+			'notify'
+		],
 		port: 9876,
 		colors: true,
 		logLevel: config.LOG_INFO,

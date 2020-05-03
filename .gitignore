@@ -41,6 +41,8 @@
 **yarn-error.log
 **testem.log
 **/typings
+**/*.key
+**/*.crt
 
 # System Files
 **.DS_Store
