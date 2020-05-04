@@ -1,22 +1,15 @@
-FROM nginx:1.17.9
+FROM node:lts-alpine3.11
 
-RUN apt-get update && \
-    apt-get install -y curl wget && \
-    apt-get clean && \
-    apt-get autoclean && \
-    rm -Rf /tmp/* && \
-    rm -Rf /var/lib/apt/lists/*
+ARG RELEASE=2.13.0
+
+RUN apk add wget unzip
+
+WORKDIR /opt/openvidu-call
 
 # Install openvidu-call
-RUN mkdir -p /var/www/openvidu-call && \
-    wget -L -O /var/www/openvidu-call/openvidu-call.tar.gz \
-        "https://github.com/OpenVidu/openvidu-call/releases/download/v2.12.0/openvidu-call-2.12.0.tar.gz" && \
-    tar zxf /var/www/openvidu-call/openvidu-call.tar.gz -C /var/www/openvidu-call && \
-    chown -R www-data:www-data /var/www/openvidu-call && \
-    rm /var/www/openvidu-call/openvidu-call.tar.gz
-
-# Nginx conf
-COPY ./openvidu-call.conf /etc/nginx/conf.d/default.conf
+RUN wget "https://github.com/OpenVidu/openvidu-call/releases/download/v${RELEASE}/openvidu-call-${RELEASE}.tar.gz" -O openvidu-call.tar.gz && \
+    tar zxf openvidu-call.tar.gz  && \
+    rm openvidu-call.tar.gz
 
 # Entrypoint
 COPY ./entrypoint.sh /usr/local/bin
