@@ -10,8 +10,6 @@ module.exports = function (config) {
 			require('karma-chrome-launcher'),
 			require('karma-jasmine-html-reporter'),
 			require('karma-coverage-istanbul-reporter'),
-			require('karma-junit-reporter'),
-			require('karma-mocha-reporter'),
 			require('karma-notify-reporter'),
 			require('@angular-devkit/build-angular/plugins/karma')
 		],
@@ -55,12 +53,10 @@ module.exports = function (config) {
 		// 	}
 		// },
 		reporters: [
-			'mocha',
 			'progress',
 			'kjhtml',
 			'dots',
 			// 'coverage-istanbul', // (https://github.com/mattlewis92/karma-coverage-istanbul-reporter/issues/49, https://github.com/angular/angular-cli/issues/10940)
-			'junit',
 			'notify'
 		],
 		port: 9876,
