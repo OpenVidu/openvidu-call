@@ -5,6 +5,8 @@ import { WebComponentModel } from '../shared/models/webcomponent-model';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
 import { ConnectionEvent, Session, Publisher } from 'openvidu-browser';
+import { ISessionConfig } from '../shared/types/webcomponent-config';
+
 
 @Component({
 	selector: 'app-web-component',
@@ -50,10 +52,18 @@ export class WebComponentComponent {
 	}
 
 	@Input('sessionConfig')
-	set sessionConfig(config: any) {
+	set sessionConfig(config: string | ISessionConfig | Object) {
 		this.log.d('Webcomponent sessionConfig: ', config);
 		setTimeout(() => {
-			// Leave session when sessionConfig is undefined
+			if (typeof config === 'string') {
+				try {
+					config = JSON.parse(config);
+				} catch (error) {
+					this.log.e('Unexpected JSON', error);
+					return;
+				}
+			}
+			// Leave session when sessionConfig is an empty Object
 			if (this.isEmpty(config)) {
 				this.log.w('Parameters received are incorrect.', config);
 				this.log.w('Exit session');

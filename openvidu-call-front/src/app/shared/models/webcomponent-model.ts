@@ -11,14 +11,7 @@ export class WebComponentModel extends ExternalConfigModel {
 
 	setSessionConfig(config: any) {
 
-		// if (!this.isCorrectType(config)){
-		// 	console.error('Error: Session config retrieved is not correct', config);
-		// }
-
 		this.sessionConfig = config;
-		if (typeof config === 'string') {
-			this.sessionConfig = JSON.parse(config);
-		}
 
 		if (!!this.sessionConfig) {
 			this.sessionName = this.sessionConfig.sessionName;
