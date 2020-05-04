@@ -9,7 +9,7 @@ The aim of this docker file is generate a docker image from OpenVidu Call releas
 To build it:
 
 ```bash
-docker build -t <your-tag-name> --build-arg RELEASE=2.13.0 .
+docker build -f release.dockerfile -t <your-tag-name> --build-arg RELEASE=2.13.0 .
 ```
 
 ####  master.dockerfile
@@ -19,6 +19,6 @@ The aim of this docker file is generate a docker image from OpenVidu Call dev.
 To build it:
 
 ```bash
-docker build -t <your-tag-name> .
+docker build -f master.dockerfile -t <your-tag-name> .
 ```
 
