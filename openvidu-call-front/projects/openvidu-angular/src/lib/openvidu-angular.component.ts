@@ -81,7 +81,7 @@ export class OpenviduSessionComponent implements OnInit {
 		session.on('sessionDisconnected', (e) => (this.display = false));
 		session.on('connectionCreated', (e: ConnectionEvent) => {
 			setTimeout(() => {
-				if (!e.connection.stream.streamManager.remote) {
+				if (!e.connection?.stream?.streamManager?.remote) {
 					this.videoRoom.checkSizeComponent();
 				}
 			}, 700);
