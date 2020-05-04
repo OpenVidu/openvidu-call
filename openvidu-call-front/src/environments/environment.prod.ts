@@ -1,6 +1,5 @@
 export const environment = {
   production: true,
   openvidu_url: '',
-  openvidu_secret: '',
-  logs: true
+  openvidu_secret: ''
 };

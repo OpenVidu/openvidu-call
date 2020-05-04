@@ -5,8 +5,7 @@
 export const environment = {
   production: false,
   openvidu_url: '',
-  openvidu_secret: '',
-  logs: true
+  openvidu_secret: ''
 };
 
 /*

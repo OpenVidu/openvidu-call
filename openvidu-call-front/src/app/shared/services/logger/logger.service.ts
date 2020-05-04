@@ -19,28 +19,23 @@ export class LoggerService implements ILogService {
 	}
 
 	public get(prefix: string) {
-		const isDebugMode = environment.logs;
-		if (isDebugMode) {
-			// this.LOG_FNS[0].call(this.log, '[' + prefix + '] Logger created');
-		}
+		const prodMode = environment.production;
 		const loggerFns = this.LOG_FNS.map((logTemplFn, i) => {
 			return logTemplFn.bind(this.log, this.MSG_PREFIXES[i][0] + prefix + this.MSG_PREFIXES[i][1]);
 		});
 		return {
 			d: function(...args: any[]) {
-				if (isDebugMode) {
+				if (!prodMode) {
 					loggerFns[0].apply(this.log, arguments);
 				}
 			},
 			w: function(...args: any[]) {
-				if (isDebugMode) {
+				if (!prodMode) {
 					loggerFns[1].apply(this.log, arguments);
 				}
 			},
 			e: function(...args: any[]) {
-				if (isDebugMode) {
-					loggerFns[2].apply(this.log, arguments);
-				}
+				loggerFns[2].apply(this.log, arguments);
 			}
 		};
 	}
