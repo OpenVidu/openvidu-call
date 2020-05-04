@@ -1,0 +1,63 @@
+import { Injectable } from '@angular/core';
+import { IDevice, CameraType } from '../../types/device-type';
+
+@Injectable()
+export class DevicesServiceMock {
+	audioDevice: IDevice = {
+		label: 'audio',
+		device: 'mockDevice'
+	};
+	videodevice: IDevice = {
+		label: 'video',
+		device: 'mockDevice',
+		type: CameraType.FRONT
+	};
+
+	constructor() {}
+
+	async initDevices() {}
+
+	private initAudioDevices() {}
+
+	private initVideoDevices() {}
+
+	getCamSelected(): IDevice {
+		return this.videodevice;
+	}
+
+	getMicSelected(): IDevice {
+		return this.audioDevice;
+	}
+
+	setCamSelected(deviceField: any) {}
+
+	setMicSelected(deviceField: any) {}
+
+	needUpdateVideoTrack(newVideoSource: string): boolean {
+		return false;
+	}
+
+	needUpdateAudioTrack(newAudioSource: string): boolean {
+		return false;
+	}
+
+	getCameras(): IDevice[] {
+		return [this.videodevice];
+	}
+
+	getMicrophones(): IDevice[] {
+		return [this.audioDevice];
+	}
+
+	hasVideoDeviceAvailable(): boolean {
+		return true;
+	}
+
+	hasAudioDeviceAvailable(): boolean {
+		return true;
+	}
+
+	cameraNeedsMirror(deviceField: string): boolean {
+		return true;
+	}
+}

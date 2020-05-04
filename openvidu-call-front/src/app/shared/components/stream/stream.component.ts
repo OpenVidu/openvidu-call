@@ -21,7 +21,7 @@ export class StreamComponent implements OnInit {
 	nicknameFormControl: FormControl;
 	matcher: NicknameMatcher;
 
-	@Input() user: UserModel;
+	_user: UserModel;
 	@Output() nicknameClicked = new EventEmitter<any>();
 	@Output() replaceScreenTrackClicked = new EventEmitter<any>();
 	@Output() toggleVideoSizeClicked = new EventEmitter<any>();
@@ -49,6 +49,12 @@ export class StreamComponent implements OnInit {
 		this.checkVideoSizeBigIcon(videoSizeBig);
 	}
 
+	@Input()
+	set user(user: UserModel) {
+		this._user = user;
+		this.nicknameFormControl = new FormControl(this._user.getNickname(), [Validators.maxLength(25), Validators.required]);
+	}
+
 	@ViewChild('nicknameInput')
 	set nicknameInputElement(element: ElementRef) {
 		setTimeout(() => {
@@ -57,17 +63,16 @@ export class StreamComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.nicknameFormControl = new FormControl(this.user.getNickname(), [Validators.maxLength(25), Validators.required]);
 		this.matcher = new NicknameMatcher();
 	}
 
 	toggleVideoSize(resetAll?) {
 		const element = this.utilsSrv.getHTMLElementByClassName(this.streamComponent.element.nativeElement, LayoutType.ROOT_CLASS);
-		this.toggleVideoSizeClicked.emit({ element, connectionId: this.user.getConnectionId() , resetAll });
+		this.toggleVideoSizeClicked.emit({ element, connectionId: this._user.getConnectionId() , resetAll });
 	}
 
 	toggleFullscreen() {
-		this.utilsSrv.toggleFullscreen('container-' + this.user.getStreamManager().stream.streamId);
+		this.utilsSrv.toggleFullscreen('container-' + this._user.getStreamManager().stream.streamId);
 		this.toggleFullscreenIcon();
 	  }
 
@@ -76,7 +81,7 @@ export class StreamComponent implements OnInit {
 	}
 
 	toggleNicknameForm() {
-		if (this.user.isLocal()) {
+		if (this._user.isLocal()) {
 			this.toggleNickname = !this.toggleNickname;
 		}
 	}
