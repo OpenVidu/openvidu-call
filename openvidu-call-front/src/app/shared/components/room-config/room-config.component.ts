@@ -188,6 +188,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
 			return;
 		}
+		this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
 	}
 
 	eventKeyPress(event) {

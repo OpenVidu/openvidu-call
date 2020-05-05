@@ -99,6 +99,38 @@
 					</div>
 
 				</div>
+
+				<!-- Devices section / Nickname-->
+				<div fxLayout="row" fxFill id="devicesSection">
+					<div fxLayout fxFlex>
+						<div class="one" fxFlex="20" fxLayoutAlign="center center">
+							<button mat-mini-fab (click)="setNicknameForm()" class="deviceButton">
+								<mat-icon matTooltip="Nickname">person</mat-icon>
+							</button>
+						</div>
+						<div class="two" fxFlex="80" fxLayoutAlign="center center">
+							<form id="nicknameForm" class="alternate-theme">
+								<mat-form-field>
+									<input
+										matInput
+										placeholder="Nickname"
+										[formControl]="nicknameFormControl"
+										[errorStateMatcher]="matcher"
+										(keypress)="eventKeyPress($event)"
+										autocomplete="off"
+									/>
+									<mat-error *ngIf="nicknameFormControl.hasError('required')">
+										Nickname is <strong>required</strong>
+									</mat-error>
+									<mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
+										Nickname is <strong>too long!</strong>
+									</mat-error>
+								</mat-form-field>
+							</form>
+						</div>
+					</div>
+				</div>
+
 				<!-- Devices section / Microphone-->
 				<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasAudioDevices && (ovSettings | hasAudio)">
 					<div fxLayout fxFlex>
@@ -177,38 +209,6 @@
 						</div>
 					</div>
 				</div>
-				<!-- Devices section / Nickname-->
-				<div fxLayout="row" fxFill id="devicesSection">
-					<div fxLayout fxFlex>
-						<div class="one" fxFlex="20" fxLayoutAlign="center center">
-							<button mat-mini-fab (click)="setNicknameForm()" class="deviceButton">
-								<mat-icon matTooltip="Nickname">person</mat-icon>
-							</button>
-						</div>
-						<div class="two" fxFlex="80" fxLayoutAlign="center center">
-							<form id="nicknameForm" class="alternate-theme">
-								<mat-form-field>
-									<input
-										matInput
-										placeholder="Nickname"
-										[formControl]="nicknameFormControl"
-										[errorStateMatcher]="matcher"
-										(keypress)="eventKeyPress($event)"
-										autocomplete="off"
-									/>
-									<mat-error *ngIf="nicknameFormControl.hasError('required')">
-										Nickname is <strong>required</strong>
-									</mat-error>
-									<mat-error *ngIf="nicknameFormControl.hasError('maxlength')">
-										Nickname is <strong>too long!</strong>
-									</mat-error>
-								</mat-form-field>
-							</form>
-						</div>
-					</div>
-				</div>
-
-
 			</div>
 		  </div>
 
