@@ -423,7 +423,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVSessionService.unpublishScreen();
 	}
 
-	subscribeToChatComponent() {
+	private subscribeToChatComponent() {
 		this.chatSubscription = this.chatService.toggleChatObs.subscribe((opened) => {
 			const timeout = this.externalConfig ? 300 : 0;
 			this.updateOpenViduLayout(timeout);
