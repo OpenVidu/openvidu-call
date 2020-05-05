@@ -76,7 +76,7 @@ export class RemoteUsersService {
 
 	updateNickname(connectionId: any, nickname: any) {
 		const user = this.getRemoteUserByConnectionId(connectionId);
-		user.setNickname(nickname);
+		user?.setNickname(nickname);
 		this._remoteUsers.next(this.users);
 	}
 

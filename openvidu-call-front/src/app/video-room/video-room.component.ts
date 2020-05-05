@@ -9,7 +9,8 @@ import {
 	StreamEvent,
 	StreamPropertyChangedEvent,
 	SessionDisconnectedEvent,
-	PublisherSpeakingEvent
+	PublisherSpeakingEvent,
+	Connection
 } from 'openvidu-browser';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -360,9 +361,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 			this.remoteUsersService.add(event, subscriber);
-
-			// subscriber.on('streamPlaying', (e: StreamManagerEvent) => {
-			// });
+			this.sendNicknameSignal(this.oVSessionService.getWebcamUserName(), event.stream.connection);
 		});
 	}
 
@@ -482,10 +481,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private sendNicknameSignal(nickname) {
+	private sendNicknameSignal(nickname: string , connection?: Connection) {
 		const signalOptions: SignalOptions = {
 			data: JSON.stringify({ nickname }),
-			type: 'nicknameChanged'
+			type: 'nicknameChanged',
+			to: connection ? [connection] : undefined
 		};
 		this.session.signal(signalOptions);
 	}
