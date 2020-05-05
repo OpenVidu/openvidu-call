@@ -10,7 +10,7 @@ jobs:
     name: Run unit tests with Karma and Jasmine
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
