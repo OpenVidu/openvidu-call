@@ -83,3 +83,9 @@
 .tooltipList {
   white-space: pre;
 }
+
+@media (max-width: 600px) {
+  #navSessionInfo {
+    display: none;
+  }
+}
