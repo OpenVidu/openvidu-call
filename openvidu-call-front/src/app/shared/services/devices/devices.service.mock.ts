@@ -17,10 +17,6 @@ export class DevicesServiceMock {
 
 	async initDevices() {}
 
-	private initAudioDevices() {}
-
-	private initVideoDevices() {}
-
 	getCamSelected(): IDevice {
 		return this.videodevice;
 	}

@@ -3,25 +3,24 @@ import { async, ComponentFixture, TestBed, fakeAsync, flush } from '@angular/cor
 import { WebComponentComponent } from './web-component.component';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { LoggerServiceMock } from '../shared/services/logger/logger.service.mock';
-import { Session } from 'openvidu-browser';
 
-
+class OV_SESSION {
+	on(event: string, callback) {}
+}
 describe('WebComponentComponent unit test', () => {
 	let component: WebComponentComponent;
 	let fixture: ComponentFixture<WebComponentComponent>;
+	const session = new OV_SESSION();
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
 			declarations: [WebComponentComponent],
-			providers: [
-				{provide: LoggerService, useClass: LoggerServiceMock},
-			]
+			providers: [{ provide: LoggerService, useClass: LoggerServiceMock }]
 		}).compileComponents();
 		fixture = TestBed.createComponent(WebComponentComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	}));
-
 
 	it('should create', () => {
 		expect(component).toBeTruthy();
@@ -179,7 +178,6 @@ describe('WebComponentComponent unit test', () => {
 
 	it('should emit a session when emitSession is called', fakeAsync(() => {
 		spyOn(component.sessionCreated, 'emit');
-		const session = new Session(null);
 		component.emitSession(session);
 		expect(component.sessionCreated.emit).toHaveBeenCalled();
 	}));

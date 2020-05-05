@@ -4,7 +4,7 @@ import { OvSettings } from '../shared/types/ov-settings';
 import { WebComponentModel } from '../shared/models/webcomponent-model';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { ILogger } from '../shared/types/logger-type';
-import { ConnectionEvent, Session, Publisher } from 'openvidu-browser';
+import { ConnectionEvent, Publisher } from 'openvidu-browser';
 import { ISessionConfig } from '../shared/types/webcomponent-config';
 
 
@@ -39,9 +39,6 @@ export class WebComponentComponent {
 	@ViewChild('videoRoom') videoRoom: VideoRoomComponent;
 
 	display = false;
-	wc_sessionName: string;
-	wc_username: string;
-	wc_tokens: string[];
 
 	webComponent: WebComponentModel = new WebComponentModel();
 
@@ -96,7 +93,7 @@ export class WebComponentComponent {
 		setTimeout(() => this.error.emit(event), 20);
 	}
 
-	emitSession(session: Session) {
+	emitSession(session: any) {
 		session.on('sessionDisconnected', (e) => this.display = false);
 		session.on('connectionCreated', (e: ConnectionEvent) => {
 			this.videoRoom.checkSizeComponent();
