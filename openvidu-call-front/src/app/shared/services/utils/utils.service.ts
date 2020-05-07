@@ -87,14 +87,6 @@ export class UtilsService {
 		return this.isAndroid() || this.isIos();
 	}
 
-	isAndroid(): boolean {
-		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
-	}
-
-	isIos(): boolean {
-		return /\b(\w*iOS\w*)\b/.test(navigator.userAgent);
-	}
-
 	showErrorMessage(header: string, message: string, disableClose: boolean = false) {
 		this.dialogRef = this.dialog.open(DialogErrorComponent, {
 			data: { header: header, message: message },
@@ -129,5 +121,14 @@ export class UtilsService {
 		while (elements.length > 0) {
 			this.toggleBigElementClass(elements[0]);
 		}
+	}
+
+
+	private isAndroid(): boolean {
+		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
+	}
+
+	private isIos(): boolean {
+		return /\b(\w*iOS\w*)\b/.test(navigator.userAgent);
 	}
 }

@@ -51,7 +51,7 @@ export class DevicesService {
 				device: device.deviceId,
 				type: CameraType.BACK
 			};
-			if (this.utilSrv.isAndroid() || this.utilSrv.isIos()) {
+			if (this.utilSrv.isMobile()) {
 				// We assume front video device has 'front' in its label in Mobile devices
 				if (myDevice.label.toLowerCase().includes(CameraType.FRONT.toLowerCase())) {
 					myDevice.type = CameraType.FRONT;
