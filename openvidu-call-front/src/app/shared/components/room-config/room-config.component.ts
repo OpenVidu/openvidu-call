@@ -15,6 +15,7 @@ import { ILogger } from '../../types/logger-type';
 import { ScreenType } from '../../types/video-type';
 import { ExternalConfigModel } from '../../models/external-config';
 import { OvSettingsModel } from '../../models/ovSettings';
+import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
 	selector: 'app-room-config',
@@ -22,6 +23,8 @@ import { OvSettingsModel } from '../../models/ovSettings';
 	styleUrls: ['./room-config.component.css']
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
+
+	private readonly USER_NICKNAME = 'openviduCallNickname';
 	@ViewChild('bodyCard') bodyCard: ElementRef;
 
 	@Input() externalConfig: ExternalConfigModel;
@@ -62,7 +65,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		private utilsSrv: UtilsService,
 		public oVSessionService: OpenViduSessionService,
 		private oVDevicesService: DevicesService,
-		private loggerSrv: LoggerService
+		private loggerSrv: LoggerService,
+		private storageSrv: StorageService,
+
 	) {
 		this.log = this.loggerSrv.get('RoomConfigComponent');
 	}
@@ -188,7 +193,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
 			return;
 		}
-		this.nicknameFormControl.setValue(this.utilsSrv.generateNickname());
+		const nickname = this.storageSrv.get(this.USER_NICKNAME) || this.utilsSrv.generateNickname();
+		this.nicknameFormControl.setValue(nickname);
 	}
 
 	eventKeyPress(event) {
@@ -224,6 +230,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// 	this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
 			// }
 			this.oVSessionService.setWebcamName(this.nicknameFormControl.value);
+			this.storageSrv.set(this.USER_NICKNAME, this.nicknameFormControl.value);
 			this.join.emit();
 		}
 		this.scrollToBottom();

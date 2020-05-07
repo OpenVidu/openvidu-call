@@ -11,6 +11,8 @@ import { OpenViduSessionServiceMock } from '../../services/openvidu-session/open
 import { LoggerServiceMock } from '../../services/logger/logger.service.mock';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IsAutoPublishPipe } from '../../pipes/ovSettings.pipe';
+import { StorageService } from '../../services/storage/storage.service';
+import { StorageServiceMock } from '../../services/storage/storage.service.mock';
 
 describe('RoomConfigComponent', () => {
 	let component: RoomConfigComponent;
@@ -24,6 +26,7 @@ describe('RoomConfigComponent', () => {
 				{provide: UtilsService, useClass: UtilsServiceMock},
 				{provide: OpenViduSessionService, useClass: OpenViduSessionServiceMock},
 				{provide: DevicesService, useClass: DevicesServiceMock},
+				{provide: StorageService, useClass: StorageServiceMock},
 			],
 			imports: [RouterTestingModule.withRoutes([])],
 		}).compileComponents();

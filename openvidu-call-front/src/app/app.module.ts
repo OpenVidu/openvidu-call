@@ -63,6 +63,7 @@ import { RemoteUsersService } from './shared/services/remote-users/remote-users.
 import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
+import { StorageService } from './shared/services/storage/storage.service';
 
 @NgModule({
 	declarations: [
@@ -125,7 +126,8 @@ import { NotificationService } from './shared/services/notifications/notificatio
 		DevicesService,
 		LoggerService,
 		ChatService,
-		NotificationService
+		NotificationService,
+		StorageService
 	],
 	bootstrap: [AppComponent]
 })

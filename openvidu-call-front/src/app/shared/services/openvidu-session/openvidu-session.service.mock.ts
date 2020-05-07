@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { PublisherProperties, Publisher, Session } from 'openvidu-browser';
 import { AvatarType } from '../../types/chat-type';
+import { Observable } from 'rxjs/internal/Observable';
+import { UserModel } from '../../models/user-model';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class OpenViduSessionServiceMock {
+
+
+	OVUsers: Observable<UserModel[]>;
 
 
 	constructor() {}
