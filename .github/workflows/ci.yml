@@ -2,8 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - master
+    paths:
+      - 'openvidu-call-front/**'
 
 jobs:
   unit_test:
