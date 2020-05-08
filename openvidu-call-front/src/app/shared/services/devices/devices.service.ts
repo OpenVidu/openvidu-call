@@ -23,15 +23,20 @@ export class DevicesService {
 	}
 
 	async initDevices() {
-		this.devices = await this.OV.getDevices();
+		await this.initOpenViduDevices();
 		this.devices.length > 0 ? this.log.d('Devices found: ', this.devices) : this.log.w('No devices found!');
 		this.resetDevicesArray();
 		if (this.hasAudioDeviceAvailable()) {
 			this.initAudioDevices();
+			this.micSelected = this.getMicSelected();
 		}
 		if (this.hasVideoDeviceAvailable()) {
 			this.initVideoDevices();
+			this.camSelected = this.cameras.find((device) => device.type === CameraType.FRONT);
 		}
+	}
+	private async initOpenViduDevices() {
+		this.devices = await this.OV.getDevices();
 	}
 
 	private initAudioDevices() {
@@ -39,7 +44,6 @@ export class DevicesService {
 		audioDevices.forEach((device: Device) => {
 			this.microphones.push({ label: device.label, device: device.deviceId });
 		});
-		this.micSelected = this.getMicSelected();
 	}
 
 	private initVideoDevices() {
@@ -55,13 +59,13 @@ export class DevicesService {
 				// We assume front video device has 'front' in its label in Mobile devices
 				if (myDevice.label.toLowerCase().includes(CameraType.FRONT.toLowerCase())) {
 					myDevice.type = CameraType.FRONT;
-					this.camSelected = myDevice;
+					// this.camSelected = myDevice;
 				}
 			} else {
 				// We assume first device is web camera in Browser Desktop
 				if (index === FIRST_POSITION) {
 					myDevice.type = CameraType.FRONT;
-					this.camSelected = myDevice;
+					// this.camSelected = myDevice;
 				}
 			}
 
@@ -72,7 +76,7 @@ export class DevicesService {
 
 	getCamSelected(): IDevice {
 		if (this.cameras.length === 0) {
-			this.log.w('No video devices found!');
+			this.log.e('No video devices found!');
 			return;
 		}
 		return this.camSelected || this.cameras[0];
@@ -80,7 +84,7 @@ export class DevicesService {
 
 	getMicSelected(): IDevice {
 		if (this.microphones.length === 0) {
-			this.log.w('No audio devices found!');
+			this.log.e('No audio devices found!');
 			return;
 		}
 		return this.micSelected || this.microphones[0];
@@ -95,11 +99,11 @@ export class DevicesService {
 	}
 
 	needUpdateVideoTrack(newVideoSource: string): boolean {
-		return this.camSelected.device !== newVideoSource;
+		return this.getCamSelected().device !== newVideoSource;
 	}
 
 	needUpdateAudioTrack(newAudioSource: string): boolean {
-		return this.micSelected.device !== newAudioSource;
+		return this.getMicSelected().device !== newAudioSource;
 	}
 
 	getCameras(): IDevice[] {
