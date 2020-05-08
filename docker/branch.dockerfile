@@ -20,19 +20,21 @@ FROM node:lts-alpine3.11 as openvidu-call-build
 
 WORKDIR /openvidu-call
 
+ARG BRANCH=master
+
 COPY --from=openvidu-browser-build /openvidu-browser/openvidu-browser-*.tgz .
 
 RUN apk add wget unzip
 
-# Download openvidu-call from master, intall openvidu-browser and build for production
-RUN wget "https://github.com/OpenVidu/openvidu-call/archive/master.zip" -O openvidu-call.zip && \
+# Download openvidu-call from specific branch (master by default), intall openvidu-browser and build for production
+RUN wget "https://github.com/OpenVidu/openvidu-call/archive/${BRANCH}.zip" -O openvidu-call.zip && \
     unzip openvidu-call.zip && \
     rm openvidu-call.zip && \
-    mv openvidu-call-master/openvidu-call-front/ . && \
-    mv openvidu-call-master/openvidu-call-back/ . && \
+    mv openvidu-call-${BRANCH}/openvidu-call-front/ . && \
+    mv openvidu-call-${BRANCH}/openvidu-call-back/ . && \
     rm openvidu-call-front/package-lock.json && \
     rm openvidu-call-back/package-lock.json && \
-    rm -rf openvidu-call-master && \
+    rm -rf openvidu-call-${BRANCH} && \
     # Install openvidu-browser in openvidu-call and build it for production
     npm i --prefix openvidu-call-front openvidu-browser-*.tgz && \
     npm i --prefix openvidu-call-front && \
