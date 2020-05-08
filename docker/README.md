@@ -19,7 +19,7 @@ The aim of this docker file is generate a docker image from a OpenVidu Call bran
 To build it:
 
 ```bash
-docker build -f master.dockerfile -t <your-tag-name> --build-arg BRANCH=<branch-name> .
+docker build -f branch.dockerfile -t <your-tag-name> --build-arg BRANCH=<branch-name> .
 ```
 
 By default, the branch name will be `master`.
