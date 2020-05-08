@@ -96,13 +96,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.oVUsersSubscription.unsubscribe();
 	}
 
-	onCameraSelected(event: any) {
+	async onCameraSelected(event: any) {
 		const videoSource = event?.value;
 		if (!!videoSource) {
 			// Is New deviceId different from the old one?
 			if (this.oVDevicesService.needUpdateVideoTrack(videoSource)) {
 				const mirror = this.oVDevicesService.cameraNeedsMirror(videoSource);
-				this.oVSessionService.replaceTrack(videoSource, null, mirror);
+				await this.oVSessionService.replaceTrack(videoSource, null, mirror);
 				this.oVDevicesService.setCamSelected(videoSource);
 				this.camSelected = this.oVDevicesService.getCamSelected();
 			}
@@ -116,7 +116,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.isVideoActive = false;
 	}
 
-	onMicrophoneSelected(event: any) {
+	async onMicrophoneSelected(event: any) {
 		const audioSource = event?.value;
 
 		if (!!audioSource) {
@@ -124,7 +124,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			if (this.oVDevicesService.needUpdateAudioTrack(audioSource)) {
 				console.log(this.camSelected);
 				const mirror = this.oVDevicesService.cameraNeedsMirror(this.camSelected.device);
-				this.oVSessionService.replaceTrack(null, audioSource, mirror);
+				await this.oVSessionService.replaceTrack(null, audioSource, mirror);
 				this.oVDevicesService.setMicSelected(audioSource);
 				this.micSelected = this.oVDevicesService.getMicSelected();
 			}

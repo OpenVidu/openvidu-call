@@ -13,7 +13,6 @@ import { ILogger } from '../../types/logger-type';
 export class OpenViduSessionService {
 	OVUsers: Observable<UserModel[]>;
 	private _OVUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
-
 	private OV: OpenVidu = null;
 	private OVScreen: OpenVidu = null;
 
@@ -160,41 +159,52 @@ export class OpenViduSessionService {
 		}
 	}
 
-	replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true) {
-		if (!!videoSource) {
-			this.log.d('Replacing video track ' + videoSource);
-			this.videoSource = videoSource;
-			// this.stopVideoTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
-		}
-		if (!!audioSource) {
-			this.log.d('Replacing audio track ' + audioSource);
-			this.audioSource = audioSource;
-			// this.stopAudioTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
-		}
-		this.destryoWebcamUser();
-		const properties = this.createProperties(
-			this.videoSource,
-			this.audioSource,
-			this.hasWebcamVideoActive(),
-			this.hasWebcamAudioActive(),
-			mirror
-		);
+	replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true): Promise<any> {
+		return new Promise((resolve, reject) => {
 
-		const publisher = this.initCamPublisher(undefined, properties);
+			if (!!videoSource) {
+				this.log.d('Replacing video track ' + videoSource);
+				this.videoSource = videoSource;
+				// this.stopVideoTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
+			}
+			if (!!audioSource) {
+				this.log.d('Replacing audio track ' + audioSource);
+				this.audioSource = audioSource;
+				// this.stopAudioTracks(this.webcamUser.getStreamManager().stream.getMediaStream());
+			}
+			this.destryoWebcamUser();
+			const properties = this.createProperties(
+				this.videoSource,
+				this.audioSource,
+				this.hasWebcamVideoActive(),
+				this.hasWebcamAudioActive(),
+				mirror
+			);
 
-		this.webcamUser.setStreamManager(publisher);
+			const publisher = this.initCamPublisher(undefined, properties);
 
-		// Reeplace track method
-		// this.webcamMediaStream = await this.OV.getUserMedia(properties);
-		// const track: MediaStreamTrack = !!videoSource
-		// 	? this.webcamMediaStream.getVideoTracks()[0]
-		// 	: this.webcamMediaStream.getAudioTracks()[0];
+			publisher.once('streamPlaying', () => {
+				this.webcamUser.setStreamManager(publisher);
+				resolve();
+			});
 
-		// try {
-		// 	await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
-		// } catch (error) {
-		// 	this.log.e('Error replacing track ', error);
-		// }
+			publisher.once('accessDenied', () => {
+				reject();
+			});
+
+
+			// Reeplace track method
+			// this.webcamMediaStream = await this.OV.getUserMedia(properties);
+			// const track: MediaStreamTrack = !!videoSource
+			// 	? this.webcamMediaStream.getVideoTracks()[0]
+			// 	: this.webcamMediaStream.getAudioTracks()[0];
+
+			// try {
+			// 	await (<Publisher>this.webcamUser.getStreamManager()).replaceTrack(track);
+			// } catch (error) {
+			// 	this.log.e('Error replacing track ', error);
+			// }
+		});
 	}
 
 	async replaceScreenTrack() {
