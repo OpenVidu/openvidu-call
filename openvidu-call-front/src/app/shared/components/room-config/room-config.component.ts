@@ -316,8 +316,11 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private initwebcamPublisher() {
-		const videoSource =  this.hasVideoDevices ? undefined : false;
-		const audioSource = this.hasAudioDevices ? undefined : false;
+		const micStorageDevice = this.micSelected?.device || undefined;
+		const camStorageDevice = this.camSelected?.device || undefined;
+
+		const videoSource =  this.hasVideoDevices ? camStorageDevice : false;
+		const audioSource = this.hasAudioDevices ? micStorageDevice : false;
 		const publishAudio = this.hasAudioDevices ? this.isAudioActive : false;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;
@@ -333,18 +336,19 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private handlePublisherSuccess(publisher: Publisher) {
 		publisher.once('accessAllowed', async () => {
-			await this.oVDevicesService.initDevices();
-			if (this.hasAudioDevices) {
-				const audioLabel = publisher.stream.getMediaStream().getAudioTracks()[0].label;
-				this.oVDevicesService.setMicSelected(audioLabel);
-			}
+			if (this.oVDevicesService.areEmptyLabels()) {
+				await this.oVDevicesService.initDevices();
+				if (this.hasAudioDevices) {
+					const audioLabel = publisher.stream.getMediaStream().getAudioTracks()[0].label;
+					this.oVDevicesService.setMicSelected(audioLabel);
+				}
 
-			if (this.hasVideoDevices) {
-				const videoLabel = publisher.stream.getMediaStream().getVideoTracks()[0].label;
-				this.oVDevicesService.setCamSelected(videoLabel);
+				if (this.hasVideoDevices) {
+					const videoLabel = publisher.stream.getMediaStream().getVideoTracks()[0].label;
+					this.oVDevicesService.setCamSelected(videoLabel);
+				}
+				this.setDevicesInfo();
 			}
-
-			this.setDevicesInfo();
 			// Emit publisher to webcomponent and angular-library
 			this.emitPublisher(publisher);
 
