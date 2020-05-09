@@ -58,7 +58,7 @@
   "private": true,
   "scripts": {
     "build": "./node_modules/@angular/cli/bin/ng build && npm run copy:backend",
-    "build-prod": "./node_modules/@angular/cli/bin/ng build --prod && npm run copy:backend-prod",
+    "build-prod": "func() { ./node_modules/@angular/cli/bin/ng build --prod --base-href=\"$1\" && npm run copy:backend-prod; }; func",
     "copy:backend": "cp -a dist/openvidu-call/. ../openvidu-call-back/public/",
     "copy:backend-prod": "mkdir -p ../openvidu-call-back/dist/public && cp -a dist/openvidu-call/. ../openvidu-call-back/dist/public/",
     "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
