@@ -18,7 +18,7 @@ export class StorageService {
 		this.log.d('Storing on localStorage "' + key + '" with value "' + value + '"');
 		this.storage.setItem(key, value);
 	}
-	public get(key: string) {
+	public get(key: string): any {
 		const value = JSON.parse(this.storage.getItem(key));
 		return value?.item ? value.item : null;
 	}
