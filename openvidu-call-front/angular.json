@@ -113,7 +113,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
-            ]
+            ],
+            "codeCoverageExclude": [
+              "/**/*mock*.ts",
+              "/**/openvidu-layout.ts"
+          ]
           }
         },
         "lint": {
