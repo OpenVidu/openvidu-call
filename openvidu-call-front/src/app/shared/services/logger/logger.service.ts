@@ -30,9 +30,8 @@ export class LoggerService implements ILogService {
 				}
 			},
 			w: function(...args: any[]) {
-				if (!prodMode) {
-					loggerFns[1].apply(this.log, arguments);
-				}
+				loggerFns[1].apply(this.log, arguments);
+
 			},
 			e: function(...args: any[]) {
 				loggerFns[2].apply(this.log, arguments);
