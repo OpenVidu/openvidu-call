@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵConsole } from '@angular/core';
 import { OpenVidu, Device } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
 import { ILogger } from '../../types/logger-type';
@@ -81,12 +81,19 @@ export class DevicesService {
 			this.log.e('No video devices found!');
 			return;
 		}
+		const storageDevice = this.getCamFromStorage();
+		if (storageDevice) {
+			return storageDevice;
+		}
+		return this.camSelected || this.cameras[0];
+	}
+
+	private getCamFromStorage() {
 		let storageDevice = this.storageSrv.get(this.VIDEO_DEVICE);
 		storageDevice = this.getCameraByDeviceField(storageDevice?.device);
 		if (storageDevice) {
 			return storageDevice;
 		}
-		return this.camSelected || this.cameras[0];
 	}
 
 	getMicSelected(): IDevice {
@@ -94,22 +101,40 @@ export class DevicesService {
 			this.log.e('No audio devices found!');
 			return;
 		}
-		let storageDevice = this.storageSrv.get(this.AUDIO_DEVICE);
-		storageDevice = this.getMicrophoneByDeviceField(storageDevice?.device);
+		const storageDevice = this.getMicFromStogare();
+		console.log("GET MIC SELECTED", storageDevice);
 		if (storageDevice) {
 			return storageDevice;
 		}
 		return this.micSelected || this.microphones[0];
 	}
 
+	private getMicFromStogare(): IDevice {
+		let storageDevice = this.storageSrv.get(this.AUDIO_DEVICE);
+		storageDevice = this.getMicrophoneByDeviceField(storageDevice?.device);
+		if (storageDevice) {
+			return storageDevice;
+		}
+	}
+
 	setCamSelected(deviceField: any) {
 		this.camSelected = this.getCameraByDeviceField(deviceField);
-		this.storageSrv.set(this.VIDEO_DEVICE, this.camSelected);
+		this.saveCamToStorage(this.camSelected);
+	}
+
+	private saveCamToStorage(cam: IDevice) {
+		this.storageSrv.set(this.VIDEO_DEVICE, cam);
 	}
 
 	setMicSelected(deviceField: any) {
 		this.micSelected = this.getMicrophoneByDeviceField(deviceField);
-		this.storageSrv.set(this.AUDIO_DEVICE, this.micSelected);
+		this.saveMicToStorage(this.micSelected);
+
+	}
+	private saveMicToStorage(mic: IDevice) {
+		console.log("SAVE MIC STORAGE", mic);
+		this.storageSrv.set(this.AUDIO_DEVICE, mic);
+		console.log("SAVE MIC STORAGE 2", this.storageSrv.get(this.AUDIO_DEVICE));
 	}
 
 	needUpdateVideoTrack(newVideoSource: string): boolean {

@@ -7,19 +7,28 @@ import { UtilsService } from '../utils/utils.service';
 import { UtilsServiceMock } from '../utils/utils.service.mock';
 import { Device } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
+import { StorageService } from '../storage/storage.service';
+import { StorageServiceMock } from '../storage/storage.service.mock';
 
 const OV_EMPTY_DEVICES: Device[] = [];
+const OV_AUDIO_EMPTY_DEVICES: Device[] = [
+	{ deviceId: '1', kind: 'audioinput', label: '' }
+];
+const OV_VIDEO_EMPTY_DEVICES: Device[] = [
+	{ deviceId: '2', kind: 'videoinput', label: '' }
+
+];
 const OV_AUDIO_DEVICES: Device[] = [
 	{ deviceId: '1', kind: 'audioinput', label: 'mic1' },
 	{ deviceId: '2', kind: 'audioinput', label: 'mic2' }
 ];
 const OV_VIDEO_DEVICES: Device[] = [
-	{ deviceId: '1', kind: 'videoinput', label: 'cam1' },
-	{ deviceId: '2', kind: 'videoinput', label: 'cam2' }
+	{ deviceId: '3', kind: 'videoinput', label: 'cam1' },
+	{ deviceId: '4', kind: 'videoinput', label: 'cam2' }
 ];
 const OV_MOBILE_VIDEO_DEVICES: Device[] = [
-	{ deviceId: '1', kind: 'videoinput', label: 'CAMfront' },
-	{ deviceId: '2', kind: 'videoinput', label: 'cam1' }
+	{ deviceId: '5', kind: 'videoinput', label: 'CAMfront' },
+	{ deviceId: '6', kind: 'videoinput', label: 'cam1' }
 ];
 const OV_BOTH_DEVICES: Device[] = OV_AUDIO_DEVICES.concat(OV_VIDEO_DEVICES);
 
@@ -28,29 +37,30 @@ const CUSTOM_AUDIO_DEVICES: IDevice[] = [
 	{ device: '2', label: 'mic2' }
 ];
 const CUSTOM_VIDEO_DEVICES: IDevice[] = [
-	{ device: '1', label: 'cam1', type: CameraType.FRONT },
-	{ device: '2', label: 'cam2', type: CameraType.BACK }
+	{ device: '3', label: 'cam1', type: CameraType.FRONT },
+	{ device: '4', label: 'cam2', type: CameraType.BACK }
 ];
 
 const CUSTOM_MOBILE_VIDEO_DEVICES: IDevice[] = [
-	{ device: '1', label: 'CAMfront', type: CameraType.FRONT },
-	{ device: '2', label: 'cam1BACK', type: CameraType.BACK }
+	{ device: '5', label: 'CAMfront', type: CameraType.FRONT },
+	{ device: '6', label: 'cam1BACK', type: CameraType.BACK }
 ];
+const CUSTOM_AUDIO_STORAGE_DEVICE: IDevice = { device: '10', label: 'storageAudio' };
+const CUSTOM_VIDEO_STORAGE_DEVICE: IDevice = { device: '11', label: 'storageVideo' };
 
 describe('DevicesService', () => {
 	let service: DevicesService;
-	//let OV: OpenViduMock;
 	let spyGetDevices;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			providers: [
 				{ provide: LoggerService, useClass: LoggerServiceMock },
-				{ provide: UtilsService, useClass: UtilsServiceMock }
+				{ provide: UtilsService, useClass: UtilsServiceMock },
+				{ provide: StorageService, useClass: StorageServiceMock}
 			]
 		});
 		service = TestBed.inject(DevicesService);
-		// service['OV'] = new OpenViduMock();
 	});
 
 	it('should be created', () => {
@@ -89,7 +99,6 @@ describe('DevicesService', () => {
 
 		expect(service.hasVideoDeviceAvailable()).toBeFalsy();
 		expect(service.hasAudioDeviceAvailable()).toBeFalsy();
-
 
 	}));
 
@@ -498,6 +507,116 @@ describe('DevicesService', () => {
 		const frontCamera = cameras.find(device => device.type === CameraType.FRONT);
 		expect(frontCamera).toBeDefined();
 		expect(frontCamera).toEqual(CUSTOM_MOBILE_VIDEO_DEVICES[0]);
+	}));
+
+	it('devices should have video empty labels', fakeAsync(() => {
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_VIDEO_EMPTY_DEVICES));
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitVideoDevices = spyOn<any>(service, 'initVideoDevices').and.callThrough();
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitVideoDevices.call(service);
+		expect(spyInitVideoDevices).toHaveBeenCalled();
+
+		expect(service.areEmptyLabels()).toBeTruthy();
+	}));
+
+	it('devices should have audio empty labels', fakeAsync(() => {
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_AUDIO_EMPTY_DEVICES));
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitAudioDevices = spyOn<any>(service, 'initAudioDevices').and.callThrough();
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitAudioDevices.call(service);
+		expect(spyInitAudioDevices).toHaveBeenCalled();
+
+		expect(service.areEmptyLabels()).toBeTruthy();
+	}));
+
+	it('should return first mic when storage audio device is not one of openvidu devices', fakeAsync(() => {
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitAudioDevices = spyOn<any>(service, 'initAudioDevices').and.callThrough();
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_BOTH_DEVICES));
+		const spysaveMicToStorage = spyOn<any>(service, 'saveMicToStorage').and.callThrough();
+
+		spysaveMicToStorage.call(service, CUSTOM_AUDIO_STORAGE_DEVICE);
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitAudioDevices.call(service);
+		expect(spyInitAudioDevices).toHaveBeenCalled();
+		expect(service.hasAudioDeviceAvailable()).toBeTruthy();
+
+		expect(service.getMicSelected()).toEqual(CUSTOM_AUDIO_DEVICES[0]);
+
+	}));
+
+	it('should return first cam when storage video device is not one of openvidu devices', fakeAsync(() => {
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitVideoDevices = spyOn<any>(service, 'initVideoDevices').and.callThrough();
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_BOTH_DEVICES));
+		const spysaveCamToStorage = spyOn<any>(service, 'saveCamToStorage').and.callThrough();
+
+		spysaveCamToStorage.call(service, CUSTOM_VIDEO_STORAGE_DEVICE);
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitVideoDevices.call(service);
+		expect(spyInitVideoDevices).toHaveBeenCalled();
+		expect(service.hasVideoDeviceAvailable()).toBeTruthy();
+
+		expect(service.getCamSelected()).toEqual(CUSTOM_VIDEO_DEVICES[0]);
+
+	}));
+
+	it('should return storage audio device', fakeAsync(() => {
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitAudioDevices = spyOn<any>(service, 'initAudioDevices').and.callThrough();
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_BOTH_DEVICES));
+		const spysaveMicToStorage = spyOn<any>(service, 'saveMicToStorage').and.callThrough();
+
+		spysaveMicToStorage.call(service, CUSTOM_AUDIO_DEVICES[1]);
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitAudioDevices.call(service);
+		expect(spyInitAudioDevices).toHaveBeenCalled();
+		expect(service.hasAudioDeviceAvailable()).toBeTruthy();
+
+		expect(service.getMicSelected()).toEqual(CUSTOM_AUDIO_DEVICES[1]);
+
+	}));
+
+	it('should return storage video device', fakeAsync(() => {
+		const spyInitOpenViduDevices = spyOn<any>(service, 'initOpenViduDevices').and.callThrough();
+		const spyInitVideoDevices = spyOn<any>(service, 'initVideoDevices').and.callThrough();
+		spyGetDevices = spyOn(service['OV'], 'getDevices').and.returnValue(Promise.resolve(OV_BOTH_DEVICES));
+		const spysaveCamToStorage = spyOn<any>(service, 'saveCamToStorage').and.callThrough();
+
+		spysaveCamToStorage.call(service, CUSTOM_VIDEO_DEVICES[1]);
+
+		spyInitOpenViduDevices.call(service);
+		flush();
+		expect(spyInitOpenViduDevices).toHaveBeenCalled();
+
+		spyInitVideoDevices.call(service);
+		expect(spyInitVideoDevices).toHaveBeenCalled();
+		expect(service.hasVideoDeviceAvailable()).toBeTruthy();
+
+		expect(service.getCamSelected()).toEqual(CUSTOM_VIDEO_DEVICES[1]);
+
 	}));
 
 
