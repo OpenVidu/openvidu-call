@@ -121,7 +121,7 @@ import { StorageService } from './shared/services/storage/storage.service';
 		DevicesService,
 		LoggerService,
 		ChatService,
-		NotificationService.
+		NotificationService,
 		StorageService
 	],
 	exports: [OpenviduSessionComponent]
