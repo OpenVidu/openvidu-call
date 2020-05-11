@@ -332,7 +332,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
 		try {
-			console.log(webcamToken, screenToken)
 			await this.oVSessionService.connectWebcamSession(webcamToken);
 			await this.oVSessionService.connectScreenSession(screenToken);
 

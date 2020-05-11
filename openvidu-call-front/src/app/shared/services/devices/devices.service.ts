@@ -102,7 +102,6 @@ export class DevicesService {
 			return;
 		}
 		const storageDevice = this.getMicFromStogare();
-		console.log("GET MIC SELECTED", storageDevice);
 		if (storageDevice) {
 			return storageDevice;
 		}
@@ -132,9 +131,7 @@ export class DevicesService {
 
 	}
 	private saveMicToStorage(mic: IDevice) {
-		console.log("SAVE MIC STORAGE", mic);
 		this.storageSrv.set(this.AUDIO_DEVICE, mic);
-		console.log("SAVE MIC STORAGE 2", this.storageSrv.get(this.AUDIO_DEVICE));
 	}
 
 	needUpdateVideoTrack(newVideoSource: string): boolean {
