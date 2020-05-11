@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as https from 'https';
 var btoa = require('btoa');
-import { DEV_MODE } from '../config';
+import { CALL_OPENVIDU_CERTTYPE } from '../config';
 
 export class HttpClientService {
 
@@ -11,7 +11,8 @@ export class HttpClientService {
 
 	public async post(body: string, openviduUrl: string, openviduSecret: string): Promise<any> {
 
-		if(DEV_MODE){
+		console.log("CALL_OPENVIDU_CERTTYPE", CALL_OPENVIDU_CERTTYPE);
+		if(CALL_OPENVIDU_CERTTYPE === 'selfsigned'){
 			this.options.httpsAgent = new https.Agent({
 				rejectUnauthorized: false
 			});

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "webpack",
-    "start": "DEV_MODE=true nodemon src/app.ts"
+    "start": "CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
   },
   "repository": {
     "type": "git",
