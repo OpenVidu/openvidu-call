@@ -20,3 +20,7 @@ jobs:
       run: npm install --prefix openvidu-call-front
     - name: Run unit tests
       run: npm run test --prefix openvidu-call-front
+    - name: Build openvidu-agular
+      run: npm run build:openvidu-angular --prefix openvidu-call-front
+    - name: Build OpenVidu Call webcomponent
+      run: npm run build:openvidu-webcomponent --prefix openvidu-call-front
