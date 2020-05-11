@@ -11,9 +11,11 @@ import { ILogger } from '../../types/logger-type';
 export class NetworkService {
 
 	private log: ILogger;
+	private baseHref: string;
 
 	constructor(private http: HttpClient, private loggerSrv: LoggerService) {
 		this.log = this.loggerSrv.get('NetworkService');
+		this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
 
 	async getToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
@@ -23,7 +25,7 @@ export class NetworkService {
 		}
 		try {
 			this.log.d('Getting token from backend');
-			return await this.http.post<any>('/call', {sessionId}).toPromise();
+			return await this.http.post<any>(this.baseHref + 'call', {sessionId}).toPromise();
 		} catch (error) {
 			if (error.status === 404) {
 				throw {status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found'};
