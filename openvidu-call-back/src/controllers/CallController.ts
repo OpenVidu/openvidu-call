@@ -32,6 +32,7 @@ app.post('/', async (req: Request, res: Response) => {
 
 function handleError(error: any, res: Response){
 	const statusCode = error.response?.status;
+	console.log(error);
 	if (error.code === 'ECONNREFUSED'){
 		console.error('ERROR: Cannot connect with OpenVidu Server');
 		res.status(504).send('ECONNREFUSED: Cannot connect with OpenVidu Server');
