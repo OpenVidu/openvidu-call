@@ -188,4 +188,32 @@ describe('WebComponentComponent unit test', () => {
 		expect(component.publisherCreated.emit).toHaveBeenCalled();
 	}));
 
+	// it('should initialize the session and leave it', fakeAsync(() => {
+	// 	component.videoRoom = jasmine.createSpyObj('component.videoRoom', {
+	// 		leaveSession: component.emitLeaveSessionEvent(session)
+	// 	});
+
+	// 	const emitLeaveSessionEventSpy = spyOn(component, 'emitLeaveSessionEvent').and.callThrough();
+
+	// 	spyOn(session, 'on').and.callFake((event: string, callback) => {
+	// 		if (event === 'sessionDisconnected') {
+	// 		  callback();
+	// 		}
+	// 	  });
+	// 	component.sessionConfig = '{"tokens": ["token"], "user": "nickname"}';
+	// 	flush();
+
+	// 	expect(component.webComponent.getSessionName()).toBeUndefined();
+	// 	expect(component.webComponent.getNickname()).toEqual('nickname');
+	// 	expect(component.webComponent.getTokens()).toEqual(['token']);
+	// 	expect(component.display).toBeTruthy();
+	// 	component.sessionConfig = {};
+	// 	flush();
+	// 	expect(component.videoRoom.leaveSession).toHaveBeenCalled();
+	// 	component.videoRoom.leaveSession();
+	// 	flush();
+	// 	expect(emitLeaveSessionEventSpy).toHaveBeenCalled();
+
+	// 	expect(component.display).toBeFalsy();
+	// }));
 });
