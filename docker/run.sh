@@ -5,7 +5,7 @@ if [[ -z "$1" ]] || [[ -z "$2" ]]; then
         echo "RELEASE_VERSION argument is required" 1>&2
     fi
     if [[ -z "$2" ]]; then
-        echo "RELEASE_VERSION argument is required" 1>&2
+        echo "BRANCH_NAME argument is required" 1>&2
     fi
     echo "Example of use: ./run.sh 2.14.0 master" 1>&2
     exit 1
