@@ -1,10 +1,4 @@
 <div id="roomConfig" [ngStyle]="{ display: (ovSettings | isAutoPublish) ? 'none' : 'block' }">
-	<app-dialog-extension
-		*ngIf="showDialogExtension"
-		[nickname]="localUsers[0].nickname"
-		(cancel)="toggleDialogExtension()"
-	></app-dialog-extension>
-
 <!-- Modal -->
 <div class="modal" *ngIf="showConfigCard">
     <div class="modal-dialog modal-xl">

@@ -43,7 +43,6 @@ import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 import { VideoRoomComponent } from './video-room/video-room.component';
 import { StreamComponent } from './shared/components/stream/stream.component';
 import { ChatComponent } from './shared/components/chat/chat.component';
-import { DialogExtensionComponent } from './shared/components/dialog-extension/dialog-extension.component';
 import { OpenViduVideoComponent } from './shared/components/stream/ov-video.component';
 import { DialogErrorComponent } from './shared/components/dialog-error/dialog-error.component';
 import { ToolbarComponent } from './shared/components/toolbar/toolbar.component';
@@ -94,7 +93,6 @@ import { StorageService } from './shared/services/storage/storage.service';
 		VideoRoomComponent,
 		StreamComponent,
 		ChatComponent,
-		DialogExtensionComponent,
 		OpenViduVideoComponent,
 		DialogErrorComponent,
 		RoomConfigComponent,

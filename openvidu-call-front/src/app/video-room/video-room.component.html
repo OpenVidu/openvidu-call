@@ -29,11 +29,6 @@
       (leaveSessionButtonClicked)="leaveSession()"
     ></app-toolbar>
 
-    <app-dialog-extension
-      *ngIf="showDialogExtension"
-      [nickname]="localUsers[0].nickname"
-      (cancel)="toggleDialogExtension()"
-    ></app-dialog-extension>
     <mat-sidenav-container class="sidenav-container" id="room-container" [class.boundsLight]="lightTheme" fullscreen>
       <mat-sidenav
         #sidenav

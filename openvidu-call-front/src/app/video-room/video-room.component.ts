@@ -56,7 +56,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	compact = false;
 	sidenavMode: 'side' | 'over' = 'side';
 	lightTheme: boolean;
-	showDialogExtension = false;
 	showConfigRoomCard = true;
 	session: Session;
 	sessionScreen: Session;
@@ -258,10 +257,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.log.w('Screen is enabled. Speach detection has been rejected');
 	}
 
-	toggleDialogExtension() {
-		this.showDialogExtension = !this.showDialogExtension;
-	}
-
 	onReplaceScreenTrack(event) {
 		this.oVSessionService.replaceScreenTrack();
 	}
@@ -458,11 +453,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
 			this.log.e(error);
-			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
-				this.toggleDialogExtension();
-			} else {
-				this.utilsSrv.handlerScreenShareError(error);
-			}
+			this.utilsSrv.handlerScreenShareError(error);
 		}
 	}
 

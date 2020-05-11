@@ -44,8 +44,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	isVideoActive = true;
 	isAudioActive = true;
 	// volumeValue = 100;
-	showDialogExtension = false;
-
 	oVUsersSubscription: Subscription;
 	localUsers: UserModel[] = [];
 	randomAvatar: string;
@@ -236,10 +234,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.scrollToBottom();
 	}
 
-	toggleDialogExtension() {
-		this.showDialogExtension = !this.showDialogExtension;
-	}
-
 	close() {
 		this.leaveSession.emit();
 		this.showConfigCard = false;
@@ -295,11 +289,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
 		} catch (error) {
 			this.log.e(error);
-			if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
-				this.toggleDialogExtension();
-			} else {
-				this.utilsSrv.handlerScreenShareError(error);
-			}
+			this.utilsSrv.handlerScreenShareError(error);
 		}
 	}
 
