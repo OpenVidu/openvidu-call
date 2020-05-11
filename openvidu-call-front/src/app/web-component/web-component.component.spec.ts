@@ -4,13 +4,13 @@ import { WebComponentComponent } from './web-component.component';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { LoggerServiceMock } from '../shared/services/logger/logger.service.mock';
 
-class OV_SESSION {
+class OVSESSION {
 	on(event: string, callback) {}
 }
 describe('WebComponentComponent unit test', () => {
 	let component: WebComponentComponent;
 	let fixture: ComponentFixture<WebComponentComponent>;
-	const session = new OV_SESSION();
+	const session = new OVSESSION();
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
