@@ -13,6 +13,7 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/releases/download/v${RELEASE
 
 # Entrypoint
 COPY ./entrypoint.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    npm install -g nodemon
 
 CMD /usr/local/bin/entrypoint.sh
