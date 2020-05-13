@@ -10,7 +10,7 @@ export class AngularLibraryModel extends ExternalConfigModel {
 
 	setTokens(tokens: string[]) {
 		if (tokens) {
-			this.ovSettings.setScreenSharing(this.ovSettings.hasScreenSharing() && this.tokens?.length > 1);
+			this.ovSettings.setScreenSharing(this.ovSettings.hasScreenSharing() && tokens?.length > 1);
 			super.setTokens(tokens);
 		}
 	}
