@@ -214,6 +214,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			const screenPublisher = this.initScreenPublisher();
 
 			screenPublisher.once('accessAllowed', (event) => {
+				// Listen to event fired when native stop button is clicked
+				screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
+					this.log.d('Clicked native stop button. Stopping screen sharing');
+					this.toggleScreenShare();
+				});
 				this.log.d('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				this.oVSessionService.publishScreen();
@@ -227,6 +232,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			screenPublisher.once('accessDenied', (event) => {
 				this.log.w('ScreenShare: Access Denied');
 			});
+
+
 			return;
 		}
 
