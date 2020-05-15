@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
+import { LayoutBigElement } from 'projects/openvidu-angular/src/lib/shared/types/layout-type';
 
 @Injectable()
 export class UtilsServiceMock {
-	readonly BIG_ELEMENT_CLASS = 'OV_big';
 
 	constructor() {}
 
@@ -21,7 +21,7 @@ export class UtilsServiceMock {
 			minRatio: 9 / 15, // The widest ratio that will be used (default 16x9)
 			fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
       and minRatio and maxRatio are ignored (default false) */,
-			bigClass: this.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
+			bigClass: LayoutBigElement.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
 			bigPercentage: 0.85, // The maximum percentage of space the big ones should take up
 			bigFixedRatio: false, // fixedRatio for the big ones
 			bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)

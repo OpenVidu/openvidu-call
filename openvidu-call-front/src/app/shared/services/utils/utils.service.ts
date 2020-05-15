@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
+import { LayoutBigElement } from 'projects/openvidu-angular/src/lib/shared/types/layout-type';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class UtilsService {
-	readonly BIG_ELEMENT_CLASS = 'OV_big';
 
 	private dialogRef: MatDialogRef<DialogErrorComponent, any>;
 
@@ -64,7 +64,7 @@ export class UtilsService {
 			minRatio: 9 / 15, // The widest ratio that will be used (default 16x9)
 			fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
       and minRatio and maxRatio are ignored (default false) */,
-			bigClass: this.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
+			bigClass: LayoutBigElement.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
 			bigPercentage: 0.85, // The maximum percentage of space the big ones should take up
 			bigFixedRatio: false, // fixedRatio for the big ones
 			bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
@@ -109,15 +109,15 @@ export class UtilsService {
 	}
 
 	toggleBigElementClass(element: HTMLElement | Element) {
-		if (element?.className.includes(this.BIG_ELEMENT_CLASS)) {
-			element?.classList.remove(this.BIG_ELEMENT_CLASS);
+		if (element?.className.includes(LayoutBigElement.BIG_ELEMENT_CLASS)) {
+			element?.classList.remove(LayoutBigElement.BIG_ELEMENT_CLASS);
 		} else {
-			element.classList.add(this.BIG_ELEMENT_CLASS);
+			element.classList.add(LayoutBigElement.BIG_ELEMENT_CLASS);
 		}
 	}
 
 	removeAllBigElementClass() {
-		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(this.BIG_ELEMENT_CLASS);
+		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(LayoutBigElement.BIG_ELEMENT_CLASS);
 		while (elements.length > 0) {
 			this.toggleBigElementClass(elements[0]);
 		}
