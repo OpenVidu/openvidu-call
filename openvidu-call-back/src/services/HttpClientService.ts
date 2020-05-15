@@ -11,7 +11,6 @@ export class HttpClientService {
 
 	public async post(body: string, openviduUrl: string, openviduSecret: string): Promise<any> {
 
-		console.log("CALL_OPENVIDU_CERTTYPE", CALL_OPENVIDU_CERTTYPE);
 		if(CALL_OPENVIDU_CERTTYPE === 'selfsigned'){
 			this.options.httpsAgent = new https.Agent({
 				rejectUnauthorized: false

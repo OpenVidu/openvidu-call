@@ -35,7 +35,7 @@ function handleError(error: any, res: Response){
 	console.log(error);
 	if (error.code === 'ECONNREFUSED'){
 		console.error('ERROR: Cannot connect with OpenVidu Server');
-		res.status(504).send('ECONNREFUSED: Cannot connect with OpenVidu Server');
+		res.status(503).send('ECONNREFUSED: Cannot connect with OpenVidu Server');
 		return;
 	}
 	if(error.code === 'DEPTH_ZERO_SELF_SIGNED_CERT' || error.code.includes('SELF_SIGNED_CERT')){
