@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
-import { LayoutBigElement } from 'projects/openvidu-angular/src/lib/shared/types/layout-type';
+import { LayoutBigElement } from '../../types/layout-type';
 
 @Injectable({
 	providedIn: 'root'

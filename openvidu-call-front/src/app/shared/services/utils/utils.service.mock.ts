@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
-import { LayoutBigElement } from 'projects/openvidu-angular/src/lib/shared/types/layout-type';
+import { LayoutBigElement } from '../../types/layout-type';
 
 @Injectable()
 export class UtilsServiceMock {
