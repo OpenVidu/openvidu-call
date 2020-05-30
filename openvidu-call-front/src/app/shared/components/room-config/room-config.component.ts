@@ -160,6 +160,10 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			const screenPublisher = this.initScreenPublisher();
 
 			screenPublisher.on('accessAllowed', (event) => {
+				screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
+					this.log.d('Clicked native stop button. Stopping screen sharing');
+					this.toggleScreenShare();
+				});
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				if (!this.oVSessionService.hasWebcamVideoActive()) {
 					this.oVSessionService.disableWebcamUser();
