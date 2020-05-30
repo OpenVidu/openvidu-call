@@ -6,12 +6,27 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 exports.config = {
   allScriptsTimeout: 30000,
   specs: ['./src/**/*.e2e-spec.ts'],
-  capabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      args: ['use-fake-ui-for-media-stream', 'use-fake-device-for-media-stream'],
+
+  multiCapabilities: [
+    {
+      browserName: 'chrome',
+      chromeOptions: {
+        args: ['use-fake-ui-for-media-stream', 'use-fake-device-for-media-stream'],
+      },
+      acceptInsecureCerts : true
     },
-  },
+    // {
+    //   browserName: 'firefox',
+    //   'moz:firefoxOptions': {
+    //     'prefs': {
+    //       'media.navigator.streams.fake': true,
+    //       'media.navigator.permission.disabled': true
+    //     }
+    //   },
+    //   acceptInsecureCerts : true
+    // }
+  ],
+  restartBrowserBetweenTests: true,
   directConnect: !process.env.SELENIUM_URL,
   seleniumAddress: process.env.SELENIUM_URL,
   baseUrl: (process.env.APP_URL || 'http://localhost:4200/'),

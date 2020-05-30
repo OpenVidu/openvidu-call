@@ -13,6 +13,7 @@
 	<div fxFlex="70%" fxFlexOrder="2">
 		<div align="center" class="buttonsContainer">
 			<button
+				id="navMicrophoneButton"
 				mat-icon-button
 				(click)="toggleMicrophone()"
 				[disabled]="isConnectionLost"
@@ -24,6 +25,7 @@
 
 			<!-- Camera button -->
 			<button
+				id="navCameraButton"
 				mat-icon-button
 				(click)="toggleCamera()"
 				[disabled]="isConnectionLost"
@@ -35,6 +37,7 @@
 
 			<!-- Screenshare button -->
 			<button
+				id="navScreenButton"
 				mat-icon-button
 				(click)="toggleScreenShare()"
 				[disabled]="isConnectionLost"

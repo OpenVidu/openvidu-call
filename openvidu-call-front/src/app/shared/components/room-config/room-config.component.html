@@ -15,7 +15,7 @@
 			</div>
 			<h3 class="headerTitle">{{ mySessionId }}</h3>
 
-			<button mat-mini-fab (click)="close()" class="closeButton">
+			<button mat-mini-fab (click)="close()" class="closeButton" id="closeButton">
 				<mat-icon color="warn" matTooltip="Close">highlight_off</mat-icon>
 			</button>
         </div>
@@ -129,7 +129,7 @@
 				<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasAudioDevices && (ovSettings | hasAudio)">
 					<div fxLayout fxFlex>
 						<div class="one" fxFlex="20" fxLayoutAlign="center center">
-							<button mat-mini-fab (click)="toggleMic()" class="deviceButton">
+							<button mat-mini-fab (click)="toggleMic()" class="deviceButton"  id="configCardMicrophoneButton">
 								<mat-icon *ngIf="isAudioActive" matTooltip="Microphone Enabled">mic</mat-icon>
 								<mat-icon *ngIf="!isAudioActive" color="warn" matTooltip="Microphone Disabled">mic_off</mat-icon>
 							</button>
@@ -153,7 +153,7 @@
 				<div fxLayout="row" fxFill id="devicesSection" *ngIf="hasVideoDevices && (ovSettings | hasVideo)">
 					<div fxLayout fxFlex>
 						<div class="one" fxFlex="20" fxLayoutAlign="center center">
-							<button mat-mini-fab (click)="toggleCam()" class="deviceButton">
+							<button mat-mini-fab (click)="toggleCam()" class="deviceButton" id="configCardCameraButton">
 								<mat-icon *ngIf="isVideoActive" matTooltip="Camera Enabled">videocam</mat-icon>
 								<mat-icon *ngIf="!isVideoActive" color="warn" matTooltip="Camera Disabled">videocam_off</mat-icon>
 							</button>
@@ -178,7 +178,7 @@
 				<div fxLayout="row" fxFill id="devicesSection" *ngIf="ovSettings | hasScreenSharing">
 					<div fxLayout fxFlex>
 						<div class="one" fxFlex="20" fxLayoutAlign="center center">
-							<button mat-mini-fab (click)="toggleScreenShare()" class="deviceButton">
+							<button mat-mini-fab (click)="toggleScreenShare()" class="deviceButton" id="configCardScreenButton">
 								<mat-icon *ngIf="this.oVSessionService.isScreenShareEnabled()" matTooltip="Screen Share Enabled"
 									>screen_share</mat-icon
 								>

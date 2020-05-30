@@ -13,16 +13,16 @@
 			<h4>Videoconference rooms in one click</h4>
 		</div>
 		<div class="formContainer">
-			<div class="roomError" *ngIf="roomForm.hasError('required')">
+			<div class="roomError" id="requiredNameError" *ngIf="roomForm.hasError('required')">
 				Room name is <strong>required</strong>
 			</div>
-			<div class="roomError" *ngIf="roomForm.hasError('minlength')">
+			<div class="roomError" id="shortNameError" *ngIf="roomForm.hasError('minlength')">
 				Room name is <strong>too short!</strong>
 			</div>
 			<form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
 				<div class="joinForm">
-					<input matInput class="inputForm" type="text" [formControl]="roomForm"  autocomplete="off" />
-					<button type="submit" class="joinButton">JOIN</button>
+					<input matInput class="inputForm" type="text" [formControl]="roomForm"  autocomplete="off" id="roomInput" />
+					<button type="submit" class="joinButton" id="joinButton" >JOIN</button>
 				</div>
 			</form>
 		</div>
