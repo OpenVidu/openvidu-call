@@ -1,0 +1,33 @@
+name: unit_tests
+
+on:
+  push:
+    branches:
+      - release
+      - develop
+      - master
+
+jobs:
+  prepare:
+    name: Prepare OpenVidu Call
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Remove package-lock
+      run: rm openvidu-call-front/package-lock.json
+    - name: Install dependencies
+      run: npm install --prefix openvidu-call-front
+
+  unit_test:
+    name: Run unit tests with Karma and Jasmine
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Run unit tests
+      run: npm run test --prefix openvidu-call-front
