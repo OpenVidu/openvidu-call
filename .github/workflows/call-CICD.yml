@@ -1,7 +1,7 @@
 name: OpenVidu Call CI/CD
 on:
   schedule: # default branch (master)
-    - cron: '* 0 * * *'
+    - cron: '*/5 * * * *'
   push:
     branches:
       - master
@@ -15,7 +15,7 @@ on:
 jobs:
 
   unit_test:
-    name: Run unit tests with Karma and Jasmine
+    name: Unit test
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -58,16 +58,22 @@ jobs:
     - name: QA Sonar
       run: echo "TODO Sonar"
 
-  build_prod:
-    name: Build for production
+  nightly:
+    name: Deploy nightly
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'release'
+    if: github.event_name == 'schedule'
     needs: [unit_test, e2e_test, qa_sonar]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+    - name: Getting timestamp
+      id : time
+      uses: nanzm/get-time-action@v1.0
+      with:
+        timeZone: 8
+        format: 'YYYY-MM-DD-HH-mm-ss'
     - name: Build OpenVidu Call front
       run: |
         npm install --prefix openvidu-call-front
@@ -76,53 +82,25 @@ jobs:
       run: |
         npm i --prefix openvidu-call-back
         npm run build --prefix openvidu-call-back
+        mkdir release && cp openvidu-call-back/dist/ -r release
     - uses: actions/upload-artifact@v2
       with:
-        name: Deploying artifact
-        path: openvidu-call-back/dist/
-
+        name: openvidu-call-${{ steps.time.outputs.time }}
+        path: release
 
   release:
     name: Deploy release
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    needs: [build_prod]
+    needs: [unit_test, e2e_test, qa_sonar]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: openvidu-call-back/dist/
-    - name: Preparing artifact
+    - name: Login to Docker Registry
+      env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u "$DOCKER_USERNAME" --password-stdin <<< "$DOCKER_PASSWORD"
+    - name: Building and publishing docker image in Docker Hub
       run: |
-        ls -R
-        mkdir release && cp openvidu-call-back/dist/ -r release
-        tar czf release/openvidu-call-${{github.ref}}.tar.gz *
-    - uses: actions/upload-artifact@v2
-      with:
-        name: openvidu-call-${{github.ref}}.tar.gz
-        path: release/openvidu-call-${{github.ref}}.tar.gz
-
-  nightly:
-    name: Deploy nightly
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    needs: [build_prod]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Getting timestamp
-      id : time
-      uses: nanzm/get-time-action@v1.0
-      with:
-        timeZone: 8
-        format: 'YYYY-MM-DD-HH-mm-ss'
-    - uses: actions/download-artifact@v2
-      with:
-        name: openvidu-call-back/dist/
-    - name: Preparing nightly artifact
-      run: |
-        ls -R
-        tar czf openvidu-call-back/dist/openvidu-call-${{ steps.time.outputs.time }}.tar.gz *
-    - uses: actions/upload-artifact@v2
-      with:
-        name: openvidu-call-${{github.ref}}.tar.gz
-        path: release/openvidu-call-${{ steps.time.outputs.time }}.tar.gz
+        chmod +x docker/run.sh
+         ./docker/run.sh ${{ github.ref }}
