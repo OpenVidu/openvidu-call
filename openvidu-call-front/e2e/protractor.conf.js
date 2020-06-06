@@ -11,7 +11,7 @@ exports.config = {
     {
       browserName: 'chrome',
       chromeOptions: {
-        args: ['use-fake-ui-for-media-stream', 'use-fake-device-for-media-stream', '--headless'],
+        args: ['use-fake-ui-for-media-stream', 'use-fake-device-for-media-stream'],
       },
       acceptInsecureCerts : true
     },
