@@ -75,22 +75,21 @@ jobs:
         npm i --prefix openvidu-call-back
         npm run build --prefix openvidu-call-back
 
-  # release:
-  #   name: Deploy release
-  #   if: github.event_name == 'release'
-  #   runs-on: ubuntu-latest
-  #   needs: [build_prod]
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Preparing artifact
-  #     run: |
-  #       mkdir release && cp openvidu-call-back/dist/ -r release
-  #       tar czf release/openvidu-call-${{github.ref}}.tar.gz *
-  #   - name: Deploy release
-  #   - uses: actions/upload-artifact@v2
-  #     with:
-  #       name: Deploying artifact
-  #       path: release/openvidu-call-${{github.ref}}.tar.gz
+  release:
+    name: Deploy release
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    needs: [build_prod]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Preparing artifact
+      run: |
+        mkdir release && cp openvidu-call-back/dist/ -r release
+        tar czf release/openvidu-call-${{github.ref}}.tar.gz *
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Deploying artifact
+        path: release/openvidu-call-${{github.ref}}.tar.gz
 
   # nightly:
   #   name: Deploy nightly
@@ -105,11 +104,10 @@ jobs:
   #     with:
   #       timeZone: 8
   #       format: 'YYYY-MM-DD-HH-mm-ss'
-  #   - name: Preparing artifact
+  #   - name: Preparing nightly artifact
   #     run: |
   #       mkdir release && cp openvidu-call-back/dist/ -r release
   #       tar czf release/openvidu-call-${{ steps.time.outputs.time }}.tar.gz *
-  #   - name: Deploy nightly
   #   - uses: actions/upload-artifact@v2
   #     with:
   #       name: Deploying artifact
