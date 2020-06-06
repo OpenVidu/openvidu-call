@@ -1,7 +1,7 @@
 name: OpenVidu Call CI/CD
 on:
   schedule: # default branch (master)
-    - cron: '*/5 * * * *'
+    - cron: '* 0 * * *'
   push:
     branches:
       - master
@@ -47,8 +47,24 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+    - name: Cache multiple paths
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/cache
+          !~/cache/exclude
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Start OpenVidu
+      run: docker run -p 4443:4443 --rm -d -e OPENVIDU_SECRET=MY_SECRET openvidu/openvidu-server-kms:2.14.0
+    - name: Install dependencies
+      run: |
+        npm install --prefix openvidu-call-front
+        npm i --prefix openvidu-call-back
+    - name: Start OpenVidu Call back
+      run: npm start --prefix openvidu-call-back &
     - name: Running E2E test
-      run: echo "TODO E2E test"
+      run: npm run e2e --prefix openvidu-call-front
 
   qa_sonar:
     name: QA and Security with Sonar
