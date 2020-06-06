@@ -1,7 +1,7 @@
 name: OpenVidu Call CI/CD
 on:
   schedule: # default branch (master)
-    - cron: '*/5 * * * *'
+    - cron: '* 0 * * *'
   push:
     branches:
       - master
@@ -68,12 +68,19 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - name: Build OpenVidu Call
+    - name: Build OpenVidu Call front
       run: |
         npm install --prefix openvidu-call-front
         npm run build-prod --prefix openvidu-call-front
+    - name: Build OpenVidu Call back
+      run: |
         npm i --prefix openvidu-call-back
         npm run build --prefix openvidu-call-back
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Deploying artifact
+        path: openvidu-call-back/dist/
+
 
   release:
     name: Deploy release
@@ -82,13 +89,17 @@ jobs:
     needs: [build_prod]
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: openvidu-call-back/dist/
     - name: Preparing artifact
       run: |
+        ls -R
         mkdir release && cp openvidu-call-back/dist/ -r release
         tar czf release/openvidu-call-${{github.ref}}.tar.gz *
     - uses: actions/upload-artifact@v2
       with:
-        name: Deploying artifact
+        name: openvidu-call-${{github.ref}}.tar.gz
         path: release/openvidu-call-${{github.ref}}.tar.gz
 
   nightly:
@@ -104,11 +115,14 @@ jobs:
       with:
         timeZone: 8
         format: 'YYYY-MM-DD-HH-mm-ss'
+    - uses: actions/download-artifact@v2
+      with:
+        name: openvidu-call-back/dist/
     - name: Preparing nightly artifact
       run: |
-        mkdir release && cp openvidu-call-back/dist/ -r release
-        tar czf release/openvidu-call-${{ steps.time.outputs.time }}.tar.gz *
+        ls -R
+        tar czf openvidu-call-back/dist/openvidu-call-${{ steps.time.outputs.time }}.tar.gz *
     - uses: actions/upload-artifact@v2
       with:
-        name: Deploying artifact
+        name: openvidu-call-${{github.ref}}.tar.gz
         path: release/openvidu-call-${{ steps.time.outputs.time }}.tar.gz
