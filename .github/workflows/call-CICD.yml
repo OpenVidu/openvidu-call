@@ -6,11 +6,11 @@ on:
     branches:
       - master
       - 'feature/**'
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - master
-  release:
-    types: [created]
 
 jobs:
 
@@ -110,17 +110,14 @@ jobs:
 
   release:
     name: Deploy release
-    if: github.event_name == 'release'
+    if: github.event_name == 'tags' && github.event.base_ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: [unit_test, e2e_test, qa_sonar]
     steps:
     - uses: actions/checkout@v2
     - name: Login to Docker Registry
-      env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: docker login -u "$DOCKER_USERNAME" --password-stdin <<< "$DOCKER_PASSWORD"
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
     - name: Building and publishing docker image in Docker Hub
       run: |
         chmod +x docker/run.sh
-         ./docker/run.sh ${{ github.ref }}
+        ./docker/run.sh ${{ github.ref }}
