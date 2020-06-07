@@ -1,6 +1,6 @@
 'use strict';
 
-import { by, element, protractor, ElementFinder, ProtractorBrowser, WebElement, ElementArrayFinder } from 'protractor';
+import { by, protractor, ElementFinder, ProtractorBrowser } from 'protractor';
 
 export class OpenViduCall {
 	constructor() {}

@@ -1,5 +1,5 @@
 import { OpenViduCall } from './call.po';
-import { browser, by, ProtractorBrowser, Key, WebElement } from 'protractor';
+import { browser, Key } from 'protractor';
 import { protractor } from 'protractor/built/ptor';
 
 describe('Connect to the room', () => {

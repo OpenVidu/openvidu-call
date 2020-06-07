@@ -1,5 +1,4 @@
 import { ExternalConfigModel } from './external-config';
-import { OvSettingsModel } from './ovSettings';
 
 export class AngularLibraryModel extends ExternalConfigModel {
 	private readonly NAME = 'Angular Library';
