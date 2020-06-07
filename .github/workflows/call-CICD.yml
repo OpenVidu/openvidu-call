@@ -12,6 +12,7 @@ on:
     branches:
       - master
 
+
 jobs:
 
   unit_test:
@@ -41,7 +42,7 @@ jobs:
   e2e_test:
     name: E2E test
     runs-on: ubuntu-latest
-    if: github.ref != 'feature/**' && github.event_name != 'pull_request'
+    if: github.event_name == 'tags' || github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v2
     - name: Install ChromeDriver
@@ -73,7 +74,7 @@ jobs:
   qa_sonar:
     name: QA and Security with Sonar
     runs-on: ubuntu-latest
-    if: github.ref != 'feature/**' && github.event_name != 'pull_request'
+    if: github.event_name == 'tags' || github.event_name == 'schedule'
     steps:
     - name: QA Sonar
       run: echo "TODO Sonar"
@@ -110,7 +111,7 @@ jobs:
 
   release:
     name: Deploy release
-    if: github.event_name == 'tags' && github.event.base_ref == 'refs/heads/master'
+    if: github.event_name == 'tags'
     runs-on: ubuntu-latest
     needs: [unit_test, e2e_test, qa_sonar]
     steps:
