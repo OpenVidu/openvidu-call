@@ -46,15 +46,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install ChromeDriver
       run: |
-        # Install Chromedriver
-        CHROME_DRIVER_VERSION=`curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE`
-        sudo wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -P ~/
-        unzip ~/chromedriver_linux64.zip -d ~/
-        sudo mv -f ~/chromedriver /usr/local/bin/chromedriver
-        sudo chown root:root /usr/local/bin/chromedriver
-        sudo chmod 0755 /usr/local/bin/chromedriver
-        # sudo apt-get update
-        # sudo apt-get install libsqlite3-dev chromium-driver google-chrome-stable
+        sudo apt-get update
+        sudo apt-get install libsqlite3-dev chromium-driver google-chrome-stable
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
