@@ -120,4 +120,4 @@ jobs:
     - name: Building and publishing docker image in Docker Hub
       run: |
         chmod +x docker/run.sh
-        ./docker/run.sh ${{ github.ref }}
+        sh ./docker/run.sh ${GITHUB_REF#refs/tags/}
