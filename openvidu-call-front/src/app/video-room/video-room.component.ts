@@ -252,16 +252,16 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			this.log.d('Automatic Layout ', this.isAutoLayout ? 'Disabled' : 'Enabled');
 			if (this.isAutoLayout) {
-				this.subscribeToSpeachDetection();
+				this.subscribeToSpeechDetection();
 				return;
 			}
-			this.log.d('Unsubscribe to speach detection');
+			this.log.d('Unsubscribe to speech detection');
 			this.session.off('publisherStartSpeaking');
 			this.resetAllBigElements();
 			this.updateOpenViduLayout();
 			return;
 		}
-		this.log.w('Screen is enabled. Speach detection has been rejected');
+		this.log.w('Screen is enabled. Speech detection has been rejected');
 	}
 
 	onReplaceScreenTrack(event) {
@@ -402,8 +402,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private subscribeToSpeachDetection() {
-		this.log.d('Subscribe to speach detection', this.session);
+	private subscribeToSpeechDetection() {
+		this.log.d('Subscribe to speech detection', this.session);
 		// Has been mandatory change the user zoom property here because of
 		// zoom icons and cannot handle publisherStartSpeaking event in other component
 		this.session.on('publisherStartSpeaking', (event: PublisherSpeakingEvent) => {
