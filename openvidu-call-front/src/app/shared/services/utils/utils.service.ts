@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { OpenViduLayoutOptions } from '../../layout/openvidu-layout';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
-import { LayoutBigElement } from '../../types/layout-type';
+import { LayoutClass } from '../../types/layout-type';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class UtilsService {
-
 	private dialogRef: MatDialogRef<DialogErrorComponent, any>;
 
 	constructor(public dialog: MatDialog) {}
@@ -64,7 +63,8 @@ export class UtilsService {
 			minRatio: 9 / 15, // The widest ratio that will be used (default 16x9)
 			fixedRatio: false /* If this is true then the aspect ratio of the video is maintained
       and minRatio and maxRatio are ignored (default false) */,
-			bigClass: LayoutBigElement.BIG_ELEMENT_CLASS, // The class to add to elements that should be sized bigger
+			bigClass: LayoutClass.BIG_ELEMENT, // The class to add to elements that should be sized bigger
+			smallClass: LayoutClass.SMALL_ELEMENT,
 			bigPercentage: 0.85, // The maximum percentage of space the big ones should take up
 			bigFixedRatio: false, // fixedRatio for the big ones
 			bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
@@ -109,20 +109,27 @@ export class UtilsService {
 	}
 
 	toggleBigElementClass(element: HTMLElement | Element) {
-		if (element?.className.includes(LayoutBigElement.BIG_ELEMENT_CLASS)) {
-			element?.classList.remove(LayoutBigElement.BIG_ELEMENT_CLASS);
+		if (element?.className.includes(LayoutClass.BIG_ELEMENT)) {
+			this.removeBigElementClass(element);
 		} else {
-			element.classList.add(LayoutBigElement.BIG_ELEMENT_CLASS);
+			element.classList.add(LayoutClass.BIG_ELEMENT);
 		}
+	}
+
+	removeBigElementClass(element: HTMLElement | Element) {
+		element?.classList.remove(LayoutClass.BIG_ELEMENT);
 	}
 
 	removeAllBigElementClass() {
-		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(LayoutBigElement.BIG_ELEMENT_CLASS);
+		const elements: HTMLCollectionOf<Element> = document.getElementsByClassName(LayoutClass.BIG_ELEMENT);
 		while (elements.length > 0) {
-			this.toggleBigElementClass(elements[0]);
+			this.removeBigElementClass(elements[0]);
 		}
 	}
 
+	isSmallElement(element: HTMLElement | Element): boolean {
+		return element?.className.includes(LayoutClass.SMALL_ELEMENT);
+	}
 
 	private isAndroid(): boolean {
 		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
