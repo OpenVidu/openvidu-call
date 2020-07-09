@@ -313,7 +313,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		const micStorageDevice = this.micSelected?.device || undefined;
 		const camStorageDevice = this.camSelected?.device || undefined;
 
-		const videoSource =  this.hasVideoDevices ? camStorageDevice : false;
+		const videoSource = this.hasVideoDevices ? camStorageDevice : false;
 		const audioSource = this.hasAudioDevices ? micStorageDevice : false;
 		const publishAudio = this.hasAudioDevices ? this.isAudioActive : false;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
@@ -333,12 +333,12 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			if (this.oVDevicesService.areEmptyLabels()) {
 				await this.oVDevicesService.initDevices();
 				if (this.hasAudioDevices) {
-					const audioLabel = publisher.stream.getMediaStream().getAudioTracks()[0].label;
+					const audioLabel = publisher?.stream?.getMediaStream()?.getAudioTracks()[0]?.label;
 					this.oVDevicesService.setMicSelected(audioLabel);
 				}
 
 				if (this.hasVideoDevices) {
-					const videoLabel = publisher.stream.getMediaStream().getVideoTracks()[0].label;
+					const videoLabel = publisher?.stream?.getMediaStream()?.getVideoTracks()[0]?.label;
 					this.oVDevicesService.setCamSelected(videoLabel);
 				}
 				this.setDevicesInfo();

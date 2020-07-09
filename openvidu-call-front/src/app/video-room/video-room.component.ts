@@ -291,6 +291,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			}
 		}
 		this.updateOpenViduLayout();
+
 	}
 
 	toolbarMicIconEnabled(): boolean {
@@ -323,12 +324,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			await this.connectBothSessions(webcamToken, screenToken);
 
 			if (this.oVSessionService.areBothConnected()) {
-				this.oVSessionService.publishWebcam();
-				this.oVSessionService.publishScreen();
+				await this.oVSessionService.publishWebcam();
+				await this.oVSessionService.publishScreen();
 			} else if (this.oVSessionService.isOnlyScreenConnected()) {
-				this.oVSessionService.publishScreen();
+				await this.oVSessionService.publishScreen();
 			} else {
-				this.oVSessionService.publishWebcam();
+				await this.oVSessionService.publishWebcam();
 			}
 			// !Deprecated
 			this._joinSession.emit();

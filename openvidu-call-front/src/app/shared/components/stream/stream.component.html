@@ -40,16 +40,13 @@
 		<div id="statusMic" *ngIf="!this._user.streamManager.stream.audioActive">
 			<mat-icon>mic_off</mat-icon>
 		</div>
-		<div id="statusCam" *ngIf="!this._user.streamManager.stream.videoActive">
-			<mat-icon>videocam_off</mat-icon>
-		</div>
 	</div>
 
 	<div class="videoButtons">
-		<button mat-icon-button id="videoZoomButton"  (click)="toggleVideoSize()">
+		<button *ngIf="this._user.streamManager.stream.videoActive" mat-icon-button id="videoZoomButton"  (click)="toggleVideoSize()">
 			<mat-icon>{{ this.videoSizeIcon }}</mat-icon>
 		</button>
-		<button mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
+		<button *ngIf="this._user.streamManager.stream.videoActive" mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
 			<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
 		</button>
 		<button mat-icon-button id="volumeButton" *ngIf="this._user.streamManager.remote" (click)="toggleSound()">
