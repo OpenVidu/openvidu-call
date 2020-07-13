@@ -83,7 +83,11 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.setSessionName();
 		await this.oVDevicesService.initDevices();
 		this.setDevicesInfo();
-		this.initwebcamPublisher();
+		if (this.hasAudioDevices || this.hasVideoDevices) {
+			this.initwebcamPublisher();
+		}else {
+			this.showConfigCard = true;
+		}
 
 		// publisher.on('streamAudioVolumeChange', (event: any) => {
 		//   this.volumeValue = Math.round(Math.abs(event.value.newValue));
@@ -91,7 +95,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.oVUsersSubscription.unsubscribe();
+		if (this.oVUsersSubscription) {
+			this.oVUsersSubscription.unsubscribe();
+		}
 	}
 
 	async onCameraSelected(event: any) {
@@ -279,15 +285,15 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private scrollToBottom(): void {
 		try {
 			this.bodyCard.nativeElement.scrollTop = this.bodyCard.nativeElement.scrollHeight;
-		} catch (err) {
-		}
+		} catch (err) {}
 	}
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = ScreenType.SCREEN;
+		const audioSource = this.hasAudioDevices ? undefined : null;
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
-		const hasAudio = willThereBeWebcam ? false : this.isAudioActive;
-		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
+		const hasAudio = willThereBeWebcam ? false : this.hasAudioDevices && this.isAudioActive;
+		const properties = this.oVSessionService.createProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);

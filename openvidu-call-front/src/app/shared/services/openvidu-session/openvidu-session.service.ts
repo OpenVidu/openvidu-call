@@ -286,7 +286,8 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-		return this.webcamUser?.getConnectionId() === connectionId || this.screenUser?.getConnectionId() === connectionId;
+		console.log("LOCAL CONNECTION", this.getWebcamSession().connection?.connectionId);
+		return this.webcamSession?.connection?.connectionId === connectionId || this.screenSession?.connection?.connectionId === connectionId;
 	}
 
 	createProperties(

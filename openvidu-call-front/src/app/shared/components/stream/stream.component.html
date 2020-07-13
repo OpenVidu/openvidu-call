@@ -1,6 +1,6 @@
-<div *ngIf="this._user"
+<div *ngIf="this._user?.streamManager"
 	class="OT_widget-container"
-	[id]="'container-' + this._user.streamManager.stream.streamId"
+	[id]="'container-' + this._user.streamManager?.stream?.streamId"
 	#streamComponent
 	(dblclick)="toggleVideoSize()"
 >

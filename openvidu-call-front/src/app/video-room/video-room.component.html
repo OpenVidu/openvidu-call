@@ -53,10 +53,12 @@
             class="OT_root OT_publisher custom-class"
             id="localUser"
             *ngFor="let localUser of localUsers"
-            [ngClass]="{OV_small: !localUser.streamManager.stream.videoActive}"
+            [ngClass]="{OV_small: !localUser?.streamManager?.stream?.videoActive}"
+            [style.display]="!localUser.streamManager?.stream ? 'none' : 'block'"
           >
           <!-- Only webcam video will be shown if webcamera is available -->
             <stream-component
+              *ngIf="!!localUser.streamManager"
               [user]="localUser"
               [videoSizeBig]="localUser.videoSizeBig"
               (nicknameClicked)="onNicknameUpdate($event)"
@@ -69,7 +71,7 @@
             *ngFor="let user of remoteUsers"
             class="OT_root OT_publisher custom-class"
             id="remoteUsers"
-            [ngClass]="{OV_small: !user.streamManager.stream.videoActive}"
+            [ngClass]="{OV_small: !user.streamManager?.stream?.videoActive}"
           >
             <stream-component
               [user]="user"
@@ -83,7 +85,7 @@
 
     <app-footer
       [lightTheme]="lightTheme"
-      [participants]="remoteUsers"
+      [participants]="participantsNameList"
     ></app-footer>
   </div>
 </div>

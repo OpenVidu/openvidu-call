@@ -1,26 +1,30 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { UserModel } from '../../models/user-model';
-import { StreamEvent, Subscriber } from 'openvidu-browser';
+import { StreamEvent, Subscriber, ConnectionEvent } from 'openvidu-browser';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { UtilsService } from '../utils/utils.service';
+import { UserName } from '../../types/username-type';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class RemoteUsersService {
 
-
 	remoteUsers: Observable<UserModel[]>;
+	remoteUserNameList: Observable<UserName[]>;
 	private _remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
+	private _remoteUserNameList = <BehaviorSubject<UserName[]>>new BehaviorSubject([]);
 
 	private users: UserModel[] = [];
 
 	private log: ILogger;
 
-	constructor(private loggerSrv: LoggerService) {
+	constructor(private loggerSrv: LoggerService, private utilsSrv: UtilsService) {
 		this.log = this.loggerSrv.get('RemoteService');
 		this.remoteUsers = this._remoteUsers.asObservable();
+		this.remoteUserNameList = this._remoteUserNameList.asObservable();
 	}
 
 	updateUsers() {
@@ -88,6 +92,22 @@ export class RemoteUsersService {
 	}
 
 	getUserAvatar(connectionId: string): string {
-		return this.getRemoteUserByConnectionId(connectionId).getAvatar();
+		return this.getRemoteUserByConnectionId(connectionId)?.getAvatar() || this.utilsSrv.getOpenViduAvatar();
+	}
+
+	addUserName(event: ConnectionEvent) {
+		const nickname = JSON.parse(event.connection.data).clientData;
+		const connectionId = event.connection.connectionId;
+		const newUserNameList = this._remoteUserNameList.getValue();
+
+		newUserNameList.push({nickname, connectionId});
+		this._remoteUserNameList.next(newUserNameList);
+	}
+
+	deleteUserName(event: ConnectionEvent) {
+		const oldUserNameList: UserName[] = this._remoteUserNameList.getValue();
+		const newUserNameList: UserName[] = oldUserNameList.filter(element => element.connectionId !== event.connection.connectionId);
+
+		this._remoteUserNameList.next(newUserNameList);
 	}
 }

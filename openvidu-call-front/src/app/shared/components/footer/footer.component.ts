@@ -1,30 +1,23 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { UserModel } from '../../models/user-model';
+import { UserName } from '../../types/username-type';
 
 @Component({
 	selector: 'app-footer',
 	templateUrl: './footer.component.html',
 	styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent{
 	@Input() lightTheme: boolean;
 
 	participantsNames: string[] = [];
 
 	constructor() {}
 
-	@HostListener('window:resize', ['$event'])
-	sizeChange(event) {}
-
-	ngOnInit() {}
-
 	@Input()
-	set participants(participants: UserModel[]) {
+	set participants(participants: UserName[]) {
 		this.participantsNames = [];
-		participants.forEach((user) => {
-			if (user.isCamera()) {
-				this.participantsNames.push(user.getNickname());
-			}
+		participants.forEach((names) => {
+			this.participantsNames.push(names.nickname);
 		});
 		this.participantsNames = [...this.participantsNames];
 	}

@@ -46,8 +46,10 @@
 
 							[className]="localUsers.length > 1 && i === 0 ? 'ovVideoSmall' : ''"
 						></ov-video>
-						<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && !hasVideoDevices">
-							<span>Oops! Camera is not available</span>
+						<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && (!hasAudioDevices || !hasVideoDevices)">
+							<span *ngIf="!hasVideoDevices && !hasAudioDevices">Oops! Camera and microphone are not available</span>
+							<span *ngIf="!hasVideoDevices && hasAudioDevices">Oops! Camera is not available</span>
+							<span *ngIf="hasVideoDevices && !hasAudioDevices">Oops! Microphone is not available</span>
 						</div>
 					</div>
 				</div>

@@ -10,7 +10,8 @@ import {
 	StreamPropertyChangedEvent,
 	SessionDisconnectedEvent,
 	PublisherSpeakingEvent,
-	Connection
+	Connection,
+	ConnectionEvent
 } from 'openvidu-browser';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
@@ -31,6 +32,7 @@ import { RemoteUsersService } from '../shared/services/remote-users/remote-users
 import { UtilsService } from '../shared/services/utils/utils.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ChatService } from '../shared/services/chat/chat.service';
+import { UserName } from '../shared/types/username-type';
 
 @Component({
 	selector: 'app-video-room',
@@ -64,6 +66,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	mySessionId: string;
 	localUsers: UserModel[] = [];
 	remoteUsers: UserModel[] = [];
+	participantsNameList: UserName[] = [];
 	isConnectionLost: boolean;
 	isAutoLayout = false;
 	hasVideoDevices: boolean;
@@ -72,6 +75,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private oVUsersSubscription: Subscription;
 	private remoteUsersSubscription: Subscription;
 	private chatSubscription: Subscription;
+	private remoteUserNameSubscription: Subscription;
 
 	constructor(
 		private networkSrv: NetworkService,
@@ -124,6 +128,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.chatSubscription) {
 			this.chatSubscription.unsubscribe();
 		}
+		if (this.remoteUserNameSubscription) {
+			this.remoteUserNameSubscription.unsubscribe();
+		}
 	}
 
 	onConfigRoomJoin() {
@@ -150,6 +157,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.sessionScreen = this.oVSessionService.getScreenSession();
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
+		this.subscribeToConnectionCreatedAndDestroyed();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
 		this.chatService.setChatComponent(this.chatSidenav);
@@ -340,10 +348,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
 		try {
-			await this.oVSessionService.connectWebcamSession(webcamToken);
 			await this.oVSessionService.connectScreenSession(screenToken);
+			await this.oVSessionService.connectWebcamSession(webcamToken);
 
-			this.localUsers[0].getStreamManager().on('streamPlaying', () => {
+			this.localUsers[0].getStreamManager()?.on('streamPlaying', () => {
 				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
 			});
 		} catch (error) {
@@ -351,6 +359,23 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.log.e('There was an error connecting to the session:', error.code, error.message);
 			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error?.error || error?.message);
 		}
+	}
+
+	private subscribeToConnectionCreatedAndDestroyed() {
+		this.session.on('connectionCreated', (event: ConnectionEvent) => {
+
+			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
+				return;
+			}
+			this.remoteUsersService.addUserName(event);
+		});
+
+		this.session.on('connectionDestroyed', (event: ConnectionEvent) => {
+			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
+				return;
+			}
+			this.remoteUsersService.deleteUserName(event);
+		});
 	}
 
 	private subscribeToStreamCreated() {
@@ -452,9 +477,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = ScreenType.SCREEN;
+		const audioSource = this.hasAudioDevices ? undefined : null;
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
-		const hasAudio = willThereBeWebcam ? false : this.oVSessionService.hasWebcamAudioActive();
-		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
+		const hasAudio = willThereBeWebcam ? false : this.hasAudioDevices && this.oVSessionService.hasWebcamAudioActive();
+		const properties = this.oVSessionService.createProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
@@ -507,16 +533,20 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private subscribeToLocalUsers() {
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users) => {
+		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users: UserModel[]) => {
 			this.localUsers = users;
 			this.updateOpenViduLayout();
 		});
 	}
 
 	private subscribeToRemoteUsers() {
-		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users) => {
+		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users: UserModel[]) => {
 			this.remoteUsers = [...users];
 			this.updateOpenViduLayout();
+		});
+
+		this.remoteUserNameSubscription = this.remoteUsersService.remoteUserNameList.subscribe((names: UserName[]) => {
+			this.participantsNameList = [...names];
 		});
 	}
 }
