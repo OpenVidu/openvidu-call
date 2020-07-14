@@ -17,7 +17,7 @@ import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu
 import { UserModel } from '../shared/models/user-model';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { OvSettingsModel } from '../shared/models/ovSettings';
-import { ScreenType } from '../shared/types/video-type';
+import { ScreenType, VideoType } from '../shared/types/video-type';
 import { ILogger } from '../shared/types/logger-type';
 import { LayoutType } from '../shared/types/layout-type';
 import { Theme } from '../shared/types/webcomponent-config';
@@ -367,14 +367,27 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
 				return;
 			}
+
 			this.remoteUsersService.addUserName(event);
+			console.warn(event);
+			// TODO
+
+			const nickname: string = JSON.parse(event.connection.data).clientData;
+			if (typeof event.connection.stream === 'undefined' && !nickname?.includes(VideoType.SCREEN)) {
+				this.remoteUsersService.add(event, null);
+			}
+
 		});
 
 		this.session.on('connectionDestroyed', (event: ConnectionEvent) => {
 			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
 				return;
 			}
-			this.remoteUsersService.deleteUserName(event);
+			// TODO
+			const nickname: string = JSON.parse(event.connection.data).clientData;
+			if (typeof event.connection.stream === 'undefined' && !nickname?.includes(VideoType.SCREEN)) {
+				this.remoteUsersService.deleteUserName(event);
+			}
 		});
 	}
 

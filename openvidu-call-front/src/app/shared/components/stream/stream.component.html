@@ -1,4 +1,4 @@
-<div *ngIf="this._user?.streamManager"
+<div *ngIf="this._user"
 	class="OT_widget-container"
 	[id]="'container-' + this._user.streamManager?.stream?.streamId"
 	#streamComponent
@@ -7,9 +7,9 @@
 	<div class="nickname" [class.fullscreen]="isFullscreen">
 		<div (click)="toggleNicknameForm()" class="nicknameContainer" selected *ngIf="!toggleNickname">
 			<span id="nickname">{{ this._user.nickname }}</span>
-			<span *ngIf="!this._user.streamManager.remote"> (edit)</span>
+			<span *ngIf="!this._user.streamManager?.remote"> (edit)</span>
 		</div>
-		<div *ngIf="toggleNickname && !this._user.streamManager.remote" [class.fullscreen]="isFullscreen" id="dialogNickname">
+		<div *ngIf="toggleNickname && !this._user.streamManager?.remote" [class.fullscreen]="isFullscreen" id="dialogNickname">
 			<button mat-icon-button (click)="toggleNicknameForm()" id="closeButton">
 				<mat-icon matTooltip="Close">highlight_off</mat-icon>
 			</button>
@@ -37,19 +37,19 @@
 		(toggleVideoSizeEvent)="toggleVideoSize($event)"
 	></ov-video>
 	<div class="statusIcons">
-		<div id="statusMic" *ngIf="!this._user.streamManager.stream.audioActive">
+		<div id="statusMic" *ngIf="!this._user.streamManager?.stream?.audioActive">
 			<mat-icon>mic_off</mat-icon>
 		</div>
 	</div>
 
 	<div class="videoButtons">
-		<button *ngIf="this._user.streamManager.stream.videoActive" mat-icon-button id="videoZoomButton"  (click)="toggleVideoSize()">
+		<button *ngIf="this._user.streamManager?.stream?.videoActive" mat-icon-button id="videoZoomButton"  (click)="toggleVideoSize()">
 			<mat-icon>{{ this.videoSizeIcon }}</mat-icon>
 		</button>
-		<button *ngIf="this._user.streamManager.stream.videoActive" mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
+		<button *ngIf="this._user.streamManager?.stream?.videoActive" mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
 			<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
 		</button>
-		<button mat-icon-button id="volumeButton" *ngIf="this._user.streamManager.remote" (click)="toggleSound()">
+		<button mat-icon-button id="volumeButton" *ngIf="this._user.streamManager?.remote" (click)="toggleSound()">
 			<mat-icon *ngIf="!mutedSound" matTooltip="Mute sound">volume_up</mat-icon>
 			<mat-icon *ngIf="mutedSound" color="warn" matTooltip="Unmute sound">volume_off</mat-icon>
 		</button>
@@ -57,7 +57,7 @@
 			mat-icon-button
 			(click)="replaceScreenTrack()"
 			id="changeScreenButton"
-			*ngIf="!this._user.streamManager.remote && this._user.isScreen()"
+			*ngIf="!this._user.streamManager?.remote && this._user.isScreen()"
 		>
 			<mat-icon matTooltip="Choose screen">picture_in_picture</mat-icon>
 		</button>

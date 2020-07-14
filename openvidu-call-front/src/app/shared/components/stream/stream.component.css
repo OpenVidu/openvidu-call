@@ -110,6 +110,7 @@ video {
   height: 100%;
   position: absolute;
   overflow: hidden;
+  background-color: #000000;
 }
 
 mat-error,

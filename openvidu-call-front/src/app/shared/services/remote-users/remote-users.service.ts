@@ -31,13 +31,14 @@ export class RemoteUsersService {
 		this._remoteUsers.next(this.users);
 	}
 
-	add(event: StreamEvent, subscriber: Subscriber) {
+	add(event: StreamEvent | ConnectionEvent, subscriber: Subscriber) {
 		let nickname = '';
 		let avatar = '';
-		const connectionId = event.stream.connection.connectionId;
+		const connectionId = (<StreamEvent>event)?.stream?.connection?.connectionId || (<ConnectionEvent>event)?.connection?.connectionId;
 		try {
-			nickname = JSON.parse(event.stream.connection.data)?.clientData;
-			avatar = JSON.parse(event.stream.connection.data)?.avatar;
+			const data = (<StreamEvent>event)?.stream?.connection?.data || (<ConnectionEvent>event)?.connection?.data;
+			nickname = JSON.parse(data)?.clientData;
+			avatar = JSON.parse(data)?.avatar;
 		} catch (error) {
 			nickname = 'Unknown';
 		}
@@ -88,6 +89,8 @@ export class RemoteUsersService {
 	clean() {
 		this._remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 		this.remoteUsers = this._remoteUsers.asObservable();
+		this._remoteUserNameList = <BehaviorSubject<UserName[]>>new BehaviorSubject([]);
+		this.remoteUserNameList = this._remoteUserNameList.asObservable();
 		this.users = [];
 	}
 
