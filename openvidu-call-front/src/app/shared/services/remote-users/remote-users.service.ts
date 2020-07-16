@@ -44,7 +44,8 @@ export class RemoteUsersService {
 		}
 		const newUser = new UserModel(connectionId, subscriber, nickname);
 		newUser.setUserAvatar(avatar);
-		this.users.push(newUser);
+		// Add new user (connectionCreated Event) or assign the streamManager to old user when the connnectionId exists (streamCreated Event)
+		this.addUser(newUser);
 		this.updateUsers();
 	}
 
@@ -83,6 +84,16 @@ export class RemoteUsersService {
 		const user = this.getRemoteUserByConnectionId(connectionId);
 		user?.setNickname(nickname);
 		this._remoteUsers.next(this.users);
+
+		// Update nickname in remote nickname list
+		const remoteUserNameList = this._remoteUserNameList.getValue();
+		remoteUserNameList.forEach(element => {
+			if (element.connectionId === connectionId) {
+				element.nickname = nickname;
+				return;
+			}
+		});
+		this._remoteUserNameList.next(remoteUserNameList);
 	}
 
 
@@ -112,5 +123,17 @@ export class RemoteUsersService {
 		const newUserNameList: UserName[] = oldUserNameList.filter(element => element.connectionId !== event.connection.connectionId);
 
 		this._remoteUserNameList.next(newUserNameList);
+	}
+
+	private addUser(user: UserModel) {
+		const oldUser = this.getRemoteUserByConnectionId(user.connectionId);
+
+		// Assign streamManager if user exists due to connectionCreated Event
+		if (!!oldUser) {
+			oldUser.setStreamManager(user.getStreamManager());
+			return;
+		}
+
+		this.users.push(user);
 	}
 }

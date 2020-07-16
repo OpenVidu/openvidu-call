@@ -1,17 +1,16 @@
-import { Injectable, ɵConsole } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { OpenVidu, Device } from 'openvidu-browser';
 import { IDevice, CameraType } from '../../types/device-type';
 import { ILogger } from '../../types/logger-type';
 import { LoggerService } from '../logger/logger.service';
 import { UtilsService } from '../utils/utils.service';
 import { StorageService } from '../storage/storage.service';
+import { Storage } from '../../types/storage-type';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DevicesService {
-	private readonly VIDEO_DEVICE = 'openviduCallVideoDevice';
-	private readonly AUDIO_DEVICE = 'openviduCallAudioDevice';
 
 	private OV: OpenVidu = null;
 	private devices: Device[];
@@ -20,6 +19,7 @@ export class DevicesService {
 	private camSelected: IDevice;
 	private micSelected: IDevice;
 	private log: ILogger;
+	private videoDevicesDisabled: boolean;
 
 	constructor(private loggerSrv: LoggerService, private utilSrv: UtilsService, private storageSrv: StorageService) {
 		this.log = this.loggerSrv.get('DevicesService');
@@ -89,7 +89,7 @@ export class DevicesService {
 	}
 
 	private getCamFromStorage() {
-		let storageDevice = this.storageSrv.get(this.VIDEO_DEVICE);
+		let storageDevice = this.storageSrv.get(Storage.VIDEO_DEVICE);
 		storageDevice = this.getCameraByDeviceField(storageDevice?.device);
 		if (storageDevice) {
 			return storageDevice;
@@ -109,7 +109,7 @@ export class DevicesService {
 	}
 
 	private getMicFromStogare(): IDevice {
-		let storageDevice = this.storageSrv.get(this.AUDIO_DEVICE);
+		let storageDevice = this.storageSrv.get(Storage.AUDIO_DEVICE);
 		storageDevice = this.getMicrophoneByDeviceField(storageDevice?.device);
 		if (storageDevice) {
 			return storageDevice;
@@ -122,7 +122,7 @@ export class DevicesService {
 	}
 
 	private saveCamToStorage(cam: IDevice) {
-		this.storageSrv.set(this.VIDEO_DEVICE, cam);
+		this.storageSrv.set(Storage.VIDEO_DEVICE, cam);
 	}
 
 	setMicSelected(deviceField: any) {
@@ -131,7 +131,7 @@ export class DevicesService {
 
 	}
 	private saveMicToStorage(mic: IDevice) {
-		this.storageSrv.set(this.AUDIO_DEVICE, mic);
+		this.storageSrv.set(Storage.AUDIO_DEVICE, mic);
 	}
 
 	needUpdateVideoTrack(newVideoSource: string): boolean {
@@ -151,7 +151,7 @@ export class DevicesService {
 	}
 
 	hasVideoDeviceAvailable(): boolean {
-		return !!this.devices?.find((device) => device.kind === 'videoinput');
+		return !this.videoDevicesDisabled && !!this.devices?.find((device) => device.kind === 'videoinput');
 	}
 
 	hasAudioDeviceAvailable(): boolean {
@@ -164,6 +164,20 @@ export class DevicesService {
 
 	areEmptyLabels(): boolean {
 		return !!this.cameras.find((device) => device.label === '') || !!this.microphones.find((device) => device.label === '');
+	}
+
+	disableVideoDevices() {
+		this.videoDevicesDisabled = true;
+	}
+
+	clear() {
+		this.OV = new OpenVidu();
+		this.devices = [];
+		this.cameras = [];
+		this.microphones = [];
+		this.camSelected = null;
+		this.micSelected = null;
+		this.videoDevicesDisabled = false;
 	}
 
 	private getCameraByDeviceField(deviceField: any): IDevice {

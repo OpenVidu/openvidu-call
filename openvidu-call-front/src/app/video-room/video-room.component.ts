@@ -5,12 +5,10 @@ import {
 	Publisher,
 	Subscriber,
 	Session,
-	SignalOptions,
 	StreamEvent,
 	StreamPropertyChangedEvent,
 	SessionDisconnectedEvent,
 	PublisherSpeakingEvent,
-	Connection,
 	ConnectionEvent
 } from 'openvidu-browser';
 import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
@@ -22,6 +20,7 @@ import { ILogger } from '../shared/types/logger-type';
 import { LayoutType } from '../shared/types/layout-type';
 import { Theme } from '../shared/types/webcomponent-config';
 import { ExternalConfigModel } from '../shared/models/external-config';
+import { Storage } from '../shared/types/storage-type';
 
 // Services
 import { DevicesService } from '../shared/services/devices/devices.service';
@@ -33,6 +32,7 @@ import { UtilsService } from '../shared/services/utils/utils.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ChatService } from '../shared/services/chat/chat.service';
 import { UserName } from '../shared/types/username-type';
+import { StorageService } from '../shared/services/storage/storage.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -85,7 +85,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		public oVSessionService: OpenViduSessionService,
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService,
-		private chatService: ChatService
+		private chatService: ChatService,
+		private storageSrv: StorageService
 	) {
 		this.log = this.loggerSrv.get('VideoRoomComponent');
 	}
@@ -104,6 +105,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
+		this.oVSessionService.initialize();
 		this.lightTheme = this.externalConfig?.getTheme() === Theme.LIGHT;
 		this.ovSettings = !!this.externalConfig ? this.externalConfig.getOvSettings() : new OvSettingsModel();
 		this.ovSettings.setScreenSharing(this.ovSettings.hasScreenSharing() && !this.utilsSrv.isMobile());
@@ -155,9 +157,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.session = this.oVSessionService.getWebcamSession();
 		this._session.emit(this.session);
 		this.sessionScreen = this.oVSessionService.getScreenSession();
+		this.subscribeToConnectionCreatedAndDestroyed();
 		this.subscribeToStreamCreated();
 		this.subscribeToStreamDestroyed();
-		this.subscribeToConnectionCreatedAndDestroyed();
 		this.subscribeToStreamPropertyChange();
 		this.subscribeToNicknameChanged();
 		this.chatService.setChatComponent(this.chatSidenav);
@@ -175,8 +177,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	onNicknameUpdate(nickname: string) {
-		this.oVSessionService.setWebcamName(nickname);
-		this.sendNicknameSignal(nickname);
+		this.oVSessionService.updateUsersNickname(nickname);
+		this.storageSrv.set(Storage.USER_NICKNAME, nickname);
+		this.oVSessionService.sendNicknameSignal();
 	}
 
 	toggleMic() {
@@ -221,7 +224,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
-			screenPublisher.once('accessAllowed', (event) => {
+			screenPublisher.once('accessAllowed', async (event) => {
 				// Listen to event fired when native stop button is clicked
 				screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
 					this.log.d('Clicked native stop button. Stopping screen sharing');
@@ -229,7 +232,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				});
 				this.log.d('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
-				this.oVSessionService.publishScreen();
+				await this.oVSessionService.publishScreen();
+				this.oVSessionService.sendNicknameSignal();
 				if (!this.oVSessionService.hasWebcamVideoActive()) {
 					// Disabling webcam
 					this.oVSessionService.disableWebcamUser();
@@ -240,8 +244,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			screenPublisher.once('accessDenied', (event) => {
 				this.log.w('ScreenShare: Access Denied');
 			});
-
-
 			return;
 		}
 
@@ -299,7 +301,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			}
 		}
 		this.updateOpenViduLayout();
-
 	}
 
 	toolbarMicIconEnabled(): boolean {
@@ -363,18 +364,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	private subscribeToConnectionCreatedAndDestroyed() {
 		this.session.on('connectionCreated', (event: ConnectionEvent) => {
-
 			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
 				return;
 			}
 
 			this.remoteUsersService.addUserName(event);
-			console.warn(event);
-			// TODO
 
 			const nickname: string = JSON.parse(event.connection.data).clientData;
-			if (typeof event.connection.stream === 'undefined' && !nickname?.includes(VideoType.SCREEN)) {
+			// Adding participant when connection is created
+			if (!nickname?.includes('_' + VideoType.SCREEN)) {
 				this.remoteUsersService.add(event, null);
+				this.oVSessionService.sendNicknameSignal(event.connection);
 			}
 
 		});
@@ -383,10 +383,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(event.connection.connectionId)) {
 				return;
 			}
-			// TODO
+			this.remoteUsersService.deleteUserName(event);
 			const nickname: string = JSON.parse(event.connection.data).clientData;
-			if (typeof event.connection.stream === 'undefined' && !nickname?.includes(VideoType.SCREEN)) {
-				this.remoteUsersService.deleteUserName(event);
+			// Deleting participant when connection is destroyed
+			if (!nickname?.includes('_' + VideoType.SCREEN)) {
+				this.remoteUsersService.removeUserByConnectionId(event.connection.connectionId);
 			}
 		});
 	}
@@ -401,7 +402,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			const subscriber: Subscriber = this.session.subscribe(event.stream, undefined);
 			this.remoteUsersService.add(event, subscriber);
-			this.sendNicknameSignal(this.oVSessionService.getWebcamUserName(), event.stream.connection);
+			// this.oVSessionService.sendNicknameSignal(event.stream.connection);
 		});
 	}
 
@@ -516,15 +517,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.log.e('There was an error getting the token:', error.status, error.message);
 			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.error || error.message);
 		}
-	}
-
-	private sendNicknameSignal(nickname: string , connection?: Connection) {
-		const signalOptions: SignalOptions = {
-			data: JSON.stringify({ nickname }),
-			type: 'nicknameChanged',
-			to: connection ? [connection] : undefined
-		};
-		this.session.signal(signalOptions);
 	}
 
 	private updateOpenViduLayout(timeout?: number) {

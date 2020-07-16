@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
-import { OpenVidu, PublisherProperties, Publisher, Session } from 'openvidu-browser';
+import { OpenVidu, PublisherProperties, Publisher, Session, Connection, SignalOptions } from 'openvidu-browser';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ScreenType } from '../../types/video-type';
 import { AvatarType } from '../../types/chat-type';
@@ -32,11 +32,16 @@ export class OpenViduSessionService {
 
 	constructor(private loggerSrv: LoggerService) {
 		this.log = this.loggerSrv.get('OpenViduSessionService');
+	}
+
+	initialize() {
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
 
 		this.OVUsers = this._OVUsers.asObservable();
 		this.webcamUser = new UserModel();
+		// Used when the streamManager is null (users without devices)
+		this.webcamUser.setLocal(true);
 		this._OVUsers.next([this.webcamUser]);
 	}
 
@@ -286,8 +291,11 @@ export class OpenViduSessionService {
 	}
 
 	isMyOwnConnection(connectionId: string): boolean {
-		console.log("LOCAL CONNECTION", this.getWebcamSession().connection?.connectionId);
 		return this.webcamSession?.connection?.connectionId === connectionId || this.screenSession?.connection?.connectionId === connectionId;
+	}
+	needSendNicknameSignal(): boolean {
+		const oldNickname: string = JSON.parse(this.getWebcamSession().connection.data).clientData;
+		return oldNickname !== this.getWebcamUserName();
 	}
 
 	createProperties(
@@ -326,8 +334,9 @@ export class OpenViduSessionService {
 		}
 	}
 
-	setWebcamName(nickname: string) {
+	updateUsersNickname(nickname: string) {
 		this.webcamUser.setNickname(nickname);
+		this.screenUser?.setNickname(this.getScreenUserName());
 	}
 
 	getWebCamAvatar(): string {
@@ -353,6 +362,19 @@ export class OpenViduSessionService {
 			return;
 		}
 		this.screenUser.setVideoSizeBig(!this.screenUser.isVideoSizeBig());
+	}
+
+	sendNicknameSignal(connection?: Connection) {
+		if (this.needSendNicknameSignal()) {
+			const signalOptions: SignalOptions = {
+				data: JSON.stringify({ nickname: this.getWebcamUserName() }),
+				type: 'nicknameChanged',
+				to: connection ? [connection] : undefined
+			};
+			this.getWebcamSession()?.signal(signalOptions);
+			signalOptions.data = JSON.stringify({nickname: this.getScreenUserName()});
+			this.getScreenSession()?.signal(signalOptions);
+		}
 	}
 
 	private initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {

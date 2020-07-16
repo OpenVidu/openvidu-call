@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserName } from '../../types/username-type';
+import { VideoType } from '../../types/video-type';
 
 @Component({
 	selector: 'app-footer',
@@ -17,7 +18,9 @@ export class FooterComponent{
 	set participants(participants: UserName[]) {
 		this.participantsNames = [];
 		participants.forEach((names) => {
-			this.participantsNames.push(names.nickname);
+			if (!names.nickname.includes(VideoType.SCREEN)) {
+				this.participantsNames.push(names.nickname);
+			}
 		});
 		this.participantsNames = [...this.participantsNames];
 	}
