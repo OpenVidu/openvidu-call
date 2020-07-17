@@ -28,6 +28,12 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
+	local: boolean;
+
+
+	/**
+	 * @hidden
+	 */
 	private randomAvatar: string;
 
 	/**
@@ -68,7 +74,7 @@ export class UserModel {
 	 * Return the connection ID
 	 */
 	public getConnectionId(): string {
-		return this.streamManager?.stream?.connection?.connectionId;
+		return this.streamManager?.stream?.connection?.connectionId || this.connectionId;
 	}
 
 	/**
@@ -96,7 +102,7 @@ export class UserModel {
 	 * Return `true` if user has a local role and `false` if not
 	 */
 	public isLocal(): boolean {
-		return !this.isRemote();
+		return this.local;
 	}
 
 	/**
@@ -147,6 +153,14 @@ export class UserModel {
 	 */
 	public setVideoSizeBig(big: boolean) {
 		this.videoSizeBig = big;
+	}
+
+	/**
+	 * @hidden
+	 */
+	// Used when the streamManager is null (users without devices)
+	public setLocal(local: boolean) {
+		this.local = local;
 	}
 
 	/**

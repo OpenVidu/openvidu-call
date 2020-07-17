@@ -16,6 +16,8 @@ import { ScreenType } from '../../types/video-type';
 import { ExternalConfigModel } from '../../models/external-config';
 import { OvSettingsModel } from '../../models/ovSettings';
 import { StorageService } from '../../services/storage/storage.service';
+import { Storage } from '../../types/storage-type';
+import { OpenViduErrorName } from 'openvidu-browser/lib/OpenViduInternal/Enums/OpenViduError';
 
 @Component({
 	selector: 'app-room-config',
@@ -23,8 +25,6 @@ import { StorageService } from '../../services/storage/storage.service';
 	styleUrls: ['./room-config.component.css']
 })
 export class RoomConfigComponent implements OnInit, OnDestroy {
-
-	private readonly USER_NICKNAME = 'openviduCallNickname';
 	@ViewChild('bodyCard') bodyCard: ElementRef;
 
 	@Input() externalConfig: ExternalConfigModel;
@@ -64,8 +64,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		public oVSessionService: OpenViduSessionService,
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService,
-		private storageSrv: StorageService,
-
+		private storageSrv: StorageService
 	) {
 		this.log = this.loggerSrv.get('RoomConfigComponent');
 	}
@@ -77,13 +76,17 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	async ngOnInit() {
 		this.subscribeToUsers();
-		this.setNicknameForm();
+		this.initNicknameAndSubscribeToChanges();
 		this.setRandomAvatar();
 		this.columns = window.innerWidth > 900 ? 2 : 1;
 		this.setSessionName();
 		await this.oVDevicesService.initDevices();
 		this.setDevicesInfo();
-		this.initwebcamPublisher();
+		if (this.hasAudioDevices || this.hasVideoDevices) {
+			this.initwebcamPublisher();
+		} else {
+			this.showConfigCard = true;
+		}
 
 		// publisher.on('streamAudioVolumeChange', (event: any) => {
 		//   this.volumeValue = Math.round(Math.abs(event.value.newValue));
@@ -91,7 +94,10 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.oVUsersSubscription.unsubscribe();
+		if (this.oVUsersSubscription) {
+			this.oVUsersSubscription.unsubscribe();
+		}
+		this.oVDevicesService.clear();
 	}
 
 	async onCameraSelected(event: any) {
@@ -151,11 +157,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	toggleScreenShare() {
+		// Disabling screenShare
 		if (this.oVSessionService.areBothConnected()) {
 			this.oVSessionService.disableScreenUser();
 			return;
 		}
 
+		// Enabling screenShare
 		if (this.oVSessionService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
@@ -175,6 +183,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			});
 			return;
 		}
+
+		// Disabling screnShare and enabling webcam
 		this.oVSessionService.enableWebcamUser();
 		this.oVSessionService.disableScreenUser();
 	}
@@ -190,13 +200,20 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.oVSessionService.setAvatar(AvatarType.VIDEO);
 	}
 
-	setNicknameForm() {
+	initNicknameAndSubscribeToChanges() {
 		if (this.externalConfig) {
 			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
+			this.oVSessionService.updateUsersNickname(this.externalConfig.getNickname());
 			return;
 		}
-		const nickname = this.storageSrv.get(this.USER_NICKNAME) || this.utilsSrv.generateNickname();
+		const nickname = this.storageSrv.get(Storage.USER_NICKNAME) || this.utilsSrv.generateNickname();
 		this.nicknameFormControl.setValue(nickname);
+		this.oVSessionService.updateUsersNickname(nickname);
+
+		this.nicknameFormControl.valueChanges.subscribe(value => {
+			this.oVSessionService.updateUsersNickname(value);
+			this.storageSrv.set(Storage.USER_NICKNAME, value);
+		});
 	}
 
 	eventKeyPress(event) {
@@ -231,9 +248,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// if (this.localUsers[1]) {
 			// 	this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
 			// }
-			this.oVSessionService.setWebcamName(this.nicknameFormControl.value);
-			this.storageSrv.set(this.USER_NICKNAME, this.nicknameFormControl.value);
-			this.join.emit();
+			return this.join.emit();
 		}
 		this.scrollToBottom();
 	}
@@ -279,15 +294,15 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private scrollToBottom(): void {
 		try {
 			this.bodyCard.nativeElement.scrollTop = this.bodyCard.nativeElement.scrollHeight;
-		} catch (err) {
-		}
+		} catch (err) {}
 	}
 
 	private initScreenPublisher(): Publisher {
 		const videoSource = ScreenType.SCREEN;
+		const audioSource = this.hasAudioDevices ? undefined : null;
 		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
-		const hasAudio = willThereBeWebcam ? false : this.isAudioActive;
-		const properties = this.oVSessionService.createProperties(videoSource, undefined, true, hasAudio, false);
+		const hasAudio = willThereBeWebcam ? false : this.hasAudioDevices && this.isAudioActive;
+		const properties = this.oVSessionService.createProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
 			return this.oVSessionService.initScreenPublisher(undefined, properties);
@@ -357,10 +372,16 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private handlePublisherError(publisher: Publisher) {
 		publisher.once('accessDenied', (e: any) => {
 			let message: string;
-			if (e.name === 'DEVICE_ACCESS_DENIED') {
-				message = 'Access to media devices was not allowed.';
+			if (e.name === OpenViduErrorName.DEVICE_ALREADY_IN_USE) {
+				this.log.w('Video device already in use. Disabling video device...');
+				// Allow access to the room with only mic if camera device is already in use
+				this.hasVideoDevices = false;
+				this.oVDevicesService.disableVideoDevices();
+				return this.initwebcamPublisher();
 			}
-			if (e.name === 'NO_INPUT_SOURCE_SET') {
+			if (e.name === OpenViduErrorName.DEVICE_ACCESS_DENIED) {
+				message = 'Access to media devices was not allowed.';
+			} else if (e.name === OpenViduErrorName.NO_INPUT_SOURCE_SET) {
 				message = 'No video or audio devices have been found. Please, connect at least one.';
 			}
 			this.utilsSrv.showErrorMessage(e.name.replace(/_/g, ' '), message, true);

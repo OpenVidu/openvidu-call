@@ -15,6 +15,8 @@ export class OpenViduSessionServiceMock {
 
 	constructor() {}
 
+	initialize() {}
+
 	initSessions() {}
 
 	getWebcamSession(): Session {

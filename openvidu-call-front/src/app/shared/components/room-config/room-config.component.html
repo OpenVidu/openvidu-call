@@ -47,7 +47,9 @@
 							[className]="localUsers.length > 1 && i === 0 ? 'ovVideoSmall' : ''"
 						></ov-video>
 						<div class="cameraMessageContainer" *ngIf="localUser.isCamera() && !hasVideoDevices">
-							<span>Oops! Camera is not available</span>
+							<span *ngIf="!hasVideoDevices && !hasAudioDevices">Oops! Camera and microphone are not available</span>
+							<span *ngIf="!hasVideoDevices && hasAudioDevices">Oops! Camera is not available</span>
+							<span *ngIf="hasVideoDevices && !hasAudioDevices">Oops! Microphone is not available</span>
 						</div>
 					</div>
 				</div>
@@ -98,7 +100,7 @@
 				<div fxLayout="row" fxFill id="devicesSection">
 					<div fxLayout fxFlex>
 						<div class="one" fxFlex="20" fxLayoutAlign="center center">
-							<button mat-mini-fab (click)="setNicknameForm()" class="deviceButton">
+							<button mat-mini-fab class="deviceButton">
 								<mat-icon matTooltip="Nickname">person</mat-icon>
 							</button>
 						</div>

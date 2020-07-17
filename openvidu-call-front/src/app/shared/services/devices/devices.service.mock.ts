@@ -56,4 +56,8 @@ export class DevicesServiceMock {
 	cameraNeedsMirror(deviceField: string): boolean {
 		return true;
 	}
+
+	disableVideoDevices() {	}
+
+	clear() {}
 }

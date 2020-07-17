@@ -95,7 +95,7 @@ export class UtilsService {
 	}
 
 	closeDialog() {
-		this.dialogRef.close();
+		this.dialogRef?.close();
 	}
 
 	getHTMLElementByClassName(element: HTMLElement, className: string): HTMLElement {
