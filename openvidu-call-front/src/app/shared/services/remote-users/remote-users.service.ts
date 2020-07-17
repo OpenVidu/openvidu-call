@@ -35,13 +35,9 @@ export class RemoteUsersService {
 		let nickname = '';
 		let avatar = '';
 		const connectionId = (<StreamEvent>event)?.stream?.connection?.connectionId || (<ConnectionEvent>event)?.connection?.connectionId;
-		try {
-			const data = (<StreamEvent>event)?.stream?.connection?.data || (<ConnectionEvent>event)?.connection?.data;
-			nickname = JSON.parse(data)?.clientData;
-			avatar = JSON.parse(data)?.avatar;
-		} catch (error) {
-			nickname = 'Unknown';
-		}
+		const data = (<StreamEvent>event)?.stream?.connection?.data || (<ConnectionEvent>event)?.connection?.data;
+		nickname = this.utilsSrv.getNicknameFromConnectionData(data);
+		avatar = this.utilsSrv.getAvatarFromConnectionData(data);
 		const newUser = new UserModel(connectionId, subscriber, nickname);
 		newUser.setUserAvatar(avatar);
 		// Add new user (connectionCreated Event) or assign the streamManager to old user when the connnectionId exists (streamCreated Event)
@@ -110,7 +106,8 @@ export class RemoteUsersService {
 	}
 
 	addUserName(event: ConnectionEvent) {
-		const nickname = JSON.parse(event.connection.data).clientData;
+
+		const nickname  = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
 		const connectionId = event.connection.connectionId;
 		const newUserNameList = this._remoteUserNameList.getValue();
 

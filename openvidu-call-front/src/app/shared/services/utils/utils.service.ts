@@ -131,6 +131,27 @@ export class UtilsService {
 		return element?.className.includes(LayoutClass.SMALL_ELEMENT);
 	}
 
+	getNicknameFromConnectionData(data: string): string {
+		let nickname: string;
+		try {
+			nickname = JSON.parse(data).clientData;
+		} catch (error) {
+			nickname = 'Unknown';
+		}
+		return nickname;
+	}
+
+	getAvatarFromConnectionData(data: string): string {
+		let avatar: string;
+		try {
+			avatar = JSON.parse(data).avatar;
+		} catch (error) {
+			avatar = this.getOpenViduAvatar();
+		}
+		return avatar;
+	}
+
+
 	private isAndroid(): boolean {
 		return /\b(\w*Android\w*)\b/.test(navigator.userAgent) && /\b(\w*Mobile\w*)\b/.test(navigator.userAgent);
 	}

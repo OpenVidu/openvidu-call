@@ -368,9 +368,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				return;
 			}
 
+			const nickname: string = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
 			this.remoteUsersService.addUserName(event);
 
-			const nickname: string = JSON.parse(event.connection.data).clientData;
 			// Adding participant when connection is created
 			if (!nickname?.includes('_' + VideoType.SCREEN)) {
 				this.remoteUsersService.add(event, null);
@@ -384,7 +384,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				return;
 			}
 			this.remoteUsersService.deleteUserName(event);
-			const nickname: string = JSON.parse(event.connection.data).clientData;
+			const nickname: string = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
+			this.remoteUsersService.addUserName(event);
 			// Deleting participant when connection is destroyed
 			if (!nickname?.includes('_' + VideoType.SCREEN)) {
 				this.remoteUsersService.removeUserByConnectionId(event.connection.connectionId);
@@ -437,7 +438,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			if (this.oVSessionService.isMyOwnConnection(connectionId)) {
 				return;
 			}
-			const nickname = JSON.parse(event.data).nickname;
+			const nickname = this.utilsSrv.getNicknameFromConnectionData(event.data);
 			this.remoteUsersService.updateNickname(connectionId, nickname);
 		});
 	}
