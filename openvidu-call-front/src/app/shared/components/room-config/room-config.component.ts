@@ -85,6 +85,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (this.hasAudioDevices || this.hasVideoDevices) {
 			this.initwebcamPublisher();
 		} else {
+			// Emit publisher to webcomponent and angular-library
+			this.emitPublisher(null);
 			this.showConfigCard = true;
 		}
 
