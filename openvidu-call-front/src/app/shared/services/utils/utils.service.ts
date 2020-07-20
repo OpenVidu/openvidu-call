@@ -64,7 +64,7 @@ export class UtilsService {
 		return 'OpenVidu_User' + Math.floor(Math.random() * 100);
 	}
 
-	isFF(): boolean {
+	isFirefox(): boolean {
 		return /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
 	}
 
@@ -146,6 +146,26 @@ export class UtilsService {
 	}
 
 	private isIos(): boolean {
-		return /\b(\w*iOS\w*)\b/.test(navigator.userAgent);
+		// return (
+		// 	(/\b(\w*iOS\w*)\b/.test(navigator.userAgent) || /\b(\w*iPhone\w*)\b/.test(navigator.userAgent)) &&
+		// 	/\b(\w*Safari\w*)\b/.test(navigator.userAgent) &&
+		// 	'ontouchend' in document
+		// );
+
+		return this.isIPhoneOrIPad(navigator?.userAgent) && this.isIOSWithSafari(navigator?.userAgent);
+	}
+
+	private isIPhoneOrIPad(userAgent): boolean {
+		const isIPad = /\b(\w*Macintosh\w*)\b/.test(userAgent);
+		const isIPhone = /\b(\w*iPhone\w*)\b/.test(userAgent) && /\b(\w*Mobile\w*)\b/.test(userAgent);
+		// && /\b(\w*iPhone\w*)\b/.test(navigator.platform);
+		const isTouchable = 'ontouchend' in document;
+
+		return (isIPad || isIPhone) && isTouchable;
+	}
+
+	private isIOSWithSafari(userAgent): boolean {
+		return /\b(\w*Apple\w*)\b/.test(navigator.vendor) && /\b(\w*Safari\w*)\b/.test(userAgent)
+			&& !/\b(\w*CriOS\w*)\b/.test(userAgent) && !/\b(\w*FxiOS\w*)\b/.test(userAgent);
 	}
 }
