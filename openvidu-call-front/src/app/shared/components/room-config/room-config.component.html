@@ -54,7 +54,7 @@
 					</div>
 				</div>
 
-				<div class="avatarButton">
+				<div class="avatarButton" *ngIf="hasVideoDevices">
 					<button mat-stroked-button (click)="takePhoto()">
 						<mat-icon matTooltip="Take Photo">photo_camera</mat-icon>
 						<span style="margin-left: 5px;">Capture Avatar</span>
@@ -63,7 +63,7 @@
 			</div>
 
 			<div class="col-sm-6 col-md-6 col-lg-6 rightSection">
-				<div class="avatarContainer">
+				<div class="avatarContainer" *ngIf="hasVideoDevices">
 					<h3>Avatar</h3>
 
 				</div>
