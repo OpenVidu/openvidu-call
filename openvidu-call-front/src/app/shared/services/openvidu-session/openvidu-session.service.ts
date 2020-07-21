@@ -367,12 +367,12 @@ export class OpenViduSessionService {
 	sendNicknameSignal(connection?: Connection) {
 		if (this.needSendNicknameSignal()) {
 			const signalOptions: SignalOptions = {
-				data: JSON.stringify({ nickname: this.getWebcamUserName() }),
+				data: JSON.stringify({ clientData: this.getWebcamUserName() }),
 				type: 'nicknameChanged',
 				to: connection ? [connection] : undefined
 			};
 			this.getWebcamSession()?.signal(signalOptions);
-			signalOptions.data = JSON.stringify({nickname: this.getScreenUserName()});
+			signalOptions.data = JSON.stringify({clientData: this.getScreenUserName()});
 			this.getScreenSession()?.signal(signalOptions);
 		}
 	}
