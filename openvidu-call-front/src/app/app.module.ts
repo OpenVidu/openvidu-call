@@ -22,7 +22,6 @@ import { AppRoutingModule } from './/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { createCustomElement } from '@angular/elements';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Pipes
@@ -112,8 +111,7 @@ import { StorageService } from './shared/services/storage/storage.service';
 		MatSnackBarModule,
 		AppRoutingModule,
 		HttpClientModule,
-		FlexLayoutModule,
-		NgxLinkifyjsModule.forRoot()
+		FlexLayoutModule
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
 	providers: [

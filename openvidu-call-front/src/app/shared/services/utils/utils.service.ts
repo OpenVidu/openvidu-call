@@ -4,6 +4,9 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogErrorComponent } from '../../components/dialog-error/dialog-error.component';
 import { LayoutClass } from '../../types/layout-type';
 
+import linkifyStr from 'linkifyjs/string';
+import { NgxLinkifyOptions } from '../../types/linkify-type';
+
 @Injectable({
 	providedIn: 'root'
 })
@@ -150,6 +153,10 @@ export class UtilsService {
 		}
 		return avatar;
 	}
+
+	linkify(text: string, options?: NgxLinkifyOptions): string {
+		return linkifyStr(text, options);
+	  }
 
 
 	private isAndroid(): boolean {

@@ -20,7 +20,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Pipes
@@ -81,8 +80,7 @@ import { StorageService } from './shared/services/storage/storage.service';
 		MatSliderModule,
 		MatSidenavModule,
 		MatSnackBarModule,
-		FlexLayoutModule,
-		NgxLinkifyjsModule.forRoot()
+		FlexLayoutModule
 	],
 	declarations: [
 		OpenviduSessionComponent,
