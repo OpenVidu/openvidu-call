@@ -7,6 +7,7 @@ import { OpenViduLayout, OpenViduLayoutOptions } from './shared/layout/openvidu-
 import { LoggerService } from './shared/services/logger/logger.service';
 import { ILogger } from './shared/types/logger-type';
 import { OvSettings } from './shared/types/ov-settings';
+import { OpenViduLayoutService } from './shared/services/layout/layout.service';
 
 @Component({
 	selector: 'opv-session',
@@ -57,7 +58,7 @@ export class OpenviduSessionComponent implements OnInit {
 
 	private log: ILogger;
 
-	constructor(private loggerSrv: LoggerService) {
+	constructor(private loggerSrv: LoggerService, private oVLayout: OpenViduLayoutService) {
 		this.log = this.loggerSrv.get('OpenviduSessionComponent');
 	}
 
@@ -108,11 +109,11 @@ export class OpenviduSessionComponent implements OnInit {
 	}
 
 	getOpenviduLayout(): OpenViduLayout {
-		return this.videoRoom.openviduLayout;
+		return this.oVLayout.getLayout();
 	}
 
 	getOpenviduLayoutOptions(): OpenViduLayoutOptions {
-		return this.videoRoom.openviduLayoutOptions;
+		return this.oVLayout.getOptions();
 	}
 
 	// !Deprecated

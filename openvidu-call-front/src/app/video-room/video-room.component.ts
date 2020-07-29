@@ -11,7 +11,6 @@ import {
 	PublisherSpeakingEvent,
 	ConnectionEvent
 } from 'openvidu-browser';
-import { OpenViduLayout, OpenViduLayoutOptions } from '../shared/layout/openvidu-layout';
 import { UserModel } from '../shared/models/user-model';
 import { ChatComponent } from '../shared/components/chat/chat.component';
 import { OvSettingsModel } from '../shared/models/ovSettings';
@@ -33,6 +32,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { ChatService } from '../shared/services/chat/chat.service';
 import { UserName } from '../shared/types/username-type';
 import { StorageService } from '../shared/services/storage/storage.service';
+import { OpenViduLayoutService } from '../shared/services/layout/layout.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -61,8 +61,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	showConfigRoomCard = true;
 	session: Session;
 	sessionScreen: Session;
-	openviduLayout: OpenViduLayout;
-	openviduLayoutOptions: OpenViduLayoutOptions;
 	mySessionId: string;
 	localUsers: UserModel[] = [];
 	remoteUsers: UserModel[] = [];
@@ -86,7 +84,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService,
 		private chatService: ChatService,
-		private storageSrv: StorageService
+		private storageSrv: StorageService,
+		private oVLayout: OpenViduLayoutService
 	) {
 		this.log = this.loggerSrv.get('VideoRoomComponent');
 	}
@@ -98,10 +97,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	@HostListener('window:resize')
 	sizeChange() {
-		if (this.openviduLayout) {
-			this.updateOpenViduLayout();
-			this.checkSizeComponent();
-		}
+		this.oVLayout.update();
+		this.checkSizeComponent();
 	}
 
 	async ngOnInit() {
@@ -116,11 +113,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		// To avoid 'Connection lost' message uses session.off()
 		this.session?.off('reconnecting');
 		this.remoteUsersService.clean();
+		this.oVLayout.clear();
 		this.session = null;
 		this.sessionScreen = null;
 		this.localUsers = [];
 		this.remoteUsers = [];
-		this.openviduLayout = null;
 		if (this.oVUsersSubscription) {
 			this.oVUsersSubscription.unsubscribe();
 		}
@@ -144,9 +141,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.mySessionId = this.oVSessionService.getSessionId();
 
 		setTimeout(() => {
-			this.openviduLayout = new OpenViduLayout();
-			this.openviduLayoutOptions = this.utilsSrv.getOpenviduLayoutOptions();
-			this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);
+			this.oVLayout.initialize();
 			this.checkSizeComponent();
 			this.joinToSession();
 		}, 50);
@@ -268,7 +263,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.log.d('Unsubscribe to speech detection');
 			this.session.off('publisherStartSpeaking');
 			this.resetAllBigElements();
-			this.updateOpenViduLayout();
+			this.oVLayout.update();
 			return;
 		}
 		this.log.w('Screen is enabled. Speech detection has been rejected');
@@ -300,7 +295,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.remoteUsersService.toggleUserZoom(event.connectionId);
 			}
 		}
-		this.updateOpenViduLayout();
+		this.oVLayout.update();
 	}
 
 	toolbarMicIconEnabled(): boolean {
@@ -343,7 +338,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			// !Deprecated
 			this._joinSession.emit();
 
-			this.updateOpenViduLayout();
+			this.oVLayout.update();
 		}
 	}
 
@@ -467,7 +462,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private subscribeToChatComponent() {
 		this.chatSubscription = this.chatService.toggleChatObs.subscribe((opened) => {
 			const timeout = this.externalConfig ? 300 : 0;
-			this.updateOpenViduLayout(timeout);
+			this.oVLayout.update(timeout);
 		});
 	}
 
@@ -520,18 +515,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private updateOpenViduLayout(timeout?: number) {
-		if (!!this.openviduLayout) {
-			if (!timeout) {
-				this.openviduLayout.updateLayout();
-				return;
-			}
-			setTimeout(() => {
-				this.openviduLayout.updateLayout();
-			}, timeout);
-		}
-	}
-
 	private resetAllBigElements() {
 		this.utilsSrv.removeAllBigElementClass();
 		this.remoteUsersService.resetUsersZoom();
@@ -541,14 +524,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private subscribeToLocalUsers() {
 		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users: UserModel[]) => {
 			this.localUsers = users;
-			this.updateOpenViduLayout();
+			this.oVLayout.update();
 		});
 	}
 
 	private subscribeToRemoteUsers() {
 		this.remoteUsersSubscription = this.remoteUsersService.remoteUsers.subscribe((users: UserModel[]) => {
 			this.remoteUsers = [...users];
-			this.updateOpenViduLayout();
+			this.oVLayout.update();
 		});
 
 		this.remoteUserNameSubscription = this.remoteUsersService.remoteUserNameList.subscribe((names: UserName[]) => {
