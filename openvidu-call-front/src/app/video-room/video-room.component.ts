@@ -380,7 +380,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			}
 			this.remoteUsersService.deleteUserName(event);
 			const nickname: string = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
-			this.remoteUsersService.addUserName(event);
 			// Deleting participant when connection is destroyed
 			if (!nickname?.includes('_' + VideoType.SCREEN)) {
 				this.remoteUsersService.removeUserByConnectionId(event.connection.connectionId);
