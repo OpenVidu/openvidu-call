@@ -93,7 +93,7 @@ export class RemoteUsersService {
 	}
 
 
-	clean() {
+	clear() {
 		this._remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
 		this.remoteUsers = this._remoteUsers.asObservable();
 		this._remoteUserNameList = <BehaviorSubject<UserName[]>>new BehaviorSubject([]);

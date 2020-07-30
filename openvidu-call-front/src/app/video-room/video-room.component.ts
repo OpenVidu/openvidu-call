@@ -24,7 +24,6 @@ import { Storage } from '../shared/types/storage-type';
 // Services
 import { DevicesService } from '../shared/services/devices/devices.service';
 import { OpenViduSessionService } from '../shared/services/openvidu-session/openvidu-session.service';
-import { NetworkService } from '../shared/services/network/network.service';
 import { LoggerService } from '../shared/services/logger/logger.service';
 import { RemoteUsersService } from '../shared/services/remote-users/remote-users.service';
 import { UtilsService } from '../shared/services/utils/utils.service';
@@ -33,6 +32,7 @@ import { ChatService } from '../shared/services/chat/chat.service';
 import { UserName } from '../shared/types/username-type';
 import { StorageService } from '../shared/services/storage/storage.service';
 import { OpenViduLayoutService } from '../shared/services/layout/layout.service';
+import { TokenService } from '../shared/services/token/token.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -61,7 +61,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	showConfigRoomCard = true;
 	session: Session;
 	sessionScreen: Session;
-	mySessionId: string;
 	localUsers: UserModel[] = [];
 	remoteUsers: UserModel[] = [];
 	participantsNameList: UserName[] = [];
@@ -69,6 +68,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	isAutoLayout = false;
 	hasVideoDevices: boolean;
 	hasAudioDevices: boolean;
+	mySessionId: string;
 	private log: ILogger;
 	private oVUsersSubscription: Subscription;
 	private remoteUsersSubscription: Subscription;
@@ -76,7 +76,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	private remoteUserNameSubscription: Subscription;
 
 	constructor(
-		private networkSrv: NetworkService,
 		private router: Router,
 		private utilsSrv: UtilsService,
 		private remoteUsersService: RemoteUsersService,
@@ -85,7 +84,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		private loggerSrv: LoggerService,
 		private chatService: ChatService,
 		private storageSrv: StorageService,
-		private oVLayout: OpenViduLayoutService
+		private oVLayout: OpenViduLayoutService,
+		private tokenService: TokenService
 	) {
 		this.log = this.loggerSrv.get('VideoRoomComponent');
 	}
@@ -112,7 +112,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		// Reconnecting session is received in Firefox
 		// To avoid 'Connection lost' message uses session.off()
 		this.session?.off('reconnecting');
-		this.remoteUsersService.clean();
+		this.remoteUsersService.clear();
 		this.oVLayout.clear();
 		this.session = null;
 		this.sessionScreen = null;
@@ -139,6 +139,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribeToLocalUsers();
 		this.subscribeToRemoteUsers();
 		this.mySessionId = this.oVSessionService.getSessionId();
+		this.tokenService.initialize(this.mySessionId, this.ovSettings);
 
 		setTimeout(() => {
 			this.oVLayout.initialize();
@@ -306,40 +307,28 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	}
 
 	private async connectToSession(): Promise<void> {
-		let webcamToken: string;
-		let screenToken: string;
-		// Webcomponent or Angular Library
-		if (!!this.externalConfig) {
-			if (this.externalConfig.hasTokens()) {
-				this.log.d('Received external tokens from ' + this.externalConfig.getComponentName());
-				webcamToken = this.externalConfig.getWebcamToken();
-				// Only connect screen if screen sharing feature is available
-				screenToken = this.ovSettings?.hasScreenSharing() ? this.externalConfig.getScreenToken() : undefined;
-			}
+		try {
+			// Initialize tokens from externalConfig or create new ones
+			await this.tokenService.initTokens(this.externalConfig);
+		} catch (error) {
+			this.log.e('There was an error initializing the token:', error.status, error.message);
+			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
+			this.utilsSrv.showErrorMessage('There was an error initializing the token:', error.error || error.message);
 		}
+		await this.connectBothSessions(this.tokenService.getWebcamToken(), this.tokenService.getScreenToken());
 
-		webcamToken = webcamToken ? webcamToken : await this.getToken();
-		// Only get screentoken if screen sharing feature is available
-		if (!screenToken && this.ovSettings?.hasScreenSharing()) {
-			screenToken = await this.getToken();
+		if (this.oVSessionService.areBothConnected()) {
+			await this.oVSessionService.publishWebcam();
+			await this.oVSessionService.publishScreen();
+		} else if (this.oVSessionService.isOnlyScreenConnected()) {
+			await this.oVSessionService.publishScreen();
+		} else {
+			await this.oVSessionService.publishWebcam();
 		}
+		// !Deprecated
+		this._joinSession.emit();
 
-		if (webcamToken || screenToken) {
-			await this.connectBothSessions(webcamToken, screenToken);
-
-			if (this.oVSessionService.areBothConnected()) {
-				await this.oVSessionService.publishWebcam();
-				await this.oVSessionService.publishScreen();
-			} else if (this.oVSessionService.isOnlyScreenConnected()) {
-				await this.oVSessionService.publishScreen();
-			} else {
-				await this.oVSessionService.publishWebcam();
-			}
-			// !Deprecated
-			this._joinSession.emit();
-
-			this.oVLayout.update();
-		}
+		this.oVLayout.update();
 	}
 
 	private async connectBothSessions(webcamToken: string, screenToken: string) {
@@ -496,21 +485,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		} catch (error) {
 			this.log.e(error);
 			this.utilsSrv.handlerScreenShareError(error);
-		}
-	}
-
-	private async getToken(): Promise<string> {
-		this.log.d('Generating tokens...');
-		try {
-			return await this.networkSrv.getToken(
-				this.mySessionId,
-				this.externalConfig?.getOvServerUrl(),
-				this.externalConfig?.getOvSecret()
-			);
-		} catch (error) {
-			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
-			this.log.e('There was an error getting the token:', error.status, error.message);
-			this.utilsSrv.showErrorMessage('There was an error getting the token:', error.error || error.message);
 		}
 	}
 
