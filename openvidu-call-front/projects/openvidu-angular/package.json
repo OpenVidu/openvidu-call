@@ -1,19 +1,19 @@
 {
     "author": "OpenVidu",
     "dependencies": {
-        "@angular/animations": "10.0.3",
-        "@angular/cdk": "10.0.2",
+        "@angular/animations": "10.0.6",
+        "@angular/cdk": "10.1.1",
         "@angular/flex-layout": "10.0.0-beta.32",
-        "@angular/material": "10.0.2",
+        "@angular/material": "10.1.1",
         "linkifyjs": "2.1.9",
-        "openvidu-browser": "2.15.0"
+        "openvidu-browser": "2.15.1-alpha2"
     },
     "description": "OpenVidu Angular",
     "license": "Apache-2.0",
     "name": "openvidu-angular",
     "peerDependencies": {
-        "@angular/common": "10.0.3",
-        "@angular/core": "10.0.3"
+        "@angular/common": "10.0.6",
+        "@angular/core": "10.0.6"
     },
     "repository": {
         "type": "git",
