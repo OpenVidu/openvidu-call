@@ -146,12 +146,6 @@ export class UtilsService {
 	}
 
 	private isIos(): boolean {
-		// return (
-		// 	(/\b(\w*iOS\w*)\b/.test(navigator.userAgent) || /\b(\w*iPhone\w*)\b/.test(navigator.userAgent)) &&
-		// 	/\b(\w*Safari\w*)\b/.test(navigator.userAgent) &&
-		// 	'ontouchend' in document
-		// );
-
 		return this.isIPhoneOrIPad(navigator?.userAgent) && this.isIOSWithSafari(navigator?.userAgent);
 	}
 

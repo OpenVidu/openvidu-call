@@ -163,6 +163,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.subscribeToChatComponent();
 		this.subscribeToReconnection();
 		await this.connectToSession();
+		// Workaround, firefox does not have audio when publisher join with muted camera
 		if (this.utilsSrv.isFirefox() && !this.oVSessionService.hasWebcamVideoActive()) {
 			this.oVSessionService.publishVideo(true);
 			this.oVSessionService.publishVideo(false);
