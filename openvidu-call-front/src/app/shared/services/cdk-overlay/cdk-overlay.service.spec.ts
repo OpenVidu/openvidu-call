@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CdkOverlayService } from './cdk-overlay.service';
-import { CdkOverlayContainer } from 'src/app/custom-cdk-overlay-container';
+import { CdkOverlayContainer } from '../../config/custom-cdk-overlay-container';
 
 export class CdkOverlayContainerMock {
 	protected _createContainer(): void {}

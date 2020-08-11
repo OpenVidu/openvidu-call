@@ -21,6 +21,9 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatMenuModule } from '@angular/material/menu';
+
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
@@ -57,6 +60,7 @@ import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
 import { StorageService } from './shared/services/storage/storage.service';
+import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
 
 @NgModule({
 	imports: [
@@ -80,7 +84,8 @@ import { StorageService } from './shared/services/storage/storage.service';
 		MatSliderModule,
 		MatSidenavModule,
 		MatSnackBarModule,
-		FlexLayoutModule
+		FlexLayoutModule,
+		MatMenuModule
 	],
 	declarations: [
 		OpenviduSessionComponent,
@@ -114,7 +119,9 @@ import { StorageService } from './shared/services/storage/storage.service';
 		LoggerService,
 		ChatService,
 		NotificationService,
-		StorageService
+		StorageService,
+		CdkOverlayContainer,
+		{ provide: OverlayContainer, useClass: CdkOverlayContainer }
 	],
 	exports: [OpenviduSessionComponent]
 })
