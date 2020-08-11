@@ -1,4 +1,5 @@
-<div *ngIf="this._user"
+<div
+	*ngIf="this._user"
 	class="OT_widget-container"
 	[id]="'container-' + this._user.streamManager?.stream?.streamId"
 	#streamComponent
@@ -43,7 +44,7 @@
 	</div>
 
 	<div class="videoButtons">
-		<button *ngIf="this._user.streamManager?.stream?.videoActive" mat-icon-button id="videoZoomButton"  (click)="toggleVideoSize()">
+		<!-- <button *ngIf="this._user.streamManager?.stream?.videoActive" mat-icon-button id="videoZoomButton" (click)="toggleVideoSize()">
 			<mat-icon>{{ this.videoSizeIcon }}</mat-icon>
 		</button>
 		<button *ngIf="this._user.streamManager?.stream?.videoActive" mat-icon-button id="fullscreenButton" (click)="toggleFullscreen()">
@@ -60,6 +61,40 @@
 			*ngIf="!this._user.streamManager?.remote && this._user.isScreen()"
 		>
 			<mat-icon matTooltip="Choose screen">picture_in_picture</mat-icon>
+		</button> -->
+
+		<button mat-icon-button (click)="toggleVideoMenu($event)" aria-label="Video settings menu">
+			<mat-icon>more_vert</mat-icon>
 		</button>
+		<span [matMenuTriggerFor]="menu" ></span>
+		<mat-menu #menu="matMenu" yPosition="above" xPosition="before">
+			<button mat-menu-item *ngIf="this._user.streamManager?.stream?.videoActive" id="videoZoomButton" (click)="toggleVideoSize()">
+				<mat-icon>{{ this.videoSizeIcon }}</mat-icon>
+				<span *ngIf="videoSizeIcon === videoSizeIconEnum.NORMAL">Zoom out</span>
+				<span *ngIf="videoSizeIcon === videoSizeIconEnum.BIG">Zoom in</span>
+			</button>
+			<button mat-menu-item id="volumeButton" *ngIf="this._user.streamManager?.remote" (click)="toggleSound()">
+				<mat-icon *ngIf="!mutedSound">volume_up</mat-icon>
+				<span *ngIf="!mutedSound">Mute sound</span>
+
+				<mat-icon *ngIf="mutedSound">volume_off</mat-icon>
+				<span *ngIf="mutedSound">Unmute sound</span>
+			</button>
+			<button mat-menu-item *ngIf="this._user.streamManager?.stream?.videoActive" id="fullscreenButton" (click)="toggleFullscreen()">
+				<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
+				<span *ngIf="fullscreenIcon === VideoFullscreenIconEnum.NORMAL">Exit fullscreen</span>
+				<span *ngIf="fullscreenIcon === VideoFullscreenIconEnum.BIG">Go to fullscreen</span>
+			</button>
+
+			<button
+				mat-menu-item
+				(click)="replaceScreenTrack()"
+				id="changeScreenButton"
+				*ngIf="!this._user.streamManager?.remote && this._user.isScreen()"
+			>
+				<mat-icon>picture_in_picture</mat-icon>
+				<span>Replace screen</span>
+			</button>
+		</mat-menu>
 	</div>
 </div>

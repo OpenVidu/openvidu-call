@@ -93,7 +93,7 @@ export class ChatService {
 		});
 	}
 
-	private isChatOpened(): boolean {
+	isChatOpened(): boolean {
 		return this.chatOpened;
 	}
 

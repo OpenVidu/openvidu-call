@@ -5,6 +5,8 @@ import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { LayoutType } from '../../types/layout-type';
 import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/icon-type';
+import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
+import { CdkOverlayService } from '../../services/cdk-overlay/cdk-overlay.service';
 
 @Component({
 	selector: 'stream-component',
@@ -12,6 +14,8 @@ import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/icon-type';
 	templateUrl: './stream.component.html'
 })
 export class StreamComponent implements OnInit {
+	videoSizeIconEnum = VideoSizeIcon;
+	VideoFullscreenIconEnum = VideoFullscreenIcon;
 	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
 	fullscreenIcon: VideoFullscreenIcon = VideoFullscreenIcon.BIG;
 	mutedSound: boolean;
@@ -27,8 +31,10 @@ export class StreamComponent implements OnInit {
 	@Output() toggleVideoSizeClicked = new EventEmitter<any>();
 
 	@ViewChild('streamComponent', { read: ViewContainerRef }) streamComponent: ViewContainerRef;
+	@ViewChild(MatMenuTrigger) public menuTrigger: MatMenuTrigger;
+	@ViewChild('menu') menu: MatMenuPanel;
 
-	constructor(private utilsSrv: UtilsService) {}
+	constructor(private utilsSrv: UtilsService, private cdkSrv: CdkOverlayService) {}
 
 	@HostListener('window:resize', ['$event'])
 	sizeChange(event) {
@@ -68,13 +74,24 @@ export class StreamComponent implements OnInit {
 
 	toggleVideoSize(resetAll?) {
 		const element = this.utilsSrv.getHTMLElementByClassName(this.streamComponent.element.nativeElement, LayoutType.ROOT_CLASS);
-		this.toggleVideoSizeClicked.emit({ element, connectionId: this._user.getConnectionId() , resetAll });
+		this.toggleVideoSizeClicked.emit({ element, connectionId: this._user.getConnectionId(), resetAll });
 	}
 
 	toggleFullscreen() {
 		this.utilsSrv.toggleFullscreen('container-' + this._user.getStreamManager().stream.streamId);
 		this.toggleFullscreenIcon();
-	  }
+	}
+
+	toggleVideoMenu(event) {
+		console.log(event);
+		if (this.menuTrigger.menuOpen) {
+			this.menuTrigger.closeMenu();
+			return;
+		}
+		this.cdkSrv.setSelector('#container-' + this._user.streamManager?.stream?.streamId);
+		this.menuTrigger.openMenu();
+
+	}
 
 	toggleSound() {
 		this.mutedSound = !this.mutedSound;

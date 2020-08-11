@@ -93,6 +93,8 @@ video {
   position: absolute;
   bottom: 0;
   z-index: 9999999;
+  z-index: 9999999999;
+
   width: 50px;
   text-align: center;
 }

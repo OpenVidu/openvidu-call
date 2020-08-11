@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -62,6 +63,8 @@ import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
 import { StorageService } from './shared/services/storage/storage.service';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { CdkOverlayContainer } from './custom-cdk-overlay-container';
 
 @NgModule({
 	declarations: [
@@ -86,7 +89,7 @@ import { StorageService } from './shared/services/storage/storage.service';
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
 		TooltipListPipe,
-		FooterComponent
+		FooterComponent,
 	],
 	imports: [
 		FormsModule,
@@ -111,7 +114,8 @@ import { StorageService } from './shared/services/storage/storage.service';
 		MatSnackBarModule,
 		AppRoutingModule,
 		HttpClientModule,
-		FlexLayoutModule
+		FlexLayoutModule,
+		MatMenuModule
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
 	providers: [
@@ -123,7 +127,9 @@ import { StorageService } from './shared/services/storage/storage.service';
 		LoggerService,
 		ChatService,
 		NotificationService,
-		StorageService
+		StorageService,
+		CdkOverlayContainer,
+		{ provide: OverlayContainer, useClass: CdkOverlayContainer },
 	],
 	bootstrap: [AppComponent]
 })
