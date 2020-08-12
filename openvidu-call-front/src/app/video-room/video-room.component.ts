@@ -49,7 +49,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	// !Deprecated
 	@Output() _joinSession = new EventEmitter<any>();
 	// !Deprecated
-  	@Output() _leaveSession = new EventEmitter<any>();
+	@Output() _leaveSession = new EventEmitter<any>();
 
 	@ViewChild('chatComponent') chatComponent: ChatComponent;
 	@ViewChild('sidenav') chatSidenav: MatSidenav;
@@ -227,10 +227,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			screenPublisher.once('accessAllowed', async (event) => {
 				// Listen to event fired when native stop button is clicked
-				screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
-					this.log.d('Clicked native stop button. Stopping screen sharing');
-					this.toggleScreenShare();
-				});
+				screenPublisher.stream
+					.getMediaStream()
+					.getVideoTracks()[0]
+					.addEventListener('ended', () => {
+						this.log.d('Clicked native stop button. Stopping screen sharing');
+						this.toggleScreenShare();
+					});
 				this.log.d('ACCESS ALOWED screenPublisher');
 				this.oVSessionService.enableScreenUser(screenPublisher);
 				await this.oVSessionService.publishScreen();
@@ -320,7 +323,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.utilsSrv.showErrorMessage('There was an error initializing the token:', error.error || error.message);
 		}
-		await this.connectBothSessions(this.tokenService.getWebcamToken(), this.tokenService.getScreenToken());
+		await this.connectBothSessions();
 
 		if (this.oVSessionService.areBothConnected()) {
 			await this.oVSessionService.publishWebcam();
@@ -336,10 +339,11 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVLayout.update();
 	}
 
-	private async connectBothSessions(webcamToken: string, screenToken: string) {
+	private async connectBothSessions() {
 		try {
-			await this.oVSessionService.connectScreenSession(screenToken);
-			await this.oVSessionService.connectWebcamSession(webcamToken);
+
+			await this.oVSessionService.connectWebcamSession(this.tokenService.getWebcamToken());
+			await this.oVSessionService.connectScreenSession(this.tokenService.getScreenToken());
 
 			this.localUsers[0].getStreamManager()?.on('streamPlaying', () => {
 				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
@@ -365,7 +369,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.remoteUsersService.add(event, null);
 				this.oVSessionService.sendNicknameSignal(event.connection);
 			}
-
 		});
 
 		this.session.on('connectionDestroyed', (event: ConnectionEvent) => {
