@@ -9,17 +9,20 @@ export class CdkOverlayContainer extends OverlayContainer {
 	protected _createContainer(): void {
 		const container = document.createElement('div');
 		container.classList.add(this.customClass);
-		this._containerElement = this.getElement(this.containerSelector).appendChild(container);
+		let element = this.getElement(this.containerSelector);
+		if (!element) {
+			element = this.getElement('body');
+		}
+		this._containerElement = element.appendChild(container);
 	}
 
 	setSelector(selector: string) {
-
 		const overlayElement = this.getElement('.' + this.customClass);
 
 		if (overlayElement && this.containerSelector !== selector) {
-			const newContainerOverlayContainer =  this.getElement(selector);
+			const newContainerOverlayContainer = this.getElement(selector);
 			this.containerSelector = selector;
-			newContainerOverlayContainer.appendChild(overlayElement);
+			newContainerOverlayContainer?.appendChild(overlayElement);
 		}
 	}
 	private getElement(selector: string): Element {

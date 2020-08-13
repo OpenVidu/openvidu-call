@@ -83,7 +83,6 @@ export class StreamComponent implements OnInit {
 	}
 
 	toggleVideoMenu(event) {
-		console.log(event);
 		if (this.menuTrigger.menuOpen) {
 			this.menuTrigger.closeMenu();
 			return;
