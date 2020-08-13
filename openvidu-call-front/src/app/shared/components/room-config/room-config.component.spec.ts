@@ -3,16 +3,20 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RoomConfigComponent } from './room-config.component';
 import { LoggerService } from '../../services/logger/logger.service';
 import { UtilsService } from '../../services/utils/utils.service';
-import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { DevicesService } from '../../services/devices/devices.service';
 import { DevicesServiceMock } from '../../services/devices/devices.service.mock';
 import { UtilsServiceMock } from '../../services/utils/utils.service.mock';
-import { OpenViduSessionServiceMock } from '../../services/openvidu-session/openvidu-session.service.mock';
 import { LoggerServiceMock } from '../../services/logger/logger.service.mock';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IsAutoPublishPipe } from '../../pipes/ovSettings.pipe';
 import { StorageService } from '../../services/storage/storage.service';
 import { StorageServiceMock } from '../../services/storage/storage.service.mock';
+import { OpenViduWebrtcServiceMock } from '../../services/openvidu-webrtc/openvidu-webrtc.service.mock';
+import { OpenViduWebrtcService } from '../../services/openvidu-webrtc/openvidu-webrtc.service';
+import { LocalUsersService } from '../../services/local-users/local-users.service';
+import { LocalUsersServiceMock } from '../../services/local-users/local-users.service.mock';
+import { TokenService } from '../../services/token/token.service';
+import { TokenServiceMock } from '../../services/token/token.service.mock';
 
 describe('RoomConfigComponent', () => {
 	let component: RoomConfigComponent;
@@ -22,13 +26,16 @@ describe('RoomConfigComponent', () => {
 		TestBed.configureTestingModule({
 			declarations: [RoomConfigComponent, IsAutoPublishPipe],
 			providers: [
-				{provide: LoggerService, useClass: LoggerServiceMock},
-				{provide: UtilsService, useClass: UtilsServiceMock},
-				{provide: OpenViduSessionService, useClass: OpenViduSessionServiceMock},
-				{provide: DevicesService, useClass: DevicesServiceMock},
-				{provide: StorageService, useClass: StorageServiceMock},
+				{ provide: LoggerService, useClass: LoggerServiceMock },
+				{ provide: UtilsService, useClass: UtilsServiceMock },
+				{ provide: OpenViduWebrtcService, useClass: OpenViduWebrtcServiceMock },
+				{ provide: LocalUsersService, useClass: LocalUsersServiceMock },
+				{ provide: DevicesService, useClass: DevicesServiceMock },
+				{ provide: StorageService, useClass: StorageServiceMock },
+				{ provide: TokenService, useClass: TokenServiceMock }
+
 			],
-			imports: [RouterTestingModule.withRoutes([])],
+			imports: [RouterTestingModule.withRoutes([])]
 		}).compileComponents();
 	}));
 

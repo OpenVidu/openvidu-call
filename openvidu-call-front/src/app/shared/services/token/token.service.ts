@@ -11,7 +11,7 @@ import { OvSettingsModel } from '../../models/ovSettings';
 export class TokenService {
 	private webcamToken = '';
 	private screenToken = '';
-	private sessionId: string;
+	private sessionId = '';
 	private ovSettings: OvSettingsModel;
 	private log: ILogger;
 
@@ -19,9 +19,16 @@ export class TokenService {
 		this.log = this.loggerSrv.get('TokenService');
 	}
 
-	initialize(sessionId: string, ovSettings: OvSettingsModel) {
-		this.sessionId = sessionId;
+	initialize(ovSettings: OvSettingsModel) {
 		this.ovSettings = ovSettings;
+	}
+
+	setSessionId(sessionId: string) {
+		this.sessionId = sessionId;
+	}
+
+	getSessionId(): string {
+		return this.sessionId;
 	}
 
 	async initTokens(externalConfig: ExternalConfigModel) {

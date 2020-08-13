@@ -19,7 +19,7 @@ describe('TokenService', () => {
 			]
 		});
 		service = TestBed.inject(TokenService);
-		service.initialize('session', new OvSettingsModel());
+		service.initialize(new OvSettingsModel());
 	});
 
 	it('should be created', () => {

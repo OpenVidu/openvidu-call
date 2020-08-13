@@ -5,7 +5,6 @@ import { NicknameMatcher } from '../../forms-matchers/nickname';
 import { UtilsService } from '../../services/utils/utils.service';
 import { Publisher } from 'openvidu-browser';
 import { ActivatedRoute, Params } from '@angular/router';
-import { OpenViduSessionService } from '../../services/openvidu-session/openvidu-session.service';
 import { IDevice, CameraType } from '../../types/device-type';
 import { DevicesService } from '../../services/devices/devices.service';
 import { Subscription } from 'rxjs';
@@ -18,6 +17,9 @@ import { OvSettingsModel } from '../../models/ovSettings';
 import { StorageService } from '../../services/storage/storage.service';
 import { Storage } from '../../types/storage-type';
 import { OpenViduErrorName } from 'openvidu-browser/lib/OpenViduInternal/Enums/OpenViduError';
+import { OpenViduWebrtcService } from '../../services/openvidu-webrtc/openvidu-webrtc.service';
+import { LocalUsersService } from '../../services/local-users/local-users.service';
+import { TokenService } from '../../services/token/token.service';
 
 @Component({
 	selector: 'app-room-config',
@@ -44,7 +46,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	isVideoActive = true;
 	isAudioActive = true;
 	// volumeValue = 100;
-	oVUsersSubscription: Subscription;
+	screenShareEnabled: boolean;
 	localUsers: UserModel[] = [];
 	randomAvatar: string;
 	videoAvatar: string;
@@ -58,10 +60,15 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	showConfigCard: boolean;
 	private log: ILogger;
 
+	private oVUsersSubscription: Subscription;
+	private screenShareStateSubscription: Subscription;
+
 	constructor(
 		private route: ActivatedRoute,
 		private utilsSrv: UtilsService,
-		public oVSessionService: OpenViduSessionService,
+		private openViduWebRTCService: OpenViduWebrtcService,
+		private localUsersService: LocalUsersService,
+		private tokenService: TokenService,
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService,
 		private storageSrv: StorageService
@@ -75,7 +82,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-		this.subscribeToUsers();
+
+		this.subscribeToLocalUsersEvents();
 		this.initNicknameAndSubscribeToChanges();
 		this.setRandomAvatar();
 		this.columns = window.innerWidth > 900 ? 2 : 1;
@@ -99,6 +107,10 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		if (this.oVUsersSubscription) {
 			this.oVUsersSubscription.unsubscribe();
 		}
+
+		if (this.screenShareStateSubscription) {
+			this.screenShareStateSubscription.unsubscribe();
+		}
 		this.oVDevicesService.clear();
 	}
 
@@ -108,17 +120,17 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			// Is New deviceId different from the old one?
 			if (this.oVDevicesService.needUpdateVideoTrack(videoSource)) {
 				const mirror = this.oVDevicesService.cameraNeedsMirror(videoSource);
-				await this.oVSessionService.replaceTrack(videoSource, null, mirror);
+				await this.openViduWebRTCService.replaceTrack(videoSource, null, mirror);
 				this.oVDevicesService.setCamSelected(videoSource);
 				this.camSelected = this.oVDevicesService.getCamSelected();
 			}
 			// Publish Webcam
-			this.oVSessionService.publishVideo(true);
+			this.openViduWebRTCService.publishWebcamVideo(true);
 			this.isVideoActive = true;
 			return;
 		}
 		// Unpublish webcam
-		this.oVSessionService.publishVideo(false);
+		this.openViduWebRTCService.publishWebcamVideo(false);
 		this.isVideoActive = false;
 	}
 
@@ -130,7 +142,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			if (this.oVDevicesService.needUpdateAudioTrack(audioSource)) {
 				console.log(this.camSelected);
 				const mirror = this.oVDevicesService.cameraNeedsMirror(this.camSelected.device);
-				await this.oVSessionService.replaceTrack(null, audioSource, mirror);
+				await this.openViduWebRTCService.replaceTrack(null, audioSource, mirror);
 				this.oVDevicesService.setMicSelected(audioSource);
 				this.micSelected = this.oVDevicesService.getMicSelected();
 			}
@@ -146,37 +158,40 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	toggleCam() {
 		this.isVideoActive = !this.isVideoActive;
-		this.oVSessionService.publishVideo(this.isVideoActive);
+		this.openViduWebRTCService.publishWebcamVideo(this.isVideoActive);
 
-		if (this.oVSessionService.areBothConnected()) {
-			this.oVSessionService.disableWebcamUser();
-			this.oVSessionService.publishScreenAudio(this.isAudioActive);
+		if (this.localUsersService.areBothConnected()) {
+			this.localUsersService.disableWebcamUser();
+			this.openViduWebRTCService.publishScreenAudio(this.isAudioActive);
 			// !this.subscribeToVolumeChange(<Publisher>this.localUsers[0].getStreamManager());
-		} else if (this.oVSessionService.isOnlyScreenConnected()) {
+		} else if (this.localUsersService.isOnlyScreenConnected()) {
 			// (<Publisher>this.localUsers[0].getStreamManager()).off('streamAudioVolumeChange');
-			this.oVSessionService.enableWebcamUser();
+			this.localUsersService.enableWebcamUser();
 		}
 	}
 
 	toggleScreenShare() {
 		// Disabling screenShare
-		if (this.oVSessionService.areBothConnected()) {
-			this.oVSessionService.disableScreenUser();
+		if (this.localUsersService.areBothConnected()) {
+			this.localUsersService.disableScreenUser();
 			return;
 		}
 
 		// Enabling screenShare
-		if (this.oVSessionService.isOnlyWebcamConnected()) {
+		if (this.localUsersService.isOnlyWebcamConnected()) {
 			const screenPublisher = this.initScreenPublisher();
 
 			screenPublisher.on('accessAllowed', (event) => {
-				screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
-					this.log.d('Clicked native stop button. Stopping screen sharing');
-					this.toggleScreenShare();
-				});
-				this.oVSessionService.enableScreenUser(screenPublisher);
-				if (!this.oVSessionService.hasWebcamVideoActive()) {
-					this.oVSessionService.disableWebcamUser();
+				screenPublisher.stream
+					.getMediaStream()
+					.getVideoTracks()[0]
+					.addEventListener('ended', () => {
+						this.log.d('Clicked native stop button. Stopping screen sharing');
+						this.toggleScreenShare();
+					});
+				this.localUsersService.enableScreenUser(screenPublisher);
+				if (!this.localUsersService.hasWebcamVideoActive()) {
+					this.localUsersService.disableWebcamUser();
 				}
 			});
 
@@ -187,8 +202,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		}
 
 		// Disabling screnShare and enabling webcam
-		this.oVSessionService.enableWebcamUser();
-		this.oVSessionService.disableScreenUser();
+		this.localUsersService.enableWebcamUser();
+		this.localUsersService.disableScreenUser();
 	}
 
 	toggleMic() {
@@ -197,23 +212,23 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	takePhoto() {
-		this.oVSessionService.setWebcamAvatar();
-		this.videoAvatar = this.oVSessionService.getWebCamAvatar();
-		this.oVSessionService.setAvatar(AvatarType.VIDEO);
+		this.localUsersService.setWebcamAvatar();
+		this.videoAvatar = this.localUsersService.getWebcamAvatar();
+		this.localUsersService.setAvatar(AvatarType.VIDEO);
 	}
 
 	initNicknameAndSubscribeToChanges() {
 		if (this.externalConfig) {
 			this.nicknameFormControl.setValue(this.externalConfig.getNickname());
-			this.oVSessionService.updateUsersNickname(this.externalConfig.getNickname());
+			this.localUsersService.updateUsersNickname(this.externalConfig.getNickname());
 			return;
 		}
 		const nickname = this.storageSrv.get(Storage.USER_NICKNAME) || this.utilsSrv.generateNickname();
 		this.nicknameFormControl.setValue(nickname);
-		this.oVSessionService.updateUsersNickname(nickname);
+		this.localUsersService.updateUsersNickname(nickname);
 
-		this.nicknameFormControl.valueChanges.subscribe(value => {
-			this.oVSessionService.updateUsersNickname(value);
+		this.nicknameFormControl.valueChanges.subscribe((value) => {
+			this.localUsersService.updateUsersNickname(value);
 			this.storageSrv.set(Storage.USER_NICKNAME, value);
 		});
 	}
@@ -283,13 +298,13 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private setSessionName() {
 		this.route.params.subscribe((params: Params) => {
 			this.mySessionId = this.externalConfig ? this.externalConfig.getSessionName() : params.roomName;
-			this.oVSessionService.setSessionId(this.mySessionId);
+			this.tokenService.setSessionId(this.mySessionId);
 		});
 	}
 
 	private setRandomAvatar() {
 		this.randomAvatar = this.utilsSrv.getOpenViduAvatar();
-		this.oVSessionService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
+		this.localUsersService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
 		this.avatarSelected = AvatarType.RANDOM;
 	}
 
@@ -302,12 +317,12 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	private initScreenPublisher(): Publisher {
 		const videoSource = ScreenType.SCREEN;
 		const audioSource = this.hasAudioDevices ? undefined : null;
-		const willThereBeWebcam = this.oVSessionService.isWebCamEnabled() && this.oVSessionService.hasWebcamVideoActive();
+		const willThereBeWebcam = this.localUsersService.isWebCamEnabled() && this.localUsersService.hasWebcamVideoActive();
 		const hasAudio = willThereBeWebcam ? false : this.hasAudioDevices && this.isAudioActive;
-		const properties = this.oVSessionService.createProperties(videoSource, audioSource, true, hasAudio, false);
+		const properties = this.openViduWebRTCService.createPublisherProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
-			return this.oVSessionService.initScreenPublisher(undefined, properties);
+			return this.openViduWebRTCService.initScreenPublisher(undefined, properties);
 		} catch (error) {
 			this.log.e(error);
 			this.utilsSrv.handlerScreenShareError(error);
@@ -315,14 +330,17 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private publishAudio(audio: boolean) {
-		this.oVSessionService.isWebCamEnabled()
-			? this.oVSessionService.publishWebcamAudio(audio)
-			: this.oVSessionService.publishScreenAudio(audio);
+		this.localUsersService.isWebCamEnabled()
+			? this.openViduWebRTCService.publishWebcamAudio(audio)
+			: this.openViduWebRTCService.publishScreenAudio(audio);
 	}
 
-	private subscribeToUsers() {
-		this.oVUsersSubscription = this.oVSessionService.OVUsers.subscribe((users) => {
+	private subscribeToLocalUsersEvents() {
+		this.oVUsersSubscription = this.localUsersService.OVUsers.subscribe((users) => {
 			this.localUsers = users;
+		});
+		this.screenShareStateSubscription = this.localUsersService.screenShareState.subscribe((enabled) => {
+			this.screenShareEnabled = enabled;
 		});
 	}
 
@@ -335,8 +353,14 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		const publishAudio = this.hasAudioDevices ? this.isAudioActive : false;
 		const publishVideo = this.hasVideoDevices ? this.isVideoActive : false;
 		const mirror = this.camSelected && this.camSelected.type === CameraType.FRONT;
-		const properties = this.oVSessionService.createProperties(videoSource, audioSource, publishVideo, publishAudio, mirror);
-		const publisher = this.oVSessionService.initCamPublisher(undefined, properties);
+		const properties = this.openViduWebRTCService.createPublisherProperties(
+			videoSource,
+			audioSource,
+			publishVideo,
+			publishAudio,
+			mirror
+		);
+		const publisher = this.openViduWebRTCService.initWebcamPublisher(undefined, properties);
 		this.handlePublisherSuccess(publisher);
 		this.handlePublisherError(publisher);
 	}

@@ -181,11 +181,11 @@
 					<div fxLayout fxFlex>
 						<div class="one" fxFlex="20" fxLayoutAlign="center center">
 							<button mat-mini-fab (click)="toggleScreenShare()" class="deviceButton" id="configCardScreenButton">
-								<mat-icon *ngIf="this.oVSessionService.isScreenShareEnabled()" matTooltip="Screen Share Enabled"
+								<mat-icon *ngIf="screenShareEnabled" matTooltip="Screen Share Enabled"
 									>screen_share</mat-icon
 								>
 								<mat-icon
-									*ngIf="!this.oVSessionService.isScreenShareEnabled()"
+									*ngIf="!screenShareEnabled"
 									color="warn"
 									matTooltip="Screen Share Disabled"
 								>
@@ -199,7 +199,7 @@
 									matInput
 									disabled
 									placeholder="Screen"
-									[ngModel]="this.oVSessionService.isScreenShareEnabled() ? 'Screen' : 'None'"
+									[ngModel]="screenShareEnabled ? 'Screen' : 'None'"
 								/>
 							</mat-form-field>
 						</div>
