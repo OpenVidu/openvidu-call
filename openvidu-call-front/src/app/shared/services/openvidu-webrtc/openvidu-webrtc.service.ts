@@ -43,6 +43,10 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		return this.webcamSession;
 	}
 
+	isWebcamSessionConnected(): boolean {
+		return !!this.webcamSession.capabilities;
+	}
+
 	initializeWebcamSession(): void {
 		this.webcamSession = this.OV.initSession();
 	}
@@ -53,6 +57,10 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 
 	getScreenSession(): Session {
 		return this.screenSession;
+	}
+
+	isScreenSessionConnected(): boolean {
+		return !!this.screenSession.capabilities;
 	}
 
 	async connectWebcamSession(token: string): Promise<any> {
@@ -101,6 +109,9 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 	initWebcamPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		const publisher = this.OV.initPublisher(targetElement, properties);
 		this.localUsersSrv.setWebcamPublisher(publisher);
+		publisher.once('streamPlaying', () => {
+			(<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
+		});
 		return publisher;
 	}
 
@@ -116,7 +127,11 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 
 	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
 		this.log.d('Initializing screen publisher with properties: ', properties);
-		return this.OV.initPublisher(targetElement, properties);
+		const publisher = this.OV.initPublisher(targetElement, properties);
+		publisher.once('streamPlaying', () => {
+			(<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
+		});
+		return publisher;
 	}
 
 	destroyScreenPublisher(): void {
@@ -131,13 +146,13 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 	}
 
 	async publishWebcamPublisher(): Promise<any> {
-		if (this.webcamSession.capabilities.publish) {
+		if (this.webcamSession?.capabilities?.publish) {
 			const publisher = this.localUsersSrv.getWebcamPublisher();
 			if (!!publisher) {
 				return await this.webcamSession.publish(publisher);
 			}
 		}
-		this.log.w('Webcam publisher cannot be published');
+		this.log.e('Webcam publisher cannot be published');
 	}
 	unpublishWebcamPublisher(): void {
 		const publisher = this.localUsersSrv.getWebcamPublisher();
@@ -153,7 +168,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 				return await this.screenSession.publish(publisher);
 			}
 		}
-		this.log.w('Screen publisher cannot be published');
+		this.log.e('Screen publisher cannot be published');
 	}
 
 	unpublishScreenPublisher(): void {

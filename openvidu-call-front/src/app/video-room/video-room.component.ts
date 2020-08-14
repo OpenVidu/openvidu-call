@@ -208,6 +208,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		if (this.localUsersService.isOnlyScreenConnected()) {
 			const hasAudio = this.localUsersService.hasScreenAudioActive();
 
+			if (!this.openViduWebRTCService.isWebcamSessionConnected()) {
+				await this.connectWebcamSession();
+			}
 			await this.openViduWebRTCService.publishWebcamPublisher();
 			this.openViduWebRTCService.publishScreenAudio(false);
 			this.openViduWebRTCService.publishWebcamAudio(hasAudio);
@@ -239,6 +242,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 					});
 				this.log.d('ACCESS ALOWED screenPublisher');
 				this.localUsersService.enableScreenUser(screenPublisher);
+
+				if (!this.openViduWebRTCService.isScreenSessionConnected()) {
+					await this.connectScreenSession();
+				}
 				await this.openViduWebRTCService.publishScreenPublisher();
 				this.openViduWebRTCService.sendNicknameSignal();
 				if (!this.localUsersService.hasWebcamVideoActive()) {
@@ -326,14 +333,17 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.utilsSrv.showErrorMessage('There was an error initializing the token:', error.error || error.message);
 		}
-		await this.connectBothSessions();
 
 		if (this.localUsersService.areBothConnected()) {
+			await this.connectWebcamSession();
+			await this.connectScreenSession();
 			await this.openViduWebRTCService.publishWebcamPublisher();
 			await this.openViduWebRTCService.publishScreenPublisher();
 		} else if (this.localUsersService.isOnlyScreenConnected()) {
+			await this.connectScreenSession();
 			await this.openViduWebRTCService.publishScreenPublisher();
 		} else {
+			await this.connectWebcamSession();
 			await this.openViduWebRTCService.publishWebcamPublisher();
 		}
 		// !Deprecated
@@ -342,15 +352,19 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.oVLayout.update();
 	}
 
-	private async connectBothSessions() {
+	private async connectScreenSession() {
 		try {
-
-			await this.openViduWebRTCService.connectWebcamSession(this.tokenService.getWebcamToken());
 			await this.openViduWebRTCService.connectScreenSession(this.tokenService.getScreenToken());
+		} catch (error) {
+			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
+			this.log.e('There was an error connecting to the session:', error.code, error.message);
+			this.utilsSrv.showErrorMessage('There was an error connecting to the session:', error?.error || error?.message);
+		}
+	}
 
-			this.localUsers[0].getStreamManager()?.on('streamPlaying', () => {
-				(<HTMLElement>this.localUsers[0].getStreamManager().videos[0].video).parentElement.classList.remove('custom-class');
-			});
+	private async connectWebcamSession() {
+		try {
+			await this.openViduWebRTCService.connectWebcamSession(this.tokenService.getWebcamToken());
 		} catch (error) {
 			this._error.emit({ error: error.error, messgae: error.message, code: error.code, status: error.status });
 			this.log.e('There was an error connecting to the session:', error.code, error.message);
