@@ -43,11 +43,17 @@
 		</div>
 	</div>
 
-	<div class="videoButtons" *ngIf="(_user.local && this._user.streamManager?.stream?.videoActive) || (!_user.local && (_user.streamManager?.stream?.videoActive || _user.streamManager?.stream?.audioActive))">
+	<div
+		class="videoButtons"
+		*ngIf="
+			(_user.local && this._user.streamManager?.stream?.videoActive) ||
+			(!_user.local && (_user.streamManager?.stream?.videoActive || _user.streamManager?.stream?.audioActive))
+		"
+	>
 		<button mat-icon-button (click)="toggleVideoMenu($event)" matTooltip="Settings" aria-label="Video settings menu">
 			<mat-icon>more_vert</mat-icon>
 		</button>
-		<span [matMenuTriggerFor]="menu" ></span>
+		<span [matMenuTriggerFor]="menu"></span>
 		<mat-menu #menu="matMenu" yPosition="above" xPosition="before">
 			<button mat-menu-item *ngIf="this._user.streamManager?.stream?.videoActive" id="videoZoomButton" (click)="toggleVideoSize()">
 				<mat-icon>{{ this.videoSizeIcon }}</mat-icon>
@@ -63,15 +69,15 @@
 			</button>
 			<button mat-menu-item *ngIf="this._user.streamManager?.stream?.videoActive" id="fullscreenButton" (click)="toggleFullscreen()">
 				<mat-icon>{{ this.fullscreenIcon }}</mat-icon>
-				<span *ngIf="fullscreenIcon === VideoFullscreenIconEnum.NORMAL">Exit fullscreen</span>
-				<span *ngIf="fullscreenIcon === VideoFullscreenIconEnum.BIG">Go to fullscreen</span>
+				<span *ngIf="fullscreenIcon === videoFullscreenIconEnum.NORMAL">Exit fullscreen</span>
+				<span *ngIf="fullscreenIcon === videoFullscreenIconEnum.BIG">Go to fullscreen</span>
 			</button>
 
 			<button
 				mat-menu-item
 				(click)="replaceScreenTrack()"
 				id="changeScreenButton"
-				*ngIf="!this._user.streamManager?.remote && this._user.isScreen()"
+				*ngIf="!this._user.streamManager?.remote && this._user.streamManager?.stream?.typeOfVideo === videoTypeEnum.SCREEN"
 			>
 				<mat-icon>picture_in_picture</mat-icon>
 				<span>Replace screen</span>

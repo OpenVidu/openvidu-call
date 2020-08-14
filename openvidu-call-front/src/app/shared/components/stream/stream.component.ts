@@ -7,6 +7,7 @@ import { LayoutType } from '../../types/layout-type';
 import { VideoSizeIcon, VideoFullscreenIcon } from '../../types/icon-type';
 import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
 import { CdkOverlayService } from '../../services/cdk-overlay/cdk-overlay.service';
+import { VideoType } from '../../types/video-type';
 
 @Component({
 	selector: 'stream-component',
@@ -15,7 +16,8 @@ import { CdkOverlayService } from '../../services/cdk-overlay/cdk-overlay.servic
 })
 export class StreamComponent implements OnInit, OnDestroy {
 	videoSizeIconEnum = VideoSizeIcon;
-	VideoFullscreenIconEnum = VideoFullscreenIcon;
+	videoFullscreenIconEnum = VideoFullscreenIcon;
+	videoTypeEnum = VideoType;
 	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
 	fullscreenIcon: VideoFullscreenIcon = VideoFullscreenIcon.BIG;
 	mutedSound: boolean;
