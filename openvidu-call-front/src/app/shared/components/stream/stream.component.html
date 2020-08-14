@@ -43,7 +43,7 @@
 		</div>
 	</div>
 
-	<div class="videoButtons" *ngIf="(_user.local && this._user.streamManager?.stream?.videoActive) || !_user.local">
+	<div class="videoButtons" *ngIf="(_user.local && this._user.streamManager?.stream?.videoActive) || (!_user.local && (_user.streamManager?.stream?.videoActive || _user.streamManager?.stream?.audioActive))">
 		<button mat-icon-button (click)="toggleVideoMenu($event)" matTooltip="Settings" aria-label="Video settings menu">
 			<mat-icon>more_vert</mat-icon>
 		</button>
