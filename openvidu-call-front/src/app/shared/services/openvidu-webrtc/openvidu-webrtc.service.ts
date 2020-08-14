@@ -132,10 +132,8 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 
 	async publishWebcamPublisher(): Promise<any> {
 		if (this.webcamSession.capabilities.publish) {
-      const publisher = this.localUsersSrv.getWebcamPublisher();
-      console.log("webcam publisher", publisher);
+			const publisher = this.localUsersSrv.getWebcamPublisher();
 			if (!!publisher) {
-        console.log("pblicando webcam");
 				return await this.webcamSession.publish(publisher);
 			}
 		}
@@ -149,7 +147,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		}
 	}
 	async publishScreenPublisher(): Promise<any> {
-		if (this.screenSession.capabilities.publish) {
+		if (this.screenSession?.capabilities?.publish) {
 			const publisher = this.localUsersSrv.getScreenPublisher();
 			if (!!publisher) {
 				return await this.screenSession.publish(publisher);
@@ -225,7 +223,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 			// 	this.log.e('Error replacing track ', error);
 			// }
 		});
-  }
+	}
 
 	sendSignal(type: Signal, connection?: Connection, data?: any): void {
 		const signalOptions: SignalOptions = {
@@ -236,10 +234,10 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		this.webcamSession.signal(signalOptions);
 		// signalOptions.data = JSON.stringify({nickname: this.getScreenUserName()});
 		// this.getScreenSession()?.signal(signalOptions);
-  }
+	}
 
-  // TODO: replace function by sendSignal
-  sendNicknameSignal(connection?: Connection) {
+	// TODO: replace function by sendSignal
+	sendNicknameSignal(connection?: Connection) {
 		if (this.needSendNicknameSignal()) {
 			const signalOptions: SignalOptions = {
 				data: JSON.stringify({ clientData: this.localUsersSrv.getWebcamUserName() }),
@@ -247,7 +245,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 				to: connection ? [connection] : undefined
 			};
 			this.getWebcamSession()?.signal(signalOptions);
-			signalOptions.data = JSON.stringify({clientData: this.localUsersSrv.getScreenUserName()});
+			signalOptions.data = JSON.stringify({ clientData: this.localUsersSrv.getScreenUserName() });
 			this.getScreenSession()?.signal(signalOptions);
 		}
 	}

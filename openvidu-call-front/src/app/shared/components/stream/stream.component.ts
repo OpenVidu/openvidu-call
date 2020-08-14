@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter, ViewContainerRef, OnDestroy } from '@angular/core';
 import { UserModel } from '../../models/user-model';
 import { FormControl, Validators } from '@angular/forms';
 import { NicknameMatcher } from '../../forms-matchers/nickname';
@@ -13,7 +13,7 @@ import { CdkOverlayService } from '../../services/cdk-overlay/cdk-overlay.servic
 	styleUrls: ['./stream.component.css'],
 	templateUrl: './stream.component.html'
 })
-export class StreamComponent implements OnInit {
+export class StreamComponent implements OnInit, OnDestroy {
 	videoSizeIconEnum = VideoSizeIcon;
 	VideoFullscreenIconEnum = VideoFullscreenIcon;
 	videoSizeIcon: VideoSizeIcon = VideoSizeIcon.BIG;
@@ -70,6 +70,10 @@ export class StreamComponent implements OnInit {
 
 	ngOnInit() {
 		this.matcher = new NicknameMatcher();
+	}
+
+	ngOnDestroy() {
+		this.cdkSrv.setSelector('.sidenav-main');
 	}
 
 	toggleVideoSize(resetAll?) {

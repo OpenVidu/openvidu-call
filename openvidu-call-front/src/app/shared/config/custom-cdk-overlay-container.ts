@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CdkOverlayContainer extends OverlayContainer {
-	containerSelector = '.OT_widget-container';
+	containerSelector = '.sidenav-main';
 	customClass = 'cdk-overlay-container';
 
 	protected _createContainer(): void {
