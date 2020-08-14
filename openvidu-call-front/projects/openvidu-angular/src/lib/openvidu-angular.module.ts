@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { OpenviduSessionComponent } from './openvidu-angular.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,7 +51,7 @@ import { RoomConfigComponent } from './shared/components/room-config/room-config
 
 // Services
 import { NetworkService } from './shared/services/network/network.service';
-import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
+import { OpenViduWebrtcService } from './shared/services/openvidu-webrtc/openvidu-webrtc.service';
 import { UtilsService } from './shared/services/utils/utils.service';
 import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
@@ -61,6 +60,8 @@ import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
 import { StorageService } from './shared/services/storage/storage.service';
 import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
+import { LocalUsersService } from './shared/services/local-users/local-users.service';
+
 
 @NgModule({
 	imports: [
@@ -112,7 +113,8 @@ import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-containe
 	entryComponents: [DialogErrorComponent],
 	providers: [
 		NetworkService,
-		OpenViduSessionService,
+		OpenViduWebrtcService,
+		LocalUsersService,
 		UtilsService,
 		RemoteUsersService,
 		DevicesService,
