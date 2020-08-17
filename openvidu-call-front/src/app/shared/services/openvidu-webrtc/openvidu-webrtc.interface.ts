@@ -2,6 +2,10 @@ import { Publisher, PublisherProperties, Connection } from 'openvidu-browser';
 import { Signal } from '../../types/singal-type';
 
 export interface IOpenViduWebRTC {
+
+	initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher;
+	initPublisherAsync(targetElement: string | HTMLElement, properties: PublisherProperties): Promise<Publisher>;
+
 	initializeWebcamSession(): void;
 
 	initializeScreenSession(): void;
@@ -14,11 +18,7 @@ export interface IOpenViduWebRTC {
 
 	disconnectScreenSession(): void;
 
-	initWebcamPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher;
-
 	destroyWebcamPublisher(): void;
-
-	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher;
 
 	destroyScreenPublisher(): void;
 

@@ -506,7 +506,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		const properties = this.openViduWebRTCService.createPublisherProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
-			return this.openViduWebRTCService.initScreenPublisher(undefined, properties);
+			return this.openViduWebRTCService.initPublisher(undefined, properties);
 		} catch (error) {
 			this.log.e(error);
 			this.utilsSrv.handlerScreenShareError(error);

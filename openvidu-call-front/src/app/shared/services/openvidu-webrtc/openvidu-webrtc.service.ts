@@ -106,9 +106,22 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		this.audioSource = undefined;
 	}
 
-	initWebcamPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
+	initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
+		this.log.d('Initializing publisher with properties: ', properties);
+
 		const publisher = this.OV.initPublisher(targetElement, properties);
-		this.localUsersSrv.setWebcamPublisher(publisher);
+		// this.localUsersSrv.setWebcamPublisher(publisher);
+		publisher.once('streamPlaying', () => {
+			(<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
+		});
+		return publisher;
+	}
+
+	async initPublisherAsync(targetElement: string | HTMLElement, properties: PublisherProperties): Promise<Publisher> {
+		this.log.d('Initializing publisher with properties: ', properties);
+
+		const publisher = await this.OV.initPublisherAsync(targetElement, properties);
+		// this.localUsersSrv.setWebcamPublisher(publisher);
 		publisher.once('streamPlaying', () => {
 			(<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
 		});
@@ -123,15 +136,6 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 			publisher.stream.disposeMediaStream();
 			this.localUsersSrv.setWebcamPublisher(publisher);
 		}
-	}
-
-	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
-		this.log.d('Initializing screen publisher with properties: ', properties);
-		const publisher = this.OV.initPublisher(targetElement, properties);
-		publisher.once('streamPlaying', () => {
-			(<HTMLElement>publisher.videos[0].video).parentElement.classList.remove('custom-class');
-		});
-		return publisher;
 	}
 
 	destroyScreenPublisher(): void {
@@ -215,7 +219,8 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 				mirror
 			);
 
-			const publisher = this.initWebcamPublisher(undefined, properties);
+			const publisher = this.initPublisher(undefined, properties);
+			this.localUsersSrv.setWebcamPublisher(publisher);
 
 			publisher.once('streamPlaying', () => {
 				this.localUsersSrv.setWebcamPublisher(publisher);

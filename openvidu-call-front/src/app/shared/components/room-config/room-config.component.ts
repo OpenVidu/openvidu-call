@@ -45,7 +45,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	micSelected: IDevice;
 	isVideoActive = true;
 	isAudioActive = true;
-	// volumeValue = 100;
 	screenShareEnabled: boolean;
 	localUsers: UserModel[] = [];
 	randomAvatar: string;
@@ -82,7 +81,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit() {
-
 		this.subscribeToLocalUsersEvents();
 		this.initNicknameAndSubscribeToChanges();
 		this.setRandomAvatar();
@@ -91,16 +89,12 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		await this.oVDevicesService.initDevices();
 		this.setDevicesInfo();
 		if (this.hasAudioDevices || this.hasVideoDevices) {
-			this.initwebcamPublisher();
+			await this.initwebcamPublisher();
 		} else {
 			// Emit publisher to webcomponent and angular-library
 			this.emitPublisher(null);
 			this.showConfigCard = true;
 		}
-
-		// publisher.on('streamAudioVolumeChange', (event: any) => {
-		//   this.volumeValue = Math.round(Math.abs(event.value.newValue));
-		// });
 	}
 
 	ngOnDestroy() {
@@ -243,28 +237,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.columns = event.target.innerWidth > 900 ? 2 : 1;
 	}
 
-	// updateVolumeColor(): string {
-	// 	// max = 0 / min = 100
-	// 	if (this.volumeValue <= 20) {
-	// 		return 'warn';
-	// 	} else if (this.volumeValue > 20 && this.volumeValue <= 35) {
-	// 		return 'accent';
-	// 	} else if (this.volumeValue > 35) {
-	// 		return 'primary';
-	// 	}
-	// }
-
 	joinSession() {
 		if (this.nicknameFormControl.valid) {
-			// this.localUsers.forEach(user => {
-			// 	user.getStreamManager().off('streamAudioVolumeChange');
-			// });
-			// if (this.avatarSelected === AVATAR_TYPE.RANDOM) {
-			// 	this.localUsers[0].removeVideoAvatar();
-			// }
-			// if (this.localUsers[1]) {
-			// 	this.localUsers[1].setUserAvatar(this.localUsers[0].getAvatar());
-			// }
 			return this.join.emit();
 		}
 		this.scrollToBottom();
@@ -322,7 +296,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		const properties = this.openViduWebRTCService.createPublisherProperties(videoSource, audioSource, true, hasAudio, false);
 
 		try {
-			return this.openViduWebRTCService.initScreenPublisher(undefined, properties);
+			return this.openViduWebRTCService.initPublisher(undefined, properties);
 		} catch (error) {
 			this.log.e(error);
 			this.utilsSrv.handlerScreenShareError(error);
@@ -344,7 +318,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private initwebcamPublisher() {
+	private async initwebcamPublisher() {
 		const micStorageDevice = this.micSelected?.device || undefined;
 		const camStorageDevice = this.camSelected?.device || undefined;
 
@@ -360,7 +334,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			publishAudio,
 			mirror
 		);
-		const publisher = this.openViduWebRTCService.initWebcamPublisher(undefined, properties);
+		const publisher = await this.openViduWebRTCService.initPublisherAsync(undefined, properties);
+		this.localUsersService.setWebcamPublisher(publisher);
 		this.handlePublisherSuccess(publisher);
 		this.handlePublisherError(publisher);
 	}
