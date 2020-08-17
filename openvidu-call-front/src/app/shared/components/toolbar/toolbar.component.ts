@@ -19,7 +19,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 	@Input() ovSettings: OvSettingsModel;
 
 	@Input() isWebcamAudioEnabled: boolean;
-	// @Input() isScreenEnabled: boolean;
 	@Input() isAutoLayout: boolean;
 	@Input() isConnectionLost: boolean;
 	@Input() hasVideoDevices: boolean;
@@ -37,7 +36,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 	isWebcamVideoEnabled: boolean;
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
-	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/openvidu-call-front/src/assets/images/';
+	logoUrl = 'assets/images/openvidu_logo.png';
 
 	participantsNames: string[] = [];
 
@@ -76,11 +75,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-		if (this.lightTheme) {
-			this.logoUrl += 'openvidu_logo_grey.png';
-			return;
-		}
-		this.logoUrl += 'openvidu_logo.png';
 		this.mySessionId = this.tokenService.getSessionId();
 
 		this.chatServiceSubscription = this.chatService.messagesUnreadObs.subscribe((num) => {
@@ -94,6 +88,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 		this.webcamVideoStateSubscription = this.localUsersService.webcamVideoActive.subscribe((enabled) => {
 			this.isWebcamVideoEnabled = enabled;
 		});
+		if (this.lightTheme) {
+			this.logoUrl = 'assets/images/openvidu_logo_grey.png';
+		}
 	}
 
 	toggleMicrophone() {

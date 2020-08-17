@@ -54,7 +54,6 @@ export class OpenViduWebrtcServiceMock {
 
 	destroyWebcamPublisher(): void {}
 
-
 	destroyScreenPublisher(): void {}
 
 	async publishWebcamPublisher(): Promise<any> {}
