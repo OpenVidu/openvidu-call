@@ -6,6 +6,8 @@ import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { LocalUsersService } from '../local-users/local-users.service';
 import { ScreenType } from '../../types/video-type';
+import { environment } from '../../../../environments/environment';
+
 
 @Injectable({
 	providedIn: 'root'
@@ -32,6 +34,10 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 	initialize() {
 		this.OV = new OpenVidu();
 		this.OVScreen = new OpenVidu();
+		if (environment.production) {
+			this.OV.enableProdMode();
+			this.OVScreen.enableProdMode();
+		}
 	}
 
 	initSessions() {
