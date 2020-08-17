@@ -45,15 +45,15 @@ export class OpenViduWebrtcServiceMock {
 
 	disconnect() {}
 
-	initWebcamPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
+	initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
+		return null;
+	}
+	initPublisherAsync(targetElement: string | HTMLElement, properties: PublisherProperties): Promise<Publisher> {
 		return null;
 	}
 
 	destroyWebcamPublisher(): void {}
 
-	initScreenPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {
-		return null;
-	}
 
 	destroyScreenPublisher(): void {}
 
