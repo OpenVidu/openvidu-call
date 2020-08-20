@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { UserModel } from '../../models/user-model';
 import { StreamEvent, Subscriber, ConnectionEvent } from 'openvidu-browser';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { UtilsService } from '../utils/utils.service';
 import { UserName } from '../../types/username-type';
+import { Observable } from 'rxjs/internal/Observable';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
 	providedIn: 'root'

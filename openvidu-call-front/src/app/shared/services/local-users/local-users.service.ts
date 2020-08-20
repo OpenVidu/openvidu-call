@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { UserModel } from '../../models/user-model';
-import { Publisher } from 'openvidu-browser';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { AvatarType } from '../../types/chat-type';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { Observable } from 'rxjs/internal/Observable';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Publisher } from 'openvidu-browser/lib/OpenVidu/Publisher';
 
 @Injectable({
 	providedIn: 'root'

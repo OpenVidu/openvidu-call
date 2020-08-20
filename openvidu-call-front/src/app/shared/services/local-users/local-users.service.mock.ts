@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { Publisher } from 'openvidu-browser';
+import { Publisher } from 'openvidu-browser/lib/OpenVidu/Publisher';
 import { UserModel } from '../../models/user-model';
 import { AvatarType } from '../../types/chat-type';
 

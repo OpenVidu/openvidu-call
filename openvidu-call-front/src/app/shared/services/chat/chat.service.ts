@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { ChatMessage } from '../../types/chat-type';
 import { MatSidenav } from '@angular/material/sidenav';
 import { RemoteUsersService } from '../remote-users/remote-users.service';
@@ -8,6 +7,8 @@ import { ILogger } from '../../types/logger-type';
 import { NotificationService } from '../notifications/notification.service';
 import { OpenViduWebrtcService } from '../openvidu-webrtc/openvidu-webrtc.service';
 import { LocalUsersService } from '../local-users/local-users.service';
+import { Observable } from 'rxjs/internal/Observable';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
 	providedIn: 'root'

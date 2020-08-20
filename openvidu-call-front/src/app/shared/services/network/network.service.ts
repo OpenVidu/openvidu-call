@@ -1,9 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
+import { throwError as observableThrowError } from 'rxjs/internal/observable/throwError';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError } from 'rxjs/internal/operators/catchError';
 
 @Injectable({
 	providedIn: 'root'
