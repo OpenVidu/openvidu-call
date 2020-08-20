@@ -52,7 +52,7 @@
   right: 0;
   top: 40px;
   bottom: 25px;
-  min-width: 400px !important;
+  min-width: 350px !important;
   width: inherit;
 }
 
@@ -84,6 +84,7 @@
   font-size: 100%;
   font-family: 'Ubuntu', sans-serif;
   vertical-align: baseline;
+  transition: all .1s linear;
 }
 
 .OT_dialog-centering {

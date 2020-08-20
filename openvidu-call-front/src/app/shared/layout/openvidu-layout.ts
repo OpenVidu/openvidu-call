@@ -1,7 +1,6 @@
 /**
  * @hidden
  */
-declare var $: any;
 
 export interface OpenViduLayoutOptions {
 	/**
@@ -119,7 +118,7 @@ export class OpenViduLayout {
 			bigMinRatio: opts.bigMinRatio != null ? opts.bigMinRatio : 9 / 16,
 			bigFirst: opts.bigFirst != null ? opts.bigFirst : true
 		};
-		this.layoutContainer = typeof container === 'string' ? $(container) : container;
+		this.layoutContainer = container;
 	}
 
 	/**
@@ -159,18 +158,16 @@ export class OpenViduLayout {
 
 		this.fixAspectRatio(elem, width);
 
-		if (animate && $) {
-			$(elem).stop();
-			$(elem).animate(targetPosition, animate.duration || 200, animate.easing || 'swing', () => {
-				this.fixAspectRatio(elem, width);
-				if (animate.complete) {
-					animate.complete.call(this);
-				}
-			});
-		} else {
-			$(elem).css(targetPosition);
-		}
-		this.fixAspectRatio(elem, width);
+		setTimeout(() => {
+			// animation added in css   transition: all .1s linear;
+			elem.style.left = targetPosition.left;
+			elem.style.top = targetPosition.top;
+			elem.style.width = targetPosition.width;
+			elem.style.height = targetPosition.height;
+			this.fixAspectRatio(elem, width);
+		}, 10);
+
+
 	}
 
 	/**
@@ -193,7 +190,8 @@ export class OpenViduLayout {
 	 * @hidden
 	 */
 	private getCSSNumber(elem: HTMLElement, prop: string) {
-		const cssStr = $(elem).css(prop);
+		const cssStr = window.getComputedStyle(elem)[prop];
+
 		return cssStr ? parseInt(cssStr, 10) : 0;
 	}
 
@@ -209,7 +207,7 @@ export class OpenViduLayout {
 	 * @hidden
 	 */
 	private getHeight(elem: HTMLElement) {
-		const heightStr = $(elem).css('height');
+		const heightStr = window.getComputedStyle(elem)['height'];
 		return heightStr ? parseInt(heightStr, 10) : 0;
 	}
 
@@ -217,7 +215,7 @@ export class OpenViduLayout {
 	 * @hidden
 	 */
 	private getWidth(elem: HTMLElement) {
-		const widthStr = $(elem).css('width');
+		const widthStr = window.getComputedStyle(elem)['width'];
 		return widthStr ? parseInt(widthStr, 10) : 0;
 	}
 

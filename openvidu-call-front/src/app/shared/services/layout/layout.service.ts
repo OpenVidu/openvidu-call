@@ -30,7 +30,8 @@ export class OpenViduLayoutService {
 			bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
 			bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
 			bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
-			animate: true // Whether you want to animate the transitions
+			animate: true // Whether you want to animate the transitions. Invalid property, to disable it remove   transition: all .1s linear;
+
 		};
 		return options;
 	}
