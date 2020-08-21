@@ -110,6 +110,10 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		}, 100);
 		this.videoSource = undefined;
 		this.audioSource = undefined;
+		this.stopVideoTracks(this.localUsersSrv.getWebcamPublisher()?.stream?.getMediaStream());
+		this.stopVideoTracks(this.localUsersSrv.getScreenPublisher()?.stream?.getMediaStream());
+		this.stopAudioTracks(this.localUsersSrv.getWebcamPublisher()?.stream?.getMediaStream());
+		this.stopAudioTracks(this.localUsersSrv.getScreenPublisher()?.stream?.getMediaStream());
 	}
 
 	initPublisher(targetElement: string | HTMLElement, properties: PublisherProperties): Publisher {

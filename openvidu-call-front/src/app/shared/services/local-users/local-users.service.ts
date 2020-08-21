@@ -37,7 +37,7 @@ export class LocalUsersService {
 	}
 
 	getWebcamPublisher(): Publisher {
-		return <Publisher>this.webcamUser.getStreamManager();
+		return <Publisher>this.webcamUser?.getStreamManager();
 	}
 
 	setWebcamPublisher(publisher: Publisher) {
@@ -45,7 +45,7 @@ export class LocalUsersService {
 	}
 
 	getScreenPublisher(): Publisher {
-		return <Publisher>this.screenUser.getStreamManager();
+		return <Publisher>this.screenUser?.getStreamManager();
 	}
 
 	setScreenPublisher(publisher: Publisher) {
