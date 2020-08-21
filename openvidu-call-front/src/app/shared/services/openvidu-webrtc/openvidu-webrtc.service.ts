@@ -73,7 +73,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		if (!!token) {
 			this.log.d('Connecting webcam session');
 			const webcamUsername = this.localUsersSrv.getWebcamUserName();
-			const webcamAvatar = this.localUsersSrv.getWebcamAvatar();
+			const webcamAvatar = this.localUsersSrv.getAvatar();
 			await this.webcamSession.connect(token, { clientData: webcamUsername, avatar: webcamAvatar });
 		}
 	}
@@ -89,7 +89,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 		if (!!token) {
 			this.log.d('Connecting screen session');
 			const screenUsername = this.localUsersSrv.getScreenUserName();
-			const webcamAvatar = this.localUsersSrv.getWebcamAvatar();
+			const webcamAvatar = this.localUsersSrv.getAvatar();
 			await this.screenSession.connect(token, { clientData: screenUsername, avatar: webcamAvatar });
 		}
 	}

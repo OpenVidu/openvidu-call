@@ -45,10 +45,6 @@ export class UtilsService {
 		}
 	}
 
-	getOpenViduAvatar(): string {
-		return 'assets/images/openvidu_globe_bg_transp_cropped.png';
-	}
-
 	handlerScreenShareError(error: any) {
 		if (error && error.name === 'SCREEN_SHARING_NOT_SUPPORTED') {
 			alert('Your browser does not support screen sharing');
@@ -124,16 +120,6 @@ export class UtilsService {
 			nickname = 'Unknown';
 		}
 		return nickname;
-	}
-
-	getAvatarFromConnectionData(data: string): string {
-		let avatar: string;
-		try {
-			avatar = JSON.parse(data).avatar;
-		} catch (error) {
-			avatar = this.getOpenViduAvatar();
-		}
-		return avatar;
 	}
 
 	linkify(text: string, options?: NgxLinkifyOptions): string {

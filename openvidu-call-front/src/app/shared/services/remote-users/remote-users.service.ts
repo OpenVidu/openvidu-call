@@ -7,12 +7,12 @@ import { UtilsService } from '../utils/utils.service';
 import { UserName } from '../../types/username-type';
 import { Observable } from 'rxjs/internal/Observable';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { AvatarService } from '../avatar/avatar.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class RemoteUsersService {
-
 	remoteUsers: Observable<UserModel[]>;
 	remoteUserNameList: Observable<UserName[]>;
 	private _remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
@@ -22,7 +22,7 @@ export class RemoteUsersService {
 
 	private log: ILogger;
 
-	constructor(private loggerSrv: LoggerService, private utilsSrv: UtilsService) {
+	constructor(private loggerSrv: LoggerService, private utilsSrv: UtilsService, private avatarService: AvatarService) {
 		this.log = this.loggerSrv.get('RemoteService');
 		this.remoteUsers = this._remoteUsers.asObservable();
 		this.remoteUserNameList = this._remoteUserNameList.asObservable();
@@ -38,9 +38,9 @@ export class RemoteUsersService {
 		const connectionId = (<StreamEvent>event)?.stream?.connection?.connectionId || (<ConnectionEvent>event)?.connection?.connectionId;
 		const data = (<StreamEvent>event)?.stream?.connection?.data || (<ConnectionEvent>event)?.connection?.data;
 		nickname = this.utilsSrv.getNicknameFromConnectionData(data);
-		avatar = this.utilsSrv.getAvatarFromConnectionData(data);
+		avatar = this.avatarService.getAvatarFromConnectionData(data);
 		const newUser = new UserModel(connectionId, subscriber, nickname);
-		newUser.setUserAvatar(avatar);
+		newUser.setAvatar(avatar);
 		// Add new user (connectionCreated Event) or assign the streamManager to old user when the connnectionId exists (streamCreated Event)
 		this.addUser(newUser);
 		this.updateUsers();
@@ -57,7 +57,7 @@ export class RemoteUsersService {
 	}
 
 	someoneIsSharingScreen(): boolean {
-		return this.users.some(user => user.isScreen());
+		return this.users.some((user) => user.isScreen());
 	}
 
 	toggleUserZoom(connectionId: string) {
@@ -66,7 +66,7 @@ export class RemoteUsersService {
 	}
 
 	resetUsersZoom() {
-		this.users.forEach(u => u.setVideoSizeBig(false));
+		this.users.forEach((u) => u.setVideoSizeBig(false));
 	}
 
 	setUserZoom(connectionId: string, zoom: boolean) {
@@ -74,7 +74,7 @@ export class RemoteUsersService {
 	}
 
 	getRemoteUserByConnectionId(connectionId: string): UserModel {
-		return this.users.find(u => u.getConnectionId() === connectionId);
+		return this.users.find((u) => u.getConnectionId() === connectionId);
 	}
 
 	updateNickname(connectionId: any, nickname: any) {
@@ -84,7 +84,7 @@ export class RemoteUsersService {
 
 		// Update nickname in remote nickname list
 		const remoteUserNameList = this._remoteUserNameList.getValue();
-		remoteUserNameList.forEach(element => {
+		remoteUserNameList.forEach((element) => {
 			if (element.connectionId === connectionId) {
 				element.nickname = nickname;
 				return;
@@ -92,7 +92,6 @@ export class RemoteUsersService {
 		});
 		this._remoteUserNameList.next(remoteUserNameList);
 	}
-
 
 	clear() {
 		this._remoteUsers = <BehaviorSubject<UserModel[]>>new BehaviorSubject([]);
@@ -103,22 +102,21 @@ export class RemoteUsersService {
 	}
 
 	getUserAvatar(connectionId: string): string {
-		return this.getRemoteUserByConnectionId(connectionId)?.getAvatar() || this.utilsSrv.getOpenViduAvatar();
+		return this.getRemoteUserByConnectionId(connectionId)?.getAvatar() || this.avatarService.getOpenViduAvatar();
 	}
 
 	addUserName(event: ConnectionEvent) {
-
-		const nickname  = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
+		const nickname = this.utilsSrv.getNicknameFromConnectionData(event.connection.data);
 		const connectionId = event.connection.connectionId;
 		const newUserNameList = this._remoteUserNameList.getValue();
 
-		newUserNameList.push({nickname, connectionId});
+		newUserNameList.push({ nickname, connectionId });
 		this._remoteUserNameList.next(newUserNameList);
 	}
 
 	deleteUserName(event: ConnectionEvent) {
 		const oldUserNameList: UserName[] = this._remoteUserNameList.getValue();
-		const newUserNameList: UserName[] = oldUserNameList.filter(element => element.connectionId !== event.connection.connectionId);
+		const newUserNameList: UserName[] = oldUserNameList.filter((element) => element.connectionId !== event.connection.connectionId);
 
 		this._remoteUserNameList.next(newUserNameList);
 	}

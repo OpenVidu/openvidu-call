@@ -17,6 +17,8 @@ import { LocalUsersService } from '../../services/local-users/local-users.servic
 import { LocalUsersServiceMock } from '../../services/local-users/local-users.service.mock';
 import { TokenService } from '../../services/token/token.service';
 import { TokenServiceMock } from '../../services/token/token.service.mock';
+import { AvatarService } from '../../services/avatar/avatar.service';
+import { AvatarServiceMock } from '../../services/avatar/avatar.service.mock';
 
 describe('RoomConfigComponent', () => {
 	let component: RoomConfigComponent;
@@ -32,7 +34,8 @@ describe('RoomConfigComponent', () => {
 				{ provide: LocalUsersService, useClass: LocalUsersServiceMock },
 				{ provide: DevicesService, useClass: DevicesServiceMock },
 				{ provide: StorageService, useClass: StorageServiceMock },
-				{ provide: TokenService, useClass: TokenServiceMock }
+				{ provide: TokenService, useClass: TokenServiceMock },
+				{ provide: AvatarService, useClass: AvatarServiceMock }
 
 			],
 			imports: [RouterTestingModule.withRoutes([])]

@@ -58,7 +58,7 @@ export class ChatService {
 				nickname: data.nickname,
 				message: data.message,
 				userAvatar: isMyOwnConnection
-					? this.localUsersService.getWebcamAvatar()
+					? this.localUsersService.getAvatar()
 					: this.remoteUsersService.getUserAvatar(connectionId)
 			});
 			if (!this.isChatOpened()) {

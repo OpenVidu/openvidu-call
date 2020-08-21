@@ -20,6 +20,7 @@ import { OpenViduErrorName } from 'openvidu-browser/lib/OpenViduInternal/Enums/O
 import { OpenViduWebrtcService } from '../../services/openvidu-webrtc/openvidu-webrtc.service';
 import { LocalUsersService } from '../../services/local-users/local-users.service';
 import { TokenService } from '../../services/token/token.service';
+import { AvatarService } from '../../services/avatar/avatar.service';
 
 @Component({
 	selector: 'app-room-config',
@@ -47,8 +48,9 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	isAudioActive = true;
 	screenShareEnabled: boolean;
 	localUsers: UserModel[] = [];
-	randomAvatar: string;
-	videoAvatar: string;
+	openviduAvatar: string;
+	capturedAvatar: string;
+	avatarTypeEnum = AvatarType;
 	avatarSelected: AvatarType;
 	columns: number;
 
@@ -70,7 +72,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		private tokenService: TokenService,
 		private oVDevicesService: DevicesService,
 		private loggerSrv: LoggerService,
-		private storageSrv: StorageService
+		private storageSrv: StorageService,
+		private avatarService: AvatarService
 	) {
 		this.log = this.loggerSrv.get('RoomConfigComponent');
 	}
@@ -83,7 +86,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 	async ngOnInit() {
 		this.subscribeToLocalUsersEvents();
 		this.initNicknameAndSubscribeToChanges();
-		this.setRandomAvatar();
+		this.openviduAvatar = this.avatarService.getOpenViduAvatar();
 		this.columns = window.innerWidth > 900 ? 2 : 1;
 		this.setSessionName();
 		await this.oVDevicesService.initDevices();
@@ -205,10 +208,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.publishAudio(this.isAudioActive);
 	}
 
-	takePhoto() {
-		this.localUsersService.setWebcamAvatar();
-		this.videoAvatar = this.localUsersService.getWebcamAvatar();
-		this.localUsersService.setAvatar(AvatarType.VIDEO);
+	captureAvatar() {
+		this.capturedAvatar = this.avatarService.createCapture();
 	}
 
 	initNicknameAndSubscribeToChanges() {
@@ -239,6 +240,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	joinSession() {
 		if (this.nicknameFormControl.valid) {
+			this.avatarService.setFinalAvatar(this.avatarSelected);
 			return this.join.emit();
 		}
 		this.scrollToBottom();
@@ -249,15 +251,8 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 		this.showConfigCard = false;
 	}
 
-	setAvatar(avatar: string) {
-		// !! REFACTOR
-		const avatarType = avatar === AvatarType.VIDEO ? AvatarType.VIDEO : AvatarType.RANDOM;
-		if ((avatarType === AvatarType.RANDOM && this.randomAvatar) || (avatarType === AvatarType.VIDEO && this.videoAvatar)) {
-			this.avatarSelected = avatarType;
-			// if (avatarType === AVATAR_TYPE.RANDOM) {
-			//   this.localUsers[0].setUserAvatar(this.randomAvatar);
-			// }
-		}
+	onSelectAvatar(type: AvatarType) {
+		this.avatarSelected = type;
 	}
 
 	private setDevicesInfo() {
@@ -274,12 +269,6 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			this.mySessionId = this.externalConfig ? this.externalConfig.getSessionName() : params.roomName;
 			this.tokenService.setSessionId(this.mySessionId);
 		});
-	}
-
-	private setRandomAvatar() {
-		this.randomAvatar = this.utilsSrv.getOpenViduAvatar();
-		this.localUsersService.setAvatar(AvatarType.RANDOM, this.randomAvatar);
-		this.avatarSelected = AvatarType.RANDOM;
 	}
 
 	private scrollToBottom(): void {

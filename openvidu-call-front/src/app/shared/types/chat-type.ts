@@ -1,6 +1,6 @@
 export enum AvatarType {
-	RANDOM = 'random',
-	VIDEO = 'video'
+	DEFAULT = 'default',
+	CAPTURED = 'captured'
 }
 
 export interface ChatMessage {

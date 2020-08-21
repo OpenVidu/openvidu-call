@@ -67,7 +67,7 @@ export class LocalUsersService {
 		const connectionId = screenPublisher?.session?.connection?.connectionId;
 
 		this.screenUser = new UserModel(connectionId, screenPublisher, this.getScreenUserName());
-		this.screenUser.setUserAvatar(this.webcamUser.getAvatar());
+		this.screenUser.setAvatar(this.webcamUser.getAvatar());
 		this._screenShareState.next(true);
 
 		if (this.isWebCamEnabled()) {
@@ -125,16 +125,9 @@ export class LocalUsersService {
 		return this.areBothConnected() || this.isOnlyScreenConnected();
 	}
 
-	setWebcamAvatar() {
-		this.webcamUser.setUserAvatar();
-	}
-
-	setAvatar(option: AvatarType, avatar?: string): void {
-		if ((option === AvatarType.RANDOM && avatar) || (AvatarType.VIDEO && avatar)) {
-			if (option === AvatarType.RANDOM) {
-				this.webcamUser.setUserAvatar(avatar);
-			}
-		}
+	setAvatar(avatar: string) {
+		this.webcamUser?.setAvatar(avatar);
+		this.screenUser?.setAvatar(avatar);
 	}
 
 	updateUsersNickname(nickname: string) {
@@ -142,7 +135,7 @@ export class LocalUsersService {
 		this.screenUser?.setNickname(this.getScreenUserName());
 	}
 
-	getWebcamAvatar(): string {
+	getAvatar(): string {
 		return this.webcamUser.getAvatar();
 	}
 

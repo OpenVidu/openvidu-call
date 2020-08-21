@@ -23,7 +23,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	videoAvatar: HTMLCanvasElement;
+	avatar: string;
 
 	/**
 	 * @hidden
@@ -33,7 +33,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	private randomAvatar: string;
+	// private randomAvatar: string;
 
 	/**
 	 * @hidden
@@ -90,7 +90,11 @@ export class UserModel {
 	 * Return the user avatar
 	 */
 	public getAvatar(): string {
-		return this.videoAvatar ? this.videoAvatar.toDataURL() : this.randomAvatar;
+		return this.avatar;
+	}
+
+	public setAvatar(avatar: string) {
+		this.avatar = avatar;
 	}
 
 	/**
@@ -158,38 +162,4 @@ export class UserModel {
 		this.local = local;
 	}
 
-	/**
-	 * @hidden
-	 */
-	public setUserAvatar(img?: string): Promise<any> {
-		return new Promise((resolve) => {
-			if (!img) {
-				this.createVideoAvatar();
-				const streamId = this.getStreamManager()?.stream?.streamId;
-				const video = <HTMLVideoElement>document.getElementById('video-' + streamId);
-				if (!!streamId && !!video) {
-					const avatar = this.videoAvatar.getContext('2d');
-					avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 100, 100);
-				}
-				resolve();
-			} else {
-				this.randomAvatar = img;
-				resolve();
-			}
-		});
-	}
-
-	public removeVideoAvatar() {
-		this.videoAvatar = null;
-	}
-
-	/**
-	 * @hidden
-	 */
-	private createVideoAvatar() {
-		this.videoAvatar = document.createElement('canvas');
-		this.videoAvatar.className = 'user-img';
-		this.videoAvatar.width = 100;
-		this.videoAvatar.height = 100;
-	}
 }
