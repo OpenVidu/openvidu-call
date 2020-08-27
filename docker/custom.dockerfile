@@ -9,7 +9,7 @@ RUN apk add wget
 
 COPY . .
 
-# Download openvidu-call from specific branch (master by default), intall openvidu-browser and build for production
+# Build openvidu call
 RUN rm openvidu-call-front/package-lock.json && \
     rm openvidu-call-back/package-lock.json && \
     # Install openvidu-call-front dependencies and build it for production
