@@ -57,6 +57,7 @@ video {
   height: fit-content;
   position: absolute;
   color: #ffffff;
+  z-index: 999;
 }
 
 .statusIcons mat-icon {
