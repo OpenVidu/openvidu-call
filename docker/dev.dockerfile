@@ -20,7 +20,7 @@ FROM node:lts-alpine3.11 as openvidu-call-build
 
 WORKDIR /openvidu-call
 
-ARG BRANCH=master
+ARG BRANCH_NAME=master
 ARG BASE_HREF=/
 
 COPY --from=openvidu-browser-build /openvidu-browser/openvidu-browser-*.tgz .
