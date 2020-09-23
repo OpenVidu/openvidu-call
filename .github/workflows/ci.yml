@@ -6,8 +6,8 @@ on:
       - 'openvidu-call-front/**'
 
 jobs:
-  unit_test:
-    name: Run unit tests with Karma and Jasmine
+  ovcall_unit_test:
+    name: OpenVidu Call unit tests
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v1
@@ -20,7 +20,25 @@ jobs:
       run: npm install --prefix openvidu-call-front
     - name: Run unit tests
       run: npm run test --prefix openvidu-call-front
+
+  build_library:
+    name: Build OpenVidu angular library
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
     - name: Build openvidu-agular
       run: npm run build:openvidu-angular --prefix openvidu-call-front
-    - name: Build OpenVidu Call webcomponent
+
+  build_webcomponent:
+    name: Build OpenVidu Webcomponent
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Build openvidu-webcomponent
       run: npm run build:openvidu-webcomponent --prefix openvidu-call-front
