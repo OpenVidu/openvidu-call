@@ -33,7 +33,9 @@ import {
 	HasScreenSharingPipe,
 	HasFullscreenPipe,
 	HasLayoutSpeakingPipe,
-	HasExitPipe
+	HasExitPipe,
+	HasFooterPipe,
+	HasToolbarPipe
 } from './shared/pipes/ovSettings.pipe';
 import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
@@ -60,7 +62,6 @@ import { NotificationService } from './shared/services/notifications/notificatio
 import { StorageService } from './shared/services/storage/storage.service';
 import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
 import { LocalUsersService } from './shared/services/local-users/local-users.service';
-import { HasFooterPipe, HasToolbarPipe } from 'src/app/shared/pipes/ovSettings.pipe';
 
 @NgModule({
 	imports: [
