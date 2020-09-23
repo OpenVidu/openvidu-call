@@ -4,7 +4,7 @@
         "url": "https://github.com/OpenVidu/openvidu-call/issues"
     },
     "dependencies": {
-        "axios": "0.19.2",
+        "axios": "0.20.0",
         "btoa": "1.2.1",
         "dotenv": "8.2.0",
         "express": "4.17.1"
@@ -12,13 +12,13 @@
     "description": "OpenVidu Call Server",
     "devDependencies": {
         "@types/btoa": "1.2.3",
-        "@types/express": "4.17.6",
-        "@types/jest": "25.2.1",
-        "@types/node": "13.13.2",
-        "concurrently": "5.1.0",
-        "cross-env": "^7.0.2",
+        "@types/express": "4.17.8",
+        "@types/jest": "26.0.14",
+        "@types/node": "14.11.2",
+        "concurrently": "5.3.0",
+        "cross-env": "7.0.2",
         "dotenv-webpack": "1.7.0",
-        "jest": "25.4.0",
+        "jest": "26.4.2",
         "nodemon": "2.0.3",
         "supertest": "4.0.2",
         "ts-loader": "7.0.1",
