@@ -23,7 +23,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { MatMenuModule } from '@angular/material/menu';
 
-
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import {
@@ -61,7 +60,7 @@ import { NotificationService } from './shared/services/notifications/notificatio
 import { StorageService } from './shared/services/storage/storage.service';
 import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
 import { LocalUsersService } from './shared/services/local-users/local-users.service';
-
+import { HasFooterPipe, HasToolbarPipe } from 'src/app/shared/pipes/ovSettings.pipe';
 
 @NgModule({
 	imports: [
@@ -108,6 +107,8 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
+		HasToolbarPipe,
+		HasFooterPipe,
 		TooltipListPipe
 	],
 	entryComponents: [DialogErrorComponent],

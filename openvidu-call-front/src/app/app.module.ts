@@ -26,7 +26,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppRoutingModule } from './app-routing.module';
 import { OverlayContainer } from '@angular/cdk/overlay';
 
-
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
 import {
@@ -37,7 +36,9 @@ import {
 	HasScreenSharingPipe,
 	HasFullscreenPipe,
 	HasLayoutSpeakingPipe,
-	HasExitPipe
+	HasExitPipe,
+	HasFooterPipe,
+	HasToolbarPipe
 } from './shared/pipes/ovSettings.pipe';
 import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
@@ -90,8 +91,10 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
+		HasFooterPipe,
+		HasToolbarPipe,
 		TooltipListPipe,
-		FooterComponent,
+		FooterComponent
 	],
 	imports: [
 		FormsModule,
@@ -132,7 +135,7 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		NotificationService,
 		StorageService,
 		CdkOverlayContainer,
-		{ provide: OverlayContainer, useClass: CdkOverlayContainer },
+		{ provide: OverlayContainer, useClass: CdkOverlayContainer }
 	],
 	bootstrap: [AppComponent]
 })

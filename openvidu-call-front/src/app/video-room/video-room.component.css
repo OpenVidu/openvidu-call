@@ -50,8 +50,8 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 40px;
-  bottom: 25px;
+  /* top: 40px; */
+  /* bottom: 25px; */
   min-width: 350px !important;
   width: inherit;
 }

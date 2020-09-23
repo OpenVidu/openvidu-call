@@ -1,12 +1,15 @@
 import { OvSettings } from '../types/ov-settings';
 
 export class OvSettingsModel {
+
 	private ovSettings: OvSettings;
 
 	constructor() {
 		this.ovSettings = {
 			chat: true,
 			autopublish: false,
+			toolbar: true,
+			footer: true,
 			toolbarButtons: {
 				video: true,
 				audio: true,
@@ -55,5 +58,12 @@ export class OvSettingsModel {
 
 	public setScreenSharing(screenShare: boolean) {
 		this.ovSettings.toolbarButtons.screenShare = screenShare;
+	}
+
+	public hasFooter(): boolean {
+		return this.ovSettings.footer;
+	}
+	public hasToolbar(): boolean {
+		return this.ovSettings.toolbar;
 	}
 }
