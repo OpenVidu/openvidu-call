@@ -1,5 +1,5 @@
 # Build OpenVidu Call for production
-FROM node:lts-alpine3.11 as openvidu-browser-build
+FROM node:lts-alpine3.12 as openvidu-browser-build
 
 WORKDIR /openvidu-browser
 
