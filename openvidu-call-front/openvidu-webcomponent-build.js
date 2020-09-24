@@ -2,13 +2,6 @@ const fs = require('fs-extra');
 const concat = require('concat');
 const VERSION = require('./package.json').version;
 
-// Fixed app-route bug: https://github.com/angular/angular/issues/24674
-module.exports.prepareWebcomponent = function () {
-  console.log("Preparing webcomponent files ...");
-  const appModule = './src/app/app.module.ts';
-  replaceText(appModule, "bootstrap: [AppComponent]", "// bootstrap: [AppComponent]");
-}
-
 module.exports.buildWebcomponent = async () => {
   console.log("Building OpenVidu Web Component (" + VERSION + ")");
   const tutorialWcPath = '../../openvidu-tutorials/openvidu-webcomponent/web';
@@ -75,3 +68,5 @@ function replaceText(file, originalText, changedText) {
   });
 
 }
+
+this.buildWebcomponent();

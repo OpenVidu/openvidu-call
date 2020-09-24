@@ -56,17 +56,19 @@
     "name": "openvidu-call",
     "private": true,
     "scripts": {
+        "start": "ng serve",
+        "start:https": "ng serve --host 192.168.1.161 --ssl --ssl-key cert.key --ssl-cert cert.crt",
         "build": "./node_modules/@angular/cli/bin/ng build && npm run copy:backend",
         "build-prod": "func() { ./node_modules/@angular/cli/bin/ng build --prod --base-href=\"${1:-/}\" && npm run copy:backend-prod; }; func",
         "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
-        "build:openvidu-webcomponent": "node -e \"require('./openvidu-webcomponent-build.js').prepareWebcomponent()\" && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node -e \"require('./openvidu-webcomponent-build.js').buildWebcomponent()\"",
+        "build:openvidu-webcomponent": "node ./openvidu-webcomponent-prepare.js && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node ./openvidu-webcomponent-build.js",
+        "build-win:openvidu-webcomponent": "node .\\openvidu-webcomponent-prepare.js && node .\\node_modules\\@angular\\cli\\bin\\ng build --prod --output-hashing none && node .\\openvidu-webcomponent-build.js",
+        "build-win:openvidu-angular": "node .\\openvidu-angular-build.js && node .\\node_modules\\@angular\\cli\\bin\\ng build openvidu-angular --prod",
         "copy:backend": "cp -a dist/openvidu-call/. ../openvidu-call-back/public/",
         "copy:backend-prod": "mkdir -p ../openvidu-call-back/dist/public && cp -a dist/openvidu-call/. ../openvidu-call-back/dist/public/",
+        "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
         "e2e": "ng e2e",
         "lint": "ng lint",
-        "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
-        "start": "ng serve",
-        "start:https": "ng serve --host 192.168.1.161 --ssl --ssl-key cert.key --ssl-cert cert.crt",
         "test": "ng test openvidu-call --watch=false --code-coverage"
     },
     "version": "2.15.0"
