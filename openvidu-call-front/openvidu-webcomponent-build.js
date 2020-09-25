@@ -6,12 +6,13 @@ module.exports.buildWebcomponent = async () => {
   console.log("Building OpenVidu Web Component (" + VERSION + ")");
   const tutorialWcPath = '../../openvidu-tutorials/openvidu-webcomponent/web';
   const e2eWcPath = '../webcomponent-test-e2e/web';
+  const appModule = './src/app/app.module.ts';
 
   try {
     await buildElement();
     await copyFiles(tutorialWcPath);
     await copyFiles(e2eWcPath);
-    await restore();
+    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
     console.log('OpenVidu Web Component (' + VERSION + ') built');
   } catch (error) {
     replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
@@ -48,11 +49,6 @@ async function copyFiles(destination) {
       throw err;
     }
   }
-}
-
-async function restore() {
-  const appModule = './src/app/app.module.ts';
-  replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
 }
 
 function replaceText(file, originalText, changedText) {
