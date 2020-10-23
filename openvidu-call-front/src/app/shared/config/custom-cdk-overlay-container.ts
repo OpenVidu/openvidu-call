@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 export class CdkOverlayContainer extends OverlayContainer {
 	containerSelector = '.sidenav-main';
 	customClass = 'cdk-overlay-container';
-
 	protected _createContainer(): void {
 		const container = document.createElement('div');
 		container.classList.add(this.customClass);

@@ -75,7 +75,7 @@ export class StreamComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.cdkSrv.setSelector('.sidenav-main');
+		this.cdkSrv.setSelector('body');
 	}
 
 	toggleVideoSize(resetAll?) {
