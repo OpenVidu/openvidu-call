@@ -14,7 +14,7 @@
         "@angular/router": "10.1.2",
         "core-js": "3.6.5",
         "linkifyjs": "2.1.9",
-        "openvidu-browser": "2.15.1-alpha2",
+        "openvidu-browser": "2.16.0-beta2",
         "rxjs": "6.6.3",
         "unique-names-generator": "4.3.1",
         "zone.js": "0.11.1"
@@ -71,5 +71,5 @@
         "lint": "ng lint",
         "test": "ng test openvidu-call --watch=false --code-coverage"
     },
-    "version": "2.15.0"
+    "version": "2.16.0-beta1"
 }
