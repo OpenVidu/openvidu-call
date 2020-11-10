@@ -52,5 +52,5 @@
         "start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts",
         "test": "jest"
     },
-    "version": "2.16.0-beta1"
+    "version": "2.16.0-beta2"
 }
