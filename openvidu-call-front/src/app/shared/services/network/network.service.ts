@@ -72,7 +72,7 @@ export class NetworkService {
 				})
 			};
 			return this.http
-				.post<any>(openviduServerUrl + 'openvidu/api/tokens' + sessionId + '/connection' , body, options)
+				.post<any>(openviduServerUrl + '/openvidu/api/sessions/' + sessionId + '/connection' , body, options)
 				.pipe(
 					catchError(error => {
 						reject(error);
