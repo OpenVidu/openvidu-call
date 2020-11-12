@@ -44,7 +44,7 @@ export class NetworkService {
 				})
 			};
 			return this.http
-				.post<any>(openviduServerUrl + '/api/sessions', body, options)
+				.post<any>(openviduServerUrl + '/openvidu/api/sessions', body, options)
 				.pipe(
 					catchError(error => {
 						if (error.status === 409) {
@@ -64,7 +64,7 @@ export class NetworkService {
 
 	createToken(sessionId: string, openviduServerUrl: string, openviduSecret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const body = JSON.stringify({ session: sessionId });
+			const body = JSON.stringify({});
 			const options = {
 				headers: new HttpHeaders({
 					Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + openviduSecret),
@@ -72,7 +72,7 @@ export class NetworkService {
 				})
 			};
 			return this.http
-				.post<any>(openviduServerUrl + '/api/tokens', body, options)
+				.post<any>(openviduServerUrl + 'openvidu/api/tokens' + sessionId + '/connection' , body, options)
 				.pipe(
 					catchError(error => {
 						reject(error);
