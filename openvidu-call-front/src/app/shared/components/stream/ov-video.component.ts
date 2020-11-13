@@ -5,7 +5,7 @@ import { VideoType } from '../../types/video-type';
 @Component({
 	selector: 'ov-video',
 	template: `
-		<img *ngIf="!_streamManager?.stream?.videoActive" class="poster_img" alt="OpenVidu Logo" src="../../../../assets/images/poster.png" />
+		<img *ngIf="!_streamManager?.stream?.videoActive" class="poster_img" alt="OpenVidu Logo" src="assets/images/poster.png" />
 		<video
 			#videoElement
 			[attr.id]="streamManager && _streamManager.stream ? 'video-' + _streamManager.stream.streamId : 'video-undefined'"
