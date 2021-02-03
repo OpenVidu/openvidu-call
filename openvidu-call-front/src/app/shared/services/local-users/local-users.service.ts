@@ -90,7 +90,8 @@ export class LocalUsersService {
 	clear() {
 		this.screenUser = null;
 		this.webcamUser = new UserModel();
-		this._OVUsers.next([this.webcamUser]);
+		// this._OVUsers.next([this.webcamUser]);
+		this.disableScreenUser();
 	}
 
 	isWebCamEnabled(): boolean {
