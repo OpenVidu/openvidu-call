@@ -103,11 +103,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 
 	disconnect() {
 		this.disconnectWebcamSession();
-		setTimeout(() => {
-			// ! Timeout neccessary to avoid race conditin error:
-			// ! OpenVidu Error Remote connection unknown when 'onParticipantLeft'. Existing remote connections: []
-			this.disconnectScreenSession();
-		}, 100);
+		this.disconnectScreenSession();
 		this.videoSource = undefined;
 		this.audioSource = undefined;
 		this.stopVideoTracks(this.localUsersSrv.getWebcamPublisher()?.stream?.getMediaStream());
