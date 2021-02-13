@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { ChatMessage } from '../../types/chat-type';
-import { OpenViduSessionService } from '../openvidu-session/openvidu-session.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { RemoteUsersService } from '../remote-users/remote-users.service';
 import { LoggerService } from '../logger/logger.service';
 import { ILogger } from '../../types/logger-type';
 import { NotificationService } from '../notifications/notification.service';
+import { OpenViduWebrtcService } from '../openvidu-webrtc/openvidu-webrtc.service';
+import { LocalUsersService } from '../local-users/local-users.service';
+import { Observable } from 'rxjs/internal/Observable';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
 	providedIn: 'root'
@@ -30,7 +32,8 @@ export class ChatService {
 
 	constructor(
 		private loggerSrv: LoggerService,
-		private oVSessionService: OpenViduSessionService,
+		private openViduWebRTCService: OpenViduWebrtcService,
+		private localUsersService: LocalUsersService,
 		private remoteUsersService: RemoteUsersService,
 		private notificationService: NotificationService
 	) {
@@ -45,17 +48,17 @@ export class ChatService {
 	}
 
 	subscribeToChat() {
-		const session = this.oVSessionService.getWebcamSession();
+		const session = this.openViduWebRTCService.getWebcamSession();
 		session.on('signal:chat', (event: any) => {
 			const connectionId = event.from.connectionId;
 			const data = JSON.parse(event.data);
-			const isMyOwnConnection = this.oVSessionService.isMyOwnConnection(connectionId);
+			const isMyOwnConnection = this.openViduWebRTCService.isMyOwnConnection(connectionId);
 			this.messageList.push({
 				isLocal: isMyOwnConnection,
 				nickname: data.nickname,
 				message: data.message,
 				userAvatar: isMyOwnConnection
-					? this.oVSessionService.getWebCamAvatar()
+					? this.localUsersService.getAvatar()
 					: this.remoteUsersService.getUserAvatar(connectionId)
 			});
 			if (!this.isChatOpened()) {
@@ -71,9 +74,9 @@ export class ChatService {
 		if (message !== '' && message !== ' ') {
 			const data = {
 				message: message,
-				nickname: this.oVSessionService.getWebcamUserName()
+				nickname: this.localUsersService.getWebcamUserName()
 			};
-			const sessionAvailable = this.oVSessionService.getConnectedUserSession();
+			const sessionAvailable = this.openViduWebRTCService.getSessionOfUserConnected();
 			sessionAvailable.signal({
 				data: JSON.stringify(data),
 				type: 'chat'

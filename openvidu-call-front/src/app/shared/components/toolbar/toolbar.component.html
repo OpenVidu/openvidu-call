@@ -43,8 +43,8 @@
 				[disabled]="isConnectionLost"
 				*ngIf="ovSettings | hasScreenSharing"
 			>
-				<mat-icon *ngIf="!isScreenEnabled" matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
-				<mat-icon *ngIf="isScreenEnabled" matTooltip="Stop sharing">screen_share</mat-icon>
+				<mat-icon *ngIf="!isScreenShareEnabled" matTooltip="Screen share" color="warn">stop_screen_share</mat-icon>
+				<mat-icon *ngIf="isScreenShareEnabled" matTooltip="Stop sharing">screen_share</mat-icon>
 			</button>
 
 			<!-- Fullscreen button -->

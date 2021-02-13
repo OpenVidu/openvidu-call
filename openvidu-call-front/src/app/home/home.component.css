@@ -1,5 +1,5 @@
 .section1 {
-  background: url('~/assets/images/bg.jpg')  top center no-repeat;
+  background: url('../../assets/images/bg.webp')  top center no-repeat;
   background-size: cover;
   height: 100%;
   text-align: center;
@@ -28,14 +28,15 @@
 
 }
 #header_img {
-  max-width: 200px;
+  max-width: 150px;
   margin-right: 10px;
   margin-top: 10px;
+  padding: 15px;
 }
 
 .ovVersion {
   position: absolute;
-  right: 5px;
+  right: 15px;
   font-size: 16px;
   font-weight: bold;
 }

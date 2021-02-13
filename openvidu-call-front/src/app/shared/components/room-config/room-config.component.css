@@ -1088,7 +1088,7 @@ mat-card {
     max-height: 100% ;
   }
   .videoContainer{
-    width: 60%;
+    width: 90%;
   }
 }
 @media (min-width: 768px) {

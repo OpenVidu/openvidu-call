@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,12 +19,12 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AppRoutingModule } from './/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { createCustomElement } from '@angular/elements';
 import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { AppRoutingModule } from './app-routing.module';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
@@ -35,7 +36,9 @@ import {
 	HasScreenSharingPipe,
 	HasFullscreenPipe,
 	HasLayoutSpeakingPipe,
-	HasExitPipe
+	HasExitPipe,
+	HasFooterPipe,
+	HasToolbarPipe
 } from './shared/pipes/ovSettings.pipe';
 import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
@@ -55,7 +58,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 
 // Services
 import { NetworkService } from './shared/services/network/network.service';
-import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
+import { OpenViduWebrtcService } from './shared/services/openvidu-webrtc/openvidu-webrtc.service';
 import { UtilsService } from './shared/services/utils/utils.service';
 import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
@@ -63,6 +66,8 @@ import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
 import { StorageService } from './shared/services/storage/storage.service';
+import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
+import { LocalUsersService } from './shared/services/local-users/local-users.service';
 
 @NgModule({
 	declarations: [
@@ -86,6 +91,8 @@ import { StorageService } from './shared/services/storage/storage.service';
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
+		HasFooterPipe,
+		HasToolbarPipe,
 		TooltipListPipe,
 		FooterComponent
 	],
@@ -113,19 +120,22 @@ import { StorageService } from './shared/services/storage/storage.service';
 		AppRoutingModule,
 		HttpClientModule,
 		FlexLayoutModule,
-		NgxLinkifyjsModule.forRoot()
+		MatMenuModule
 	],
 	entryComponents: [DialogErrorComponent, WebComponentComponent],
 	providers: [
 		NetworkService,
-		OpenViduSessionService,
+		OpenViduWebrtcService,
+		LocalUsersService,
 		UtilsService,
 		RemoteUsersService,
 		DevicesService,
 		LoggerService,
 		ChatService,
 		NotificationService,
-		StorageService
+		StorageService,
+		CdkOverlayContainer,
+		{ provide: OverlayContainer, useClass: CdkOverlayContainer }
 	],
 	bootstrap: [AppComponent]
 })

@@ -1,29 +1,25 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { UserModel } from '../../models/user-model';
+import { Component, Input } from '@angular/core';
+import { UserName } from '../../types/username-type';
+import { VideoType } from '../../types/video-type';
 
 @Component({
 	selector: 'app-footer',
 	templateUrl: './footer.component.html',
 	styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent{
 	@Input() lightTheme: boolean;
 
 	participantsNames: string[] = [];
 
 	constructor() {}
 
-	@HostListener('window:resize', ['$event'])
-	sizeChange(event) {}
-
-	ngOnInit() {}
-
 	@Input()
-	set participants(participants: UserModel[]) {
+	set participants(participants: UserName[]) {
 		this.participantsNames = [];
-		participants.forEach((user) => {
-			if (user.isCamera()) {
-				this.participantsNames.push(user.getNickname());
+		participants.forEach((names) => {
+			if (!names.nickname.includes(VideoType.SCREEN)) {
+				this.participantsNames.push(names.nickname);
 			}
 		});
 		this.participantsNames = [...this.participantsNames];

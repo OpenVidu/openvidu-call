@@ -4,6 +4,8 @@ import { VideoFullscreenIcon } from '../../types/icon-type';
 import { OvSettingsModel } from '../../models/ovSettings';
 import { ChatService } from '../../services/chat/chat.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { TokenService } from '../../services/token/token.service';
+import { LocalUsersService } from '../../services/local-users/local-users.service';
 
 @Component({
 	selector: 'app-toolbar',
@@ -12,14 +14,11 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
 	@Input() lightTheme: boolean;
-	@Input() mySessionId: boolean;
 	@Input() compact: boolean;
 	@Input() showNotification: boolean;
 	@Input() ovSettings: OvSettingsModel;
 
-	@Input() isWebcamVideoEnabled: boolean;
 	@Input() isWebcamAudioEnabled: boolean;
-	@Input() isScreenEnabled: boolean;
 	@Input() isAutoLayout: boolean;
 	@Input() isConnectionLost: boolean;
 	@Input() hasVideoDevices: boolean;
@@ -30,21 +29,38 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 	@Output() layoutButtonClicked = new EventEmitter<any>();
 	@Output() leaveSessionButtonClicked = new EventEmitter<any>();
 
+	mySessionId: string;
+
 	newMessagesNum: number;
-	private chatServiceSubscription: Subscription;
+	isScreenShareEnabled: boolean;
+	isWebcamVideoEnabled: boolean;
 
 	fullscreenIcon = VideoFullscreenIcon.BIG;
-	logoUrl = 'https://raw.githubusercontent.com/OpenVidu/openvidu-call/master/openvidu-call-front/src/assets/images/';
+	logoUrl = 'assets/images/openvidu_logo.png';
 
 	participantsNames: string[] = [];
 
-	constructor(private utilsSrv: UtilsService, private chatService: ChatService) {
-		this.chatServiceSubscription = this.chatService.messagesUnreadObs.subscribe((num) => {
-			this.newMessagesNum = num;
-		});
-	}
+	private chatServiceSubscription: Subscription;
+	private screenShareStateSubscription: Subscription;
+	private webcamVideoStateSubscription: Subscription;
+
+	constructor(
+		private utilsSrv: UtilsService,
+		private chatService: ChatService,
+		private tokenService: TokenService,
+		private localUsersService: LocalUsersService
+	) {}
+
 	ngOnDestroy(): void {
-		this.chatServiceSubscription.unsubscribe();
+		if (this.chatServiceSubscription) {
+			this.chatServiceSubscription.unsubscribe();
+		}
+		if (this.screenShareStateSubscription) {
+			this.screenShareStateSubscription.unsubscribe();
+		}
+		if (this.webcamVideoStateSubscription) {
+			this.webcamVideoStateSubscription.unsubscribe();
+		}
 	}
 
 	@HostListener('window:resize', ['$event'])
@@ -59,11 +75,22 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
+		this.mySessionId = this.tokenService.getSessionId();
+
+		this.chatServiceSubscription = this.chatService.messagesUnreadObs.subscribe((num) => {
+			this.newMessagesNum = num;
+		});
+
+		this.screenShareStateSubscription = this.localUsersService.screenShareState.subscribe((enabled) => {
+			this.isScreenShareEnabled = enabled;
+		});
+
+		this.webcamVideoStateSubscription = this.localUsersService.webcamVideoActive.subscribe((enabled) => {
+			this.isWebcamVideoEnabled = enabled;
+		});
 		if (this.lightTheme) {
-			this.logoUrl += 'openvidu_logo_grey.png';
-			return;
+			this.logoUrl = 'assets/images/openvidu_logo_grey.png';
 		}
-		this.logoUrl += 'openvidu_logo.png';
 	}
 
 	toggleMicrophone() {

@@ -23,12 +23,17 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	videoAvatar: HTMLCanvasElement;
+	avatar: string;
 
 	/**
 	 * @hidden
 	 */
-	private randomAvatar: string;
+	local: boolean;
+
+	/**
+	 * @hidden
+	 */
+	// private randomAvatar: string;
 
 	/**
 	 * @hidden
@@ -38,11 +43,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	constructor(
-		connectionId?: string,
-		streamManager?: StreamManager,
-		nickname?: string,
-	) {
+	constructor(connectionId?: string, streamManager?: StreamManager, nickname?: string) {
 		this.connectionId = connectionId || '';
 		this.nickname = nickname || 'OpenVidu';
 		this.streamManager = streamManager || null;
@@ -68,7 +69,7 @@ export class UserModel {
 	 * Return the connection ID
 	 */
 	public getConnectionId(): string {
-		return this.streamManager?.stream?.connection?.connectionId;
+		return this.streamManager?.stream?.connection?.connectionId || this.connectionId;
 	}
 
 	/**
@@ -89,14 +90,18 @@ export class UserModel {
 	 * Return the user avatar
 	 */
 	public getAvatar(): string {
-		return this.videoAvatar ? this.videoAvatar.toDataURL() : this.randomAvatar;
+		return this.avatar;
+	}
+
+	public setAvatar(avatar: string) {
+		this.avatar = avatar;
 	}
 
 	/**
 	 * Return `true` if user has a local role and `false` if not
 	 */
 	public isLocal(): boolean {
-		return !this.isRemote();
+		return this.local;
 	}
 
 	/**
@@ -152,32 +157,9 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	public setUserAvatar(img?: string): Promise<any> {
-		return new Promise(resolve => {
-			if (!img) {
-				this.createVideoAvatar();
-				const video = <HTMLVideoElement>document.getElementById('video-' + this.getStreamManager().stream.streamId);
-				const avatar = this.videoAvatar.getContext('2d');
-				avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 100, 100);
-				resolve();
-			} else {
-				this.randomAvatar = img;
-				resolve();
-			}
-		});
+	// Used when the streamManager is null (users without devices)
+	public setLocal(local: boolean) {
+		this.local = local;
 	}
 
-	public removeVideoAvatar() {
-		this.videoAvatar = null;
-	}
-
-	/**
-	 * @hidden
-	 */
-	private createVideoAvatar() {
-		this.videoAvatar = document.createElement('canvas');
-		this.videoAvatar.className = 'user-img';
-		this.videoAvatar.width = 100;
-		this.videoAvatar.height = 100;
-	}
 }

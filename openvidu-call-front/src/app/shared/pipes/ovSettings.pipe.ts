@@ -64,3 +64,19 @@ export class HasExitPipe implements PipeTransform {
 		return !ovSettings || ovSettings.hasExit();
 	}
 }
+
+@Pipe({ name: 'hasToolbar', pure: true })
+export class HasToolbarPipe implements PipeTransform {
+	constructor() {}
+	transform(ovSettings: OvSettingsModel): boolean {
+		return !ovSettings || ovSettings.hasToolbar();
+	}
+}
+
+@Pipe({ name: 'hasFooter', pure: true })
+export class HasFooterPipe implements PipeTransform {
+	constructor() {}
+	transform(ovSettings: OvSettingsModel): boolean {
+		return !ovSettings || ovSettings.hasFooter();
+	}
+}

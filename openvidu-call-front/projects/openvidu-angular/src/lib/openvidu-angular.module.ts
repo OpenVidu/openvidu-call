@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { OpenviduSessionComponent } from './openvidu-angular.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,8 +19,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatMenuModule } from '@angular/material/menu';
 
 // Pipes
 import { LinkifyPipe } from './shared/pipes/linkfy';
@@ -33,7 +33,9 @@ import {
 	HasScreenSharingPipe,
 	HasFullscreenPipe,
 	HasLayoutSpeakingPipe,
-	HasExitPipe
+	HasExitPipe,
+	HasFooterPipe,
+	HasToolbarPipe
 } from './shared/pipes/ovSettings.pipe';
 import { TooltipListPipe } from './shared/pipes/tooltipList.pipe';
 
@@ -50,7 +52,7 @@ import { RoomConfigComponent } from './shared/components/room-config/room-config
 
 // Services
 import { NetworkService } from './shared/services/network/network.service';
-import { OpenViduSessionService } from './shared/services/openvidu-session/openvidu-session.service';
+import { OpenViduWebrtcService } from './shared/services/openvidu-webrtc/openvidu-webrtc.service';
 import { UtilsService } from './shared/services/utils/utils.service';
 import { DevicesService } from './shared/services/devices/devices.service';
 import { RemoteUsersService } from './shared/services/remote-users/remote-users.service';
@@ -58,6 +60,8 @@ import { ChatService } from './shared/services/chat/chat.service';
 import { LoggerService } from './shared/services/logger/logger.service';
 import { NotificationService } from './shared/services/notifications/notification.service';
 import { StorageService } from './shared/services/storage/storage.service';
+import { CdkOverlayContainer } from './shared/config/custom-cdk-overlay-container';
+import { LocalUsersService } from './shared/services/local-users/local-users.service';
 
 @NgModule({
 	imports: [
@@ -82,7 +86,7 @@ import { StorageService } from './shared/services/storage/storage.service';
 		MatSidenavModule,
 		MatSnackBarModule,
 		FlexLayoutModule,
-		NgxLinkifyjsModule.forRoot()
+		MatMenuModule
 	],
 	declarations: [
 		OpenviduSessionComponent,
@@ -104,19 +108,24 @@ import { StorageService } from './shared/services/storage/storage.service';
 		HasFullscreenPipe,
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
+		HasToolbarPipe,
+		HasFooterPipe,
 		TooltipListPipe
 	],
 	entryComponents: [DialogErrorComponent],
 	providers: [
 		NetworkService,
-		OpenViduSessionService,
+		OpenViduWebrtcService,
+		LocalUsersService,
 		UtilsService,
 		RemoteUsersService,
 		DevicesService,
 		LoggerService,
 		ChatService,
 		NotificationService,
-		StorageService
+		StorageService,
+		CdkOverlayContainer,
+		{ provide: OverlayContainer, useClass: CdkOverlayContainer }
 	],
 	exports: [OpenviduSessionComponent]
 })

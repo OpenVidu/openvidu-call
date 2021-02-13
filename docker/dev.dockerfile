@@ -1,5 +1,5 @@
 # Build OpenVidu Call for production
-FROM node:lts-alpine3.11 as openvidu-browser-build
+FROM node:lts-alpine3.12 as openvidu-browser-build
 
 WORKDIR /openvidu-browser
 
@@ -20,7 +20,7 @@ FROM node:lts-alpine3.11 as openvidu-call-build
 
 WORKDIR /openvidu-call
 
-ARG BRANCH=master
+ARG BRANCH_NAME=master
 ARG BASE_HREF=/
 
 COPY --from=openvidu-browser-build /openvidu-browser/openvidu-browser-*.tgz .

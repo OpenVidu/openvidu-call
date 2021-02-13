@@ -57,6 +57,7 @@ video {
   height: fit-content;
   position: absolute;
   color: #ffffff;
+  z-index: 999;
 }
 
 .statusIcons mat-icon {
@@ -92,7 +93,7 @@ video {
   right: 0;
   position: absolute;
   bottom: 0;
-  z-index: 9999999;
+  z-index: 10;
   width: 50px;
   text-align: center;
 }
@@ -110,6 +111,7 @@ video {
   height: 100%;
   position: absolute;
   overflow: hidden;
+  background-color: #000000;
 }
 
 mat-error,
@@ -125,4 +127,16 @@ mat-error,
 
 input {
   caret-color: #ffffff !important;
+}
+
+.poster_img {
+  position: absolute;
+  z-index: 888;
+  max-width: 70%;
+  max-height: 70%;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+  right: 0;
+  left: 0;
 }

@@ -1,6 +1,6 @@
-FROM node:lts-alpine3.11
+FROM node:lts-alpine3.12
 
-ARG RELEASE_VERSION=2.13.0
+ARG RELEASE_VERSION=2.15.0
 
 RUN apk add wget unzip
 

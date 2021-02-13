@@ -28,10 +28,13 @@
               "src/theme.scss"
             ],
             "scripts": [
-              "./node_modules/jquery/dist/jquery.min.js",
               {
                 "input": "node_modules/document-register-element/build/document-register-element.js"
               }
+            ],
+            "allowedCommonJsDependencies": [
+              "linkifyjs",
+              "openvidu-browser"
             ]
           },
           "configurations": {

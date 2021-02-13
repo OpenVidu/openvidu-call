@@ -37,6 +37,7 @@ async function copyFiles() {
 
       // openvidu-service environments path
       replaceEnvironmentPath(sharedDest + 'services/logger/logger.service.ts');
+      replaceEnvironmentPath(sharedDest + 'services/openvidu-webrtc/openvidu-webrtc.service.ts');
       replaceEnvironmentPath(sharedDest + 'services/network/network.service.ts');
     });
   } catch (err) {

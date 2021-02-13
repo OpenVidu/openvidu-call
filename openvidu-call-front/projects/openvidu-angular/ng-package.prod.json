@@ -5,13 +5,13 @@
     "entryFile": "src/public_api.ts",
     "umdModuleIds": {
       "openvidu-browser": "openvidu-browser",
-      "ngx-linkifyjs": "ngx-linkifyjs"
+      "linkifyjs": "linkifyjs"
     }
   },
   "whitelistedNonPeerDependencies": [
     "tslib",
     "openvidu-browser",
-    "ngx-linkifyjs",
+    "linkifyjs",
     "@angular/material",
     "@angular/cdk",
     "@angular/animations",

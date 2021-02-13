@@ -10,7 +10,6 @@ export class WebComponentModel extends ExternalConfigModel {
 	}
 
 	setSessionConfig(config: any) {
-
 		this.sessionConfig = config;
 
 		if (!!this.sessionConfig) {
@@ -37,6 +36,10 @@ export class WebComponentModel extends ExternalConfigModel {
 			typeof obj['chat'] === 'boolean' &&
 			'autopublish' in obj &&
 			typeof obj['autopublish'] === 'boolean' &&
+			'toolbar' in obj &&
+			typeof obj['toolbar'] === 'boolean' &&
+			'footer' in obj &&
+			typeof obj['footer'] === 'boolean' &&
 			'toolbarButtons' in obj &&
 			typeof obj['toolbarButtons'] === 'object' &&
 			'audio' in obj.toolbarButtons &&
