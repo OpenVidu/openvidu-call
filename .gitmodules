@@ -1,0 +1,4 @@
+[submodule "openvidu-call-front/projects/openvidu-call-pro"]
+	path = openvidu-call-front/projects/openvidu-call-pro
+	url = https://github.com/OpenVidu/openvidu-call-pro
+	branch = openvidu-call-pro
