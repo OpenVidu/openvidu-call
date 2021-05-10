@@ -62,6 +62,7 @@
         "build-win:openvidu-webcomponent": "node .\\openvidu-webcomponent-prepare.js && node .\\node_modules\\@angular\\cli\\bin\\ng build --prod --output-hashing none && node .\\openvidu-webcomponent-build.js",
         "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
         "build:openvidu-webcomponent": "node ./openvidu-webcomponent-prepare.js && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node ./openvidu-webcomponent-build.js",
+        "build:openvidu-webcomponent-pro": "node ./openvidu-webcomponent-prepare.js pro && ./node_modules/@angular/cli/bin/ng build openvidu-call-pro --prod --output-hashing none && node ./openvidu-webcomponent-build.js pro",
         "copy:backend": "cp -a dist/openvidu-call/. ../openvidu-call-back/public/",
         "copy:backend-prod": "mkdir -p ../openvidu-call-back/dist/public && cp -a dist/openvidu-call/. ../openvidu-call-back/dist/public/",
         "e2e": "ng e2e",

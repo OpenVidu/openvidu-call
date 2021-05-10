@@ -1,10 +1,14 @@
 const fs = require('fs-extra');
 const { exit } = require('process');
 const { forEachComment } = require('tslint');
+const PROJECT = process.argv.slice(2)[0];
 
 module.exports.prepareWebcomponent = function () {
 	console.log('Preparing webcomponent files ...');
-	const appModule = './src/app/app.module.ts';
+	let appModule = './src/app/app.module.ts';
+	if (PROJECT === 'pro') {
+    appModule = './projects/openvidu-call-pro/src/app/app.module.ts'
+  }
 	replaceText(appModule, 'bootstrap: [AppComponent]', '// bootstrap: [AppComponent]');
 };
 

@@ -1,17 +1,27 @@
 const fs = require('fs-extra');
 const concat = require('concat');
-const VERSION = require('./package.json').version;
+const MODE = process.argv.slice(2)[0];
+let VERSION = require('./package.json').version;
+let PROJECT = 'openvidu-call';
 
 module.exports.buildWebcomponent = async () => {
+  let appModule = './src/app/app.module.ts';
+  if (MODE === 'pro') {
+    appModule = './projects/openvidu-call-pro/src/app/app.module.ts'
+    PROJECT = 'openvidu-call-pro'
+    VERSION = 'pro-' + VERSION;
+  }
   console.log("Building OpenVidu Web Component (" + VERSION + ")");
   const tutorialWcPath = '../../openvidu-tutorials/openvidu-webcomponent/web';
   const e2eWcPath = '../webcomponent-test-e2e/web';
-  const appModule = './src/app/app.module.ts';
 
   try {
     await buildElement();
-    await copyFiles(tutorialWcPath);
-    await copyFiles(e2eWcPath);
+    // Only update tutorial if PRO
+    if (MODE !== 'pro') {
+      await copyFiles(tutorialWcPath);
+      await copyFiles(e2eWcPath);
+    }
     replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
     console.log('OpenVidu Web Component (' + VERSION + ') built');
   } catch (error) {
@@ -22,16 +32,16 @@ module.exports.buildWebcomponent = async () => {
 
 async function buildElement() {
   const files = [
-    './dist/openvidu-call/runtime.js',
-    './dist/openvidu-call/polyfills.js',
-    './dist/openvidu-call/scripts.js',
-    './dist/openvidu-call/main.js',
+    `./dist/${PROJECT}/runtime.js`,
+    `./dist/${PROJECT}/polyfills.js`,
+    `./dist/${PROJECT}/scripts.js`,
+    `./dist/${PROJECT}/main.js`,
   ];
 
   try {
     await fs.ensureDir('openvidu-webcomponent');
     await concat(files, './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js')
-    await fs.copy('./dist/openvidu-call/styles.css', './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css');
+    await fs.copy(`./dist/${PROJECT}/styles.css`, './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css');
   } catch (err) {
     console.error('Error executing build function in webcomponent-builds.js');
     throw err;

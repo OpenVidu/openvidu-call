@@ -232,7 +232,8 @@
             ],
             "allowedCommonJsDependencies": [
               "linkifyjs",
-              "openvidu-browser"
+              "openvidu-browser",
+              "openvidu-ce"
             ]
           },
           "configurations": {

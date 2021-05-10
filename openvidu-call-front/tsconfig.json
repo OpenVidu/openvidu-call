@@ -24,6 +24,9 @@
       ],
       "openvidu-session/*": [
         "dist/openvidu-session/*"
+      ],
+      "openvidu-ce/*": [
+        "src/app/*"
       ]
     }
   }
