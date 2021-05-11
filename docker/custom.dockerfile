@@ -1,5 +1,5 @@
 # Build OpenVidu Call for production
-FROM node:lts-alpine3.12 as openvidu-call-build
+FROM node:lts-alpine3.13 as openvidu-call-build
 
 WORKDIR /openvidu-call
 
@@ -36,7 +36,7 @@ RUN if [ ${OPENVIDU_BROWSER} != "DEFAULT" ]; then \
     rm -rf openvidu-call-back openvidu
 
 
-FROM node:lts-alpine3.11
+FROM node:lts-alpine3.13
 
 WORKDIR /opt/openvidu-call
 

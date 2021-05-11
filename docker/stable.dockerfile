@@ -1,4 +1,4 @@
-FROM node:lts-alpine3.12
+FROM node:lts-alpine3.13
 
 ARG RELEASE_VERSION=2.15.0
 

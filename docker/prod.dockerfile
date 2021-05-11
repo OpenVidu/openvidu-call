@@ -1,5 +1,5 @@
 # Build OpenVidu Call for production
-FROM node:lts-alpine3.12 as openvidu-call-build
+FROM node:lts-alpine3.13 as openvidu-call-build
 
 WORKDIR /openvidu-call
 
@@ -28,7 +28,7 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/${BRANCH_NAME}.zip" 
     rm -rf openvidu-call-back
 
 
-FROM node:lts-alpine3.11
+FROM node:lts-alpine3.13
 
 WORKDIR /opt/openvidu-call
 
