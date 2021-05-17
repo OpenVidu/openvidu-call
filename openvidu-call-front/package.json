@@ -45,7 +45,6 @@
         "karma-junit-reporter": "2.0.1",
         "karma-mocha-reporter": "2.2.5",
         "karma-notify-reporter": "1.2.0",
-        "crypto": "1.0.1",
         "ng-packagr": "10.1.0",
         "protractor": "7.0.0",
         "ts-node": "9.0.0",
