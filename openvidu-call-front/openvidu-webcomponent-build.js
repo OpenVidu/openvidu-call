@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
+const path = require('path');
 const concat = require('concat');
+const crypto = require('crypto');
 const MODE = process.argv.slice(2)[0];
 let VERSION = require('./package.json').version;
 let PROJECT = 'openvidu-call';
@@ -7,7 +9,7 @@ let PROJECT = 'openvidu-call';
 module.exports.buildWebcomponent = async () => {
   let appModule = './src/app/app.module.ts';
   if (MODE === 'pro') {
-    appModule = './projects/openvidu-call-pro/src/app/app.module.ts'
+    appModule = './projects/openvidu-call-pro/frontend/src/app/app.module.ts'
     PROJECT = 'openvidu-call-pro'
     VERSION = 'pro-' + VERSION;
   }
@@ -21,6 +23,15 @@ module.exports.buildWebcomponent = async () => {
     if (MODE !== 'pro') {
       await copyFiles(tutorialWcPath);
       await copyFiles(e2eWcPath);
+    } else {
+      // Update OpenVidu Call Pro Backend Files
+      const openviduCallProResourcesPath = './projects/openvidu-call-pro/backend/src/main/resources/static';
+      const webcomponentLibJsHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js').substring(0, 10);
+      const webcomponentCssHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css').substring(0, 10);
+      await fs.ensureDir(openviduCallProResourcesPath);
+      removeFilesWithPrefix(openviduCallProResourcesPath, 'openvidu-webcomponent-pro');
+      await fs.move('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js', openviduCallProResourcesPath + '/openvidu-webcomponent-' + VERSION + "-" + webcomponentLibJsHash + '.js');
+      await fs.move('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css', openviduCallProResourcesPath + '/openvidu-webcomponent-' + VERSION + "-" + webcomponentCssHash + '.css');
     }
     replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
     console.log('OpenVidu Web Component (' + VERSION + ') built');
@@ -72,7 +83,24 @@ function replaceText(file, originalText, changedText) {
       if (err) return console.log(err);
     });
   });
+}
 
+function hashFromFile(fileDir) {
+  let file_buffer = fs.readFileSync(fileDir);
+  let sum = crypto.createHash('sha256');
+  sum.update(file_buffer);
+  return sum.digest('hex');
+}
+
+function removeFilesWithPrefix(directory, prefix) {
+  const files = fs.readdirSync(directory);
+  for (const file of files) {
+    if (file.startsWith(prefix)) {
+      console.log(file);
+      console.log(path.join(directory, file));
+      fs.unlinkSync(path.join(directory, file));
+    }
+  }
 }
 
 this.buildWebcomponent();
