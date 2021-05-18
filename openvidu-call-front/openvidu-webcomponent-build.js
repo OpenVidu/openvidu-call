@@ -25,7 +25,7 @@ module.exports.buildWebcomponent = async () => {
       await copyFiles(e2eWcPath);
     } else {
       // Update OpenVidu Call Pro Backend Files
-      const openviduCallProResourcesPath = './projects/openvidu-call-pro/backend/src/main/resources/static';
+      const openviduCallProResourcesPath = '../../openvidu-call-pro/backend/src/main/resources/static';
       const webcomponentLibJsHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js').substring(0, 10);
       const webcomponentCssHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css').substring(0, 10);
       await fs.ensureDir(openviduCallProResourcesPath);
