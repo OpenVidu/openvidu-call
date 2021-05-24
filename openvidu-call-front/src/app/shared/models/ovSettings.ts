@@ -2,7 +2,7 @@ import { OvSettings } from '../types/ov-settings';
 
 export class OvSettingsModel {
 
-	private ovSettings: OvSettings;
+	protected ovSettings: OvSettings;
 
 	constructor() {
 		this.ovSettings = {
