@@ -154,7 +154,10 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		HasLayoutSpeakingPipe,
 		HasExitPipe,
 		HasFooterPipe,
-		HasToolbarPipe
+		HasToolbarPipe,
+		TooltipListPipe,
+		OpenViduVideoComponent,
+		ChatComponent,
 	],
 	bootstrap: [AppComponent]
 })

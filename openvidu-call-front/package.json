@@ -70,6 +70,7 @@
         "lint": "ng lint",
         "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
         "start": "ng serve",
+        "start-pro": "ng serve openvidu-call-pro --configuration=dev --port \"${FRONTEND_PORT:-4200}\"",
         "start:https": "ng serve --host 192.168.1.161 --ssl --ssl-key cert.key --ssl-cert cert.crt",
         "test": "ng test openvidu-call --watch=false --code-coverage"
     },

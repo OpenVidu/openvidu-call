@@ -38,7 +38,7 @@ export class UserModel {
 	/**
 	 * @hidden
 	 */
-	private videoSizeBig: boolean;
+	videoSizeBig: boolean;
 
 	/**
 	 * @hidden

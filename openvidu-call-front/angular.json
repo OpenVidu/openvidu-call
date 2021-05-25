@@ -282,6 +282,29 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            },
+            "dev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/openvidu-call-pro/frontend/src/environments/environment.ts",
+                  "with": "projects/openvidu-call-pro/frontend/src/environments/environment.dev.ts"
+                }
+              ],
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           }
         },
@@ -294,6 +317,9 @@
           "configurations": {
             "production": {
               "browserTarget": "openvidu-call-pro:build:production"
+            },
+            "dev": {
+              "browserTarget": "openvidu-call-pro:build:dev"
             }
           }
         },
