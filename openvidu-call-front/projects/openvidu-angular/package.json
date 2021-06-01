@@ -6,7 +6,7 @@
         "@angular/flex-layout": "10.0.0-beta.32", 
         "@angular/material": "10.2.2", 
         "linkifyjs": "2.1.9", 
-        "openvidu-browser": "2.17.0"
+        "openvidu-browser": "2.18.0"
     }, 
     "description": "OpenVidu Angular", 
     "license": "Apache-2.0", 
@@ -19,5 +19,5 @@
         "type": "git", 
         "url": "git://github.com/OpenVidu/openvidu-call"
     }, 
-    "version": "2.17.0"
+    "version": "2.18.0"
 }
