@@ -24,17 +24,17 @@ module.exports.buildWebcomponent = async () => {
       await copyFiles(tutorialWcPath);
       await copyFiles(e2eWcPath);
     } else {
-      // Update OpenVidu Call Pro Backend Files
-      const openviduCallProResourcesPath = '../../openvidu-call-pro/backend/src/main/resources/static';
-      const webcomponentLibJsHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js').substring(0, 10);
-      const webcomponentCssHash = hashFromFile('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css').substring(0, 10);
-      await fs.ensureDir(openviduCallProResourcesPath);
-      removeFilesWithPrefix(openviduCallProResourcesPath, 'openvidu-webcomponent-pro');
-      await fs.move('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js', openviduCallProResourcesPath + '/openvidu-webcomponent-' + VERSION + "-" + webcomponentLibJsHash + '.js');
-      await fs.move('./openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css', openviduCallProResourcesPath + '/openvidu-webcomponent-' + VERSION + "-" + webcomponentCssHash + '.css');
+      await copyFilesPro();
     }
-    replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
-    console.log('OpenVidu Web Component (' + VERSION + ') built');
+
+    if (MODE != 'pro') {
+      replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
+      console.log('OpenVidu Call Web Component (' + VERSION + ') built');
+    } else {
+      replaceText(appModule, "// bootstrap: [AppProComponent]", "bootstrap: [AppProComponent]");
+      console.log('OpenVidu Call Web Component PRO (' + VERSION + ') built');
+    }
+
   } catch (error) {
     replaceText(appModule, "// bootstrap: [AppComponent]", "bootstrap: [AppComponent]");
     console.error(error);
@@ -72,12 +72,43 @@ async function copyFiles(destination) {
   }
 }
 
+async function copyFilesPro() {
+  // Update OpenVidu Call Pro Backend Files
+  const openviduCallProResourcesPath = '../../openvidu-call-pro/backend/src/main/resources/static';
+  const openviduCallProTargetPath = '../../openvidu-call-pro/backend/target/classes/static';
+  const origWebComponentJsDir = './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js';
+  const origWebComponentCssDir = './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css';
+
+  // Replace assets directory to be loaded from root path of host url
+  replaceText(origWebComponentJsDir, "assets/images", "/assets/images");
+
+  // Get hash of the webcomponent file to differentiate builds
+  const webcomponentLibJsHash = hashFromFile(origWebComponentJsDir).substring(0, 10);
+  const webcomponentCssHash = hashFromFile(origWebComponentCssDir).substring(0, 10);
+  const hashedWebComponentJsDir = '/openvidu-webcomponent-' + VERSION + "-" + webcomponentLibJsHash + '.js';
+  const hashedWebComponentCssDir = '/openvidu-webcomponent-' + VERSION + "-" + webcomponentCssHash + '.css';
+
+  // Remove and copy new webcomponent builds
+  await fs.ensureDir(openviduCallProResourcesPath);
+  removeFilesWithPrefix(openviduCallProResourcesPath, 'openvidu-webcomponent-pro');
+  console.log("Copying new file: ", openviduCallProResourcesPath + hashedWebComponentJsDir);
+  await fs.copy(origWebComponentJsDir, openviduCallProResourcesPath + hashedWebComponentJsDir);
+  console.log("Copying new file: ", openviduCallProResourcesPath + hashedWebComponentCssDir);
+  await fs.copy(origWebComponentCssDir, openviduCallProResourcesPath + hashedWebComponentCssDir);
+  await fs.ensureDir(openviduCallProTargetPath);
+  removeFilesWithPrefix(openviduCallProTargetPath, 'openvidu-webcomponent-pro');
+  console.log("Copying new file: ", openviduCallProTargetPath + hashedWebComponentJsDir);
+  await fs.move(origWebComponentJsDir, openviduCallProTargetPath + hashedWebComponentJsDir);
+  console.log("Copying new file: ", openviduCallProTargetPath + hashedWebComponentCssDir);
+  await fs.move(origWebComponentCssDir, openviduCallProTargetPath + hashedWebComponentCssDir);
+}
+
 function replaceText(file, originalText, changedText) {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) {
       return console.log(err);
     }
-    let result = data.replace(originalText, changedText);
+    let result = data.split(originalText).join(changedText);
 
     fs.writeFile(file, result, 'utf8', (err) => {
       if (err) return console.log(err);
@@ -96,8 +127,7 @@ function removeFilesWithPrefix(directory, prefix) {
   const files = fs.readdirSync(directory);
   for (const file of files) {
     if (file.startsWith(prefix)) {
-      console.log(file);
-      console.log(path.join(directory, file));
+      console.log("Removing old file: ", path.join(directory, file));
       fs.unlinkSync(path.join(directory, file));
     }
   }

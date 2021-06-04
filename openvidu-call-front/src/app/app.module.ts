@@ -158,6 +158,7 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		TooltipListPipe,
 		OpenViduVideoComponent,
 		ChatComponent,
+		DialogErrorComponent,
 	],
 	bootstrap: [AppComponent]
 })
