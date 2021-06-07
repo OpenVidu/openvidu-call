@@ -79,9 +79,6 @@ async function copyFilesPro() {
   const origWebComponentJsDir = './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.js';
   const origWebComponentCssDir = './openvidu-webcomponent/openvidu-webcomponent-' + VERSION + '.css';
 
-  // Replace assets directory to be loaded from root path of host url
-  replaceText(origWebComponentJsDir, "assets/images", "/assets/images");
-
   // Get hash of the webcomponent file to differentiate builds
   const webcomponentLibJsHash = hashFromFile(origWebComponentJsDir).substring(0, 10);
   const webcomponentCssHash = hashFromFile(origWebComponentCssDir).substring(0, 10);
@@ -108,7 +105,7 @@ function replaceText(file, originalText, changedText) {
     if (err) {
       return console.log(err);
     }
-    let result = data.split(originalText).join(changedText);
+    let result = data.replace(originalText, changedText);
 
     fs.writeFile(file, result, 'utf8', (err) => {
       if (err) return console.log(err);
