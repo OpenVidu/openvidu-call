@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "@angular/animations": "11.1.1",
-        "@angular/cdk": "11.0.0",
+        "@angular/cdk": "11.1.1",
         "@angular/common": "11.1.1",
         "@angular/compiler": "11.1.1",
         "@angular/core": "11.1.1",
@@ -17,7 +17,8 @@
         "openvidu-browser": "2.18.0",
         "rxjs": "6.6.3",
         "unique-names-generator": "4.3.1",
-        "zone.js": "0.11.3"
+        "zone.js": "0.11.3",
+        "ng2-canvas-whiteboard": "4.0.1"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "0.1101.2",
@@ -62,12 +63,14 @@
         "build-win:openvidu-webcomponent": "node .\\openvidu-webcomponent-prepare.js && node .\\node_modules\\@angular\\cli\\bin\\ng build --prod --output-hashing none && node .\\openvidu-webcomponent-build.js",
         "build:openvidu-angular": "node openvidu-angular-build.js && ./node_modules/@angular/cli/bin/ng build openvidu-angular --prod",
         "build:openvidu-webcomponent": "node ./openvidu-webcomponent-prepare.js && ./node_modules/@angular/cli/bin/ng build --prod --output-hashing none && node ./openvidu-webcomponent-build.js",
+        "build:openvidu-webcomponent-pro": "node ./openvidu-webcomponent-prepare.js pro && ./node_modules/@angular/cli/bin/ng build openvidu-call-pro --prod --output-hashing none && node ./openvidu-webcomponent-build.js pro",
         "copy:backend": "cp -a dist/openvidu-call/. ../openvidu-call-back/public/",
         "copy:backend-prod": "mkdir -p ../openvidu-call-back/dist/public && cp -a dist/openvidu-call/. ../openvidu-call-back/dist/public/",
         "e2e": "ng e2e",
         "lint": "ng lint",
         "pack:openvidu-angular": "cd dist/openvidu-angular && npm pack",
         "start": "ng serve",
+        "start-pro": "func() { ng serve openvidu-call-pro --configuration=dev --port \"${1:-4200}\"; }; func",
         "start:https": "ng serve --host 192.168.1.161 --ssl --ssl-key cert.key --ssl-cert cert.crt",
         "test": "ng test openvidu-call --watch=false --code-coverage"
     },

@@ -137,6 +137,29 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 		CdkOverlayContainer,
 		{ provide: OverlayContainer, useClass: CdkOverlayContainer }
 	],
+	exports: [
+		// Shared Components and Pipes
+		// Components
+		ToolbarLogoComponent,
+		// Pipes
+		HasAudioPipe,
+		HasVideoPipe,
+		LinkifyPipe,
+		HasChatPipe,
+		HasAudioPipe,
+		HasVideoPipe,
+		IsAutoPublishPipe,
+		HasScreenSharingPipe,
+		HasFullscreenPipe,
+		HasLayoutSpeakingPipe,
+		HasExitPipe,
+		HasFooterPipe,
+		HasToolbarPipe,
+		TooltipListPipe,
+		OpenViduVideoComponent,
+		ChatComponent,
+		DialogErrorComponent,
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {

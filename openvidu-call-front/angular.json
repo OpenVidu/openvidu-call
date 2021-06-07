@@ -200,6 +200,168 @@
           }
         }
       }
+    },
+    "openvidu-call-pro": {
+      "root": "projects/openvidu-call-pro/frontend",
+      "sourceRoot": "projects/openvidu-call-pro/frontend/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/openvidu-call-pro",
+            "index": "projects/openvidu-call-pro/frontend/src/index.html",
+            "main": "projects/openvidu-call-pro/frontend/src/main.ts",
+            "polyfills": "projects/openvidu-call-pro/frontend/src/polyfills.ts",
+            "tsConfig": "projects/openvidu-call-pro/frontend/src/tsconfig.app.json",
+            "assets": [
+              "projects/openvidu-call-pro/frontend/src/assets",
+              "projects/openvidu-call-pro/frontend/src/favicon.ico"
+            ],
+            "styles": [
+              "src/styles.css",
+              "src/theme.scss"
+            ],
+            "scripts": [
+              {
+                "input": "node_modules/document-register-element/build/document-register-element.js"
+              }
+            ],
+            "allowedCommonJsDependencies": [
+              "linkifyjs",
+              "openvidu-browser",
+              "openvidu-ce"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/openvidu-call-pro/frontend/src/environments/environment.ts",
+                  "with": "projects/openvidu-call-pro/frontend/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
+            "ci": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/openvidu-call-pro/frontend/src/environments/environment.ts",
+                  "with": "projects/openvidu-call-pro/frontend/src/environments/environment.ci.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
+            "dev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/openvidu-call-pro/frontend/src/environments/environment.ts",
+                  "with": "projects/openvidu-call-pro/frontend/src/environments/environment.dev.ts"
+                }
+              ],
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "openvidu-call-pro:build",
+            "proxyConfig": "projects/openvidu-call-pro/frontend/src/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "openvidu-call-pro:build:production"
+            },
+            "dev": {
+              "browserTarget": "openvidu-call-pro:build:dev"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "openvidu-call-pro:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/openvidu-call-pro/frontend/src/test.ts",
+            "polyfills": "projects/openvidu-call-pro/frontend/src/polyfills.ts",
+            "tsConfig": "projects/openvidu-call-pro/frontend/src/tsconfig.spec.json",
+            "karmaConfig": "projects/openvidu-call-pro/frontend/src/karma.conf.js",
+            "codeCoverage": true,
+            "styles": [],
+            "scripts": [],
+            "assets": [
+              "projects/openvidu-call-pro/frontend/src/assets",
+              "projects/openvidu-call-pro/frontend/src/favicon.ico"
+            ],
+            "codeCoverageExclude": [
+              "/**/*mock*.ts",
+              "/**/openvidu-layout.ts"
+          ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/openvidu-call-pro/frontend/src/tsconfig.app.json",
+              "projects/openvidu-call-pro/frontend/src/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "openvidu-call"

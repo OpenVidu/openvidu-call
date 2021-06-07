@@ -1,11 +1,17 @@
 const fs = require('fs-extra');
 const { exit } = require('process');
 const { forEachComment } = require('tslint');
+const PROJECT = process.argv.slice(2)[0];
 
 module.exports.prepareWebcomponent = function () {
 	console.log('Preparing webcomponent files ...');
-	const appModule = './src/app/app.module.ts';
-	replaceText(appModule, 'bootstrap: [AppComponent]', '// bootstrap: [AppComponent]');
+	if (PROJECT === 'pro') {
+    const appModule = './projects/openvidu-call-pro/frontend/src/app/app.module.ts'
+		replaceText(appModule, 'bootstrap: [AppProComponent]', '// bootstrap: [AppProComponent]');
+  } else {
+		const appModule = './src/app/app.module.ts';
+		replaceText(appModule, 'bootstrap: [AppComponent]', '// bootstrap: [AppComponent]');
+	}
 };
 
 function replaceText(file, originalText, changedText) {
