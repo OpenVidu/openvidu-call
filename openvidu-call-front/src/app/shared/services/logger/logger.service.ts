@@ -6,7 +6,7 @@ import { environment } from '../../../../environments/environment';
 	providedIn: 'root'
 })
 export class LoggerService implements ILogService {
-	public log = window.console;
+	public log;
 	public LOG_FNS = [];
 	public MSG_PREFIXES = [
 		['[', ']'],
@@ -15,6 +15,10 @@ export class LoggerService implements ILogService {
 	];
 
 	constructor() {
+	}
+
+	private getConsole() {
+		this.log = window.console;
 		this.LOG_FNS = [this.log.log, this.log.warn, this.log.error];
 	}
 
@@ -26,14 +30,17 @@ export class LoggerService implements ILogService {
 		return {
 			d: function(...args: any[]) {
 				if (!prodMode) {
+					this.getConsole();
 					loggerFns[0].apply(this.log, arguments);
 				}
 			},
 			w: function(...args: any[]) {
+				this.getConsole();
 				loggerFns[1].apply(this.log, arguments);
 
 			},
 			e: function(...args: any[]) {
+				this.getConsole();
 				loggerFns[2].apply(this.log, arguments);
 			}
 		};
