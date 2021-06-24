@@ -24,8 +24,8 @@ export class LoggerService implements ILogService {
 
 	public get(prefix: string) {
 		const prodMode = environment.production;
+		this.getConsole();
 		const loggerFns = this.LOG_FNS.map((logTemplFn, i) => {
-			this.getConsole();
 			return logTemplFn.bind(this.log, this.MSG_PREFIXES[i][0] + prefix + this.MSG_PREFIXES[i][1]);
 		});
 		return {
