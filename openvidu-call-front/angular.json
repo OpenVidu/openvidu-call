@@ -165,7 +165,7 @@
       "prefix": "opv",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/openvidu-angular/tsconfig.lib.json",
             "project": "projects/openvidu-angular/ng-package.json"
