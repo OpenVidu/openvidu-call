@@ -14,11 +14,11 @@
         "@angular/router": "11.1.1",
         "core-js": "3.8.3",
         "linkifyjs": "2.1.9",
-        "openvidu-browser": "2.18.1",
+        "ng2-canvas-whiteboard": "4.0.1",
+        "openvidu-browser": "2.19.0",
         "rxjs": "6.6.3",
         "unique-names-generator": "4.3.1",
-        "zone.js": "0.11.3",
-        "ng2-canvas-whiteboard": "4.0.1"
+        "zone.js": "0.11.3"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "0.1101.2",
@@ -74,5 +74,5 @@
         "start:https": "ng serve --host 192.168.1.161 --ssl --ssl-key cert.key --ssl-cert cert.crt",
         "test": "ng test openvidu-call --watch=false --code-coverage"
     },
-    "version": "2.18.0"
+    "version": "2.19.0"
 }
