@@ -36,6 +36,8 @@ export class StreamComponent implements OnInit, OnDestroy {
 	@ViewChild(MatMenuTrigger) public menuTrigger: MatMenuTrigger;
 	@ViewChild('menu') menu: MatMenuPanel;
 
+	private readonly ESCAPE_KEY = 'Escape';
+
 	constructor(private utilsSrv: UtilsService, private cdkSrv: CdkOverlayService) {}
 
 	@HostListener('window:resize', ['$event'])
@@ -48,6 +50,15 @@ export class StreamComponent implements OnInit, OnDestroy {
 			this.isFullscreen = false;
 			this.videoSizeIcon = VideoSizeIcon.BIG;
 		}
+	}
+
+
+	@HostListener('document:fullscreenchange', ['$event'])
+  	@HostListener('document:webkitfullscreenchange', ['$event'])
+	@HostListener('document:mozfullscreenchange', ['$event'])
+   	@HostListener('document:MSFullscreenChange', ['$event'])
+	onFullscreenHandler(event) {
+		this.toggleFullscreenIcon();
 	}
 
 	// Has been mandatory fullscreen Input because of Input user did not fire changing
@@ -85,7 +96,6 @@ export class StreamComponent implements OnInit, OnDestroy {
 
 	toggleFullscreen() {
 		this.utilsSrv.toggleFullscreen('container-' + this._user.getStreamManager().stream.streamId);
-		this.toggleFullscreenIcon();
 	}
 
 	toggleVideoMenu(event) {
