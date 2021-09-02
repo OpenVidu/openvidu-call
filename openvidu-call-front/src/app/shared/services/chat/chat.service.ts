@@ -90,10 +90,14 @@ export class ChatService {
 			this.chatOpened = this.chatComponent.opened;
 			this._toggleChat.next(this.chatOpened);
 			if (this.chatOpened) {
-				this.messagesUnread = 0;
-				this._messagesUnread.next(this.messagesUnread);
+				this.resetUnreadMessages();
 			}
 		});
+	}
+
+	resetUnreadMessages() {
+		this.messagesUnread = 0;
+		this._messagesUnread.next(this.messagesUnread);
 	}
 
 	private isChatOpened(): boolean {

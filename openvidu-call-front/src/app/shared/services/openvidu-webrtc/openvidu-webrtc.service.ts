@@ -208,7 +208,7 @@ export class OpenViduWebrtcService implements IOpenViduWebRTC {
 			publisher.publishAudio(active);
 		}
 	}
-	replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true): Promise<any> {
+	replaceTrack(videoSource: string, audioSource: string, mirror: boolean = true): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (!!videoSource) {
 				this.log.d('Replacing video track ' + videoSource);

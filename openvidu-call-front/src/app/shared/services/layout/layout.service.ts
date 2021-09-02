@@ -11,7 +11,17 @@ export class OpenViduLayoutService {
 
 	constructor() {}
 
-	initialize() {
+	initialize(timeout: number = null) {
+		if(!!timeout) {
+			setTimeout(() => {
+				this._initialize();
+			}, timeout);
+		} else {
+			this._initialize();
+		}
+	}
+
+	private _initialize() {
 		this.openviduLayout = new OpenViduLayout();
 		this.openviduLayoutOptions = this.getOptions();
 		this.openviduLayout.initLayoutContainer(document.getElementById('layout'), this.openviduLayoutOptions);

@@ -6,7 +6,7 @@ import { ILogger } from '../../types/logger-type';
 import { UtilsService } from '../utils/utils.service';
 import { UserName } from '../../types/username-type';
 import { Observable } from 'rxjs/internal/Observable';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { AvatarService } from '../avatar/avatar.service';
 
 @Injectable({

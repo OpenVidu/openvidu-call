@@ -73,7 +73,7 @@ export class OpenViduLayout {
 	 */
 	updateLayout() {
 		setTimeout(() => {
-			if (this.layoutContainer.style.display === 'none') {
+			if (this.layoutContainer?.style?.display === 'none') {
 				return;
 			}
 			let id = this.layoutContainer.id;

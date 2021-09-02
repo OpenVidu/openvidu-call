@@ -21,7 +21,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { createCustomElement } from '@angular/elements';
-import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppRoutingModule } from './app-routing.module';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -164,8 +163,8 @@ import { LocalUsersService } from './shared/services/local-users/local-users.ser
 })
 export class AppModule {
 	constructor(private injector: Injector) {
-		const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
-		const element = createCustomElement(WebComponentComponent, { injector: this.injector, strategyFactory });
+		// const strategyFactory = new ElementZoneStrategyFactory(WebComponentComponent, this.injector);
+		const element = createCustomElement(WebComponentComponent, { injector: this.injector });
 		customElements.define('openvidu-webcomponent', element);
 	}
 
