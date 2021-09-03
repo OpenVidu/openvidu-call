@@ -323,10 +323,20 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			publishAudio,
 			mirror
 		);
-		const publisher = await this.openViduWebRTCService.initPublisherAsync(undefined, properties);
-		this.localUsersService.setWebcamPublisher(publisher);
-		this.handlePublisherSuccess(publisher);
-		this.handlePublisherError(publisher);
+		if(this.hasAudioDevices || this.hasVideoDevices){
+			const publisher = this.openViduWebRTCService.initPublisher(undefined, properties);
+			this.localUsersService.setWebcamPublisher(publisher);
+			this.handlePublisherSuccess(publisher);
+			this.handlePublisherError(publisher);
+		} else {
+			this.localUsersService.setWebcamPublisher(null);
+			// Emit publisher to webcomponent and angular-library
+			if (this.ovSettings.isAutoPublish()) {
+				this.joinSession();
+				return;
+			}
+			this.showConfigCard = true;
+		}
 	}
 
 	private emitPublisher(publisher) {
@@ -335,6 +345,12 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 
 	private handlePublisherSuccess(publisher: Publisher) {
 		publisher.once('accessAllowed', async () => {
+			// Emit publisher to webcomponent and angular-library
+			this.emitPublisher(publisher);
+			if (this.ovSettings.isAutoPublish()) {
+				this.joinSession();
+				return;
+			}
 			if (this.oVDevicesService.areEmptyLabels()) {
 				await this.oVDevicesService.initDevices();
 				if (this.hasAudioDevices) {
@@ -348,13 +364,7 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 				}
 				this.setDevicesInfo();
 			}
-			// Emit publisher to webcomponent and angular-library
-			this.emitPublisher(publisher);
 
-			if (this.ovSettings.isAutoPublish()) {
-				this.joinSession();
-				return;
-			}
 			this.showConfigCard = true;
 		});
 	}
@@ -371,6 +381,11 @@ export class RoomConfigComponent implements OnInit, OnDestroy {
 			}
 			if (e.name === OpenViduErrorName.DEVICE_ACCESS_DENIED) {
 				message = 'Access to media devices was not allowed.';
+				this.hasVideoDevices = false;
+				this.hasAudioDevices = false;
+				this.oVDevicesService.disableVideoDevices();
+				this.oVDevicesService.disableAudioDevices();
+				return this.initwebcamPublisher();
 			} else if (e.name === OpenViduErrorName.NO_INPUT_SOURCE_SET) {
 				message = 'No video or audio devices have been found. Please, connect at least one.';
 			}
