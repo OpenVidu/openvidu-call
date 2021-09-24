@@ -1,26 +1,23 @@
-import { HttpClientService } from './HttpClientService';
+import { Connection, ConnectionProperties, OpenVidu, Session, SessionProperties } from "openvidu-node-client";
+import { OPENVIDU_URL, OPENVIDU_SECRET } from '../config';
 
 export class OpenViduService {
 
-    private httpClientService: HttpClientService;
+    private openvidu: OpenVidu;
 
 	constructor(){
-        this.httpClientService = new HttpClientService();
+        this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-	public async createSession(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<any> {
-        const url = openviduUrl + '/openvidu/api/sessions';
-        console.log("Requesting session to ", url);
-        const body: string = JSON.stringify({ customSessionId: sessionId});
-
-        return await this.httpClientService.post(body, url, openviduSecret);
+	public async createSession(sessionId: string): Promise<Session> {
+        console.log("Creating session: ", sessionId);
+        let sessionProperties: SessionProperties = {customSessionId: sessionId};
+        return await this.openvidu.createSession(sessionProperties);
 	}
 
-	public async createToken(sessionId: string, openviduUrl: string, openviduSecret: string ): Promise<any> {
-		const url = openviduUrl + '/openvidu/api/sessions/' + sessionId + '/connection';
-        console.log("Requesting token to ", url);
-        const body: string = JSON.stringify({});
-
-        return await this.httpClientService.post(body, url, openviduSecret);
+	public async createConnection(session: Session): Promise<Connection> {
+        console.log("Requesting token from session ", session);
+        let connectionProperties: ConnectionProperties = {};
+        return await session.createConnection(connectionProperties);
     }
 }

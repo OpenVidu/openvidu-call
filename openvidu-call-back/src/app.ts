@@ -13,6 +13,11 @@ app.use(express.json());
 
 app.use('/call', callController);
 
+// Accept selfsigned certificates if CALL_OPENVIDU_CERTTYPE=selfsigned
+if (CALL_OPENVIDU_CERTTYPE === 'selfsigned') {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+}
+
 app.listen(SERVER_PORT, () => {
     console.log("---------------------------------------------------------");
     console.log(" ")
