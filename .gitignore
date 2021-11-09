@@ -47,3 +47,5 @@
 # System Files
 **.DS_Store
 **Thumbs.db
+
+openvidu-components/.angular/

@@ -1,0 +1,9 @@
+<div [ngStyle]="{ color: color }">
+  {{ this.color }}
+  <p>openvidu-components works!</p>
+</div>
+
+<ng-content></ng-content>
+
+<p>Button content</p>
+<ng-content select="[buttons]"></ng-content>
