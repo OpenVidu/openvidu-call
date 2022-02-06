@@ -14,8 +14,6 @@ RUN wget "https://github.com/OpenVidu/openvidu-call/archive/${BRANCH_NAME}.zip" 
     rm openvidu-call.zip && \
     mv openvidu-call-${BRANCH_NAME}/openvidu-call-front/ . && \
     mv openvidu-call-${BRANCH_NAME}/openvidu-call-back/ . && \
-    rm openvidu-call-front/package-lock.json && \
-    rm openvidu-call-back/package-lock.json && \
     rm -rf openvidu-call-${BRANCH_NAME} && \
     # Install openvidu-call-front dependencies and build it for production
     npm i --prefix openvidu-call-front && \
