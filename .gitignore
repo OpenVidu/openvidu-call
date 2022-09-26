@@ -51,3 +51,5 @@ Thumbs.db
 .editorconfig
 *.browserslistrc
 .git/*
+
+openvidu-call-back-java/src/main/resources/static/
