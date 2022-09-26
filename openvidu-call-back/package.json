@@ -22,7 +22,7 @@
         "cross-env": "7.0.3",
         "dotenv-webpack": "7.0.3",
         "jest": "27.4.7",
-        "nodemon": "2.0.15",
+        "nodemon": "2.0.20",
         "supertest": "6.2.2",
         "ts-loader": "9.2.6",
         "ts-node": "10.4.0",
