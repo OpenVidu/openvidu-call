@@ -5,28 +5,28 @@
     },
     "dependencies": {
         "btoa": "1.2.1",
-        "dotenv": "8.2.0",
-        "express": "4.17.1",
-        "openvidu-node-client": "2.21.0"
+        "cookie-parser": "1.4.6",
+        "cookie-session": "^2.0.0",
+        "dotenv": "16.0.0",
+        "express": "4.18.1",
+        "http-proxy-middleware": "2.0.6",
+        "openvidu-node-client": "2.23.0"
     },
     "description": "OpenVidu Call Server",
     "devDependencies": {
         "@types/btoa": "1.2.3",
-        "@types/express": "4.17.9",
-        "@types/jest": "26.0.15",
-        "@types/node": "14.14.7",
-        "concurrently": "5.3.0",
-        "cross-env": "7.0.2",
-        "dotenv-webpack": "1.7.0",
-        "jest": "26.4.2",
-        "nodemon": "2.0.6",
-        "supertest": "4.0.2",
-        "ts-loader": "7.0.1",
-        "ts-node": "8.8.2",
-        "typescript": "3.8.3",
-        "webpack": "4.43.0",
-        "webpack-cli": "3.3.11",
-        "webpack-node-externals": "1.7.2"
+        "@types/cookie-parser": "1.4.3",
+        "@types/express": "4.17.13",
+        "@types/jest": "27.4.0",
+        "@types/node": "17.0.10",
+        "cross-env": "7.0.3",
+        "dotenv-webpack": "7.0.3",
+        "jest": "27.4.7",
+        "nodemon": "2.0.15",
+        "supertest": "6.2.2",
+        "ts-loader": "9.2.6",
+        "ts-node": "10.4.0",
+        "typescript": "4.4.4"
     },
     "homepage": "https://github.com/OpenVidu/openvidu-call#readme",
     "jest": {
@@ -48,9 +48,9 @@
         "url": "git+https://github.com/OpenVidu/openvidu-call.git"
     },
     "scripts": {
-        "build": "webpack",
+        "build": "tsc",
         "start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts",
         "test": "jest"
     },
-    "version": "2.21.0"
+    "version": "2.23.0"
 }
