@@ -72,7 +72,7 @@ app.post('/', async (req: Request, res: Response) => {
 		} else if (error.message === 404) {
 			message = 'No session exists';
 		}
-		if (typeof code !== 'number') {
+		if (typeof code !== 'number' || Object.entries(error).length === 0) {
 			code = 503;
 		}
 		res.status(code).send({ message });
