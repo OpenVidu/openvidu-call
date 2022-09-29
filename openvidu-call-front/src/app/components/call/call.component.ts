@@ -7,7 +7,7 @@ import { RestService } from '../../services/rest.service';
 @Component({
 	selector: 'app-call',
 	templateUrl: './call.component.html',
-	styleUrls: ['./call.component.css']
+	styleUrls: ['./call.component.scss']
 })
 export class CallComponent implements OnInit {
 	sessionId = '';
