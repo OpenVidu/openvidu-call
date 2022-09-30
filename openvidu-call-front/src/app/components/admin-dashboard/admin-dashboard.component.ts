@@ -21,7 +21,7 @@ export class AdminDashboardComponent implements OnInit {
 
 	async onLoginClicked(pass: string) {
 		try {
-			const resp: any = await this.restService.login(pass);
+			const resp: any = await this.restService.adminLogin(pass);
 			this.logged = true;
 			this.recordings = resp.recordings;
 		} catch (error) {
@@ -31,7 +31,7 @@ export class AdminDashboardComponent implements OnInit {
 	}
 	async onLogoutClicked() {
 		this.logged = false;
-		await this.restService.logout();
+		await this.restService.adminLogout();
 	}
 
 	async onRefreshRecordingsClicked() {

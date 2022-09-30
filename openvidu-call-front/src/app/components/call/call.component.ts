@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { ParticipantService, RecordingInfo, RecordingService, TokenModel } from 'openvidu-angular';
+import { ParticipantService, RecordingInfo, TokenModel } from 'openvidu-angular';
 
 import { RestService } from '../../services/rest.service';
 
@@ -22,7 +22,6 @@ export class CallComponent implements OnInit {
 	constructor(
 		private restService: RestService,
 		private participantService: ParticipantService,
-		private recordingService: RecordingService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {}

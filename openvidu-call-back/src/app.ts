@@ -1,12 +1,25 @@
-import * as express from 'express';
-import { SERVER_PORT, OPENVIDU_URL, OPENVIDU_SECRET, CALL_OPENVIDU_CERTTYPE, ADMIN_SECRET, RECORDING } from './config';
-import { app as sessionController } from './controllers/SessionController';
-import { app as adminController } from './controllers/AdminController';
-import { app as recordingController, proxyGETRecording } from './controllers/RecordingController';
-
-import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import * as cookieSession from 'cookie-session';
+import * as dotenv from 'dotenv';
+import * as express from 'express';
+
+import { app as authController } from './controllers/AuthController';
+import { app as callController } from './controllers/CallController';
+import { app as recordingController, proxyGETRecording } from './controllers/RecordingController';
+import { app as sessionController } from './controllers/SessionController';
+import { authorizer } from './services/AuthService';
+
+import {
+	ADMIN_SECRET,
+	CALL_OPENVIDU_CERTTYPE,
+	CALL_PRIVATE_ACCESS,
+	CALL_SECRET,
+	CALL_USER,
+	OPENVIDU_SECRET,
+	OPENVIDU_URL,
+	RECORDING,
+	SERVER_PORT
+} from './config';
 
 dotenv.config();
 const app = express();
@@ -22,10 +35,11 @@ app.use(
 	})
 );
 
-app.use('/sessions', sessionController);
-app.use('/recordings', recordingController);
-app.use('/recordings/:recordingId', proxyGETRecording);
-app.use('/admin', adminController);
+app.use('/call', callController);
+app.use('/sessions', authorizer, sessionController);
+app.use('/recordings', authorizer, recordingController);
+app.use('/recordings/:recordingId', authorizer, proxyGETRecording);
+app.use('/auth', authController);
 
 // Accept selfsigned certificates if CALL_OPENVIDU_CERTTYPE=selfsigned
 if (CALL_OPENVIDU_CERTTYPE === 'selfsigned') {
@@ -37,6 +51,11 @@ app.listen(SERVER_PORT, () => {
 	console.log(`OPENVIDU URL: ${OPENVIDU_URL}`);
 	console.log(`OPENVIDU SECRET: ${OPENVIDU_SECRET}`);
 	console.log(`CALL OPENVIDU CERTTYPE: ${CALL_OPENVIDU_CERTTYPE}`);
+	console.log(`CALL PRIVATE ACCESS: ${CALL_PRIVATE_ACCESS}`);
+	if (CALL_PRIVATE_ACCESS === 'ENABLED') {
+		console.log(`CALL USER: ${CALL_USER}`);
+		console.log(`CALL SECRET: ${CALL_SECRET}`);
+	}
 	console.log(`CALL RECORDING: ${RECORDING}`);
 	console.log(`CALL ADMIN PASSWORD: ${ADMIN_SECRET}`);
 	console.log(`OpenVidu Call Server is listening on port ${SERVER_PORT}`);

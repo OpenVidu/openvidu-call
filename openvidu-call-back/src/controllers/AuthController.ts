@@ -1,9 +1,10 @@
-import * as express from 'express';
 import * as crypto from 'crypto';
+import * as express from 'express';
 import { Request, Response } from 'express';
 
-import { OpenViduService } from '../services/OpenViduService';
 import { ADMIN_SECRET } from '../config';
+import { authorizer } from '../services/AuthService';
+import { OpenViduService } from '../services/OpenViduService';
 
 export const app = express.Router({
 	strict: true
@@ -12,6 +13,16 @@ export const app = express.Router({
 const openviduService = OpenViduService.getInstance();
 
 app.post('/login', async (req: Request, res: Response) => {
+	const { username, password } = req.body;
+	req.headers.authorization = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+	const callback = () => {
+		console.log('Login succeeded');
+		res.status(200).send('');
+	};
+	return authorizer(req, res, callback);
+});
+
+app.post('/admin/login', async (req: Request, res: Response) => {
 	const password = req.body.password;
 	const isAdminTokenValid = openviduService.adminTokens.includes(req['session']?.token);
 	const isAuthValid = password === ADMIN_SECRET || isAdminTokenValid;
@@ -29,7 +40,7 @@ app.post('/login', async (req: Request, res: Response) => {
 			res.status(200).send(JSON.stringify({ recordings }));
 		} catch (error) {
 			const code = Number(error?.message);
-			if(code === 501){
+			if (code === 501) {
 				console.log('501. OpenVidu Server recording module is disabled.');
 				res.status(200).send();
 			} else {
@@ -42,7 +53,7 @@ app.post('/login', async (req: Request, res: Response) => {
 	}
 });
 
-app.post('/logout', async (req: Request, res: Response) => {
+app.post('/admin/logout', async (req: Request, res: Response) => {
 	openviduService.adminTokens = openviduService.adminTokens.filter((token) => token !== req['session'].token);
 	req['session'] = {};
 });

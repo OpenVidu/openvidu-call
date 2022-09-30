@@ -1,33 +1,89 @@
 <div class="section1">
 	<mat-toolbar id="header">
-		<a href="https://openvidu.io/" target="_blank">
-			<img id="header_img" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png" />
-		</a>
 		<div class="ovVersion">
 			<span>{{ version }}</span>
 		</div>
 	</mat-toolbar>
-	<div class="container">
-		<div class="ovInfo">
-			<img class="ovLogo" alt="OpenVidu Logo" src="assets/images/openvidu_logo.png" />
+	<div class="form-container">
+		<div>
+			<a href="https://openvidu.io/" target="_blank">
+				<img id="form-img" src="assets/images/openvidu_logo.png" />
+			</a>
 			<h4>Videoconference rooms in one click</h4>
 		</div>
-		<div class="formContainer">
-			<div class="roomError" id="requiredNameError" *ngIf="roomForm.hasError('required')">
-				Room name is <strong>required</strong>
-			</div>
-			<div class="roomError" id="shortNameError" *ngIf="roomForm.hasError('minlength')">
-				Room name is <strong>too short!</strong>
-			</div>
-			<form [formGroup]="roomForm" novalidate (ngSubmit)="goToVideoCall()">
-				<div class="joinForm">
-					<input matInput class="inputForm" type="text" [formControl]="roomForm"  autocomplete="off" id="roomInput" />
-					<button type="submit" class="joinButton" id="joinButton" >JOIN</button>
+		<div class="grid">
+			<form [formGroup]="sessionForm" novalidate (ngSubmit)="goToVideoCall()" class="form login">
+				<div *ngIf="hasAppPrivateAccess" class="form-field">
+					<label for="login-username" [ngClass]="{ error: loginError }">
+						<mat-icon>person</mat-icon>
+
+						<span class="hidden">Username</span>
+					</label>
+					<input
+						formControlName="username"
+						autocomplete="off"
+						id="login-username"
+						type="text"
+						name="username"
+						class="form-input"
+						placeholder="Username"
+						(keydown)="keyDown($event)"
+					/>
+				</div>
+
+				<div *ngIf="hasAppPrivateAccess" class="form-field">
+					<label for="login-password" [ngClass]="{ error: loginError }">
+						<mat-icon>lock</mat-icon>
+						<span class="hidden">Password</span>
+					</label>
+					<input
+						formControlName="password"
+						id="login-password"
+						type="password"
+						name="password"
+						class="form-input"
+						placeholder="Password"
+						(keydown)="keyDown($event)"
+					/>
+				</div>
+				<div class="roomError" id="login-error" *ngIf="loginError">Authentication failed. Try again.</div>
+
+				<div class="form-field">
+					<label for="session-name-input" [ngClass]="{ error: sessionForm.get('sessionName').invalid }">
+						<mat-icon>video_camera_front</mat-icon>
+						<span class="hidden">Session Name</span></label
+					>
+					<input
+						formControlName="sessionName"
+						autocomplete="off"
+						id="session-name-input"
+						type="text"
+						name="sessionName"
+						class="form-input"
+						placeholder="Session Name"
+						(keydown)="keyDown($event)"
+					/>
+					<button mat-icon-button id="session-name-generator-btn" (click)="generateSessionName($event)">
+						<mat-icon>cached</mat-icon>
+					</button>
+				</div>
+				<div class="roomError" id="requiredNameError" *ngIf="sessionForm.get('sessionName').hasError('required')">
+					Session name is required
+				</div>
+				<div class="roomError" id="shortNameError" *ngIf="sessionForm.get('sessionName').hasError('minlength')">
+					Session name is too short!
+				</div>
+
+				<div class="form-field">
+					<button mat-button id="join-btn" type="submit" [disabled]="sessionForm.invalid || serverConnectionError">JOIN</button>
+				</div>
+				<div class="roomError" id="serverConnectionError" *ngIf="serverConnectionError">
+					<mat-icon>error</mat-icon>
+					<span>Server connection failed!</span>
 				</div>
 			</form>
 		</div>
 	</div>
-
 
 	<mat-toolbar class="footer">
 		<span>

@@ -1,7 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, lastValueFrom, Observable } from 'rxjs';
 import { RecordingInfo } from 'openvidu-angular';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root'
@@ -12,17 +12,26 @@ export class RestService {
 	constructor(private http: HttpClient) {
 		this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
+
+	async login(username: string, password: string): Promise<{ logged: boolean }> {
+		return this.postRequest('auth/login', { username, password });
+	}
+
+	async getConfig() {
+		return await this.getRequest('call/config');
+	}
+
 	async getTokens(
 		sessionId: string,
 		nickname?: string
-	): Promise<{ cameraToken: string, screenToken: string, recordingEnabled: boolean, recordings?: RecordingInfo[] }> {
+	): Promise<{ cameraToken: string; screenToken: string; recordingEnabled: boolean; recordings?: RecordingInfo[] }> {
 		return this.postRequest('sessions', { sessionId, nickname });
 	}
-	login(password: string): Promise<any[]> {
-		return this.postRequest('admin/login', { password });
+	adminLogin(password: string): Promise<any[]> {
+		return this.postRequest('auth/admin/login', { password });
 	}
-	logout(): Promise<void> {
-		return this.postRequest('admin/logout', {});
+	adminLogout(): Promise<void> {
+		return this.postRequest('auth/admin/logout', {});
 	}
 
 	getRecordings() {
@@ -41,7 +50,7 @@ export class RestService {
 		return this.deleteRequest(`recordings/delete/${recordingId}`);
 	}
 
-	private postRequest(path: string, body: any): any {
+	private postRequest(path: string, body: any): Promise<any> {
 		try {
 			return lastValueFrom(this.http.post<any>(this.baseHref + path, body));
 		} catch (error) {

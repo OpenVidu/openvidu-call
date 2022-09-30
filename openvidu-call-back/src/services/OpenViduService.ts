@@ -66,7 +66,6 @@ export class OpenViduService {
 			}
 			return false;
 		} catch (error) {
-			console.log(error);
 			return false;
 		}
 	}

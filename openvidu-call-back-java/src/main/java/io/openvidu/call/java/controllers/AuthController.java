@@ -26,8 +26,14 @@ import io.openvidu.java.client.Recording;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("admin")
-public class AdminController {
+@RequestMapping("auth")
+public class AuthController {
+
+	@Value("${CALL_USER}")
+	private String CALL_USER;
+
+	@Value("${CALL_SECRET}")
+	private String CALL_SECRET;
 
 	@Value("${ADMIN_SECRET}")
 	private String ADMIN_SECRET;
@@ -36,12 +42,27 @@ public class AdminController {
 	private OpenViduService openviduService;
 
 	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody(required = true) Map<String, String> params) {
+
+		String username = params.get("username");
+		String password = params.get("password");
+
+		if (username.equals(CALL_USER) && password.equals(CALL_SECRET)) {
+			System.out.println("Login succeeded");
+			return new ResponseEntity<>("", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+		}
+	}
+
+	@PostMapping("/admin/login")
 	public ResponseEntity<?> login(@RequestBody(required = false) Map<String, String> params,
-			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken, HttpServletResponse res) {
-		
+			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken,
+			HttpServletResponse res) {
+
 		String message = "";
 		Map<String, Object> response = new HashMap<String, Object>();
-		
+
 		String password = params.get("password");
 		String sessionToken = this.openviduService.getSessionIdFromCookie(recordingToken);
 		boolean isAdminTokenValid = this.openviduService.adminTokens.contains(sessionToken);
@@ -70,8 +91,8 @@ public class AdminController {
 
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			} catch (OpenViduJavaClientException | OpenViduHttpException error) {
-				
-				if(Integer.parseInt(error.getMessage()) == 501) {
+
+				if (Integer.parseInt(error.getMessage()) == 501) {
 					System.err.println(error.getMessage() + ". OpenVidu Server recording module is disabled.");
 					return new ResponseEntity<>(response, HttpStatus.OK);
 				} else {
@@ -90,7 +111,7 @@ public class AdminController {
 
 	}
 
-	@PostMapping("/logout")
+	@PostMapping("/admin/logout")
 	public ResponseEntity<Void> logout(@RequestBody(required = false) Map<String, String> params,
 			@CookieValue(name = "session", defaultValue = "") String sessionToken,
 			HttpServletResponse res) {
@@ -98,7 +119,6 @@ public class AdminController {
 		Cookie cookie = new Cookie("session", null);
 		res.addCookie(cookie);
 		return new ResponseEntity<>(null, HttpStatus.OK);
-
 	}
 
 }

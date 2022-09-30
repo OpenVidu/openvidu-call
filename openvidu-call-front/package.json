@@ -12,7 +12,7 @@
         "@angular/router": "13.3.0",
         "openvidu-angular": "2.23.1",
         "rxjs": "7.5.7",
-        "unique-names-generator": "4.7.1",
+        "unique-names-generator": "^4.7.1",
         "zone.js": "0.11.8"
     },
     "devDependencies": {

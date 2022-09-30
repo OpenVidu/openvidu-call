@@ -1,179 +1,239 @@
+$loginBorderRadus: 0.35rem;
+$loginColor: #e6e6e6;
+$loginError: #770000;
+$loginInputBackgroundColor: #434a52;
+$loginInputHoverBackgroundColor: #3c4249;
+$loginLabelBackgroundColor: #363b41;
+$loginSubmitBackgroundColor: #0087a9;
+$loginSubmitDisabledBackgroundColor: #264b55;
+
+$loginSubmitColor: #eee;
+$loginSubmitDisabledColor: #bdbdbd;
+
+$loginSubmitHoverBackgroundColor: #006a85;
+$iconFill: #606468;
+$formGap: 0.375rem;
+
 .section1 {
-  background: url('../../../assets/images/bg.webp')  top center no-repeat;
-  background-size: cover;
-  height: 100%;
-  text-align: center;
-  position: relative;
-  color: #fff;
+	background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+		url('../../../assets/images/bg.webp') top center no-repeat;
+	background-size: cover;
+	height: 100%;
+	text-align: center;
+	position: relative;
+	color: $loginColor;
 }
 
-#header, .footer {
-  background-color: transparent;
-  color: #ffffff;
-}
-
-.roomError{
-  font-size: 16px;
-  color: #c01515;
-}
+#header,
 .footer {
-  position: absolute;
-  bottom: 0;
-  font-size: 9px;
-  height: auto;
+	background-color: transparent;
+	color: $loginColor;
+}
+
+.roomError {
+	font-size: 14px;
+	color: $loginError;
+	text-shadow: 0.2px 0px #ffffff;
+	text-align: left;
+	font-weight: 600;
+}
+
+.roomError mat-icon {
+	vertical-align: bottom;
+	padding-right: 4px;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	font-size: 9px;
+	height: auto;
 }
 
 .footer a {
-  color: #ffffff;
-
-}
-#header_img {
-  max-width: 150px;
-  margin-right: 10px;
-  margin-top: 10px;
-  padding: 15px;
+	color: $loginColor;
 }
 
 .ovVersion {
-  position: absolute;
-  right: 15px;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.ovLogo {
-  margin: auto;
-}
-
-#card_content {
-  height: 50%;
+	position: absolute;
+	right: 15px;
+	font-size: 16px;
+	font-weight: bold;
 }
 
 h4 {
-  font-size: 25px;
-  font-weight: 500;
-  color: #fff;
-  position: relative;
-  padding-bottom: 5px;
-}
-
-#room_card {
-  color: #303030;
-  position: inherit;
-  max-width: 700px;
-  width: 75%;
-  margin: auto;
-  background: rgba(221, 221, 221, 0.856);
-}
-
-#room_card mat-form-field {
-  margin: auto;
-  padding: 0px 5px;
+	font-size: 25px;
+	font-weight: 300;
+	color: #ffffff;
+	position: relative;
+	padding-bottom: 5px;
 }
 
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
-  #header_img, .ovVersion, .footer {
-    display: none;
-  }
-  .joinForm, .ovLogo {
-    max-width: 80%;
-  }
-  .inputForm, h4 {
-    font-size: 16px ;
-  }
-
+	#header_img,
+	.ovVersion,
+	.footer {
+		display: none;
+	}
 }
 
-.container {
-  position: relative;
-  width: 100%;
-  padding: 100px 0;
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.form-container {
+	margin-top: 110px;
 }
 
-.formContainer {
-  font-size: 20px;
-  text-align: center;
-}
-
-
-.joinForm {
-  min-width: 300px;
-  margin: 10px auto;
-  max-width: 50%;
-  background: #fff;
-  padding: 6px 10px;
-  position: relative;
-  border-radius: 10px 5px 10px 0px;
-  text-align: left;
-}
-
-.inputForm {
-  border: 0;
-  padding: 4px 8px;
-  font-size: 17px;
-  width: calc(100% - 90px);
-  outline: none;
-  caret-color: #000000;
-  color: #303030;
-}
-
-.joinButton {
-  position: absolute;
-  top: 0;
-  right: -2px;
-  bottom: 0;
-  border: 0;
-  background: none;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 0 20px;
-  background: #00ad4e;
-  color: #fff;
-  border-radius: 0px 5px 10px 0px;
-  transition: 0.3s;
-  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
-  margin: 0px;
-}
-
-.joinButton:hover {
-  background: #009242;
-}
-
-
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-  .ovLogo {
-    max-width: 75%;
-  }
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
-
-}
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-  .ovLogo {
-    max-width: 60%;
-  }
-  .inputForm {
-    font-size: 20px !important;
-  }
+#form-img {
+	max-width: 290px;
+	margin-right: 10px;
+	margin-top: 10px;
+	padding: 15px;
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-  .section1 {
-    background-attachment: fixed;
-  }
-  .ovLogo {
-    max-width: 50%;
-  }
+	.section1 {
+		background-attachment: fixed;
+	}
+}
+
+.grid {
+	inline-size: 90%;
+	margin-inline: auto;
+	max-inline-size: 26rem;
+}
+
+.hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
+
+.icons {
+	display: none;
+}
+
+.icon {
+	block-size: 1em;
+	display: inline-block;
+	fill: $iconFill;
+	inline-size: 1em;
+	vertical-align: middle;
+}
+
+input {
+	background-image: none;
+	border: 0;
+	color: inherit;
+	font: inherit;
+	margin: 0;
+	outline: 0;
+	padding: 0;
+	transition: background-color 0.3s;
+}
+
+input[type='submit'] {
+	cursor: pointer;
+}
+
+.form {
+	display: grid;
+	gap: $formGap;
+}
+
+.form input[type='password'],
+.form input[type='text'],
+.form button[type='submit'] {
+	inline-size: 100%;
+}
+
+.form-field {
+	display: flex;
+}
+
+.form-input {
+	flex: 1;
+}
+
+.login {
+	color: $loginColor;
+}
+
+.login label.error {
+	background-color: $loginError;
+}
+.login label,
+.login input[type='text'],
+.login input[type='password'] {
+	border-radius: $loginBorderRadus;
+	padding: 0.85rem;
+}
+#session-name-input {
+	border-radius: 0;
+}
+
+.login button[type='submit'] {
+	border-radius: $loginBorderRadus;
+	padding: 0.4rem;
+	cursor: pointer;
+}
+
+.login button:disabled[type='submit'] {
+	cursor: auto;
+	color: $loginSubmitDisabledColor !important;
+	background-color: $loginSubmitDisabledBackgroundColor !important;
+}
+
+.login label {
+	background-color: $loginLabelBackgroundColor;
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
+	padding-inline: 1.25rem;
+}
+
+.login input[type='password'],
+.login input[type='text'] {
+	background-color: $loginInputBackgroundColor;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	font-size: 16px;
+}
+
+.login input[type='password']:focus,
+.login input[type='password']:hover,
+.login input[type='text']:focus,
+.login input[type='text']:hover {
+	background-color: $loginInputHoverBackgroundColor;
+}
+
+.login button[type='submit'] {
+	background-color: $loginSubmitBackgroundColor;
+	color: $loginSubmitColor;
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+.login button[type='submit']:focus,
+.login button[type='submit']:hover {
+	background-color: $loginSubmitHoverBackgroundColor;
+}
+
+#session-name-generator-btn {
+	height: auto;
+	background-color: $loginInputBackgroundColor;
+	border-radius: $loginBorderRadus;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+}
+
+p {
+	margin-block: 1.5rem;
+}
+
+.text--center {
+	text-align: center;
 }

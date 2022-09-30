@@ -54,14 +54,15 @@ public class OpenViduService {
 	public long getDateFromCookie(String recordingToken) {
 		try {
 			if (!recordingToken.isEmpty()) {
-				MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder.fromUriString(recordingToken).build()
+				MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder.fromUriString(recordingToken)
+						.build()
 						.getQueryParams();
 				String date = cookieTokenParams.get("createdAt").get(0);
 				return Long.parseLong(date);
 			} else {
 				return System.currentTimeMillis();
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return System.currentTimeMillis();
 		}
 	}
@@ -88,8 +89,8 @@ public class OpenViduService {
 
 			if (!recordingToken.isEmpty()) {
 				MultiValueMap<String, String> storedTokenParams = null;
-				
-				if(this.recordingMap.containsKey(sessionId)) {
+
+				if (this.recordingMap.containsKey(sessionId)) {
 					storedTokenParams = UriComponentsBuilder
 							.fromUriString(this.recordingMap.get(sessionId).getToken()).build().getQueryParams();
 				}
@@ -105,7 +106,8 @@ public class OpenViduService {
 					String storedToken = storedTokenParams.get(RECORDING_TOKEN_NAME).get(0);
 					String storedDate = storedTokenParams.get("createdAt").get(0);
 
-					return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken) && cookieDate.equals(storedDate);
+					return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken)
+							&& cookieDate.equals(storedDate);
 				}
 			}
 
