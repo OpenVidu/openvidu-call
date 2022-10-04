@@ -1,0 +1,60 @@
+name: openvidu-call E2E
+on:
+  push:
+  #   paths:
+  #     - 'openvidu-components-angular/**'
+  #     - 'openvidu-browser/**'
+  # pull_request:
+  #   branches:
+  #     - master
+
+  repository_dispatch:
+    types: [on-demand-e2e-test]
+  workflow_dispatch:
+
+jobs:
+  openvidu_angular_e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+    - name: Run Selenium Chromedriver
+      run: docker run -d --shm-size="2g" --network host selenium/standalone-chrome:106.0
+    - name: Run openvidu-server-kms
+      run: |
+        docker run -p 4443:4443 --rm -d \
+        -e OPENVIDU_SECRET=MY_SECRET \
+        openvidu/openvidu-dev:latest
+    # - name: Build openvidu-browser
+    #   run: |
+    #     cd openvidu-browser
+    #     npm install
+    #     npm run build && npm pack
+    #     mv openvidu-browser-*.tgz ../openvidu-call-front
+    # - name: Install openvidu-browser
+    #   run: |
+    #     cd openvidu-components-angular
+    #     npm install openvidu-browser-*.tgz
+    - name: Install dependencies
+      run: |
+        npm install --prefix openvidu-call-front && \
+        npm install --prefix openvidu-call-back
+    # - name: Build openvidu-angular
+    #   run: npm run lib:build --prefix openvidu-components-angular
+    # - name: Build openvidu-webcomponent
+    #   run: npm run webcomponent:build --prefix openvidu-components-angular
+    # - name: Build openvidu-angular-testapp
+    #   run: npm run build --prefix openvidu-components-angular
+    - name: Serve openvidu-call
+      run: npm run dev:start --prefix openvidu-call-front &
+    - name: Serve openvidu-call-back
+      run: npm run start --prefix openvidu-call-back &
+    - name: Run openvidu-call E2E
+      run: npm run e2e:auth-ci --prefix openvidu-call-front
+    # - name: Serve Webcomponent Testapp
+    #   run: npm run webcomponent:serve-testapp --prefix openvidu-components-angular &
+    # - name: Run Webcomponent E2E
+    #   run:  npm run webcomponent:e2e-ci --prefix openvidu-components-angular
