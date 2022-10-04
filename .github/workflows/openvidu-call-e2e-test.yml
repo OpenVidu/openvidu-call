@@ -9,14 +9,19 @@ on:
   #     - master
 
   repository_dispatch:
-    types: [on-demand-e2e-test]
+    types: [openvidu-components-angular]
   workflow_dispatch:
 
 jobs:
   openvidu_angular_e2e:
     name: E2E tests
     runs-on: ubuntu-latest
+
     steps:
+    - env:
+        COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
+        COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
+      run: echo ${COMMIT_MESSAGE} - ${COMMIT_REF}
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v2
       with:
