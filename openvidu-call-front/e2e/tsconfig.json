@@ -1,0 +1,13 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+	"compilerOptions": {
+	  "target": "es6",
+	  "module": "commonjs",
+	  "strict": true,
+	  "outDir": "./dist",
+	  "lib": ["es6"],
+	  "types": [ "mocha", "node" ],
+	  "experimentalDecorators": true,
+	  "emitDecoratorMetadata": true
+	},
+  }
