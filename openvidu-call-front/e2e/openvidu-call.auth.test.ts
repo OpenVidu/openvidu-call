@@ -53,7 +53,7 @@ describe('Testing AUTHENTICATION', () => {
 		expect(await element.getText()).to.be.equal('Authentication failed. Try again.');
 	});
 
-	it('should JOIN TO SESSION when LOGIN with RIGHT CREDENTIALS', async () => {
+	it('should JOIN TO SESSION when LOGIN with VALID CREDENTIALS', async () => {
 		await browser.get(url);
 		let element: WebElement = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
 		expect(await element.isDisplayed()).to.be.true;
@@ -71,9 +71,14 @@ describe('Testing AUTHENTICATION', () => {
 		expect(await element.isDisplayed()).to.be.true;
 	});
 
-	it('should REDIRECT to the ROOT PATH', async () => {
+	it('should REDIRECT to the ROOT PATH with SAME SESSION NAME', async () => {
 		await browser.get(`${url}testSession`);
-		let element: any = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
+		let element: WebElement = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
 		expect(await element.isDisplayed()).to.be.true;
+
+		element = await browser.wait(until.elementLocated(By.id('session-name-input')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+		await browser.wait(async () => (await element.getAttribute('value')).length > 0, TIMEOUT);
+		expect(await element.getAttribute('value')).equals('testSession');
 	});
 });
