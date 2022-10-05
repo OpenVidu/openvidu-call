@@ -43,9 +43,18 @@ jobs:
     #   run: |
     #     cd openvidu-components-angular
     #     npm install openvidu-browser-*.tgz
-    - name: Install dependencies
+    - name: Build openvidu-angular
       run: |
-        npm install --prefix openvidu-call-front && \
+        git clone https://github.com/OpenVidu/openvidu.git && \
+        cd openvidu/openvidu-components-angular && \
+        npm install && \
+        npm run lib:build && \
+        mv dist/openvidu-angular/openvidu-angular-*.tgz ../../openvidu-call-front
+    - name: Install openvidu-angular and dependencies
+      run: |
+        cd openvidu-call-front && \
+        npm install openvidu-angular-*.tgz && \
+        cd .. && \
         npm install --prefix openvidu-call-back
     # - name: Build openvidu-angular
     #   run: npm run lib:build --prefix openvidu-components-angular
