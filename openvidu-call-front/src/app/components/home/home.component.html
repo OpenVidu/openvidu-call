@@ -46,7 +46,7 @@
 						(keydown)="keyDown($event)"
 					/>
 				</div>
-				<div class="roomError" id="login-error" *ngIf="loginError">Authentication failed. Try again.</div>
+				<div class="roomError" id="login-error" *ngIf="hasAppPrivateAccess && loginError">Authentication failed. Try again.</div>
 
 				<div class="form-field">
 					<label for="session-name-input" [ngClass]="{ error: sessionForm.get('sessionName').invalid }">
