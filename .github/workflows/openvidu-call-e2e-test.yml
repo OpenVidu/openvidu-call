@@ -70,8 +70,8 @@ jobs:
       run: npm run e2e:auth-ci --prefix openvidu-call-front
     - name: Run openvidu-call BASIC e2e
       run: |
-        fuser -k 5000/tpc && \
-        npm run e2e:basic-ci --prefix openvidu-components-angular & && \
+        fuser -k 5000/tcp
+        npm run start:basic --prefix openvidu-call-back &
         npm run e2e:basic-ci --prefix openvidu-call-front
     # - name: Run Webcomponent E2E
     #   run:  npm run webcomponent:e2e-ci --prefix openvidu-components-angular
