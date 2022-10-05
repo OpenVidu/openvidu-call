@@ -21,7 +21,7 @@ jobs:
     - env:
         COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
         COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
-      run: Commit openvidu-components-angular
+      run: echo Commit openvidu-components-angular
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v2
       with:
