@@ -1,0 +1,39 @@
+<ion-app class="transparent">
+	<ion-header>
+		<ion-toolbar color="dark">
+			<img class="demo-logo" src="assets/images/openvidu_vert_white_bg_trans_cropped.png" />
+			<ion-buttons slot="primary">
+				<ion-button color="light" href="https://github.com/OpenVidu/openvidu-tutorials/tree/master/openvidu-ionic-components">
+					<ion-icon slot="icon-only" name="logo-github"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+		</ion-toolbar>
+	</ion-header>
+
+	<ion-content class="ion-padding transparent" *ngIf="!session">
+		<ov-videoconference
+			[tokens]="tokens"
+			(onJoinButtonClicked)="onJoinClicked()"
+			(onToolbarLeaveButtonClicked)="onToolbarLeaveButtonClicked()"
+			(onToolbarCameraButtonClicked)="onToolbarCameraButtonClicked()"
+			(onToolbarMicrophoneButtonClicked)="onToolbarMicrophoneButtonClicked()"
+			(onToolbarScreenshareButtonClicked)="onToolbarScreenshareButtonClicked()"
+			(onToolbarFullscreenButtonClicked)="onToolbarFullscreenButtonClicked()"
+			(onToolbarParticipantsPanelButtonClicked)="onToolbarParticipantsPanelButtonClicked()"
+			(onToolbarChatPanelButtonClicked)="onToolbarChatPanelButtonClicked()"
+			(onToolbarStartRecordingClicked)="onStartRecordingClicked()"
+			(onToolbarStopRecordingClicked)="onStopRecordingClicked()"
+			(onActivitiesPanelStartRecordingClicked)="onStartRecordingClicked()"
+			(onActivitiesPanelStopRecordingClicked)="onStopRecordingClicked()"
+			(onActivitiesPanelDeleteRecordingClicked)="onDeleteRecordingClicked($event)"
+			[minimal]="false"
+			[prejoin]="true"
+			[activitiesPanelRecordingActivity]="true"
+			[recordingActivityRecordingsList]="recordingList"
+			[recordingActivityRecordingError]="recordingError"
+			[toolbarSettingsButton]="true"
+		>
+		</ov-videoconference>
+	</ion-content>
+
+</ion-app>
