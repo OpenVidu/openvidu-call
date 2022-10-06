@@ -1,9 +1,9 @@
-import * as express from 'express';
 import * as crypto from 'crypto';
+import * as express from 'express';
 import { Request, Response } from 'express';
 import { OpenViduRole, Session } from 'openvidu-node-client';
+import { CALL_RECORDING } from '../config';
 import { OpenViduService } from '../services/OpenViduService';
-import { RECORDING } from '../config';
 
 export const app = express.Router({
 	strict: true
@@ -20,7 +20,7 @@ app.post('/', async (req: Request, res: Response) => {
 		let date = null;
 		let sessionCreated: Session = await openviduService.createSession(sessionId);
 		const RECORDING_TOKEN_NAME = openviduService.RECORDING_TOKEN_NAME;
-		const IS_RECORDING_ENABLED = RECORDING.toUpperCase() === 'ENABLED';
+		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
 		const hasValidToken = openviduService.isValidToken(sessionId, req.cookies);
 		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
 		const role: OpenViduRole = isSessionCreator && IS_RECORDING_ENABLED ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;

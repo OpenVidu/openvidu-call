@@ -10,14 +10,14 @@ import { app as sessionController } from './controllers/SessionController';
 import { authorizer } from './services/AuthService';
 
 import {
-	ADMIN_SECRET,
+	CALL_ADMIN_SECRET,
 	CALL_OPENVIDU_CERTTYPE,
 	CALL_PRIVATE_ACCESS,
+	CALL_RECORDING,
 	CALL_SECRET,
 	CALL_USER,
 	OPENVIDU_SECRET,
 	OPENVIDU_URL,
-	RECORDING,
 	SERVER_PORT
 } from './config';
 
@@ -30,7 +30,7 @@ app.use(cookieParser());
 app.use(
 	cookieSession({
 		name: 'session',
-		keys: [ADMIN_SECRET],
+		keys: [CALL_ADMIN_SECRET],
 		maxAge: 24 * 60 * 60 * 1000 // 24 hours
 	})
 );
@@ -56,8 +56,8 @@ app.listen(SERVER_PORT, () => {
 		console.log(`CALL USER: ${CALL_USER}`);
 		console.log(`CALL SECRET: ${CALL_SECRET}`);
 	}
-	console.log(`CALL RECORDING: ${RECORDING}`);
-	console.log(`CALL ADMIN PASSWORD: ${ADMIN_SECRET}`);
+	console.log(`CALL RECORDING: ${CALL_RECORDING}`);
+	console.log(`CALL ADMIN PASSWORD: ${CALL_ADMIN_SECRET}`);
 	console.log(`OpenVidu Call Server is listening on port ${SERVER_PORT}`);
 	console.log(' ');
 	console.log('---------------------------------------------------------');

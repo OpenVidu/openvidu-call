@@ -35,8 +35,8 @@ public class AuthController {
 	@Value("${CALL_SECRET}")
 	private String CALL_SECRET;
 
-	@Value("${ADMIN_SECRET}")
-	private String ADMIN_SECRET;
+	@Value("${CALL_ADMIN_SECRET}")
+	private String CALL_ADMIN_SECRET;
 
 	@Autowired
 	private OpenViduService openviduService;
@@ -67,7 +67,7 @@ public class AuthController {
 		String sessionToken = this.openviduService.getSessionIdFromCookie(recordingToken);
 		boolean isAdminTokenValid = this.openviduService.adminTokens.contains(sessionToken);
 
-		boolean isAuthValid = password.equals(ADMIN_SECRET) || isAdminTokenValid;
+		boolean isAuthValid = password.equals(CALL_ADMIN_SECRET) || isAdminTokenValid;
 		if (isAuthValid) {
 			try {
 				if (sessionToken.isEmpty() || !openviduService.adminTokens.contains(sessionToken)) {

@@ -5,5 +5,5 @@ export const CALL_OPENVIDU_CERTTYPE = process.env.CALL_OPENVIDU_CERTTYPE || 'sel
 export const CALL_PRIVATE_ACCESS = process.env.CALL_PRIVATE_ACCESS || 'ENABLED';
 export const CALL_USER = process.env.CALL_USER || 'admin';
 export const CALL_SECRET = process.env.CALL_SECRET || OPENVIDU_SECRET;
-export const ADMIN_SECRET = process.env.ADMIN_SECRET || OPENVIDU_SECRET;
-export const RECORDING = process.env.RECORDING || 'ENABLED';
+export const CALL_ADMIN_SECRET = process.env.CALL_ADMIN_SECRET || OPENVIDU_SECRET;
+export const CALL_RECORDING = process.env.CALL_RECORDING || 'ENABLED';

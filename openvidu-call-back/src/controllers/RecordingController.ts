@@ -1,10 +1,10 @@
-import { CALL_OPENVIDU_CERTTYPE, OPENVIDU_URL, RECORDING } from '../config';
+import { CALL_OPENVIDU_CERTTYPE, CALL_RECORDING, OPENVIDU_URL } from '../config';
 
 import * as express from 'express';
 import { Request, Response } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Recording } from 'openvidu-node-client';
 import { OpenViduService } from '../services/OpenViduService';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 export const app = express.Router({
 	strict: true
 });
@@ -13,7 +13,7 @@ const openviduService = OpenViduService.getInstance();
 
 app.get('/', async (req: Request, res: Response) => {
 	try {
-		const IS_RECORDING_ENABLED = RECORDING.toUpperCase() === 'ENABLED';
+		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
 		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
 		const isAdminDashboard = openviduService.adminTokens.includes(req['session'].token);
 		let recordings = [];

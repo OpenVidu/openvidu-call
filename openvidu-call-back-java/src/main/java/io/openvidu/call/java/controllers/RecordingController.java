@@ -33,8 +33,8 @@ import io.openvidu.java.client.Recording;
 @RequestMapping("/recordings")
 public class RecordingController {
 
-	@Value("${RECORDING}")
-	private String RECORDING;
+	@Value("${CALL_RECORDING}")
+	private String CALL_RECORDING;
 
 	@Autowired
 	private OpenViduService openviduService;
@@ -47,7 +47,7 @@ public class RecordingController {
 			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken) {
 		try {
 			List<Recording> recordings = new ArrayList<Recording>();
-			boolean IS_RECORDING_ENABLED = RECORDING.toUpperCase().equals("ENABLED");
+			boolean IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase().equals("ENABLED");
 			String sessionId = openviduService.getSessionIdFromCookie(recordingToken);
 			boolean isAdminDashboard = openviduService.adminTokens.contains(sessionId);
 
@@ -204,7 +204,8 @@ public class RecordingController {
 	@GetMapping("/{recordingId}/{extension}")
 	public ResponseEntity<?> getRecording(@PathVariable String recordingId, @PathVariable String extension,
 			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken,
-			@CookieValue(name = "session", defaultValue = "") String sessionToken, HttpServletRequest req, HttpServletResponse res) {
+			@CookieValue(name = "session", defaultValue = "") String sessionToken, HttpServletRequest req,
+			HttpServletResponse res) {
 
 		boolean isAdminDashboard = openviduService.adminTokens.contains(sessionToken);
 		String sessionId = this.openviduService.getSessionIdFromCookie(recordingToken);
@@ -228,6 +229,5 @@ public class RecordingController {
 		}
 
 	}
-	
 
 }

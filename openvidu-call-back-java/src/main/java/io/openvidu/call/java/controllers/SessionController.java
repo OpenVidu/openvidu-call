@@ -32,8 +32,8 @@ import io.openvidu.java.client.Session;
 @RestController
 public class SessionController {
 
-	@Value("${RECORDING}")
-	private String RECORDING;
+	@Value("${CALL_RECORDING}")
+	private String CALL_RECORDING;
 
 	@Autowired
 	private OpenViduService openviduService;
@@ -55,7 +55,7 @@ public class SessionController {
 			}
 
 			Session sessionCreated = this.openviduService.createSession(sessionId);
-			boolean IS_RECORDING_ENABLED = RECORDING.toUpperCase().equals("ENABLED");
+			boolean IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase().equals("ENABLED");
 
 			boolean hasValidToken = this.openviduService.isValidToken(sessionId, recordingTokenCookie);
 			boolean isSessionCreator = hasValidToken || sessionCreated.getActiveConnections().size() == 0;

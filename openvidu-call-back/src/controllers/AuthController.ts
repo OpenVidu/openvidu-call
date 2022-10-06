@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
 
-import { ADMIN_SECRET } from '../config';
+import { CALL_ADMIN_SECRET } from '../config';
 import { authorizer } from '../services/AuthService';
 import { OpenViduService } from '../services/OpenViduService';
 
@@ -25,7 +25,7 @@ app.post('/login', async (req: Request, res: Response) => {
 app.post('/admin/login', async (req: Request, res: Response) => {
 	const password = req.body.password;
 	const isAdminTokenValid = openviduService.adminTokens.includes(req['session']?.token);
-	const isAuthValid = password === ADMIN_SECRET || isAdminTokenValid;
+	const isAuthValid = password === CALL_ADMIN_SECRET || isAdminTokenValid;
 	if (isAuthValid) {
 		try {
 			if (!req['session']?.token || !openviduService.adminTokens.includes(req['session']?.token)) {
