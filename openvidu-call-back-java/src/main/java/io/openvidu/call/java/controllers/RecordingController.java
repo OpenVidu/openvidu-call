@@ -86,17 +86,24 @@ public class RecordingController {
 
 		try {
 			String sessionId = params.get("sessionId");
-			if (openviduService.isValidToken(sessionId, recordingToken)) {
-				Recording startingRecording = openviduService.startRecording(sessionId);
-				openviduService.recordingMap.get(sessionId).setRecordingId(startingRecording.getId());
-				System.out.println("Starting recording in " + sessionId);
-				return new ResponseEntity<>(startingRecording, HttpStatus.OK);
+			if (CALL_RECORDING.toUpperCase().equals("ENABLED")) {
+				if (openviduService.isValidToken(sessionId, recordingToken)) {
+					Recording startingRecording = openviduService.startRecording(sessionId);
+					openviduService.recordingMap.get(sessionId).setRecordingId(startingRecording.getId());
+					System.out.println("Starting recording in " + sessionId);
+					return new ResponseEntity<>(startingRecording, HttpStatus.OK);
 
+				} else {
+					String message = "Permissions denied for starting recording in session " + sessionId;
+					System.out.println(message);
+					return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+				}
 			} else {
-				String message = "Permissions denied for starting recording in session " + sessionId;
+				String message = "Start recording failed. OpenVidu Call Recording is disabled";
 				System.out.println(message);
 				return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
 			}
+
 		} catch (OpenViduJavaClientException | OpenViduHttpException error) {
 			error.printStackTrace();
 			int code = Integer.parseInt(error.getMessage());
@@ -120,26 +127,34 @@ public class RecordingController {
 			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken) {
 		try {
 			String sessionId = params.get("sessionId");
-			if (openviduService.isValidToken(sessionId, recordingToken)) {
-				String recordingId = openviduService.recordingMap.get(sessionId).getRecordingId();
+			if (CALL_RECORDING.toUpperCase().equals("ENABLED")) {
+				if (openviduService.isValidToken(sessionId, recordingToken)) {
+					String recordingId = openviduService.recordingMap.get(sessionId).getRecordingId();
 
-				if (!recordingId.isEmpty()) {
-					System.out.println("Stopping recording in " + sessionId);
-					openviduService.stopRecording(recordingId);
-					long date = openviduService.getDateFromCookie(recordingToken);
-					List<Recording> recordingList = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
-					openviduService.recordingMap.get(sessionId).setRecordingId("");
-					return new ResponseEntity<>(recordingList, HttpStatus.OK);
+					if (!recordingId.isEmpty()) {
+						System.out.println("Stopping recording in " + sessionId);
+						openviduService.stopRecording(recordingId);
+						long date = openviduService.getDateFromCookie(recordingToken);
+						List<Recording> recordingList = openviduService.listRecordingsBySessionIdAndDate(sessionId,
+								date);
+						openviduService.recordingMap.get(sessionId).setRecordingId("");
+						return new ResponseEntity<>(recordingList, HttpStatus.OK);
+					} else {
+						String message = "Session was not being recorded";
+						System.err.println(message);
+						return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+					}
 				} else {
-					String message = "Session was not being recorded";
+					String message = "Permissions denied to drive recording";
 					System.err.println(message);
-					return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+					return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
 				}
 			} else {
-				String message = "Permissions denied to drive recording";
-				System.err.println(message);
+				String message = "Stop recording failed. OpenVidu Call Recording is disabled";
+				System.out.println(message);
 				return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
 			}
+
 		} catch (OpenViduJavaClientException | OpenViduHttpException error) {
 			error.printStackTrace();
 			int code = Integer.parseInt(error.getMessage());

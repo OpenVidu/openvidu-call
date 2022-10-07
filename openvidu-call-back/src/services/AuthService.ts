@@ -20,13 +20,15 @@ export const authorizer = (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-function safeCompare(userInput: string, secret: string) {
-	const userInputLength = Buffer.byteLength(userInput);
-	const secretLength = Buffer.byteLength(secret);
-	const userInputBuffer = Buffer.alloc(userInputLength, 0, 'utf8');
-	userInputBuffer.write(userInput);
-	const secretBuffer = Buffer.alloc(userInputLength, 0, 'utf8');
-	secretBuffer.write(secret);
-
-	return !!(timingSafeEqual(userInputBuffer, secretBuffer) && userInputLength === secretLength);
+function safeCompare(a: string, b: string): boolean {
+	if (!!a && !!b) {
+		const aLength = Buffer.byteLength(a);
+		const bLength = Buffer.byteLength(b);
+		const aBuffer = Buffer.alloc(aLength, 0, 'utf8');
+		aBuffer.write(a);
+		const bBuffer = Buffer.alloc(aLength, 0, 'utf8');
+		bBuffer.write(b);
+		return !!(timingSafeEqual(aBuffer, bBuffer) && aLength === bLength);
+	}
+	return false;
 }
