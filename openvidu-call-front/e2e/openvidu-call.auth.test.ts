@@ -26,12 +26,16 @@ describe('Testing AUTHENTICATION', () => {
 	});
 
 	it('should show the LOGIN FORM inputs', async () => {
-		await browser.get(url);
-		let element: any = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		try {
+			await browser.get(url);
+			let element: any = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
+			expect(await element.isDisplayed()).to.be.true;
 
-		element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+			element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
+			expect(await element.isDisplayed()).to.be.true;
+		} catch (error) {
+			console.log(await browser.takeScreenshot());
+		}
 	});
 
 	it('should show an error when LOGIN with WRONG CREDENTIALS', async () => {
