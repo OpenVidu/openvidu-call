@@ -27,7 +27,7 @@ jobs:
       with:
         node-version: '16'
     - name: Run Selenium Chromedriver
-      run: docker run -d --shm-size="2g" --network host selenium/standalone-chrome:106.0
+      run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
     - name: Run openvidu-server-kms
       run: |
         docker run -p 4443:4443 --rm -d \
@@ -65,5 +65,5 @@ jobs:
     - name: Run openvidu-call BASIC e2e
       run: |
         fuser -k 5000/tcp
-        npm run start:basic --prefix openvidu-call-back &
+        npm run e2e:start-basic --prefix openvidu-call-back &
         npm run e2e:basic-ci --prefix openvidu-call-front

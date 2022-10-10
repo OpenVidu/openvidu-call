@@ -37,7 +37,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts",
-		"start:basic": "cross-env CALL_PRIVATE_ACCESS='DISABLED' CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
+		"e2e:start-basic": "cross-env CALL_PRIVATE_ACCESS='DISABLED' CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
 	},
 	"version": "2.23.0"
 }
