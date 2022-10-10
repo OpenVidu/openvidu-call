@@ -1,7 +1,10 @@
 <div class="section1">
 	<mat-toolbar id="header">
-		<div class="ovVersion">
-			<span>{{ version }}</span>
+		<div *ngIf="isUserLogged" id="logout">
+			<span>Hi, {{ username }}</span>
+			<button matTooltip="Logout" mat-icon-button id="logout-btn" (click)="logout()">
+				<mat-icon>logout</mat-icon>
+			</button>
 		</div>
 	</mat-toolbar>
 	<div class="form-container">
@@ -9,48 +12,61 @@
 			<a href="https://openvidu.io/" target="_blank">
 				<img id="form-img" src="assets/images/openvidu_logo.png" />
 			</a>
-			<h4>Videoconference rooms in one click</h4>
+			<h4 id="slogan-text">Videoconference rooms in one click</h4>
 		</div>
 		<div class="grid">
-			<form [formGroup]="sessionForm" novalidate (ngSubmit)="goToVideoCall()" class="form login">
-				<div *ngIf="hasAppPrivateAccess" class="form-field">
+			<form
+				*ngIf="hasAppPrivateAccess && !isUserLogged"
+				[formGroup]="loginForm"
+				novalidate
+				(ngSubmit)="login()"
+				id="form-login"
+				class="form login"
+			>
+				<div class="form-field" id="login-username">
 					<label for="login-username" [ngClass]="{ error: loginError }">
-						<mat-icon>person</mat-icon>
-
+						<mat-icon matTooltip="Username">person</mat-icon>
 						<span class="hidden">Username</span>
 					</label>
 					<input
 						formControlName="username"
 						autocomplete="off"
-						id="login-username"
 						type="text"
 						name="username"
 						class="form-input"
 						placeholder="Username"
-						(keydown)="keyDown($event)"
 					/>
 				</div>
 
-				<div *ngIf="hasAppPrivateAccess" class="form-field">
+				<div class="form-field" id="login-password">
 					<label for="login-password" [ngClass]="{ error: loginError }">
-						<mat-icon>lock</mat-icon>
+						<mat-icon matTooltip="Password">lock</mat-icon>
 						<span class="hidden">Password</span>
 					</label>
-					<input
-						formControlName="password"
-						id="login-password"
-						type="password"
-						name="password"
-						class="form-input"
-						placeholder="Password"
-						(keydown)="keyDown($event)"
-					/>
+					<input formControlName="password" type="password" name="password" class="form-input" placeholder="Password" />
 				</div>
-				<div class="roomError" id="login-error" *ngIf="hasAppPrivateAccess && loginError">Authentication failed. Try again.</div>
+				<div class="roomError" id="login-error" *ngIf="loginError">Authentication failed. Try again.</div>
 
 				<div class="form-field">
+					<button mat-button id="join-btn" type="submit" [disabled]="loginForm.invalid || serverConnectionError">Login</button>
+				</div>
+				<div class="roomError" id="serverConnectionError" *ngIf="serverConnectionError">
+					<mat-icon>error</mat-icon>
+					<span>Server connection failed!</span>
+				</div>
+			</form>
+
+			<form
+				*ngIf="isUserLogged || !hasAppPrivateAccess"
+				[formGroup]="sessionForm"
+				novalidate
+				(ngSubmit)="goToVideoCall()"
+				id="form-session"
+				class="form login"
+			>
+				<div class="form-field">
 					<label for="session-name-input" [ngClass]="{ error: sessionForm.get('sessionName').invalid }">
-						<mat-icon>video_camera_front</mat-icon>
+						<mat-icon matTooltip="Session name">video_camera_front</mat-icon>
 						<span class="hidden">Session Name</span></label
 					>
 					<input
@@ -63,7 +79,12 @@
 						placeholder="Session Name"
 						(keydown)="keyDown($event)"
 					/>
-					<button mat-icon-button id="session-name-generator-btn" (click)="generateSessionName($event)">
+					<button
+						matTooltip="Generate new session name"
+						mat-icon-button
+						id="session-name-generator-btn"
+						(click)="generateSessionName($event)"
+					>
 						<mat-icon>cached</mat-icon>
 					</button>
 				</div>
@@ -101,7 +122,10 @@
 				target="_blank"
 			>
 				Unsplash
-			</a></span
-		>
+			</a>
+		</span>
+		<div id="call-version">
+			<span>{{ version }}</span>
+		</div>
 	</mat-toolbar>
 </div>

@@ -13,9 +13,9 @@ export class AuthGuardService implements CanActivate {
 		return new Promise(async (resolve, reject) => {
 			if (this.authService.hasPrivateAccess()) {
 				try {
-					await this.authService.login();
-					const encodedAuthData = `${window.btoa(`${this.authService.getUsername()}:${this.authService.getPassword()}`)}`;
-					localStorage.setItem('callAuthData', `Basic ${encodedAuthData}`);
+					if (!this.authService.isUserLogged()) {
+						throw new Error('User is not logged');
+					}
 					return resolve(true);
 				} catch (error) {
 					this.router.navigate(['/'], { queryParams: { sessionId: state.url } });
