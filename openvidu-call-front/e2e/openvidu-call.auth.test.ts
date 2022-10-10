@@ -22,20 +22,18 @@ describe('Testing AUTHENTICATION', () => {
 	});
 
 	afterEach(async () => {
+		console.log('SCREENSHOT:');
+		console.log(`data:image/png;base64,${await browser.takeScreenshot()}`);
 		await browser.quit();
 	});
 
 	it('should show the LOGIN FORM inputs', async () => {
-		try {
-			await browser.get(url);
-			let element: any = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-			expect(await element.isDisplayed()).to.be.true;
+		await browser.get(url);
+		let element: any = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
 
-			element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
-			expect(await element.isDisplayed()).to.be.true;
-		} catch (error) {
-			console.log(await browser.takeScreenshot());
-		}
+		element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
 	});
 
 	it('should show an error when LOGIN with WRONG CREDENTIALS', async () => {
