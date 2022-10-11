@@ -164,7 +164,7 @@ describe('Testing AUTHENTICATION', () => {
 		expect(await element.isEnabled()).to.be.false;
 	});
 
-	it('should REDIRECT to the HOME PAGE without LOGIN FORM', async () => {
+	it('should ENTER to the PREJOIN PAGE injecting the session name in the url', async () => {
 		await browser.get(`${url}`);
 
 		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
@@ -200,7 +200,7 @@ describe('Testing AUTHENTICATION', () => {
 
 		await browser.navigate().refresh();
 
-		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
+		element = await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
 		expect(await element.isDisplayed()).to.be.true;
 	});
 });
