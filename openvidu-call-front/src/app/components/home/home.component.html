@@ -16,7 +16,7 @@
 		</div>
 		<div class="grid">
 			<form
-				*ngIf="hasAppPrivateAccess && !isUserLogged"
+				*ngIf="isPrivateAccess && !isUserLogged"
 				[formGroup]="loginForm"
 				novalidate
 				(ngSubmit)="login()"
@@ -57,7 +57,7 @@
 			</form>
 
 			<form
-				*ngIf="isUserLogged || !hasAppPrivateAccess"
+				*ngIf="isUserLogged || !isPrivateAccess"
 				[formGroup]="sessionForm"
 				novalidate
 				(ngSubmit)="goToVideoCall()"

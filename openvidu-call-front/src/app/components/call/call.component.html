@@ -1,4 +1,5 @@
 <ov-videoconference
+	*ngIf="!loading && !serverError"
 	[tokens]="tokens"
 	[recordingActivityRecordingsList]="recordingList"
 	[recordingActivityRecordingError]="recordingError"
@@ -12,3 +13,10 @@
 	[toolbarRecordingButton]="recordingEnabled"
 >
 </ov-videoconference>
+
+<div *ngIf="!loading && serverError">
+	<mat-icon>error</mat-icon>
+	<span>
+		{{ serverError }}
+	</span>
+</div>

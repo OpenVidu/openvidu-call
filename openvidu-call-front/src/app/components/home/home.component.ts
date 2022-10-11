@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.services';
+import { CallService } from 'src/app/services/call.service';
 import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
 import packageInfo from '../../../../package.json';
 
@@ -20,7 +21,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 		password: new FormControl('', [])
 	});
 	version: string;
-	hasAppPrivateAccess: boolean;
+	isPrivateAccess: boolean;
 	username: string;
 	loginError: boolean;
 	serverConnectionError: boolean;
@@ -28,7 +29,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 	private queryParamSubscription: Subscription;
 	private loginSubscription: Subscription;
 
-	constructor(private router: Router, public formBuilder: FormBuilder, private authService: AuthService, private route: ActivatedRoute) {}
+	constructor(
+		private router: Router,
+		public formBuilder: FormBuilder,
+		private authService: AuthService,
+		private callService: CallService,
+		private route: ActivatedRoute
+	) {}
 
 	async ngOnInit() {
 		this.version = packageInfo.version;
@@ -36,18 +43,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 		this.subscribeToQueryParams();
 
 		try {
-			await this.authService.initialize();
-			this.hasAppPrivateAccess = this.authService.hasPrivateAccess();
-			this.username = this.authService.getUsername();
-			if (this.hasAppPrivateAccess) {
+			await this.callService.initialize();
+			this.isPrivateAccess = this.callService.isPrivateAccess();
+
+			if (this.isPrivateAccess) {
 				this.subscribeToLogin();
 				this.loginForm.get('username').setValidators(Validators.required);
 				this.loginForm.get('username').setValue(this.authService.getUsername());
 				this.loginForm.get('password').setValidators(Validators.required);
 				this.loginForm.get('password').setValue(this.authService.getPassword());
+				await this.authService.loginUsingLocalStorageData();
 			}
+
+			this.username = this.authService.getUsername();
 		} catch (error) {
-			console.error(error);
 			this.serverConnectionError = true;
 		}
 	}
@@ -74,15 +83,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 		this.loginError = false;
 		this.username = this.loginForm.get('username').value;
 		const password = this.loginForm.get('password').value;
-		try {
-			await this.authService.login(this.username, password);
-		} catch (error) {
-			this.loginError = true;
-		}
+		await this.authService.login(this.username, password);
 	}
 
 	logout() {
 		this.authService.logout();
+		this.loginError = false;
 	}
 
 	async goToVideoCall() {
@@ -94,7 +100,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 	}
 
 	private subscribeToLogin() {
-		this.loginSubscription = this.authService.isLoggedObs.subscribe((isLogged) => (this.isUserLogged = isLogged));
+		this.loginSubscription = this.authService.isLoggedObs.subscribe((isLogged) => {
+			this.isUserLogged = isLogged;
+			this.loginError = !this.isUserLogged;
+		});
 	}
 
 	private subscribeToQueryParams(): void {

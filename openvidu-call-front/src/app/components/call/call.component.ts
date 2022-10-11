@@ -18,6 +18,8 @@ export class CallComponent implements OnInit {
 	recordingEnabled: boolean = true;
 	recordingList: RecordingInfo[] = [];
 	recordingError: any;
+	serverError: string = '';
+	loading: boolean = true;
 
 	constructor(
 		private restService: RestService,
@@ -40,13 +42,20 @@ export class CallComponent implements OnInit {
 			nickname = this.participantService.getLocalParticipant().getNickname();
 		}
 
-		const response = await this.restService.getTokens(this.sessionId, nickname);
-		this.recordingEnabled = response.recordingEnabled;
-		this.recordingList = response.recordings;
-		this.tokens = {
-			webcam: response.cameraToken,
-			screen: response.screenToken
-		};
+		try {
+			const response = await this.restService.getTokens(this.sessionId, nickname);
+			this.recordingEnabled = response.recordingEnabled;
+			this.recordingList = response.recordings;
+			this.tokens = {
+				webcam: response.cameraToken,
+				screen: response.screenToken
+			};
+		} catch (error) {
+			console.error(error);
+			this.serverError = error?.error?.message || error?.statusText;
+		} finally {
+			this.loading = false;
+		}
 	}
 	onLeaveButtonClicked() {
 		this.isSessionAlive = false;

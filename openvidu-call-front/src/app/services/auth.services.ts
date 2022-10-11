@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { CallService } from './call.service';
 import { RestService } from './rest.service';
 
 @Injectable({
@@ -10,39 +11,14 @@ export class AuthService {
 	private AUTH_DATA_NAME = 'callAuthData';
 	private username: string;
 	private password: string;
-	private privateAccess: boolean = true;
-	private isLogged: BehaviorSubject<boolean> = new BehaviorSubject(false);
+	private logged: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-	constructor(private restService: RestService) {
-		this.isLoggedObs = this.isLogged.asObservable();
+	constructor(private callService: CallService, private restService: RestService) {
+		this.isLoggedObs = this.logged.asObservable();
 	}
 
-	async initialize() {
-		const config = await this.restService.getConfig();
-		this.privateAccess = config.isPrivate;
-		if (this.privateAccess) {
-			const authData = this.getCredentialsFromStorage();
-			if (!!authData) {
-				const decodedDataArr = window.atob(authData)?.split(':');
-				if (decodedDataArr.length > 0) {
-					const username = decodedDataArr[0];
-					const password = decodedDataArr[1];
-					try {
-						await this.login(username, password);
-					} catch (error) {
-						console.error(error);
-					}
-				}
-			}
-		}
-	}
-
-	hasPrivateAccess() {
-		return this.privateAccess;
-	}
-
-	isUserLogged() {
-		return this.isLogged.getValue();
+	isLogged() {
+		return this.logged.getValue();
 	}
 
 	getUsername(): any {
@@ -56,6 +32,18 @@ export class AuthService {
 		return localStorage.getItem(this.AUTH_DATA_NAME);
 	}
 
+	async loginUsingLocalStorageData() {
+		const authData = this.getCredentialsFromStorage();
+		if (!!authData) {
+			const decodedDataArr = window.atob(authData)?.split(':');
+			if (decodedDataArr?.length > 0) {
+				const username = decodedDataArr[0];
+				const password = decodedDataArr[1];
+				await this.login(username, password);
+			}
+		}
+	}
+
 	async login(username: string, password: string) {
 		const encodedAuthData = `${window.btoa(`${username}:${password}`)}`;
 		localStorage.setItem(this.AUTH_DATA_NAME, encodedAuthData);
@@ -63,20 +51,19 @@ export class AuthService {
 			await this.restService.login(username, password);
 			this.username = username;
 			this.password = password;
-			this.isLogged.next(true);
-			console.log('Loggin succeeded');
+			this.logged.next(true);
+			console.log('Loggin succeeded', username, password);
 		} catch (error) {
 			console.error('Error doing login ', error);
-			this.isLogged.next(false);
+			this.logged.next(false);
 			this.clearAuthData();
-			throw error;
 		}
 	}
 
 	logout() {
 		this.username = '';
 		this.password = '';
-		this.isLogged.next(false);
+		this.logged.next(false);
 		this.clearAuthData();
 	}
 
