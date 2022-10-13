@@ -4,7 +4,7 @@ import { Builder, By, until, WebDriver, WebElement } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
 
 const url = OpenViduCallConfig.appUrl;
-const TIMEOUT = 10000;
+const TIMEOUT = 30000;
 
 describe('Testing SURFACE FEATURES ', () => {
 	let browser: WebDriver;
@@ -53,7 +53,7 @@ describe('Testing SURFACE FEATURES ', () => {
 	});
 
 	it('should show the PREJOIN page INSERTING the SESSION NAME', async () => {
-		await browser.get(`${url}TEST`);
+		await browser.get(`${url}testSession`);
 
 		let element: WebElement = await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
 		expect(await element.isDisplayed()).to.be.true;
