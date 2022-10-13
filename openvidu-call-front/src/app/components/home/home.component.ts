@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	loginError: boolean;
 	serverConnectionError: boolean;
 	isUserLogged: boolean = false;
+	loading: boolean = true;
 	private queryParamSubscription: Subscription;
 	private loginSubscription: Subscription;
 
@@ -58,6 +59,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 			this.username = this.authService.getUsername();
 		} catch (error) {
 			this.serverConnectionError = true;
+		} finally {
+			this.loading = false;
 		}
 	}
 
@@ -102,7 +105,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	private subscribeToLogin() {
 		this.loginSubscription = this.authService.isLoggedObs.subscribe((isLogged) => {
 			this.isUserLogged = isLogged;
-			this.loginError = !this.isUserLogged;
+			this.loginError = this.authService.hadLoginError();
 		});
 	}
 

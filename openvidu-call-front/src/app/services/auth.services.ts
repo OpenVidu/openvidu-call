@@ -12,6 +12,7 @@ export class AuthService {
 	private username: string;
 	private password: string;
 	private logged: BehaviorSubject<boolean> = new BehaviorSubject(false);
+	private loginError: boolean = false;
 
 	constructor(private callService: CallService, private restService: RestService) {
 		this.isLoggedObs = this.logged.asObservable();
@@ -51,10 +52,12 @@ export class AuthService {
 			await this.restService.login(username, password);
 			this.username = username;
 			this.password = password;
+			this.loginError = false;
 			this.logged.next(true);
 			console.log('Loggin succeeded', username, password);
 		} catch (error) {
 			console.error('Error doing login ', error);
+			this.loginError = true;
 			this.logged.next(false);
 			this.clearAuthData();
 		}
@@ -65,6 +68,10 @@ export class AuthService {
 		this.password = '';
 		this.logged.next(false);
 		this.clearAuthData();
+	}
+
+	hadLoginError(): boolean {
+		return this.loginError;
 	}
 
 	private clearAuthData() {

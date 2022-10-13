@@ -7,13 +7,13 @@
 			</button>
 		</div>
 	</mat-toolbar>
+	<div class="openvidu-slogan-container">
+		<a href="https://openvidu.io/" target="_blank">
+			<img id="form-img" src="assets/images/openvidu_logo.png" />
+		</a>
+		<h4 id="slogan-text">Videoconference rooms in one click</h4>
+	</div>
 	<div class="form-container">
-		<div>
-			<a href="https://openvidu.io/" target="_blank">
-				<img id="form-img" src="assets/images/openvidu_logo.png" />
-			</a>
-			<h4 id="slogan-text">Videoconference rooms in one click</h4>
-		</div>
 		<div class="grid">
 			<form
 				*ngIf="isPrivateAccess && !isUserLogged"
