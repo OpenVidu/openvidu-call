@@ -1,7 +1,7 @@
 <div class="section1">
 	<mat-toolbar id="header">
-		<div *ngIf="isUserLogged" id="logout">
-			<span>Hi, {{ username }}</span>
+		<div *ngIf="isUserLogged" id="logout-content">
+			<span>Hi {{ username }}, do you want to logout?</span>
 			<button matTooltip="Logout" mat-icon-button id="logout-btn" (click)="logout()">
 				<mat-icon>logout</mat-icon>
 			</button>

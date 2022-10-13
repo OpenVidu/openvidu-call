@@ -4,7 +4,7 @@ import { Builder, By, until, WebDriver, WebElement } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
 
 const url = OpenViduCallConfig.appUrl;
-const TIMEOUT = 10000;
+const TIMEOUT = 30000;
 describe('Testing AUTHENTICATION', () => {
 	let browser: WebDriver;
 
@@ -104,6 +104,53 @@ describe('Testing AUTHENTICATION', () => {
 
 		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
 		expect(await element.isEnabled()).to.be.true;
+	});
+
+	it('should do LOGOUT and show the LOGIN FORM when logout button is clicked', async () => {
+		await browser.get(url);
+
+		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
+		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
+
+		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+
+		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+		await element.sendKeys('admin');
+
+		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+		await element.sendKeys('MY_SECRET');
+
+		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
+		expect(await element.isEnabled()).to.be.true;
+		await element.click();
+
+		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+
+		element = await browser.wait(until.elementLocated(By.css('#logout-content span')), TIMEOUT);
+		expect(await element.getText()).equal('Hi admin, do you want to logout?');
+
+		element = await browser.wait(until.elementLocated(By.id('logout-btn')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+		await element.click();
+
+		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
+		expect(await element.isDisplayed()).to.be.true;
+
+		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
+		expect(await element.getAttribute('value')).equal('admin');
+
+		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
+		expect(await element.getAttribute('value')).equal('MY_SECRET');
+
+		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
+		expect(await element.isEnabled()).to.be.true;
+
+		let elements: WebElement[] = await browser.findElements(By.id('logout-btn'));
+		expect(elements.length).to.equal(0);
 	});
 
 	it('should be able to JOIN with a VALID CREDENTIALS AND SESSION', async () => {
