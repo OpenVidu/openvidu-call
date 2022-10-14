@@ -23,7 +23,7 @@ jobs:
         COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
       run: echo Commit openvidu-components-angular
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         node-version: '16'
     - name: Run Selenium Chromedriver
@@ -67,3 +67,13 @@ jobs:
         fuser -k 5000/tcp
         npm run e2e:start-basic --prefix openvidu-call-back &
         npm run e2e:basic-ci --prefix openvidu-call-front
+    - name: Uploading Chrome logs
+      if: failure()
+      run: |
+        docker logs "$(docker ps | grep 'selenium/standalone-chrome:106.0' -m 1 | awk '{print $1}')"
+        mkdir -p openvidu-call
+        docker logs "$(docker ps | grep 'selenium/standalone-chrome:106.0' -m 1 | awk '{print $1}')" > openvidu-call/chrome-logs.txt
+    - uses: actions/upload-artifact@v3
+      with:
+        name: chrome-logs
+        path: openvidu-call/chrome-logs.txt
