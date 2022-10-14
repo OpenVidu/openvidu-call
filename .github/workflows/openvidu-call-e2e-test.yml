@@ -13,19 +13,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  openvidu_angular_e2e:
-    name: E2E tests
-    runs-on: ubuntu-latest
 
+  test_setup:
+    name: Build openvidu-angular lib
+    runs-on: ubuntu-latest
     steps:
     - env:
         COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
         COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
       run: echo Commit openvidu-components-angular
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - name: Build openvidu-angular
+      run: |
+        git clone https://github.com/OpenVidu/openvidu.git && \
+        cd openvidu/openvidu-components-angular && \
+        npm install && \
+        npm run lib:build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: openvidu-angular
+        path: openvidu/openvidu-components-angular/dist/openvidu-angular/openvidu-angular-*.tgz
+
+  e2e_test_with_authentication:
+    needs: test_setup
+    name: Authentication E2E tests
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
         node-version: '16'
+    - uses: actions/download-artifact@v3
+      with:
+        name: openvidu-angular
+        path: openvidu-call-front
     - name: Run Selenium Chromedriver
       run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
     - name: Run openvidu-server-kms
@@ -33,23 +56,6 @@ jobs:
         docker run -p 4443:4443 --rm -d \
         -e OPENVIDU_SECRET=MY_SECRET \
         openvidu/openvidu-dev:latest
-    # - name: Build openvidu-browser
-    #   run: |
-    #     cd openvidu-browser
-    #     npm install
-    #     npm run build && npm pack
-    #     mv openvidu-browser-*.tgz ../openvidu-call-front
-    # - name: Install openvidu-browser
-    #   run: |
-    #     cd openvidu-components-angular
-    #     npm install openvidu-browser-*.tgz
-    - name: Build openvidu-angular
-      run: |
-        git clone https://github.com/OpenVidu/openvidu.git && \
-        cd openvidu/openvidu-components-angular && \
-        npm install && \
-        npm run lib:build && \
-        mv dist/openvidu-angular/openvidu-angular-*.tgz ../../openvidu-call-front
     - name: Install openvidu-angular and dependencies
       run: |
         cd openvidu-call-front && \
@@ -62,18 +68,37 @@ jobs:
       run: |
         npm run start --prefix openvidu-call-back &
         npm run e2e:auth-ci --prefix openvidu-call-front
+
+
+  e2e_test_without_authentication:
+    needs: test_setup
+    name: No Authentication E2E tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - uses: actions/download-artifact@v3
+      with:
+        name: openvidu-angular
+        path: openvidu-call-front
+    - name: Run Selenium Chromedriver
+      run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
+    - name: Run openvidu-server-kms
+      run: |
+        docker run -p 4443:4443 --rm -d \
+        -e OPENVIDU_SECRET=MY_SECRET \
+        openvidu/openvidu-dev:latest
+    - name: Install openvidu-angular and dependencies
+      run: |
+        cd openvidu-call-front && \
+        npm install openvidu-angular-*.tgz && \
+        cd .. && \
+        npm install --prefix openvidu-call-back
+    - name: Serve openvidu-call-front
+      run: npm run dev:start --prefix openvidu-call-front &
     - name: Run openvidu-call BASIC e2e
       run: |
-        fuser -k 5000/tcp
         npm run e2e:start-basic --prefix openvidu-call-back &
         npm run e2e:basic-ci --prefix openvidu-call-front
-    - name: Uploading Chrome logs
-      if: failure()
-      run: |
-        docker logs "$(docker ps | grep 'selenium/standalone-chrome:106.0' -m 1 | awk '{print $1}')"
-        mkdir -p openvidu-call
-        docker logs "$(docker ps | grep 'selenium/standalone-chrome:106.0' -m 1 | awk '{print $1}')" > openvidu-call/chrome-logs.txt
-    - uses: actions/upload-artifact@v3
-      with:
-        name: chrome-logs
-        path: openvidu-call/chrome-logs.txt
