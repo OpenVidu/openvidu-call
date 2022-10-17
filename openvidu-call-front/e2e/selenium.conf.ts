@@ -21,14 +21,13 @@ let chromeArgumentsCI = [
 	'--disable-dev-shm-usage',
 	'--disable-background-networking',
 	'--disable-default-apps',
-	'--window-size=1024,768',
 	'--use-fake-ui-for-media-stream',
 	'--use-fake-device-for-media-stream'
 ];
 
 export const OpenViduCallConfig: BrowserConfig = {
 	appUrl: 'http://localhost:4200/#/',
-	seleniumAddress: LAUNCH_MODE === 'CI' ? 'http://localhost:4444/wd/hub' : '',
+	seleniumAddress: LAUNCH_MODE === 'CI' ? 'http://localhost:3000/webdriver' : '',
 	browserName: 'ChromeTest',
 	browserCapabilities: Capabilities.chrome().set('acceptInsecureCerts', true),
 	browserOptions: new chrome.Options().addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments))
