@@ -40,7 +40,7 @@
 	"scripts": {
 		"dev:start": "ng serve --configuration development",
 		"dev:build": "./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back/public/",
-		"prod:build": "func() { ./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back/public/ --configuration production --base-href=\"${1:-/}\"; }; func",
+		"prod:build": "func() { ./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back/dist/public/ --configuration production --base-href=\"${1:-/}\"; }; func",
 		"dev:build-java": "./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back-java/src/main/resources/static/",
 		"prod:build-java": "func() { ./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back-java/src/main/resources/static/ --configuration production --base-href=\"${1:-/}\"; }; func",
 		"e2e:basic": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/openvidu-call.test.js",

@@ -64,12 +64,17 @@ jobs:
         npm install openvidu-angular-*.tgz && \
         cd .. && \
         npm install --prefix openvidu-call-back
-    - name: Serve openvidu-call-front
-      run: npm run dev:start --prefix openvidu-call-front &
-    - name: Run openvidu-call AUTH e2e
+    - name: Build openvidu-call
       run: |
-        npm run start --prefix openvidu-call-back &
-        npm run e2e:auth-ci --prefix openvidu-call-front
+        npm run build --prefix openvidu-call-back && \
+        npm run prod:build --prefix openvidu-call-front
+    - name: Serve openvidu-call
+      env:
+        LAUNCH_MODE: CI
+        CALL_OPENVIDU_CERTTYPE: selfsigned
+      run: node openvidu-call-back/dist/app.js &
+    - name: Run openvidu-call AUTH e2e
+      run: npm run e2e:auth-ci --prefix openvidu-call-front
 
 
   e2e_test_without_authentication:
@@ -100,9 +105,16 @@ jobs:
         npm install openvidu-angular-*.tgz && \
         cd .. && \
         npm install --prefix openvidu-call-back
-    - name: Serve openvidu-call-front
-      run: npm run dev:start --prefix openvidu-call-front &
-    - name: Run openvidu-call BASIC e2e
+    - name: Build openvidu-call
       run: |
-        npm run e2e:start-basic --prefix openvidu-call-back &
-        npm run e2e:basic-ci --prefix openvidu-call-front
+        npm run build --prefix openvidu-call-back && \
+        npm run prod:build --prefix openvidu-call-front
+
+    - name: Serve openvidu-call
+      env:
+        LAUNCH_MODE: CI
+        CALL_PRIVATE_ACCESS: DISABLED
+        CALL_OPENVIDU_CERTTYPE: selfsigned
+      run: node openvidu-call-back/dist/app.js &
+    - name: Run openvidu-call BASIC e2e
+      run: npm run e2e:basic-ci --prefix openvidu-call-front
