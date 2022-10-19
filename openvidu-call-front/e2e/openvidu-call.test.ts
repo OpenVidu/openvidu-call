@@ -1,13 +1,14 @@
 import { expect } from 'chai';
-import { Builder, By, until, WebDriver, WebElement } from 'selenium-webdriver';
+import { Builder, WebDriver } from 'selenium-webdriver';
 
 import { OpenViduCallConfig } from './selenium.conf';
+import { OpenViduCallPO } from './utils.po.test';
 
 const url = OpenViduCallConfig.appUrl;
-const TIMEOUT = 30000;
 
 describe('Testing SURFACE FEATURES ', () => {
 	let browser: WebDriver;
+	let utils: OpenViduCallPO;
 
 	async function createChromeBrowser(): Promise<WebDriver> {
 		return await new Builder()
@@ -20,6 +21,7 @@ describe('Testing SURFACE FEATURES ', () => {
 
 	beforeEach(async () => {
 		browser = await createChromeBrowser();
+		utils = new OpenViduCallPO(browser);
 	});
 
 	afterEach(async () => {
@@ -29,33 +31,34 @@ describe('Testing SURFACE FEATURES ', () => {
 	it('should show ONLY the SESSION NAME input', async () => {
 		await browser.get(url);
 
-		let elements: WebElement[] = await browser.findElements(By.id('login-username'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('#login-username')).to.be.false;
 
-		elements = await browser.findElements(By.id('login-password'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('#login-password')).to.be.false;
 
-		let element: WebElement = await browser.wait(until.elementLocated(By.id('session-name-input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#session-name-input');
+		expect(await utils.isPresent('#session-name-input')).to.be.true;
+
+		const button = await utils.waitForElement('#join-btn');
+		expect(await utils.isPresent('#join-btn')).to.be.true;
+		expect(await button.isEnabled()).to.be.true;
 	});
 
 	it('should CHANGE the SESSION NAME', async () => {
 		await browser.get(`${url}`);
 
-		let sessionNameElement: WebElement = await browser.wait(until.elementLocated(By.id('session-name-input')), TIMEOUT);
-		expect(await sessionNameElement.isDisplayed()).to.be.true;
-		await browser.wait(async () => (await sessionNameElement.getAttribute('value')).length > 0, TIMEOUT);
+		const element = await utils.waitForElement('#session-name-input');
+		expect(await utils.isPresent('#session-name-input')).to.be.true;
 
-		let sessionName = await sessionNameElement.getAttribute('value');
-		let element: WebElement = await browser.wait(until.elementLocated(By.id('session-name-generator-btn')), TIMEOUT);
-		await element.click();
-		expect(await sessionNameElement.getAttribute('value')).to.not.equal(sessionName);
+		let sessionName = await element.getAttribute('value');
+
+		await utils.clickOn('#session-name-generator-btn');
+
+		expect(await element.getAttribute('value')).to.not.equal(sessionName);
 	});
 
 	it('should show the PREJOIN page INSERTING the SESSION NAME', async () => {
 		await browser.get(`${url}testSession`);
 
-		let element: WebElement = await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.checkPrejoinIsPresent();
 	});
 });

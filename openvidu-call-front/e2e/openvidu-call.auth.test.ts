@@ -1,12 +1,14 @@
 import { expect } from 'chai';
-import { Builder, By, until, WebDriver, WebElement } from 'selenium-webdriver';
+import { Builder, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { OpenViduCallConfig } from './selenium.conf';
+import { OpenViduCallPO } from './utils.po.test';
 
 const url = OpenViduCallConfig.appUrl;
-const TIMEOUT = 30000;
+
 describe('Testing AUTHENTICATION', () => {
 	let browser: WebDriver;
+	let utils: OpenViduCallPO;
 
 	async function createChromeBrowser(): Promise<WebDriver> {
 		return await new Builder()
@@ -19,10 +21,10 @@ describe('Testing AUTHENTICATION', () => {
 
 	beforeEach(async () => {
 		browser = await createChromeBrowser();
+		utils = new OpenViduCallPO(browser);
 	});
 
 	afterEach(async () => {
-		// console.log('SCREENSHOT:');
 		// console.log(`data:image/png;base64,${await browser.takeScreenshot()}`);
 		await browser.quit();
 	});
@@ -30,224 +32,180 @@ describe('Testing AUTHENTICATION', () => {
 	it('should show the LOGIN FORM with DISABELD button', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
+		let element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-login');
 
-		let elements: WebElement[] = await browser.findElements(By.id('form-session'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('#form-session')).to.be.false;
 
-		element = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#login-username');
 
-		element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#login-password');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
+		element = await utils.waitForElement('#join-btn');
 		expect(await element.isEnabled()).to.be.false;
 	});
 
 	it('should show an error when LOGIN with WRONG CREDENTIALS', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
+		let element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-login');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-username input');
 		await element.sendKeys('user');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-password input');
 		await element.sendKeys('user');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('login-error')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-error');
 		expect(await element.getText()).to.be.equal('Authentication failed. Try again.');
 	});
 
 	it('should show the SESSION NAME form when LOGIN with VALID CREDENTIALS', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
+		let element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-login');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-username input');
 		await element.sendKeys('admin');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-password input');
 		await element.sendKeys('MY_SECRET');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-session');
 
-		let elements: WebElement[] = await browser.findElements(By.id('prejoin-container'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('prejoin-container')).to.be.false;
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
+		await utils.waitForElement('#join-btn');
+		expect(await utils.isPresent('#join-btn')).to.be.true;
 	});
 
 	it('should do LOGOUT and show the LOGIN FORM when logout button is clicked', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
-		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
+		await utils.waitForElement('#slogan-text');
+		await utils.waitForElement('#form-login');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
-
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		let element = await utils.waitForElement('#login-username input');
 		await element.sendKeys('admin');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-password input');
 		await element.sendKeys('MY_SECRET');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-session');
 
-		element = await browser.wait(until.elementLocated(By.css('#logout-content span')), TIMEOUT);
+		element = await utils.waitForElement('#logout-content span');
 		expect(await element.getText()).equal('Hi admin, do you want to logout?');
 
-		element = await browser.wait(until.elementLocated(By.id('logout-btn')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
-		await element.click();
+		await utils.clickOn('#logout-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-login');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
+		element = await utils.waitForElement('#login-username input');
 		expect(await element.getAttribute('value')).equal('admin');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
+		element = await utils.waitForElement('#login-password input');
 		expect(await element.getAttribute('value')).equal('MY_SECRET');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
+		element = await utils.waitForElement('#join-btn');
 		expect(await element.isEnabled()).to.be.true;
 
-		let elements: WebElement[] = await browser.findElements(By.id('logout-btn'));
-		expect(elements.length).to.equal(0);
+		expect(await utils.isPresent('#logout-btn')).to.be.false;
+
+		await browser.navigate().refresh();
+
+		await utils.waitForElement('#slogan-text');
+
+		expect(await utils.isPresent('#logout-btn')).to.be.false;
 	});
 
 	it('should be able to JOIN with a VALID CREDENTIALS AND SESSION', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
-		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
+		await utils.waitForElement('#slogan-text');
+		await utils.waitForElement('#form-login');
 
-		element = await browser.wait(until.elementLocated(By.id('form-login')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
-
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		let element = await utils.waitForElement('#login-username input');
 		await element.sendKeys('admin');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-password input');
 		await element.sendKeys('MY_SECRET');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-session');
 
-		let elements: WebElement[] = await browser.findElements(By.id('prejoin-container'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('#prejoin-container')).to.be.false;
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
-		elements = await browser.findElements(By.id('prejoin-container'));
-		expect(elements.length).to.be.greaterThan(0);
+		await utils.checkPrejoinIsPresent();
 	});
 
 	it('should REDIRECT to the ROOT PATH with SAME SESSION NAME', async () => {
 		await browser.get(`${url}testSession`);
 
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
-		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
+		await utils.waitForElement('#slogan-text');
 
-		element = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#form-login');
 
-		let elements: WebElement[] = await browser.findElements(By.id('form-session'));
-		expect(elements.length).equals(0);
+		expect(await utils.isPresent('#form-session')).to.be.false;
 
-		element = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#login-username');
 
-		element = await browser.wait(until.elementLocated(By.id('login-password')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#login-password');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
+		let element = await utils.waitForElement('#join-btn');
 		expect(await element.isEnabled()).to.be.false;
-	});
 
-	it('should ENTER to the PREJOIN PAGE injecting the session name in the url', async () => {
-		await browser.get(`${url}`);
-
-		let element: WebElement = await browser.wait(until.elementIsVisible(browser.findElement(By.id('slogan-text'))));
-		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
-
-		element = await browser.wait(until.elementLocated(By.id('login-username')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
-
-		let elements: WebElement[] = await browser.findElements(By.id('form-session'));
-		expect(elements.length).equals(0);
-
-		element = await browser.wait(until.elementLocated(By.css('#login-username input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-username input');
 		await element.sendKeys('admin');
 
-		element = await browser.wait(until.elementLocated(By.css('#login-password input')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#login-password input');
 		await element.sendKeys('MY_SECRET');
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+		await utils.clickOn('#join-btn');
 
-		element = await browser.wait(until.elementLocated(By.id('form-session')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		element = await utils.waitForElement('#form-session input');
+		expect(await element.getAttribute('value')).equal('testSession');
+	});
 
-		element = await browser.wait(until.elementLocated(By.id('join-btn')), TIMEOUT);
-		expect(await element.isEnabled()).to.be.true;
-		await element.click();
+	it('should ENTER to the PREJOIN PAGE refreshing AFTER LOGIN', async () => {
+		await browser.get(`${url}`);
 
-		element = await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.waitForElement('#slogan-text');
+		await utils.waitForElement('#form-login');
+
+		let element = await utils.waitForElement('#login-username input');
+		await element.sendKeys('admin');
+
+		element = await utils.waitForElement('#login-password input');
+		await element.sendKeys('MY_SECRET');
+
+		await utils.clickOn('#join-btn');
+
+		await utils.waitForElement('#form-session');
+
+		expect(await utils.isPresent('#prejoin-container')).to.be.false;
+
+		await utils.clickOn('#join-btn');
+
+		await utils.checkPrejoinIsPresent();
 
 		await browser.navigate().refresh();
-
-		element = await browser.wait(until.elementLocated(By.id('prejoin-container')), TIMEOUT);
-		expect(await element.isDisplayed()).to.be.true;
+		await utils.checkPrejoinIsPresent();
 	});
 });
