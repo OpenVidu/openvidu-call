@@ -14,8 +14,8 @@ on:
 
 jobs:
 
-  test_setup:
-    name: Build openvidu-angular lib
+  prepare_openvidu_angular:
+    name: Prepare openvidu-angular
     runs-on: ubuntu-latest
     steps:
     - env:
@@ -25,19 +25,27 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - name: Build openvidu-angular
+    - name: Build openvidu-browser and openvidu-angular
       run: |
         git clone https://github.com/OpenVidu/openvidu.git && \
-        cd openvidu/openvidu-components-angular && \
+        cd openvidu/openvidu-browser && \
         npm install && \
-        npm run lib:build
+        npm run build && \
+        npm pack && \
+        mv openvidu-browser-*.tgz ../openvidu-components-angular && \
+        cd ../openvidu-components-angular && \
+        npm install openvidu-browser-*.tgz && \
+        npm install && \
+        npm run lib:build && \
+        mv dist/openvidu-angular/openvidu-angular-*.tgz .
+        tar -cvf artifacts.tar openvidu-angular-*.tgz openvidu-browser-*.tgz
     - uses: actions/upload-artifact@v3
       with:
-        name: openvidu-angular
-        path: openvidu/openvidu-components-angular/dist/openvidu-angular/openvidu-angular-*.tgz
+        name: artifacts
+        path: openvidu/openvidu-components-angular/artifacts.tar
 
   e2e_test_with_authentication:
-    needs: test_setup
+    needs: prepare_openvidu_angular
     name: Authentication E2E tests
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +55,6 @@ jobs:
         node-version: '16'
     - uses: actions/download-artifact@v3
       with:
-        name: openvidu-angular
         path: openvidu-call-front
     # - name: Run Selenium Chromedriver
     #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
@@ -61,7 +68,9 @@ jobs:
     - name: Install openvidu-angular and dependencies
       run: |
         cd openvidu-call-front && \
+        tar -xvf artifacts/artifacts.tar && \
         npm install openvidu-angular-*.tgz && \
+        npm install openvidu-browser*.tgz && \
         cd .. && \
         npm install --prefix openvidu-call-back
     - name: Build openvidu-call
@@ -78,7 +87,7 @@ jobs:
 
 
   e2e_test_without_authentication:
-    needs: test_setup
+    needs: prepare_openvidu_angular
     name: No Authentication E2E tests
     runs-on: ubuntu-latest
     steps:
@@ -88,7 +97,6 @@ jobs:
         node-version: '16'
     - uses: actions/download-artifact@v3
       with:
-        name: openvidu-angular
         path: openvidu-call-front
     # - name: Run Selenium Chromedriver
     #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
@@ -102,7 +110,9 @@ jobs:
     - name: Install openvidu-angular and dependencies
       run: |
         cd openvidu-call-front && \
+        tar -xvf artifacts/artifacts.tar && \
         npm install openvidu-angular-*.tgz && \
+        npm install openvidu-browser*.tgz && \
         cd .. && \
         npm install --prefix openvidu-call-back
     - name: Build openvidu-call
