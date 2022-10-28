@@ -34,14 +34,19 @@ export class AuthService {
 	}
 
 	async loginUsingLocalStorageData() {
-		const authData = this.getCredentialsFromStorage();
-		if (!!authData) {
-			const decodedDataArr = window.atob(authData)?.split(':');
-			if (decodedDataArr?.length > 0) {
-				const username = decodedDataArr[0];
-				const password = decodedDataArr[1];
-				await this.login(username, password);
+		try {
+			const authData = this.getCredentialsFromStorage();
+			if (!!authData) {
+				const decodedDataArr = window.atob(authData)?.split(':');
+				if (decodedDataArr?.length > 0) {
+					const username = decodedDataArr[0];
+					const password = decodedDataArr[1];
+					await this.login(username, password);
+				}
 			}
+		} catch (error) {
+			this.loginError = true;
+			this.logout();
 		}
 	}
 
@@ -58,8 +63,7 @@ export class AuthService {
 		} catch (error) {
 			console.error('Error doing login ', error);
 			this.loginError = true;
-			this.logged.next(false);
-			this.clearAuthData();
+			this.logout();
 		}
 	}
 
