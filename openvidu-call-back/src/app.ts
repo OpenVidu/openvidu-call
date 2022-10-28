@@ -1,5 +1,6 @@
 import * as cookieParser from 'cookie-parser';
 import * as cookieSession from 'cookie-session';
+import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 
@@ -32,6 +33,13 @@ app.use(
 		name: 'session',
 		keys: [CALL_ADMIN_SECRET],
 		maxAge: 24 * 60 * 60 * 1000 // 24 hours
+	})
+);
+
+// Enable CORS support
+app.use(
+	cors({
+		origin: '*'
 	})
 );
 
