@@ -14,7 +14,7 @@
 >
 </ov-videoconference>
 
-<div *ngIf="!loading && serverError">
+<div *ngIf="!loading && serverError" class="error">
 	<mat-icon>error</mat-icon>
 	<span>
 		{{ serverError }}
