@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { HomeComponent } from './home.component';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 
 describe('HomeComponent', () => {
 	let component: HomeComponent;
@@ -11,7 +11,7 @@ describe('HomeComponent', () => {
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
 			declarations: [HomeComponent],
-			providers: [FormBuilder],
+			providers: [UntypedFormBuilder],
 			imports: [RouterTestingModule.withRoutes([])]
 		}).compileComponents();
 	}));

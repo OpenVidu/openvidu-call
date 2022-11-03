@@ -171,6 +171,5 @@
 				}
 			}
 		}
-	},
-	"defaultProject": "openvidu-call"
+  }
 }

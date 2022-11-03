@@ -53,3 +53,5 @@ Thumbs.db
 .git/*
 
 openvidu-call-back-java/src/main/resources/static/
+
+openvidu-call-back/public/

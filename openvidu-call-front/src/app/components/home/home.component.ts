@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.services';
@@ -13,12 +13,12 @@ import packageInfo from '../../../../package.json';
 	styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-	sessionForm: FormGroup = new FormGroup({
-		sessionName: new FormControl('', [Validators.minLength(6), Validators.required])
+	sessionForm: UntypedFormGroup = new UntypedFormGroup({
+		sessionName: new UntypedFormControl('', [Validators.minLength(6), Validators.required])
 	});
-	loginForm: FormGroup = new FormGroup({
-		username: new FormControl('', []),
-		password: new FormControl('', [])
+	loginForm: UntypedFormGroup = new UntypedFormGroup({
+		username: new UntypedFormControl('', []),
+		password: new UntypedFormControl('', [])
 	});
 	version: string;
 	isPrivateAccess: boolean;
@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private router: Router,
-		public formBuilder: FormBuilder,
+		public formBuilder: UntypedFormBuilder,
 		private authService: AuthService,
 		private callService: CallService,
 		private route: ActivatedRoute
