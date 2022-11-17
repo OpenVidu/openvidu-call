@@ -9,7 +9,7 @@
 		"dotenv": "16.0.2",
 		"express": "4.18.1",
 		"http-proxy-middleware": "2.0.6",
-		"openvidu-node-client": "2.23.0"
+		"openvidu-node-client": "2.24.0"
 	},
 	"description": "OpenVidu Call Server",
 	"devDependencies": {
@@ -38,5 +38,5 @@
 		"build": "tsc",
 		"dev:start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
 	},
-	"version": "2.23.0"
+	"version": "2.24.0"
 }
