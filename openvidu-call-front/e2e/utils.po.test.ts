@@ -30,4 +30,10 @@ export class OpenViduCallPO {
 		const element = await this.waitForElement(selector);
 		await element.click();
 	}
+
+	async checkToolbarIsPresent(): Promise<void> {
+		await this.waitForElement('#toolbar');
+		await this.waitForElement('#media-buttons-container');
+		expect(await this.isPresent('#media-buttons-container')).to.be.true;
+	}
 }
