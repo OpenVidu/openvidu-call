@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { ParticipantService, RecordingInfo, TokenModel } from 'openvidu-angular';
+import { ParticipantService, RecordingInfo, StreamingError, StreamingInfo, TokenModel } from 'openvidu-angular';
 
 import { RestService } from '../../services/rest.service';
 
@@ -19,6 +19,8 @@ export class CallComponent implements OnInit {
 	streamingEnabled: boolean = true;
 	recordingList: RecordingInfo[] = [];
 	recordingError: any;
+	streamingError: StreamingError;
+	streamingInfo: StreamingInfo;
 	serverError: string = '';
 	loading: boolean = true;
 	private isDebugSession: boolean = false;
@@ -80,6 +82,24 @@ export class CallComponent implements OnInit {
 			this.recordingList = await this.restService.deleteRecording(recordingId);
 		} catch (error) {
 			this.recordingError = error;
+		}
+	}
+
+	async onStartStreamingClicked(rtmpUrl: string) {
+		try {
+			this.streamingError = undefined;
+			this.streamingInfo = await this.restService.startStreaming(rtmpUrl);
+		} catch (error) {
+			this.streamingError = error.error;
+		}
+	}
+
+	async onStopStreamingClicked() {
+		try {
+			this.streamingError = undefined;
+			this.streamingInfo = await this.restService.stopStreaming();
+		} catch (error) {
+			this.streamingError = error.message || error;
 		}
 	}
 

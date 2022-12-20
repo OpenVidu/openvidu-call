@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RecordingInfo } from 'openvidu-angular';
 import { lastValueFrom } from 'rxjs';
@@ -54,9 +54,22 @@ export class RestService {
 		return this.deleteRequest(`recordings/delete/${recordingId}`);
 	}
 
-	private postRequest(path: string, body: any): Promise<any> {
+	async startStreaming(rtmpUrl: string) {
+		const options = {
+			headers: new HttpHeaders({
+				'Content-Type': 'application/json'
+			})
+		};
+		return this.postRequest('streamings/start', { rtmpUrl }, options);
+	}
+
+	stopStreaming() {
+		return this.deleteRequest('streamings/stop');
+	}
+
+	private postRequest(path: string, body: any, options?: any): Promise<any> {
 		try {
-			return lastValueFrom(this.http.post<any>(this.baseHref + path, body));
+			return lastValueFrom(this.http.post<any>(this.baseHref + path, body, options));
 		} catch (error) {
 			if (error.status === 404) {
 				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
