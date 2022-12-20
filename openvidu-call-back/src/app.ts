@@ -7,6 +7,7 @@ import { app as authController } from './controllers/AuthController';
 import { app as callController } from './controllers/CallController';
 import { app as recordingController, proxyGETRecording } from './controllers/RecordingController';
 import { app as sessionController } from './controllers/SessionController';
+import { proxyStreaming } from './controllers/StreamingController';
 import { authorizer } from './services/AuthService';
 
 import {
@@ -15,6 +16,7 @@ import {
 	CALL_PRIVATE_ACCESS,
 	CALL_RECORDING,
 	CALL_SECRET,
+	CALL_STREAMING,
 	CALL_USER,
 	OPENVIDU_SECRET,
 	OPENVIDU_URL,
@@ -39,6 +41,7 @@ app.use('/call', callController);
 app.use('/sessions', authorizer, sessionController);
 app.use('/recordings', authorizer, recordingController);
 app.use('/recordings/:recordingId', authorizer, proxyGETRecording);
+app.use('/streamings', authorizer, proxyStreaming);
 app.use('/auth', authController);
 
 // Accept selfsigned certificates if CALL_OPENVIDU_CERTTYPE=selfsigned
@@ -57,6 +60,7 @@ app.listen(SERVER_PORT, () => {
 		console.log(`CALL SECRET: ${CALL_SECRET}`);
 	}
 	console.log(`CALL RECORDING: ${CALL_RECORDING}`);
+	console.log(`CALL STREAMING: ${CALL_STREAMING}`);
 	console.log(`CALL ADMIN PASSWORD: ${CALL_ADMIN_SECRET}`);
 	console.log(`OpenVidu Call Server is listening on port ${SERVER_PORT}`);
 	console.log(' ');

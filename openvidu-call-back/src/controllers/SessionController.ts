@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { OpenViduRole, Session } from 'openvidu-node-client';
-import { CALL_RECORDING } from '../config';
+import { CALL_RECORDING, CALL_STREAMING } from '../config';
 import { OpenViduService } from '../services/OpenViduService';
 
 export const app = express.Router({
@@ -21,10 +21,17 @@ app.post('/', async (req: Request, res: Response) => {
 		let sessionCreated: Session = await openviduService.createSession(sessionId);
 		const RECORDING_TOKEN_NAME = openviduService.RECORDING_TOKEN_NAME;
 		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
+		const IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase() === 'ENABLED';
 		const hasValidToken = openviduService.isValidToken(sessionId, req.cookies);
 		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
-		const role: OpenViduRole = isSessionCreator && IS_RECORDING_ENABLED ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
-		const response = { cameraToken: '', screenToken: '', recordingEnabled: IS_RECORDING_ENABLED, recordings: [] };
+		const role: OpenViduRole = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
+		const response = {
+			cameraToken: '',
+			screenToken: '',
+			recordingEnabled: IS_RECORDING_ENABLED,
+			recordings: [],
+			streamingEnabled: IS_STREAMING_ENABLED
+		};
 		const cameraConnection = await openviduService.createConnection(sessionCreated, nickname, role);
 		const screenConnection = await openviduService.createConnection(sessionCreated, nickname, role);
 		response.cameraToken = cameraConnection.token;
@@ -55,9 +62,7 @@ app.post('/', async (req: Request, res: Response) => {
 				response.recordings = await openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 			} catch (error) {
 				if (error.message === '501') {
-					console.log('Recording is diasbled in OpenVidu Server. Disabling it in OpenVidu Call');
-					response.recordings = [];
-					response.recordingEnabled = false;
+					console.warn('[WARN] Recording is disabled in OpenVidu Server.');
 				}
 			}
 		}

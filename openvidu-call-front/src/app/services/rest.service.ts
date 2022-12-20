@@ -3,6 +3,13 @@ import { Injectable } from '@angular/core';
 import { RecordingInfo } from 'openvidu-angular';
 import { lastValueFrom } from 'rxjs';
 
+interface SessionResponse {
+	cameraToken: string;
+	screenToken: string;
+	recordingEnabled: boolean;
+	recordings?: RecordingInfo[];
+	streamingEnabled: boolean;
+}
 @Injectable({
 	providedIn: 'root'
 })
@@ -21,10 +28,7 @@ export class RestService {
 		return await this.getRequest('call/config');
 	}
 
-	async getTokens(
-		sessionId: string,
-		nickname?: string
-	): Promise<{ cameraToken: string; screenToken: string; recordingEnabled: boolean; recordings?: RecordingInfo[] }> {
+	async getTokens(sessionId: string, nickname?: string): Promise<SessionResponse> {
 		return this.postRequest('sessions', { sessionId, nickname });
 	}
 	adminLogin(password: string): Promise<any[]> {

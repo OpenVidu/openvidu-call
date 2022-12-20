@@ -1,13 +1,15 @@
 import { Connection, ConnectionProperties, OpenVidu, OpenViduRole, Recording, Session, SessionProperties } from 'openvidu-node-client';
-import { OPENVIDU_URL, OPENVIDU_SECRET } from '../config';
+import { OPENVIDU_SECRET, OPENVIDU_URL } from '../config';
 
 export class OpenViduService {
 	RECORDING_TOKEN_NAME = 'ovCallRecordingToken';
 	ADMIN_TOKEN_NAME = 'ovCallAdminToken';
 	recordingMap: Map<string, { token: string; recordingId: string }> = new Map<string, { token: string; recordingId: string }>();
+	streamingMap: Map<string, string> = new Map<string, string>();
 	adminTokens: string[] = [];
 	protected static instance: OpenViduService;
 	private openvidu: OpenVidu;
+	private edition: string;
 
 	private constructor() {
 		this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
@@ -78,7 +80,7 @@ export class OpenViduService {
 		return session;
 	}
 
-	public createConnection(session: Session, nickname: string, role: OpenViduRole): Promise<Connection> {
+	public async createConnection(session: Session, nickname: string, role: OpenViduRole): Promise<Connection> {
 		console.log(`Requesting token for session ${session.sessionId}`);
 		let connectionProperties: ConnectionProperties = { role };
 		if (!!nickname) {
@@ -87,7 +89,10 @@ export class OpenViduService {
 			});
 		}
 		console.log('Connection Properties:', connectionProperties);
-		return session.createConnection(connectionProperties);
+		const connection = await session.createConnection(connectionProperties);
+		this.edition = new URL(connection.token).searchParams.get('edition');
+
+		return connection;
 	}
 
 	public async startRecording(sessionId: string): Promise<Recording> {
@@ -112,5 +117,9 @@ export class OpenViduService {
 	public async listRecordingsBySessionIdAndDate(sessionId: string, date: number) {
 		const recordingList: Recording[] = await this.listAllRecordings();
 		return recordingList.filter((recording) => recording.sessionId === sessionId && date <= recording.createdAt);
+	}
+
+	public isPRO(): boolean {
+		return this.edition.toUpperCase() === 'PRO';
 	}
 }

@@ -16,6 +16,7 @@ export class CallComponent implements OnInit {
 	closeClicked: boolean = false;
 	isSessionAlive: boolean = false;
 	recordingEnabled: boolean = true;
+	streamingEnabled: boolean = true;
 	recordingList: RecordingInfo[] = [];
 	recordingError: any;
 	serverError: string = '';
@@ -89,6 +90,7 @@ export class CallComponent implements OnInit {
 			nickname = this.participantService.getLocalParticipant().getNickname();
 		}
 		const response = await this.restService.getTokens(this.sessionId, nickname);
+		this.streamingEnabled = response.streamingEnabled;
 		this.recordingEnabled = response.recordingEnabled;
 		this.recordingList = response.recordings;
 		this.tokens = {
