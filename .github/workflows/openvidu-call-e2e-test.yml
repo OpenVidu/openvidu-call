@@ -26,8 +26,10 @@ jobs:
       with:
         node-version: '16'
     - name: Build openvidu-browser and openvidu-angular
+      env:
+        BRANCH_NAME: ${{ github.event.client_payload.branch-name || 'master' }}
       run: |
-        git clone https://github.com/OpenVidu/openvidu.git && \
+        git clone -b ${BRANCH_NAME} https://github.com/OpenVidu/openvidu.git && \
         cd openvidu/openvidu-browser && \
         npm install && \
         npm run build && \
