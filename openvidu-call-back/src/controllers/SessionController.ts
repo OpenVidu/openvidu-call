@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { OpenViduRole, Session } from 'openvidu-node-client';
-import { CALL_RECORDING } from '../config';
+import { CALL_RECORDING, CALL_STREAMING } from '../config';
 import { OpenViduService } from '../services/OpenViduService';
 
 export const app = express.Router({
@@ -19,22 +19,27 @@ app.post('/', async (req: Request, res: Response) => {
 		let nickname: string = req.body.nickname;
 		let date = null;
 		let sessionCreated: Session = await openviduService.createSession(sessionId);
-		const RECORDING_TOKEN_NAME = openviduService.RECORDING_TOKEN_NAME;
+		const MODERATOR_TOKEN_NAME = openviduService.MODERATOR_TOKEN_NAME;
 		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
+		const IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase() === 'ENABLED';
+		const PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_STREAMING_ENABLED;
 		const hasValidToken = openviduService.isValidToken(sessionId, req.cookies);
 		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
-		const role: OpenViduRole = isSessionCreator && IS_RECORDING_ENABLED ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
-		const response = { cameraToken: '', screenToken: '', recordingEnabled: IS_RECORDING_ENABLED, recordings: [] };
-		const cameraConnection = await openviduService.createConnection(sessionCreated, nickname, role);
-		const screenConnection = await openviduService.createConnection(sessionCreated, nickname, role);
-		response.cameraToken = cameraConnection.token;
-		response.screenToken = screenConnection.token;
+		const role: OpenViduRole = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
+		const response = {
+			cameraToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
+			screenToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
+			recordingEnabled: IS_RECORDING_ENABLED,
+			streamingEnabled: IS_STREAMING_ENABLED,
+			recordings: [],
+		};
 
-		if (IS_RECORDING_ENABLED && isSessionCreator && !hasValidToken) {
+		if (isSessionCreator && !hasValidToken && PRIVATE_FEATURES_ENABLED ) {
 			/**
 			 * ! *********** WARN *********** !
 			 *
-			 * To identify who is able to manage session recording, the code sends a cookie with a token to the session creator.
+			 * To identify who is able to manage session recording and streaming,
+			 * the code sends a cookie with a token to the session creator.
 			 * The relation between cookies and sessions are stored in backend memory.
 			 *
 			 * This authentication & authorization system is pretty basic and it is not for production.
@@ -44,9 +49,9 @@ app.post('/', async (req: Request, res: Response) => {
 			 **/
 			const uuid = crypto.randomBytes(32).toString('hex');
 			date = Date.now();
-			const recordingToken = `${response.cameraToken}&${RECORDING_TOKEN_NAME}=${uuid}&createdAt=${date}`;
-			res.cookie(RECORDING_TOKEN_NAME, recordingToken);
-			openviduService.recordingMap.set(sessionId, { token: recordingToken, recordingId: '' });
+			const moderatorToken = `${response.cameraToken}&${MODERATOR_TOKEN_NAME}=${uuid}&createdAt=${date}`;
+			res.cookie(MODERATOR_TOKEN_NAME, moderatorToken);
+			openviduService.recordingMap.set(sessionId, { token: moderatorToken, recordingId: '' });
 		}
 
 		if (IS_RECORDING_ENABLED) {
@@ -55,9 +60,7 @@ app.post('/', async (req: Request, res: Response) => {
 				response.recordings = await openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 			} catch (error) {
 				if (error.message === '501') {
-					console.log('Recording is diasbled in OpenVidu Server. Disabling it in OpenVidu Call');
-					response.recordings = [];
-					response.recordingEnabled = false;
+					console.warn('[WARN] Recording is disabled in OpenVidu Server.');
 				}
 			}
 		}

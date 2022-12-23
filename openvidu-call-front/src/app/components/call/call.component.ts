@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { ParticipantService, RecordingInfo, TokenModel } from 'openvidu-angular';
+import { ParticipantService, RecordingInfo, StreamingError, StreamingInfo, TokenModel } from 'openvidu-angular';
 
 import { RestService } from '../../services/rest.service';
 
@@ -16,8 +16,11 @@ export class CallComponent implements OnInit {
 	closeClicked: boolean = false;
 	isSessionAlive: boolean = false;
 	recordingEnabled: boolean = true;
+	streamingEnabled: boolean = true;
 	recordingList: RecordingInfo[] = [];
 	recordingError: any;
+	streamingError: StreamingError;
+	streamingInfo: StreamingInfo;
 	serverError: string = '';
 	loading: boolean = true;
 	private isDebugSession: boolean = false;
@@ -82,6 +85,24 @@ export class CallComponent implements OnInit {
 		}
 	}
 
+	async onStartStreamingClicked(rtmpUrl: string) {
+		try {
+			this.streamingError = undefined;
+			this.streamingInfo = await this.restService.startStreaming(rtmpUrl);
+		} catch (error) {
+			this.streamingError = error.error;
+		}
+	}
+
+	async onStopStreamingClicked() {
+		try {
+			this.streamingError = undefined;
+			this.streamingInfo = await this.restService.stopStreaming();
+		} catch (error) {
+			this.streamingError = error.message || error;
+		}
+	}
+
 	private async initializeTokens(): Promise<void> {
 		let nickname: string = '';
 		if (this.isDebugSession) {
@@ -89,6 +110,7 @@ export class CallComponent implements OnInit {
 			nickname = this.participantService.getLocalParticipant().getNickname();
 		}
 		const response = await this.restService.getTokens(this.sessionId, nickname);
+		this.streamingEnabled = response.streamingEnabled;
 		this.recordingEnabled = response.recordingEnabled;
 		this.recordingList = response.recordings;
 		this.tokens = {

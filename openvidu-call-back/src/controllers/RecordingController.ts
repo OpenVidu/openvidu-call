@@ -4,21 +4,24 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Recording } from 'openvidu-node-client';
+import { AuthService } from '../services/AuthService';
 import { OpenViduService } from '../services/OpenViduService';
 export const app = express.Router({
 	strict: true
 });
 
 const openviduService = OpenViduService.getInstance();
+const authService = AuthService.getInstance();
 
 app.get('/', async (req: Request, res: Response) => {
 	try {
 		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
 		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
-		const isAdminDashboard = openviduService.adminTokens.includes(req['session'].token);
+		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		let recordings = [];
-		if ((!!sessionId && IS_RECORDING_ENABLED && openviduService.isValidToken(sessionId, req.cookies)) || isAdminDashboard) {
-			if (isAdminDashboard) {
+		if ((!!sessionId && IS_RECORDING_ENABLED && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
+			if (isAdminSessionValid) {
 				recordings = await openviduService.listAllRecordings();
 			} else {
 				const date = openviduService.getDateFromCookie(req.cookies);
@@ -113,16 +116,17 @@ app.post('/stop', async (req: Request, res: Response) => {
 app.delete('/delete/:recordingId', async (req: Request, res: Response) => {
 	try {
 		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
-		const isAdminDashboard = openviduService.adminTokens.includes(req['session'].token);
+		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		let recordings = [];
-		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminDashboard) {
+		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
 			const recordingId: string = req.params.recordingId;
 			if (!recordingId) {
 				return res.status(400).send('Missing recording id parameter.');
 			}
 			console.log(`Deleting recording ${recordingId}`);
 			await openviduService.deleteRecording(recordingId);
-			if (isAdminDashboard && !!req['session']) {
+			if (isAdminSessionValid) {
 				recordings = await openviduService.listAllRecordings();
 			} else {
 				const date = openviduService.getDateFromCookie(req.cookies);
@@ -151,10 +155,11 @@ export const proxyGETRecording = createProxyMiddleware({
 	target: `${OPENVIDU_URL}/openvidu/`,
 	secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned',
 	onProxyReq: (proxyReq, req: Request, res: Response) => {
-		const isAdminDashboard = openviduService.adminTokens.includes(req['session'].token);
+		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
 		proxyReq.removeHeader('Cookie');
-		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminDashboard) {
+		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
 			const recordingId: string = req.params.recordingId;
 			if (!recordingId) {
 				return res.status(400).send(JSON.stringify({ message: 'Missing recording id parameter.' }));

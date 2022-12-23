@@ -2,15 +2,17 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
 
-import { CALL_ADMIN_SECRET } from '../config';
-import { authorizer } from '../services/AuthService';
+import { CALL_ADMIN_SECRET, CALL_OPENVIDU_CERTTYPE } from '../config';
+import { AuthService } from '../services/AuthService';
 import { OpenViduService } from '../services/OpenViduService';
 
 export const app = express.Router({
 	strict: true
 });
 
+const cookieAdminMaxAge = 24 * 60 * 60 * 1000; // 24 hours
 const openviduService = OpenViduService.getInstance();
+const authService = AuthService.getInstance();
 
 app.post('/login', async (req: Request, res: Response) => {
 	const { username, password } = req.body;
@@ -19,21 +21,24 @@ app.post('/login', async (req: Request, res: Response) => {
 		console.log('Login succeeded');
 		res.status(200).send('');
 	};
-	return authorizer(req, res, callback);
+	return authService.authorizer(req, res, callback);
 });
 
 app.post('/admin/login', async (req: Request, res: Response) => {
 	const password = req.body.password;
-	const isAdminTokenValid = openviduService.adminTokens.includes(req['session']?.token);
-	const isAuthValid = password === CALL_ADMIN_SECRET || isAdminTokenValid;
+	const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+	const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
+	const isAuthValid = password === CALL_ADMIN_SECRET || isAdminSessionValid;
 	if (isAuthValid) {
 		try {
-			if (!req['session']?.token || !openviduService.adminTokens.includes(req['session']?.token)) {
-				// Save session token
-				const token = crypto.randomBytes(32).toString('hex');
-				res.cookie(openviduService.ADMIN_TOKEN_NAME, token);
-				req['session'] = { token };
-				openviduService.adminTokens.push(token);
+			if (!isAdminSessionValid) {
+				// Generate a new session cookie
+				const id = crypto.randomBytes(16).toString('hex');
+				res.cookie(authService.ADMIN_COOKIE_NAME, id, {
+					maxAge: cookieAdminMaxAge,
+					secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned'
+				});
+				authService.adminSessions.set(id, { expires: new Date().getTime() + cookieAdminMaxAge });
 			}
 			const recordings = await openviduService.listAllRecordings();
 			console.log(`${recordings.length} recordings found`);
@@ -54,6 +59,6 @@ app.post('/admin/login', async (req: Request, res: Response) => {
 });
 
 app.post('/admin/logout', async (req: Request, res: Response) => {
-	openviduService.adminTokens = openviduService.adminTokens.filter((token) => token !== req['session'].token);
-	req['session'] = {};
+	const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+	authService.adminSessions.delete(adminSessionId);
 });

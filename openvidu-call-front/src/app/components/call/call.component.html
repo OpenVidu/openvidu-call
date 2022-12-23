@@ -3,15 +3,22 @@
 	[tokens]="tokens"
 	[recordingActivityRecordingsList]="recordingList"
 	[recordingActivityRecordingError]="recordingError"
+	[streamingActivityStreamingError]="streamingError"
+	[streamingActivityStreamingInfo]="streamingInfo"
 	(onToolbarLeaveButtonClicked)="onLeaveButtonClicked()"
 	(onToolbarStartRecordingClicked)="onStartRecordingClicked()"
 	(onActivitiesPanelStartRecordingClicked)="onStartRecordingClicked()"
 	(onToolbarStopRecordingClicked)="onStopRecordingClicked()"
 	(onActivitiesPanelStopRecordingClicked)="onStopRecordingClicked()"
 	(onActivitiesPanelDeleteRecordingClicked)="onDeleteRecordingClicked($event)"
+	(onActivitiesPanelStartStreamingClicked)="onStartStreamingClicked($event)"
+	(onActivitiesPanelStopStreamingClicked)="onStopStreamingClicked()"
+	(onToolbarStopStreamingClicked)="onStopStreamingClicked()"
 	(onNodeCrashed)="onNodeCrashed()"
 	[activitiesPanelRecordingActivity]="recordingEnabled"
 	[toolbarRecordingButton]="recordingEnabled"
+	[activitiesPanelStreamingActivity]="streamingEnabled"
+	[toolbarStreamingButton]="streamingEnabled"
 >
 </ov-videoconference>
 
