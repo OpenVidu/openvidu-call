@@ -1,5 +1,5 @@
 import * as cookieParser from 'cookie-parser';
-import * as cookieSession from 'cookie-session';
+
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 
@@ -8,7 +8,7 @@ import { app as callController } from './controllers/CallController';
 import { app as recordingController, proxyGETRecording } from './controllers/RecordingController';
 import { app as sessionController } from './controllers/SessionController';
 import { proxyStreaming } from './controllers/StreamingController';
-import { authorizer } from './services/AuthService';
+import { AuthService } from './services/AuthService';
 
 import {
 	CALL_ADMIN_SECRET,
@@ -23,25 +23,19 @@ import {
 	SERVER_PORT
 } from './config';
 
+const authService = AuthService.getInstance();
+
 dotenv.config();
 const app = express();
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-	cookieSession({
-		name: 'session',
-		keys: [CALL_ADMIN_SECRET],
-		maxAge: 24 * 60 * 60 * 1000 // 24 hours
-	})
-);
-
 app.use('/call', callController);
-app.use('/sessions', authorizer, sessionController);
-app.use('/recordings', authorizer, recordingController);
-app.use('/recordings/:recordingId', authorizer, proxyGETRecording);
-app.use('/streamings', authorizer, proxyStreaming);
+app.use('/sessions', authService.authorizer, sessionController);
+app.use('/recordings', authService.authorizer, recordingController);
+app.use('/recordings/:recordingId', authService.authorizer, proxyGETRecording);
+app.use('/streamings', authService.authorizer, proxyStreaming);
 app.use('/auth', authController);
 
 // Accept selfsigned certificates if CALL_OPENVIDU_CERTTYPE=selfsigned
