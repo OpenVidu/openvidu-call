@@ -26,8 +26,6 @@ export const proxyStreaming = createProxyMiddleware({
 	selfHandleResponse: true,
 	secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned',
 	onProxyReq: (proxyReq, req: Request, res: Response) => {
-		console.log('PATH', req.path);
-
 		const IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase() === 'ENABLED';
 		if (IS_STREAMING_ENABLED) {
 			const sessionId = openviduService.getSessionIdFromCookie(req?.cookies);
@@ -51,7 +49,6 @@ export const proxyStreaming = createProxyMiddleware({
 					console.log('STOP STREAMING');
 					const streamingId = openviduService.streamingMap.get(sessionId);
 					proxyReq.path += streamingId;
-					console.log(proxyReq.path);
 				}
 			} else {
 				res.status(403).send(JSON.stringify({ message: 'Permissions denied to drive streaming' }));
