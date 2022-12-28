@@ -112,9 +112,8 @@ public class ProxyService {
 	}
 
 	public HttpResponse<String> sendPost(String url, Map<String, String> body, Map<String, String> headers)
-			throws IOException, InterruptedException {
-
-		String boundary = "";
+			throws InterruptedException, IllegalArgumentException, IOException {
+		 
 		Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(url));
 		BodyPublisher postBody;
 

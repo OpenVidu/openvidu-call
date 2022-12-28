@@ -53,13 +53,16 @@ public class StreamingController {
 	@Autowired
 	private ProxyService proxyService;
 	
-	private final String RTMP_URL = RTMP_EXPORTER_URL + "/api/streams/";
+	private final String RTMP_PATH = "/api/streams/";
 
 	@PostMapping("/start")
 	public ResponseEntity<?> startStreaming(@RequestBody(required = true) Map<String, String> params,
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken,
 			HttpServletRequest req,
 			HttpServletResponse res) {
+		Map<String, String> response = new HashMap<String, String>();
+		response.put("rtmpAvailable", "true");
+
 		try {
 			boolean IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase().equals("ENABLED");
 			if (IS_STREAMING_ENABLED) {
@@ -81,32 +84,41 @@ public class StreamingController {
 					Map<String, String> headers = new HashMap<String, String>();
 					headers.put("Authorization", "Basic " + Base64.getEncoder().encodeToString(RTMP_EXPORTER_CREDENTIALS.getBytes()));
 					
-					HttpResponse<String> rtmpResponse = proxyService.sendPost(RTMP_URL, params, headers);
+					HttpResponse<String> rtmpResponse = proxyService.sendPost(RTMP_EXPORTER_URL + RTMP_PATH, params, headers);
 					if (rtmpResponse != null && rtmpResponse.statusCode() == 200) {
-
 						JsonObject jsonResponse = new Gson().fromJson(rtmpResponse.body().toString(), JsonObject.class);
 						jsonResponse.addProperty("rtmpAvailable", true);
 						openviduService.streamingMap.put(sessionId, jsonResponse.get("id").getAsString());
+						
 						return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+					} else {
+						response.put("rtmpAvailable", null);
+						response.put("message", rtmpResponse.body());
 					}
 					
-					return new ResponseEntity<>(rtmpResponse.body(), HttpStatus.resolve(rtmpResponse.statusCode()));
+					return new ResponseEntity<>(response, HttpStatus.resolve(rtmpResponse.statusCode()));
 
 				} else {
 					System.err.println("Permissions denied to drive streaming");
-					return new ResponseEntity<>("Permissions denied to drive streaming", HttpStatus.FORBIDDEN);
+					response.put("message", "Permissions denied to drive streaming");
+					return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 				}
 
 			} else {
 				System.err.println("OpenVidu Call Streaming is not enabled");
-				return new ResponseEntity<>("OpenVidu Call Streaming is disabled", HttpStatus.FORBIDDEN);
+				response.put("message", "OpenVidu Call Streaming is disabled");
+				return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
-			return new ResponseEntity<>("Unexpected error starting streaming", HttpStatus.INTERNAL_SERVER_ERROR);
-
-		}
-
+			if(e.getCause().getMessage().equals("Connection refused")) {
+				response.put("rtmpAvailable", null);
+				response.put("message", "Cannot connect with RTMP service");
+			} else {				
+				response.put("message", "Unexpected error starting streaming");
+			}
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} 
 	}
 
 	@DeleteMapping("/stop")
@@ -128,7 +140,7 @@ public class StreamingController {
 
 					Map<String, String> headers = new HashMap<String, String>();
 					headers.put("Authorization", "Basic " + Base64.getEncoder().encodeToString(RTMP_EXPORTER_CREDENTIALS.getBytes()));
-					HttpResponse<String> rtmpResponse = proxyService.sendDelete(RTMP_URL + streamingId, headers);
+					HttpResponse<String> rtmpResponse = proxyService.sendDelete(RTMP_EXPORTER_URL + RTMP_PATH + streamingId, headers);
 					if (rtmpResponse != null && rtmpResponse.statusCode() == 200) {
 						JsonObject jsonResponse = new Gson().fromJson(rtmpResponse.body().toString(), JsonObject.class);
 						jsonResponse.addProperty("rtmpAvailable", true);
