@@ -5,6 +5,10 @@
 	[recordingActivityRecordingError]="recordingError"
 	[streamingActivityStreamingError]="streamingError"
 	[streamingActivityStreamingInfo]="streamingInfo"
+	[activitiesPanelRecordingActivity]="recordingEnabled"
+	[toolbarRecordingButton]="recordingEnabled"
+	[activitiesPanelStreamingActivity]="streamingEnabled"
+	[toolbarStreamingButton]="streamingEnabled"
 	(onToolbarLeaveButtonClicked)="onLeaveButtonClicked()"
 	(onToolbarStartRecordingClicked)="onStartRecordingClicked()"
 	(onActivitiesPanelStartRecordingClicked)="onStartRecordingClicked()"
@@ -15,10 +19,6 @@
 	(onActivitiesPanelStopStreamingClicked)="onStopStreamingClicked()"
 	(onToolbarStopStreamingClicked)="onStopStreamingClicked()"
 	(onNodeCrashed)="onNodeCrashed()"
-	[activitiesPanelRecordingActivity]="recordingEnabled"
-	[toolbarRecordingButton]="recordingEnabled"
-	[activitiesPanelStreamingActivity]="streamingEnabled"
-	[toolbarStreamingButton]="streamingEnabled"
 >
 </ov-videoconference>
 
