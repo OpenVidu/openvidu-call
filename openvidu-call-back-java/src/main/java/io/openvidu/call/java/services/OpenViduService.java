@@ -27,10 +27,9 @@ import io.openvidu.java.client.SessionProperties;
 @Service
 public class OpenViduService {
 
-	public static final String RECORDING_TOKEN_NAME = "ovCallRecordingToken";
-	public static final String ADMIN_TOKEN_NAME = "ovCallAdminToken";
+	public static final String MODERATOR_TOKEN_NAME = "ovCallModeratorToken";
 	public Map<String, RecordingData> recordingMap = new HashMap<String, RecordingData>();
-	public List<String> adminTokens = new ArrayList<String>();
+	public Map<String, String> streamingMap = new HashMap<String, String>();
 
 	@Value("${OPENVIDU_URL}")
 	public String OPENVIDU_URL;
@@ -39,6 +38,7 @@ public class OpenViduService {
 	private String OPENVIDU_SECRET;
 
 	private OpenVidu openvidu;
+	private String edition;
 
 	@PostConstruct
 	public void init() {
@@ -49,6 +49,10 @@ public class OpenViduService {
 		String stringToEncode = "OPENVIDUAPP:" + OPENVIDU_SECRET;
 		byte[] encodedString = Base64.encodeBase64(stringToEncode.getBytes());
 		return "Basic " + new String(encodedString);
+	}
+	
+	public boolean isPRO() {
+		return this.edition.toUpperCase().equals("PRO");
 	}
 
 	public long getDateFromCookie(String recordingToken) {
@@ -77,17 +81,17 @@ public class OpenViduService {
 			}
 
 		} catch (Exception error) {
-			System.out.println("Recording cookie not found");
+			System.out.println("Moderator cookie not found");
 			System.err.println(error);
 		}
 		return "";
 
 	}
 
-	public boolean isValidToken(String sessionId, String recordingToken) {
+	public boolean isValidToken(String sessionId, String token) {
 		try {
 
-			if (!recordingToken.isEmpty()) {
+			if (!token.isEmpty()) {
 				MultiValueMap<String, String> storedTokenParams = null;
 
 				if (this.recordingMap.containsKey(sessionId)) {
@@ -96,14 +100,14 @@ public class OpenViduService {
 				}
 
 				MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder
-						.fromUriString(recordingToken).build().getQueryParams();
+						.fromUriString(token).build().getQueryParams();
 
 				if (!cookieTokenParams.isEmpty() && storedTokenParams != null) {
 					String cookieSessionId = cookieTokenParams.get("sessionId").get(0);
-					String cookieToken = cookieTokenParams.get(RECORDING_TOKEN_NAME).get(0);
+					String cookieToken = cookieTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
 					String cookieDate = cookieTokenParams.get("createdAt").get(0);
 
-					String storedToken = storedTokenParams.get(RECORDING_TOKEN_NAME).get(0);
+					String storedToken = storedTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
 					String storedDate = storedTokenParams.get("createdAt").get(0);
 
 					return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken)
@@ -137,7 +141,14 @@ public class OpenViduService {
 		params.put("role", role.name());
 		params.put("data", connectionData.toString());
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-		return session.createConnection(properties);
+
+		Connection connection = session.createConnection(properties);
+		
+		MultiValueMap<String, String> tokenParams = UriComponentsBuilder
+				.fromUriString(connection.getToken()).build().getQueryParams();;
+		this.edition = tokenParams.get("edition").get(0);
+		
+		return connection;
 
 	}
 

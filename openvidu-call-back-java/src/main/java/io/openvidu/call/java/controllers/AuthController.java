@@ -1,11 +1,13 @@
 package io.openvidu.call.java.controllers;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.openvidu.call.java.models.AdminSessionData;
+import io.openvidu.call.java.services.AuthService;
 import io.openvidu.call.java.services.OpenViduService;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
@@ -28,6 +32,8 @@ import io.openvidu.java.client.Recording;
 @RestController
 @RequestMapping("auth")
 public class AuthController {
+	
+	private int cookieAdminMaxAge = 24 * 60 * 60; //24 hours
 
 	@Value("${CALL_USER}")
 	private String CALL_USER;
@@ -37,9 +43,15 @@ public class AuthController {
 
 	@Value("${CALL_ADMIN_SECRET}")
 	private String CALL_ADMIN_SECRET;
+	
+	@Value("${CALL_OPENVIDU_CERTTYPE}")
+	private String CALL_OPENVIDU_CERTTYPE;
 
 	@Autowired
 	private OpenViduService openviduService;
+	
+	@Autowired
+	private AuthService authService;
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody(required = true) Map<String, String> params) {
@@ -56,33 +68,31 @@ public class AuthController {
 	}
 
 	@PostMapping("/admin/login")
-	public ResponseEntity<?> login(@RequestBody(required = false) Map<String, String> params,
-			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingToken,
+	public ResponseEntity<?> adminLogin(@RequestBody(required = false) Map<String, String> params,
+			@CookieValue(name = AuthService.ADMIN_COOKIE_NAME, defaultValue = "") String adminToken,
 			HttpServletResponse res) {
 
 		String message = "";
 		Map<String, Object> response = new HashMap<String, Object>();
 
 		String password = params.get("password");
-		String sessionToken = this.openviduService.getSessionIdFromCookie(recordingToken);
-		boolean isAdminTokenValid = this.openviduService.adminTokens.contains(sessionToken);
+		boolean isAdminSessionValid = authService.isAdminSessionValid(adminToken);
 
-		boolean isAuthValid = password.equals(CALL_ADMIN_SECRET) || isAdminTokenValid;
+		boolean isAuthValid = password.equals(CALL_ADMIN_SECRET) || isAdminSessionValid;
 		if (isAuthValid) {
 			try {
-				if (sessionToken.isEmpty() || !openviduService.adminTokens.contains(sessionToken)) {
-					// Save session token
-					String token = UUID.randomUUID().toString();
+				if (!isAdminSessionValid) {
+					// Generate a new session cookie
+					String id = UUID.randomUUID().toString();
 
-					Cookie cookie = new Cookie(OpenViduService.ADMIN_TOKEN_NAME, token);
+					Cookie cookie = new Cookie(AuthService.ADMIN_COOKIE_NAME, id);
 					cookie.setPath("/");
+					cookie.setMaxAge(cookieAdminMaxAge);
+					cookie.setSecure(CALL_OPENVIDU_CERTTYPE.equals("selfsigned"));
 					res.addCookie(cookie);
 
-					cookie = new Cookie("session", token);
-					cookie.setPath("/");
-					res.addCookie(cookie);
-
-					openviduService.adminTokens.add(token);
+					AdminSessionData data = new AdminSessionData(new Date().getTime() + cookieAdminMaxAge);
+					authService.adminSessions.put(id, data);
 				}
 				List<Recording> recordings = openviduService.listAllRecordings();
 				System.out.println("Login succeeded");
@@ -112,12 +122,20 @@ public class AuthController {
 	}
 
 	@PostMapping("/admin/logout")
-	public ResponseEntity<Void> logout(@RequestBody(required = false) Map<String, String> params,
-			@CookieValue(name = "session", defaultValue = "") String sessionToken,
+	public ResponseEntity<Void> adminLogout(@CookieValue(name = AuthService.ADMIN_COOKIE_NAME, defaultValue = "") String adminToken,
+			HttpServletRequest req,
 			HttpServletResponse res) {
-		this.openviduService.adminTokens.remove(sessionToken);
-		Cookie cookie = new Cookie("session", null);
-		res.addCookie(cookie);
+		
+		authService.adminSessions.remove(adminToken);
+		for (Cookie cookie : req.getCookies()) {
+			if(cookie.getName().equals(AuthService.ADMIN_COOKIE_NAME)) {
+				cookie.setValue("");
+				cookie.setPath("/");
+				cookie.setMaxAge(0);
+				res.addCookie(cookie);
+				break;
+			}
+        }
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 

@@ -34,14 +34,20 @@ public class SessionController {
 
 	@Value("${CALL_RECORDING}")
 	private String CALL_RECORDING;
+	
+	@Value("${CALL_STREAMING}")
+	private String CALL_STREAMING;
 
 	@Autowired
 	private OpenViduService openviduService;
+	
+	private final int cookieAdminMaxAge = 24 * 60 * 60;
+
 
 	@PostMapping("/sessions")
 	public ResponseEntity<Map<String, Object>> createConnection(
 			@RequestBody(required = false) Map<String, Object> params,
-			@CookieValue(name = OpenViduService.RECORDING_TOKEN_NAME, defaultValue = "") String recordingTokenCookie,
+			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken,
 			HttpServletResponse res) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -56,12 +62,13 @@ public class SessionController {
 
 			Session sessionCreated = this.openviduService.createSession(sessionId);
 			boolean IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase().equals("ENABLED");
+			boolean IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase().equals("ENABLED");
+			boolean PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_STREAMING_ENABLED;
 
-			boolean hasValidToken = this.openviduService.isValidToken(sessionId, recordingTokenCookie);
+			boolean hasValidToken = this.openviduService.isValidToken(sessionId, moderatorToken);
 			boolean isSessionCreator = hasValidToken || sessionCreated.getActiveConnections().size() == 0;
 
-			OpenViduRole role = isSessionCreator && IS_RECORDING_ENABLED ? OpenViduRole.MODERATOR
-					: OpenViduRole.PUBLISHER;
+			OpenViduRole role = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
 
 			response.put("recordingEnabled", IS_RECORDING_ENABLED);
 			response.put("recordings", new ArrayList<Recording>());
@@ -72,11 +79,11 @@ public class SessionController {
 			response.put("cameraToken", cameraConnection.getToken());
 			response.put("screenToken", screenConnection.getToken());
 
-			if (IS_RECORDING_ENABLED && isSessionCreator && !hasValidToken) {
+			if (isSessionCreator && !hasValidToken && PRIVATE_FEATURES_ENABLED) {
 				/**
 				 * ! *********** WARN *********** !
 				 *
-				 * To identify who is able to manage session recording, the code sends a cookie
+				 * To identify who is able to manage session recording and streaming, the code sends a cookie
 				 * with a token to the session creator. The relation between cookies and
 				 * sessions are stored in backend memory.
 				 *
@@ -89,10 +96,11 @@ public class SessionController {
 
 				String uuid = UUID.randomUUID().toString();
 				date = System.currentTimeMillis();
-				String recordingToken = cameraConnection.getToken() + "&" + OpenViduService.RECORDING_TOKEN_NAME + "="
+				String recordingToken = cameraConnection.getToken() + "&" + OpenViduService.MODERATOR_TOKEN_NAME + "="
 						+ uuid + "&createdAt=" + date;
 
-				Cookie cookie = new Cookie(OpenViduService.RECORDING_TOKEN_NAME, recordingToken);
+				Cookie cookie = new Cookie(OpenViduService.MODERATOR_TOKEN_NAME, recordingToken);
+				cookie.setMaxAge(cookieAdminMaxAge);
 				res.addCookie(cookie);
 
 				RecordingData recData = new RecordingData(recordingToken, "");
@@ -101,7 +109,7 @@ public class SessionController {
 
 			if (IS_RECORDING_ENABLED) {
 				if (date == -1) {
-					date = openviduService.getDateFromCookie(recordingTokenCookie);
+					date = openviduService.getDateFromCookie(moderatorToken);
 				}
 				List<Recording> recordings = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 				response.put("recordings", recordings);
@@ -113,7 +121,6 @@ public class SessionController {
 
 			if (e.getMessage() != null && Integer.parseInt(e.getMessage()) == 501) {
 				System.err.println("OpenVidu Server recording module is disabled");
-				response.put("recordingEnabled", false);
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			} else if (e.getMessage() != null && Integer.parseInt(e.getMessage()) == 401) {
 				System.err.println("OpenVidu credentials are wrong.");
