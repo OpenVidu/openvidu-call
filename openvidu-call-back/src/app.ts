@@ -4,20 +4,20 @@ import * as dotenv from 'dotenv';
 import * as express from 'express';
 
 import { app as authController } from './controllers/AuthController';
+import { app as broadcastController } from './controllers/BroadcastController';
 import { app as callController } from './controllers/CallController';
 import { app as recordingController, proxyGETRecording } from './controllers/RecordingController';
 import { app as sessionController } from './controllers/SessionController';
-import { proxyStreaming } from './controllers/StreamingController';
 import { AuthService } from './services/AuthService';
 
 import * as chalk from 'chalk';
 import {
 	CALL_ADMIN_SECRET,
+	CALL_BROADCAST,
 	CALL_OPENVIDU_CERTTYPE,
 	CALL_PRIVATE_ACCESS,
 	CALL_RECORDING,
 	CALL_SECRET,
-	CALL_STREAMING,
 	CALL_USER,
 	OPENVIDU_SECRET,
 	OPENVIDU_URL,
@@ -36,7 +36,7 @@ app.use('/call', callController);
 app.use('/sessions', authService.authorizer, sessionController);
 app.use('/recordings', authService.authorizer, recordingController);
 app.use('/recordings/:recordingId', authService.authorizer, proxyGETRecording);
-app.use('/streamings', authService.authorizer, proxyStreaming);
+app.use('/broadcasts', authService.authorizer, broadcastController);
 app.use('/auth', authController);
 
 // Accept selfsigned certificates if CALL_OPENVIDU_CERTTYPE=selfsigned
@@ -59,7 +59,7 @@ app.listen(SERVER_PORT, () => {
 	console.log('OPENVIDU SECRET: ', credential(OPENVIDU_SECRET));
 	console.log('CALL OPENVIDU CERTTYPE: ', text(CALL_OPENVIDU_CERTTYPE));
 	console.log('CALL RECORDING: ', CALL_RECORDING === 'ENABLED' ? enabled(CALL_RECORDING) : disabled(CALL_RECORDING));
-	console.log('CALL STREAMING: ', CALL_STREAMING === 'ENABLED' ? enabled(CALL_STREAMING) : disabled(CALL_STREAMING));
+	console.log('CALL BROADCAST: ', CALL_BROADCAST === 'ENABLED' ? enabled(CALL_BROADCAST) : disabled(CALL_BROADCAST));
 	console.log('---------------------------------------------------------');
 	console.log(' ');
 	console.log('CALL PRIVATE ACCESS: ', CALL_PRIVATE_ACCESS === 'ENABLED' ? enabled(CALL_PRIVATE_ACCESS) : disabled(CALL_PRIVATE_ACCESS));

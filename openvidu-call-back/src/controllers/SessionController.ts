@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { OpenViduRole, Session } from 'openvidu-node-client';
-import { CALL_RECORDING, CALL_STREAMING } from '../config';
+import { CALL_BROADCAST, CALL_RECORDING } from '../config';
 import { OpenViduService } from '../services/OpenViduService';
 
 export const app = express.Router({
@@ -21,8 +21,8 @@ app.post('/', async (req: Request, res: Response) => {
 		let sessionCreated: Session = await openviduService.createSession(sessionId);
 		const MODERATOR_TOKEN_NAME = openviduService.MODERATOR_TOKEN_NAME;
 		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
-		const IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase() === 'ENABLED';
-		const PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_STREAMING_ENABLED;
+		const IS_BROADCASTING_ENABLED = CALL_BROADCAST.toUpperCase() === 'ENABLED';
+		const PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_BROADCASTING_ENABLED;
 		const hasValidToken = openviduService.isValidToken(sessionId, req.cookies);
 		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
 		const role: OpenViduRole = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
@@ -30,7 +30,7 @@ app.post('/', async (req: Request, res: Response) => {
 			cameraToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
 			screenToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
 			recordingEnabled: IS_RECORDING_ENABLED,
-			streamingEnabled: IS_STREAMING_ENABLED,
+			broadcastingEnabled: IS_BROADCASTING_ENABLED,
 			recordings: [],
 		};
 
@@ -38,7 +38,7 @@ app.post('/', async (req: Request, res: Response) => {
 			/**
 			 * ! *********** WARN *********** !
 			 *
-			 * To identify who is able to manage session recording and streaming,
+			 * To identify who is able to manage session recording and broadcasting,
 			 * the code sends a cookie with a token to the session creator.
 			 * The relation between cookies and sessions are stored in backend memory.
 			 *

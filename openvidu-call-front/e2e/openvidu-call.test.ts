@@ -91,7 +91,7 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await browser.quit();
 	});
 
-	it('MODERATOR should have access to STREAMING feature', async () => {
+	it('MODERATOR should have access to BROADCASTING feature', async () => {
 
 		await browser.get(url);
 
@@ -104,15 +104,15 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await utils.checkToolbarIsPresent();
 		await utils.clickOn('#activities-panel-btn');
 
-		await utils.waitForElement('ov-streaming-activity');
-		await utils.clickOn('ov-streaming-activity');
+		await utils.waitForElement('ov-broadcasting-activity');
+		await utils.clickOn('ov-broadcasting-activity');
 
-		await utils.waitForElement('#streaming-url-input');
+		await utils.waitForElement('#broadcasting-url-input');
 		expect(await utils.isPresent('not-allowed-message')).to.be.false;
 	});
 
-	it('PUBLISHER should not access to STREAMING feature', async () => {
-		await browser.get(`${url}streamingSession`);
+	it('PUBLISHER should not access to BROADCASTING feature', async () => {
+		await browser.get(`${url}broadcastingSession`);
 
 		await utils.waitForElement('#join-button');
 		await utils.clickOn('#join-button');
@@ -120,17 +120,17 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await utils.checkToolbarIsPresent();
 		await utils.clickOn('#activities-panel-btn');
 
-		await utils.waitForElement('ov-streaming-activity');
-		await utils.clickOn('ov-streaming-activity');
+		await utils.waitForElement('ov-broadcasting-activity');
+		await utils.clickOn('ov-broadcasting-activity');
 
-		await utils.waitForElement('#streaming-url-input');
+		await utils.waitForElement('#broadcasting-url-input');
 		expect(await utils.isPresent('.not-allowed-message')).to.be.false;
 
 
 		incognitoBrowser = await createChromeBrowser(true);
 		const incognitoUtils =  new OpenViduCallPO(incognitoBrowser);
 
-		await incognitoBrowser.get(`${url}streamingSession`);
+		await incognitoBrowser.get(`${url}broadcastingSession`);
 
 		await incognitoUtils.waitForElement('#join-button');
 		await incognitoUtils.clickOn('#join-button');
@@ -138,11 +138,11 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await incognitoUtils.checkToolbarIsPresent();
 		await incognitoUtils.clickOn('#activities-panel-btn');
 
-		await incognitoUtils.waitForElement('ov-streaming-activity');
-		await incognitoUtils.clickOn('ov-streaming-activity');
+		await incognitoUtils.waitForElement('ov-broadcasting-activity');
+		await incognitoUtils.clickOn('ov-broadcasting-activity');
 
 		await incognitoUtils.waitForElement('.not-allowed-message');
-		expect(await incognitoUtils.isPresent('#streaming-url-input')).to.be.false;
+		expect(await incognitoUtils.isPresent('#broadcasting-url-input')).to.be.false;
 		await incognitoBrowser.quit();
 	});
 
