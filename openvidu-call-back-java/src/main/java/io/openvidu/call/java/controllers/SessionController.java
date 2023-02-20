@@ -34,15 +34,14 @@ public class SessionController {
 
 	@Value("${CALL_RECORDING}")
 	private String CALL_RECORDING;
-	
-	@Value("${CALL_STREAMING}")
-	private String CALL_STREAMING;
+
+	@Value("${CALL_BROADCAST}")
+	private String CALL_BROADCAST;
 
 	@Autowired
 	private OpenViduService openviduService;
-	
-	private final int cookieAdminMaxAge = 24 * 60 * 60;
 
+	private final int cookieAdminMaxAge = 24 * 60 * 60;
 
 	@PostMapping("/sessions")
 	public ResponseEntity<Map<String, Object>> createConnection(
@@ -62,8 +61,8 @@ public class SessionController {
 
 			Session sessionCreated = this.openviduService.createSession(sessionId);
 			boolean IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase().equals("ENABLED");
-			boolean IS_STREAMING_ENABLED = CALL_STREAMING.toUpperCase().equals("ENABLED");
-			boolean PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_STREAMING_ENABLED;
+			boolean IS_BROADCAST_ENABLED = CALL_BROADCAST.toUpperCase().equals("ENABLED");
+			boolean PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_BROADCAST_ENABLED;
 
 			boolean hasValidToken = this.openviduService.isValidToken(sessionId, moderatorToken);
 			boolean isSessionCreator = hasValidToken || sessionCreated.getActiveConnections().size() == 0;
@@ -72,6 +71,7 @@ public class SessionController {
 
 			response.put("recordingEnabled", IS_RECORDING_ENABLED);
 			response.put("recordings", new ArrayList<Recording>());
+			response.put("broadcastingEnabled", IS_BROADCAST_ENABLED);
 
 			Connection cameraConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
 			Connection screenConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
@@ -83,7 +83,8 @@ public class SessionController {
 				/**
 				 * ! *********** WARN *********** !
 				 *
-				 * To identify who is able to manage session recording and streaming, the code sends a cookie
+				 * To identify who is able to manage session recording and streaming, the code
+				 * sends a cookie
 				 * with a token to the session creator. The relation between cookies and
 				 * sessions are stored in backend memory.
 				 *

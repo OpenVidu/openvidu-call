@@ -1,13 +1,13 @@
 package io.openvidu.call.java.services;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -47,12 +47,16 @@ public class OpenViduService {
 
 	public String getBasicAuth() {
 		String stringToEncode = "OPENVIDUAPP:" + OPENVIDU_SECRET;
-		byte[] encodedString = Base64.encodeBase64(stringToEncode.getBytes());
+		String encodedString = Base64.getEncoder().encodeToString(stringToEncode.getBytes());
 		return "Basic " + new String(encodedString);
 	}
-	
+
 	public boolean isPRO() {
 		return this.edition.toUpperCase().equals("PRO");
+	}
+
+	public boolean isCE() {
+		return this.edition.toUpperCase().equals("CE");
 	}
 
 	public long getDateFromCookie(String recordingToken) {
@@ -143,11 +147,12 @@ public class OpenViduService {
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
 
 		Connection connection = session.createConnection(properties);
-		
+
 		MultiValueMap<String, String> tokenParams = UriComponentsBuilder
-				.fromUriString(connection.getToken()).build().getQueryParams();;
+				.fromUriString(connection.getToken()).build().getQueryParams();
+		;
 		this.edition = tokenParams.get("edition").get(0);
-		
+
 		return connection;
 
 	}
@@ -182,6 +187,15 @@ public class OpenViduService {
 			}
 		}
 		return recordingsAux;
+	}
+
+	public void startBroadcast(String sessionId, String broadcastUrl)
+			throws OpenViduJavaClientException, OpenViduHttpException {
+		this.openvidu.startBroadcast(sessionId, broadcastUrl);
+	}
+
+	public void stopBroadcast(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+		this.openvidu.stopBroadcast(sessionId);
 	}
 
 }
