@@ -25,26 +25,44 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - name: Build openvidu-browser and openvidu-angular
+    - name: Build openvidu-browser
       env:
         BRANCH_NAME: ${{ github.event.client_payload.branch-name || 'master' }}
       run: |
         git clone -b ${BRANCH_NAME} https://github.com/OpenVidu/openvidu.git && \
+        echo ${PWD} && \
         cd openvidu/openvidu-browser && \
         npm install && \
         npm run build && \
         npm pack && \
-        mv openvidu-browser-*.tgz ../openvidu-components-angular && \
-        cd ../openvidu-components-angular && \
-        npm install openvidu-browser-*.tgz && \
+        cp openvidu-browser-*.tgz ../../ && \
+        mv openvidu-browser-*.tgz ../openvidu-components-angular
+
+    - name: Build openvidu-node-client
+      run: |
+        ls -al && \
+        cd openvidu/openvidu-node-client && \
         npm install && \
+        npm run build && \
+        npm pack && \
+        mv openvidu-node-client-*.tgz ../../
+
+    - name: Build openvidu-angular
+      run: |
+        cd openvidu/openvidu-components-angular && \
+        npm install ../../openvidu-browser-*.tgz && \
+        # npm install && \
         npm run lib:build && \
-        mv dist/openvidu-angular/openvidu-angular-*.tgz .
-        tar -cvf artifacts.tar openvidu-angular-*.tgz openvidu-browser-*.tgz
+        mv dist/openvidu-angular/openvidu-angular-*.tgz ../../
+        cd ../../ && \
+        rm -rf openvidu && \
+        ls -al
+        # tar -cvf artifacts.tar .
     - uses: actions/upload-artifact@v3
       with:
         name: artifacts
-        path: openvidu/openvidu-components-angular/artifacts.tar
+        path: ${{ github.workspace }}/**.tgz
+        if-no-files-found: error
 
   e2e_test_with_authentication:
     needs: prepare_openvidu_angular
@@ -57,7 +75,7 @@ jobs:
         node-version: '16'
     - uses: actions/download-artifact@v3
       with:
-        path: openvidu-call-front
+        name: artifacts
     # - name: Run Selenium Chromedriver
     #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
     - name: Run Browserless Chrome
@@ -69,12 +87,10 @@ jobs:
         openvidu/openvidu-dev:latest
     - name: Install openvidu-angular and dependencies
       run: |
-        cd openvidu-call-front && \
-        tar -xvf artifacts/artifacts.tar && \
-        npm install openvidu-angular-*.tgz && \
-        npm install openvidu-browser*.tgz && \
-        cd .. && \
-        npm install --prefix openvidu-call-back
+        ls -al && \
+        npm install openvidu-angular-*.tgz --prefix openvidu-call-front && \
+        npm install openvidu-browser*.tgz --prefix openvidu-call-front && \
+        npm install openvidu-node-client-*.tgz --prefix openvidu-call-back
     - name: Build openvidu-call
       run: |
         npm run build --prefix openvidu-call-back && \
@@ -99,7 +115,7 @@ jobs:
         node-version: '16'
     - uses: actions/download-artifact@v3
       with:
-        path: openvidu-call-front
+        name: artifacts
     # - name: Run Selenium Chromedriver
     #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
     - name: Run Browserless Chrome
@@ -111,12 +127,10 @@ jobs:
         openvidu/openvidu-dev:latest
     - name: Install openvidu-angular and dependencies
       run: |
-        cd openvidu-call-front && \
-        tar -xvf artifacts/artifacts.tar && \
-        npm install openvidu-angular-*.tgz && \
-        npm install openvidu-browser*.tgz && \
-        cd .. && \
-        npm install --prefix openvidu-call-back
+        ls -al && \
+        npm install openvidu-angular-*.tgz --prefix openvidu-call-front && \
+        npm install openvidu-browser*.tgz --prefix openvidu-call-front && \
+        npm install openvidu-node-client*.tgz --prefix openvidu-call-back
     - name: Build openvidu-call
       run: |
         npm run build --prefix openvidu-call-back && \
