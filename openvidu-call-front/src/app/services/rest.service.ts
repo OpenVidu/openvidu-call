@@ -7,8 +7,10 @@ interface SessionResponse {
 	cameraToken: string;
 	screenToken: string;
 	recordingEnabled: boolean;
+	isRecordingActive: boolean;
 	recordings?: RecordingInfo[];
 	broadcastingEnabled: boolean;
+	isBroadcastingActive: boolean;
 }
 @Injectable({
 	providedIn: 'root'

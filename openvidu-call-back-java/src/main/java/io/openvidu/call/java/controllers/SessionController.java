@@ -72,7 +72,9 @@ public class SessionController {
 			response.put("recordingEnabled", IS_RECORDING_ENABLED);
 			response.put("recordings", new ArrayList<Recording>());
 			response.put("broadcastingEnabled", IS_BROADCAST_ENABLED);
-
+			response.put("isRecordingActive", sessionCreated.isBeingRecorded());
+			response.put("isBroadcastingActive", sessionCreated.isBeingBroadcasted());
+			
 			Connection cameraConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
 			Connection screenConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
 

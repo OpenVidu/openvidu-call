@@ -1,6 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BroadcastingError, ParticipantService, RecordingInfo, TokenModel } from 'openvidu-angular';
+import {
+	BroadcastingError,
+	BroadcastingService,
+	BroadcastingStatus,
+	ParticipantService,
+	RecordingInfo,
+	RecordingService,
+	RecordingStatus,
+	TokenModel
+} from 'openvidu-angular';
 
 import { RestService } from '../../services/rest.service';
 
@@ -27,6 +36,8 @@ export class CallComponent implements OnInit {
 	constructor(
 		private restService: RestService,
 		private participantService: ParticipantService,
+		private recordingService: RecordingService,
+		private broadcastingService: BroadcastingService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {}
@@ -110,13 +121,17 @@ export class CallComponent implements OnInit {
 			console.warn('DEBUGGING SESSION');
 			nickname = this.participantService.getLocalParticipant().getNickname();
 		}
-		const response = await this.restService.getTokens(this.sessionId, nickname);
-		this.broadcastingEnabled = response.broadcastingEnabled;
-		this.recordingEnabled = response.recordingEnabled;
-		this.recordingList = response.recordings;
+		const { broadcastingEnabled, recordingEnabled, recordings, cameraToken, screenToken, isRecordingActive, isBroadcastingActive } =
+			await this.restService.getTokens(this.sessionId, nickname);
+
+		this.broadcastingEnabled = broadcastingEnabled;
+		this.recordingEnabled = recordingEnabled;
+		this.recordingList = recordings;
 		this.tokens = {
-			webcam: response.cameraToken,
-			screen: response.screenToken
+			webcam: cameraToken,
+			screen: screenToken
 		};
+		if (isRecordingActive) this.recordingService.updateStatus(RecordingStatus.STARTED);
+		if (isBroadcastingActive) this.broadcastingService.updateStatus(BroadcastingStatus.STARTED);
 	}
 }

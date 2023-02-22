@@ -32,6 +32,8 @@ app.post('/', async (req: Request, res: Response) => {
 			recordingEnabled: IS_RECORDING_ENABLED,
 			broadcastingEnabled: IS_BROADCASTING_ENABLED,
 			recordings: [],
+			isRecordingActive: sessionCreated.recording,
+			isBroadcastingActive: sessionCreated.broadcasting
 		};
 
 		if (isSessionCreator && !hasValidToken && PRIVATE_FEATURES_ENABLED ) {
