@@ -6,15 +6,15 @@
 	"dependencies": {
 		"chalk": "4.1.2",
 		"cookie-parser": "1.4.6",
-		"dotenv": "16.0.2",
-		"express": "4.18.1",
+		"dotenv": "16.0.3",
+		"express": "4.18.2",
 		"http-proxy-middleware": "2.0.6",
 		"openvidu-node-client": "2.25.0"
 	},
 	"description": "OpenVidu Call Server",
 	"devDependencies": {
 		"@types/cookie-parser": "1.4.3",
-		"@types/express": "4.17.14",
+		"@types/express": "4.17.17",
 		"@types/node": "18.7.21",
 		"cross-env": "7.0.3",
 		"nodemon": "2.0.20",
