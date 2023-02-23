@@ -29,8 +29,7 @@ jobs:
       env:
         BRANCH_NAME: ${{ github.event.client_payload.branch-name || 'master' }}
       run: |
-        git clone -b ${BRANCH_NAME} https://github.com/OpenVidu/openvidu.git && \
-        echo ${PWD} && \
+        git clone -b ${BRANCH_NAME} --depth 1 https://github.com/OpenVidu/openvidu.git && \
         cd openvidu/openvidu-browser && \
         npm install && \
         npm run build && \
