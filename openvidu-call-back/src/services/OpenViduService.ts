@@ -10,6 +10,7 @@ export class OpenViduService {
 
 	private constructor() {
 		this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+		if (process.env.NODE_ENV === 'production') this.openvidu.enableProdMode();
 	}
 
 	static getInstance() {
