@@ -11,7 +11,7 @@
     "@angular/platform-browser-dynamic": "14.2.8",
     "@angular/router": "14.2.8",
     "core-js": "^3.26.0",
-    "openvidu-angular": "2.25.0",
+    "openvidu-angular": "2.26.0",
     "rxjs": "7.5.7",
     "unique-names-generator": "^4.7.1",
     "zone.js": "0.11.8"
@@ -50,5 +50,5 @@
     "e2e:auth-ci": "cross-env LAUNCH_MODE=CI npm run e2e:auth",
     "test": "ng test openvidu-call --watch=false --code-coverage"
   },
-  "version": "2.25.0"
+  "version": "2.26.0"
 }
