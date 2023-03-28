@@ -150,8 +150,12 @@ public class OpenViduService {
 
 		MultiValueMap<String, String> tokenParams = UriComponentsBuilder
 				.fromUriString(connection.getToken()).build().getQueryParams();
-		;
-		this.edition = tokenParams.get("edition").get(0);
+
+		if (tokenParams.containsKey("edition")) {
+			this.edition = tokenParams.get("edition").get(0);
+		} else {
+			this.edition = "ce";
+		}
 
 		return connection;
 
