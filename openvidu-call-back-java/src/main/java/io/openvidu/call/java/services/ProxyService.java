@@ -7,17 +7,12 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,27 +79,25 @@ public class ProxyService {
 			headers.set(headerName, request.getHeader(headerName));
 		}
 
-		headers.add("Authorization", this.openviduService.getBasicAuth());
+		headers.set("Authorization", this.openviduService.getBasicAuth());
 		headers.remove("Cookie");
 		headers.remove(HttpHeaders.ACCEPT_ENCODING);
-
-		HttpEntity<String> httpEntity = new HttpEntity<>(null, headers);
+		
+		HttpEntity<?> httpEntity = new HttpEntity<>(null, headers);
 		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
 		RestTemplate restTemplate = new RestTemplate(factory);
 
-		restTemplate.setInterceptors(Arrays.asList((requestIntercept, body, execution) -> {
+		restTemplate.setInterceptors(Collections.singletonList((requestIntercept, body, execution) -> {
 			ClientHttpResponse responseIntercept = execution.execute(requestIntercept, body);
 			responseIntercept.getHeaders().remove("set-cookie");
 			return responseIntercept;
 		}));
 
 		try {
-
 			return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, byte[].class);
 
 		} catch (HttpStatusCodeException e) {
 			System.err.println(e.getMessage());
-			System.err.println(e.getRawStatusCode());
 			return ResponseEntity.status(e.getRawStatusCode()).headers(e.getResponseHeaders())
 					.body(e.getResponseBodyAsString());
 		}
@@ -113,7 +106,7 @@ public class ProxyService {
 
 	public HttpResponse<String> sendPost(String url, Map<String, String> body, Map<String, String> headers)
 			throws InterruptedException, IllegalArgumentException, IOException {
-		 
+
 		Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(url));
 		BodyPublisher postBody;
 
@@ -163,21 +156,17 @@ public class ProxyService {
 		props.setProperty("jdk.httpclient.keepalive.timeout", "0");
 
 		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[] {
-				new X509TrustManager() {
-					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-						return null;
-					}
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
 
-					public void checkClientTrusted(
-							java.security.cert.X509Certificate[] certs, String authType) {
-					}
+			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
 
-					public void checkServerTrusted(
-							java.security.cert.X509Certificate[] certs, String authType) {
-					}
-				}
-		};
+			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
+		} };
 
 		// Install the all-trusting trust manager
 		SSLContext sc = SSLContext.getInstance("SSL");
@@ -185,28 +174,4 @@ public class ProxyService {
 		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 		return HttpClient.newBuilder().sslContext(sc).build();
 	}
-
-	private BodyPublisher ofMimeMultipartData(Map<Object, Object> data, String boundary) throws IOException {
-		var byteArrays = new ArrayList<byte[]>();
-		byte[] separator = ("--" + boundary + "\r\nContent-Disposition: form-data; name=")
-				.getBytes(StandardCharsets.UTF_8);
-		for (Map.Entry<Object, Object> entry : data.entrySet()) {
-			byteArrays.add(separator);
-
-			if (entry.getValue() instanceof Path) {
-				var path = (Path) entry.getValue();
-				String mimeType = Files.probeContentType(path);
-				byteArrays.add(("\"" + entry.getKey() + "\"; filename=\"" + path.getFileName() + "\"\r\nContent-Type: "
-						+ mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
-				byteArrays.add(Files.readAllBytes(path));
-				byteArrays.add("\r\n".getBytes(StandardCharsets.UTF_8));
-			} else {
-				byteArrays.add(("\"" + entry.getKey() + "\"\r\n\r\n" + entry.getValue() + "\r\n")
-						.getBytes(StandardCharsets.UTF_8));
-			}
-		}
-		byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
-		return BodyPublishers.ofByteArrays(byteArrays);
-	}
-
 }
