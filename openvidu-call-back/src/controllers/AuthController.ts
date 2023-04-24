@@ -61,7 +61,7 @@ app.post('/admin/login', async (req: Request, res: Response) => {
 app.post('/admin/logout', async (req: Request, res: Response) => {
 	const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
 	authService.adminSessions.delete(adminSessionId);
-	res.cookie(authService.ADMIN_COOKIE_NAME, null);
+	res.cookie(authService.ADMIN_COOKIE_NAME, '', { maxAge: 0 });
 	res.status(200).send("Logout");
 	res.end();
 });

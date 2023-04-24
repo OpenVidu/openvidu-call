@@ -127,16 +127,14 @@ public class AuthController {
 			HttpServletResponse res) {
 		
 		authService.adminSessions.remove(adminToken);
-		for (Cookie cookie : req.getCookies()) {
-			if(cookie.getName().equals(AuthService.ADMIN_COOKIE_NAME)) {
-				cookie.setValue("");
-				cookie.setPath("/");
-				cookie.setMaxAge(0);
-				res.addCookie(cookie);
-				break;
-			}
-        }
-		return new ResponseEntity<>(null, HttpStatus.OK);
+		
+	    Cookie cookie = new Cookie(AuthService.ADMIN_COOKIE_NAME, "");
+		cookie.setValue("");
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		res.addCookie(cookie);
+		
+		return ResponseEntity.ok().build();
 	}
 
 }
