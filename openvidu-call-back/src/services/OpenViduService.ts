@@ -50,21 +50,24 @@ export class OpenViduService {
 		}
 	}
 
+	getSessionIdFromRecordingId(recordingId: string): string {
+		return recordingId.split('~')[0];
+	}
+
 	isValidToken(sessionId: string, cookies: any): boolean {
 		try {
-			const storedTokenUrl = new URL(this.recordingMap.get(sessionId)?.token);
+			if (!this.recordingMap.has(sessionId)) return false;
+			if (!cookies[this.MODERATOR_TOKEN_NAME]) return false;
+			const storedTokenUrl = new URL(this.recordingMap.get(sessionId).token);
 			const cookieTokenUrl = new URL(cookies[this.MODERATOR_TOKEN_NAME]);
-			if (!!cookieTokenUrl && !!storedTokenUrl) {
-				const cookieSessionId = cookieTokenUrl.searchParams.get('sessionId');
-				const cookieToken = cookieTokenUrl.searchParams.get(this.MODERATOR_TOKEN_NAME);
-				const cookieDate = cookieTokenUrl.searchParams.get('createdAt');
+			const cookieSessionId = cookieTokenUrl.searchParams.get('sessionId');
+			const cookieToken = cookieTokenUrl.searchParams.get(this.MODERATOR_TOKEN_NAME);
+			const cookieDate = cookieTokenUrl.searchParams.get('createdAt');
 
-				const storedToken = storedTokenUrl.searchParams.get(this.MODERATOR_TOKEN_NAME);
-				const storedDate = storedTokenUrl.searchParams.get('createdAt');
+			const storedToken = storedTokenUrl.searchParams.get(this.MODERATOR_TOKEN_NAME);
+			const storedDate = storedTokenUrl.searchParams.get('createdAt');
 
-				return sessionId === cookieSessionId && cookieToken === storedToken && cookieDate === storedDate;
-			}
-			return false;
+			return sessionId === cookieSessionId && cookieToken === storedToken && cookieDate === storedDate;
 		} catch (error) {
 			return false;
 		}

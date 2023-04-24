@@ -184,17 +184,17 @@ public class RecordingController {
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken,
 			@CookieValue(name = AuthService.ADMIN_COOKIE_NAME, defaultValue = "") String adminToken) {
 		try {
+
+			if (recordingId.isEmpty()) {
+				return new ResponseEntity<>("Missing recording id parameter.", HttpStatus.BAD_REQUEST);
+			}
+
 			List<Recording> recordings = new ArrayList<Recording>();
-			String sessionId = openviduService.getSessionIdFromCookie(moderatorToken);
+			String sessionId = openviduService.getSessionIdFromRecordingId(recordingId);
 			boolean isAdminSessionValid = authService.isAdminSessionValid(adminToken);
 
 			if ((!sessionId.isEmpty() && openviduService.isValidToken(sessionId, moderatorToken))
 					|| isAdminSessionValid) {
-				if (recordingId.isEmpty()) {
-					String message = "Missing recording id parameter.";
-					System.err.println(message);
-					return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-				}
 
 				System.out.println("Deleting recording " + recordingId);
 				openviduService.deleteRecording(recordingId);
@@ -231,25 +231,23 @@ public class RecordingController {
 	public ResponseEntity<?> getRecording(@PathVariable String recordingId, @PathVariable String extension,
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken,
 			@CookieValue(name = AuthService.ADMIN_COOKIE_NAME, defaultValue = "") String sessionToken,
-			HttpServletRequest req,
-			HttpServletResponse res) {
+			HttpServletRequest req, HttpServletResponse res) {
+
+		if (recordingId.isEmpty()) {
+			return new ResponseEntity<>("Missing recording id parameter.", HttpStatus.BAD_REQUEST);
+		}
 
 		boolean isAdminSessionValid = authService.isAdminSessionValid(sessionToken);
-		String sessionId = this.openviduService.getSessionIdFromCookie(moderatorToken);
-		if ((!sessionId.isEmpty() && openviduService.isValidToken(sessionId, moderatorToken))
-				|| isAdminSessionValid) {
-			if (recordingId.isEmpty()) {
-				String message = "Missing recording id parameter.";
-				System.err.println(message);
-				return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-			} else {
-				try {
-					return proxyService.recordingProxyRequest(req, res);
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
-				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		String sessionId = this.openviduService.getSessionIdFromRecordingId(recordingId);
+		if ((!sessionId.isEmpty() && openviduService.isValidToken(sessionId, moderatorToken)) || isAdminSessionValid) {
+
+			try {
+				return proxyService.recordingProxyRequest(req, res);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
 			}
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		} else {
 			String message = "Permissions denied to drive recording";
 			System.err.println(message);

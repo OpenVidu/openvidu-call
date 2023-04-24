@@ -115,15 +115,15 @@ app.post('/stop', async (req: Request, res: Response) => {
 
 app.delete('/delete/:recordingId', async (req: Request, res: Response) => {
 	try {
-		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
+		const recordingId: string = req.params.recordingId;
+		if (!recordingId) {
+			return res.status(400).send('Missing recording id parameter.');
+		}
+		const sessionId = openviduService.getSessionIdFromRecordingId(recordingId);
 		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
 		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		let recordings = [];
 		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
-			const recordingId: string = req.params.recordingId;
-			if (!recordingId) {
-				return res.status(400).send('Missing recording id parameter.');
-			}
 			console.log(`Deleting recording ${recordingId}`);
 			await openviduService.deleteRecording(recordingId);
 			if (isAdminSessionValid) {
@@ -155,18 +155,18 @@ export const proxyGETRecording = createProxyMiddleware({
 	target: `${OPENVIDU_URL}/openvidu/`,
 	secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned',
 	onProxyReq: (proxyReq, req: Request, res: Response) => {
+		proxyReq.removeHeader('Cookie');
+		const recordingId: string = req.params.recordingId;
+		if (!recordingId) {
+			return res.status(400).send('Missing recording id parameter.');
+		}
 		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
 		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
-		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
-		proxyReq.removeHeader('Cookie');
+		const sessionId = openviduService.getSessionIdFromRecordingId(recordingId);
+
 		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
-			const recordingId: string = req.params.recordingId;
-			if (!recordingId) {
-				return res.status(400).send(JSON.stringify({ message: 'Missing recording id parameter.' }));
-			} else {
-				proxyReq.setHeader('Connection', 'keep-alive');
-				proxyReq.setHeader('Authorization', openviduService.getBasicAuth());
-			}
+			proxyReq.setHeader('Connection', 'keep-alive');
+			proxyReq.setHeader('Authorization', openviduService.getBasicAuth());
 		} else {
 			return res.status(403).send(JSON.stringify({ message: 'Permissions denied to drive recording' }));
 		}

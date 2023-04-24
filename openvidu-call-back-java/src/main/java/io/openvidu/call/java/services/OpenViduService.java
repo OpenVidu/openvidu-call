@@ -91,35 +91,33 @@ public class OpenViduService {
 		return "";
 
 	}
+	
+	public String getSessionIdFromRecordingId(String recordingId) {
+		return recordingId.split("~")[0];
+	}
 
 	public boolean isValidToken(String sessionId, String token) {
 		try {
+			
+			if(token.isEmpty()) return false;
+			if(!this.recordingMap.containsKey(sessionId)) return false;
 
-			if (!token.isEmpty()) {
-				MultiValueMap<String, String> storedTokenParams = null;
+			MultiValueMap<String, String> storedTokenParams = UriComponentsBuilder
+					.fromUriString(this.recordingMap.get(sessionId).getToken()).build().getQueryParams();
 
-				if (this.recordingMap.containsKey(sessionId)) {
-					storedTokenParams = UriComponentsBuilder
-							.fromUriString(this.recordingMap.get(sessionId).getToken()).build().getQueryParams();
-				}
+			MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder
+					.fromUriString(token).build().getQueryParams();
 
-				MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder
-						.fromUriString(token).build().getQueryParams();
+			String cookieSessionId = cookieTokenParams.get("sessionId").get(0);
+			String cookieToken = cookieTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
+			String cookieDate = cookieTokenParams.get("createdAt").get(0);
 
-				if (!cookieTokenParams.isEmpty() && storedTokenParams != null) {
-					String cookieSessionId = cookieTokenParams.get("sessionId").get(0);
-					String cookieToken = cookieTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
-					String cookieDate = cookieTokenParams.get("createdAt").get(0);
+			String storedToken = storedTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
+			String storedDate = storedTokenParams.get("createdAt").get(0);
 
-					String storedToken = storedTokenParams.get(MODERATOR_TOKEN_NAME).get(0);
-					String storedDate = storedTokenParams.get("createdAt").get(0);
+			return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken)
+					&& cookieDate.equals(storedDate);
 
-					return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken)
-							&& cookieDate.equals(storedDate);
-				}
-			}
-
-			return false;
 		} catch (Exception e) {
 			return false;
 		}
