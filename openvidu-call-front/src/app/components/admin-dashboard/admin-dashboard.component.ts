@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { RecordingService } from 'openvidu-angular';
 import { RestService } from 'src/app/services/rest.service';
 
 @Component({
@@ -11,7 +10,7 @@ export class AdminDashboardComponent implements OnInit {
 	recordings = [];
 	logged: boolean;
 	error: any;
-	constructor(private restService: RestService, private recordingService: RecordingService) {}
+	constructor(private restService: RestService) {}
 
 	ngOnInit(): void {}
 
