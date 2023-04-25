@@ -91,7 +91,7 @@ public class AuthController {
 					cookie.setSecure(CALL_OPENVIDU_CERTTYPE.equals("selfsigned"));
 					res.addCookie(cookie);
 
-					AdminSessionData data = new AdminSessionData(new Date().getTime() + cookieAdminMaxAge);
+					AdminSessionData data = new AdminSessionData(new Date().getTime() + cookieAdminMaxAge * 1000);
 					authService.adminSessions.put(id, data);
 				}
 				List<Recording> recordings = openviduService.listAllRecordings();
@@ -129,7 +129,6 @@ public class AuthController {
 		authService.adminSessions.remove(adminToken);
 		
 	    Cookie cookie = new Cookie(AuthService.ADMIN_COOKIE_NAME, "");
-		cookie.setValue("");
 		cookie.setPath("/");
 		cookie.setMaxAge(0);
 		res.addCookie(cookie);
