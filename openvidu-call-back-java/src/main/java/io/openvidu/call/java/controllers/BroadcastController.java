@@ -46,7 +46,7 @@ public class BroadcastController {
 			boolean IS_BROADCAST_ENABLED = CALL_BROADCAST.toUpperCase().equals("ENABLED");
 			if (IS_BROADCAST_ENABLED) {
 				String sessionId = openviduService.getSessionIdFromCookie(moderatorToken);
-				boolean isValidToken = openviduService.isValidToken(sessionId, moderatorToken);
+				boolean isValidToken = openviduService.isModeratorSessionValid(sessionId, moderatorToken);
 				if (!sessionId.isEmpty() && isValidToken) {
 
 					if (this.openviduService.isCE()) {
@@ -84,7 +84,7 @@ public class BroadcastController {
 			boolean IS_BROADCAST_ENABLED = CALL_BROADCAST.toUpperCase().equals("ENABLED");
 			if (IS_BROADCAST_ENABLED) {
 				String sessionId = openviduService.getSessionIdFromCookie(moderatorToken);
-				boolean isValidToken = openviduService.isValidToken(sessionId, moderatorToken);
+				boolean isValidToken = openviduService.isModeratorSessionValid(sessionId, moderatorToken);
 				if (!sessionId.isEmpty() && isValidToken) {
 					System.out.println("Stopping broadcast in session " + sessionId);
 

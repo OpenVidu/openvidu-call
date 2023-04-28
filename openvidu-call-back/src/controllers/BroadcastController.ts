@@ -15,7 +15,7 @@ app.post('/start', async (req: Request, res: Response) => {
 
 		if (IS_BROADCASTING_ENABLED) {
 			const sessionId = openviduService.getSessionIdFromCookie(req?.cookies);
-			if (!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) {
+			if (!!sessionId && openviduService.isModeratorSessionValid(sessionId, req.cookies)) {
 				console.log(`Starting broadcast in ${sessionId}`);
 
 				const broadcastUrl: string = req.body.broadcastUrl;
@@ -62,7 +62,7 @@ app.delete('/stop', async (req: Request, res: Response) => {
 
 		if (IS_BROADCASTING_ENABLED) {
 			const sessionId = openviduService.getSessionIdFromCookie(req?.cookies);
-			if (!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) {
+			if (!!sessionId && openviduService.isModeratorSessionValid(sessionId, req.cookies)) {
 				console.log(`Stopping broadcast in ${sessionId}`);
 				await openviduService.stopBroadcasting(sessionId);
 				res.status(200).send({ message: 'Broadcasting stopped' });

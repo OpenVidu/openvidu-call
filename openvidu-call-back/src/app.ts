@@ -1,8 +1,6 @@
 import * as cookieParser from 'cookie-parser';
-
 import * as dotenv from 'dotenv';
 import * as express from 'express';
-
 import { app as authController } from './controllers/AuthController';
 import { app as broadcastController } from './controllers/BroadcastController';
 import { app as callController } from './controllers/CallController';

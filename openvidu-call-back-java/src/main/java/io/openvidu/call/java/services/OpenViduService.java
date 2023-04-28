@@ -28,8 +28,9 @@ import io.openvidu.java.client.SessionProperties;
 public class OpenViduService {
 
 	public static final String MODERATOR_TOKEN_NAME = "ovCallModeratorToken";
-	public Map<String, RecordingData> recordingMap = new HashMap<String, RecordingData>();
-	public Map<String, String> streamingMap = new HashMap<String, String>();
+	public static final String PARTICIPANT_TOKEN_NAME = "ovCallParticipantToken";
+	public Map<String, RecordingData> moderatorsCookieMap = new HashMap<String, RecordingData>();
+	public Map<String, List<String>> participantsCookieMap = new HashMap<String, List<String>>();
 
 	@Value("${OPENVIDU_URL}")
 	public String OPENVIDU_URL;
@@ -85,25 +86,25 @@ public class OpenViduService {
 			}
 
 		} catch (Exception error) {
-			System.out.println("Moderator cookie not found");
+			System.out.println("Session cookie not found");
 			System.err.println(error);
 		}
 		return "";
 
 	}
-	
+
 	public String getSessionIdFromRecordingId(String recordingId) {
 		return recordingId.split("~")[0];
 	}
 
-	public boolean isValidToken(String sessionId, String token) {
+	public boolean isModeratorSessionValid(String sessionId, String token) {
 		try {
-			
+
 			if(token.isEmpty()) return false;
-			if(!this.recordingMap.containsKey(sessionId)) return false;
+			if(!this.moderatorsCookieMap.containsKey(sessionId)) return false;
 
 			MultiValueMap<String, String> storedTokenParams = UriComponentsBuilder
-					.fromUriString(this.recordingMap.get(sessionId).getToken()).build().getQueryParams();
+					.fromUriString(this.moderatorsCookieMap.get(sessionId).getToken()).build().getQueryParams();
 
 			MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder
 					.fromUriString(token).build().getQueryParams();
@@ -117,6 +118,41 @@ public class OpenViduService {
 
 			return sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken)
 					&& cookieDate.equals(storedDate);
+
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean isParticipantSessionValid(String sessionId, String cookie) {
+
+		try {
+			if (!this.participantsCookieMap.containsKey(sessionId))	return false;
+			if(cookie.isEmpty()) return false;
+
+
+			MultiValueMap<String, String> cookieTokenParams = UriComponentsBuilder
+					.fromUriString(cookie).build().getQueryParams();
+
+			List<String> storedTokens = this.participantsCookieMap.get(sessionId);
+
+			String cookieSessionId = cookieTokenParams.get("sessionId").get(0);
+			String cookieToken = cookieTokenParams.get(PARTICIPANT_TOKEN_NAME).get(0);
+			String cookieDate = cookieTokenParams.get("createdAt").get(0);
+
+			for (String token : storedTokens) {
+				MultiValueMap<String, String> storedTokenParams = UriComponentsBuilder
+					.fromUriString(token).build().getQueryParams();
+
+				String storedToken = storedTokenParams.get(PARTICIPANT_TOKEN_NAME).get(0);
+				String storedDate = storedTokenParams.get("createdAt").get(0);
+
+				if (sessionId.equals(cookieSessionId) && cookieToken.equals(storedToken) && cookieDate.equals(storedDate)) {
+					return true;
+				}
+			}
+
+			return false;
 
 		} catch (Exception e) {
 			return false;

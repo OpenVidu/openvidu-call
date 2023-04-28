@@ -46,7 +46,8 @@ public class SessionController {
 	@PostMapping("/sessions")
 	public ResponseEntity<Map<String, Object>> createConnection(
 			@RequestBody(required = false) Map<String, Object> params,
-			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken,
+			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorCookie,
+			@CookieValue(name = OpenViduService.PARTICIPANT_TOKEN_NAME, defaultValue = "") String participantCookie,
 			HttpServletResponse res) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -60,11 +61,16 @@ public class SessionController {
 			}
 
 			Session sessionCreated = this.openviduService.createSession(sessionId);
+			String MODERATOR_TOKEN_NAME = OpenViduService.MODERATOR_TOKEN_NAME;
+			String PARTICIPANT_TOKEN_NAME = OpenViduService.PARTICIPANT_TOKEN_NAME;
 			boolean IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase().equals("ENABLED");
 			boolean IS_BROADCAST_ENABLED = CALL_BROADCAST.toUpperCase().equals("ENABLED");
 			boolean PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_BROADCAST_ENABLED;
 
-			boolean hasValidToken = this.openviduService.isValidToken(sessionId, moderatorToken);
+			boolean hasModeratorValidToken = this.openviduService.isModeratorSessionValid(sessionId, moderatorCookie);
+			boolean hasParticipantValidToken = this.openviduService.isParticipantSessionValid(sessionId,
+					participantCookie);
+			boolean hasValidToken = hasModeratorValidToken || hasParticipantValidToken;
 			boolean isSessionCreator = hasValidToken || sessionCreated.getActiveConnections().size() == 0;
 
 			OpenViduRole role = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
@@ -74,14 +80,14 @@ public class SessionController {
 			response.put("broadcastingEnabled", IS_BROADCAST_ENABLED);
 			response.put("isRecordingActive", sessionCreated.isBeingRecorded());
 			response.put("isBroadcastingActive", sessionCreated.isBeingBroadcasted());
-			
+
 			Connection cameraConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
 			Connection screenConnection = this.openviduService.createConnection(sessionCreated, nickname, role);
 
 			response.put("cameraToken", cameraConnection.getToken());
 			response.put("screenToken", screenConnection.getToken());
 
-			if (isSessionCreator && !hasValidToken && PRIVATE_FEATURES_ENABLED) {
+			if (!hasValidToken && PRIVATE_FEATURES_ENABLED) {
 				/**
 				 * ! *********** WARN *********** !
 				 *
@@ -96,23 +102,47 @@ public class SessionController {
 				 *
 				 * ! *********** WARN *********** !
 				 **/
-
 				String uuid = UUID.randomUUID().toString();
 				date = System.currentTimeMillis();
-				String recordingToken = cameraConnection.getToken() + "&" + OpenViduService.MODERATOR_TOKEN_NAME + "="
-						+ uuid + "&createdAt=" + date;
 
-				Cookie cookie = new Cookie(OpenViduService.MODERATOR_TOKEN_NAME, recordingToken);
-				cookie.setMaxAge(cookieAdminMaxAge);
-				res.addCookie(cookie);
+				if (isSessionCreator) {
+					String moderatorToken = cameraConnection.getToken() + "&" + MODERATOR_TOKEN_NAME + "="
+							+ uuid + "&createdAt=" + date;
 
-				RecordingData recData = new RecordingData(recordingToken, "");
-				this.openviduService.recordingMap.put(sessionId, recData);
+					Cookie cookie = new Cookie(MODERATOR_TOKEN_NAME, moderatorToken);
+					cookie.setMaxAge(cookieAdminMaxAge);
+					res.addCookie(cookie);
+					// Remove participant cookie if exists
+					Cookie oldCookie = new Cookie(PARTICIPANT_TOKEN_NAME, "");
+					oldCookie.setMaxAge(0);
+					res.addCookie(oldCookie);
+
+					RecordingData recData = new RecordingData(moderatorToken, "");
+					this.openviduService.moderatorsCookieMap.put(sessionId, recData);
+
+				} else {
+					String participantToken = cameraConnection.getToken() + "&" + PARTICIPANT_TOKEN_NAME + "="
+							+ uuid + "&createdAt=" + date;
+
+					Cookie cookie = new Cookie(PARTICIPANT_TOKEN_NAME, participantToken);
+					cookie.setMaxAge(cookieAdminMaxAge);
+					res.addCookie(cookie);
+					// Remove moderator cookie if exists
+					Cookie oldCookie = new Cookie(MODERATOR_TOKEN_NAME, "");
+					oldCookie.setMaxAge(0);
+					res.addCookie(oldCookie);
+
+					List<String> tokens = this.openviduService.participantsCookieMap.containsKey(sessionId)
+							? this.openviduService.participantsCookieMap.get(sessionId)
+							: new ArrayList<String>();
+					tokens.add(participantToken);
+					this.openviduService.participantsCookieMap.put(sessionId, tokens);
+				}
 			}
 
 			if (IS_RECORDING_ENABLED) {
 				if (date == -1) {
-					date = openviduService.getDateFromCookie(moderatorToken);
+					date = openviduService.getDateFromCookie(moderatorCookie);
 				}
 				List<Recording> recordings = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 				response.put("recordings", recordings);
@@ -128,7 +158,6 @@ public class SessionController {
 			} else if (e.getMessage() != null && Integer.parseInt(e.getMessage()) == 401) {
 				System.err.println("OpenVidu credentials are wrong.");
 				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-
 			} else {
 				e.printStackTrace();
 				System.err.println(e.getMessage());

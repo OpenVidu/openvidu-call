@@ -20,12 +20,16 @@ app.post('/', async (req: Request, res: Response) => {
 		let date = null;
 		let sessionCreated: Session = await openviduService.createSession(sessionId);
 		const MODERATOR_TOKEN_NAME = openviduService.MODERATOR_TOKEN_NAME;
+		const PARTICIPANT_TOKEN_NAME = openviduService.PARTICIPANT_TOKEN_NAME;
 		const IS_RECORDING_ENABLED = CALL_RECORDING.toUpperCase() === 'ENABLED';
 		const IS_BROADCASTING_ENABLED = CALL_BROADCAST.toUpperCase() === 'ENABLED';
 		const PRIVATE_FEATURES_ENABLED = IS_RECORDING_ENABLED || IS_BROADCASTING_ENABLED;
-		const hasValidToken = openviduService.isValidToken(sessionId, req.cookies);
+		const hasModeratorValidToken = openviduService.isModeratorSessionValid(sessionId, req.cookies);
+		const hasParticipantValidToken = openviduService.isParticipantSessionValid(sessionId, req.cookies);
+		const hasValidToken = hasModeratorValidToken || hasParticipantValidToken;
 		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
 		const role: OpenViduRole = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
+
 		const response = {
 			cameraToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
 			screenToken: (await openviduService.createConnection(sessionCreated, nickname, role)).token,
@@ -36,7 +40,7 @@ app.post('/', async (req: Request, res: Response) => {
 			isBroadcastingActive: sessionCreated.broadcasting
 		};
 
-		if (isSessionCreator && !hasValidToken && PRIVATE_FEATURES_ENABLED ) {
+		if (!hasValidToken && PRIVATE_FEATURES_ENABLED) {
 			/**
 			 * ! *********** WARN *********** !
 			 *
@@ -51,9 +55,22 @@ app.post('/', async (req: Request, res: Response) => {
 			 **/
 			const uuid = crypto.randomBytes(32).toString('hex');
 			date = Date.now();
-			const moderatorToken = `${response.cameraToken}&${MODERATOR_TOKEN_NAME}=${uuid}&createdAt=${date}`;
-			res.cookie(MODERATOR_TOKEN_NAME, moderatorToken);
-			openviduService.recordingMap.set(sessionId, { token: moderatorToken, recordingId: '' });
+
+			if (isSessionCreator) {
+				const moderatorToken = `${response.cameraToken}&${MODERATOR_TOKEN_NAME}=${uuid}&createdAt=${date}`;
+				res.cookie(MODERATOR_TOKEN_NAME, moderatorToken);
+				// Remove participant cookie if exists
+				res.cookie(PARTICIPANT_TOKEN_NAME, '', { maxAge: 0 });
+				openviduService.moderatorsCookieMap.set(sessionId, { token: moderatorToken, recordingId: '' });
+			} else {
+				const participantToken = `${response.cameraToken}&${PARTICIPANT_TOKEN_NAME}=${uuid}&createdAt=${date}`;
+				res.cookie(PARTICIPANT_TOKEN_NAME, participantToken);
+				// Remove moderator cookie if exists
+				res.cookie(MODERATOR_TOKEN_NAME, '', { maxAge: 0 });
+				const tokens = openviduService.participantsCookieMap.get(sessionId) || [];
+				tokens.push(participantToken);
+				openviduService.participantsCookieMap.set(sessionId, tokens);
+			}
 		}
 
 		if (IS_RECORDING_ENABLED) {

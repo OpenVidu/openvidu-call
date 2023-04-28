@@ -19,11 +19,13 @@ app.get('/', async (req: Request, res: Response) => {
 		const sessionId = openviduService.getSessionIdFromCookie(req.cookies);
 		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
 		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
+		const isModeratorSessionValid = openviduService.isModeratorSessionValid(sessionId, req.cookies);
+		const isParticipantSessionValid = openviduService.isParticipantSessionValid(sessionId, req.cookies);
 		let recordings = [];
-		if ((!!sessionId && IS_RECORDING_ENABLED && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
+		if (!!sessionId && IS_RECORDING_ENABLED) {
 			if (isAdminSessionValid) {
 				recordings = await openviduService.listAllRecordings();
-			} else {
+			} else if (isModeratorSessionValid || isParticipantSessionValid) {
 				const date = openviduService.getDateFromCookie(req.cookies);
 				recordings = await openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 			}
@@ -47,11 +49,11 @@ app.post('/start', async (req: Request, res: Response) => {
 	try {
 		let sessionId: string = req.body.sessionId;
 		if (CALL_RECORDING === 'ENABLED') {
-			if (openviduService.isValidToken(sessionId, req.cookies)) {
+			if (openviduService.isModeratorSessionValid(sessionId, req.cookies)) {
 				let startingRecording: Recording = null;
 				console.log(`Starting recording in ${sessionId}`);
 				startingRecording = await openviduService.startRecording(sessionId);
-				openviduService.recordingMap.get(sessionId).recordingId = startingRecording.id;
+				openviduService.moderatorsCookieMap.get(sessionId).recordingId = startingRecording.id;
 				res.status(200).send(JSON.stringify(startingRecording));
 			} else {
 				console.log(`Permissions denied for starting recording in session ${sessionId}`);
@@ -80,15 +82,15 @@ app.post('/stop', async (req: Request, res: Response) => {
 	try {
 		let sessionId: string = req.body.sessionId;
 		if (CALL_RECORDING === 'ENABLED') {
-			if (openviduService.isValidToken(sessionId, req.cookies)) {
-				const recordingId = openviduService.recordingMap.get(sessionId)?.recordingId;
+			if (openviduService.isModeratorSessionValid(sessionId, req.cookies)) {
+				const recordingId = openviduService.moderatorsCookieMap.get(sessionId)?.recordingId;
 
 				if (!!recordingId) {
 					console.log(`Stopping recording in ${sessionId}`);
 					await openviduService.stopRecording(recordingId);
 					const date = openviduService.getDateFromCookie(req.cookies);
 					const recordingList = await openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
-					openviduService.recordingMap.get(sessionId).recordingId = '';
+					openviduService.moderatorsCookieMap.get(sessionId).recordingId = '';
 					res.status(200).send(JSON.stringify(recordingList));
 				} else {
 					res.status(404).send(JSON.stringify({ message: 'Session was not being recorded' }));
@@ -121,9 +123,10 @@ app.delete('/delete/:recordingId', async (req: Request, res: Response) => {
 		}
 		const sessionId = openviduService.getSessionIdFromRecordingId(recordingId);
 		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
+		const isModeratorSessionValid = openviduService.isModeratorSessionValid(sessionId, req.cookies);
 		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		let recordings = [];
-		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
+		if ((!!sessionId && isModeratorSessionValid) || isAdminSessionValid) {
 			console.log(`Deleting recording ${recordingId}`);
 			await openviduService.deleteRecording(recordingId);
 			if (isAdminSessionValid) {
@@ -163,8 +166,10 @@ export const proxyGETRecording = createProxyMiddleware({
 		const adminSessionId = req.cookies[authService.ADMIN_COOKIE_NAME];
 		const isAdminSessionValid = authService.isAdminSessionValid(adminSessionId);
 		const sessionId = openviduService.getSessionIdFromRecordingId(recordingId);
+		const isModeratorSessionValid = openviduService.isModeratorSessionValid(sessionId, req.cookies);
+		const isParticipantSessionValid = openviduService.isParticipantSessionValid(sessionId, req.cookies);
 
-		if ((!!sessionId && openviduService.isValidToken(sessionId, req.cookies)) || isAdminSessionValid) {
+		if (!!sessionId && (isModeratorSessionValid || isParticipantSessionValid || isAdminSessionValid)) {
 			proxyReq.setHeader('Connection', 'keep-alive');
 			proxyReq.setHeader('Authorization', openviduService.getBasicAuth());
 		} else {
