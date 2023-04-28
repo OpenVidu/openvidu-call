@@ -95,6 +95,14 @@ export class CallComponent implements OnInit {
 		}
 	}
 
+	async onForceRecordingUpdate() {
+		try {
+			this.recordingList = await this.restService.getRecordings();
+		} catch (error) {
+			this.recordingError = error;
+		}
+	}
+
 	async onStartBroadcastingClicked(broadcastingUrl: string) {
 		try {
 			this.broadcastingError = undefined;
