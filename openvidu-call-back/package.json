@@ -1,42 +1,42 @@
 {
-	"author": "OpenVidu",
-	"bugs": {
-		"url": "https://github.com/OpenVidu/openvidu-call/issues"
-	},
-	"dependencies": {
-		"chalk": "4.1.2",
-		"cookie-parser": "1.4.6",
-		"dotenv": "16.0.3",
-		"express": "4.18.2",
-		"http-proxy-middleware": "2.0.6",
-		"openvidu-node-client": "2.26.2"
-	},
-	"description": "OpenVidu Call Server",
-	"devDependencies": {
-		"@types/cookie-parser": "1.4.3",
-		"@types/express": "4.17.17",
-		"@types/node": "18.7.21",
-		"cross-env": "7.0.3",
-		"nodemon": "2.0.20",
-		"ts-node": "10.9.1",
-		"typescript": "4.4.4"
-	},
-	"homepage": "https://github.com/OpenVidu/openvidu-call#readme",
-	"keywords": [
-		"openvidu",
-		"webrtc",
-		"openvidu-call"
-	],
-	"license": "Apache-2.0",
-	"main": "app.ts",
-	"name": "openvidu-call-server",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/OpenVidu/openvidu-call.git"
-	},
-	"scripts": {
-		"build": "tsc",
-		"dev:start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
-	},
-	"version": "2.26.0"
+  "author": "OpenVidu",
+  "bugs": {
+    "url": "https://github.com/OpenVidu/openvidu-call/issues"
+  },
+  "dependencies": {
+    "chalk": "4.1.2",
+    "cookie-parser": "1.4.6",
+    "dotenv": "16.0.3",
+    "express": "4.18.2",
+    "http-proxy-middleware": "2.0.6",
+    "openvidu-node-client": "2.27.0"
+  },
+  "description": "OpenVidu Call Server",
+  "devDependencies": {
+    "@types/cookie-parser": "1.4.3",
+    "@types/express": "4.17.17",
+    "@types/node": "18.7.21",
+    "cross-env": "7.0.3",
+    "nodemon": "2.0.20",
+    "ts-node": "10.9.1",
+    "typescript": "4.4.4"
+  },
+  "homepage": "https://github.com/OpenVidu/openvidu-call#readme",
+  "keywords": [
+    "openvidu",
+    "webrtc",
+    "openvidu-call"
+  ],
+  "license": "Apache-2.0",
+  "main": "app.ts",
+  "name": "openvidu-call-server",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenVidu/openvidu-call.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev:start": "cross-env CALL_OPENVIDU_CERTTYPE=selfsigned nodemon src/app.ts"
+  },
+  "version": "2.27.0"
 }
