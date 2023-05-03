@@ -27,7 +27,8 @@ app.post('/', async (req: Request, res: Response) => {
 		const hasModeratorValidToken = openviduService.isModeratorSessionValid(sessionId, req.cookies);
 		const hasParticipantValidToken = openviduService.isParticipantSessionValid(sessionId, req.cookies);
 		const hasValidToken = hasModeratorValidToken || hasParticipantValidToken;
-		const isSessionCreator = hasValidToken || sessionCreated.activeConnections.length === 0;
+		const iAmFirstConnection = sessionCreated.activeConnections.length === 0;
+		const isSessionCreator = hasModeratorValidToken || iAmFirstConnection;
 		const role: OpenViduRole = isSessionCreator ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER;
 
 		const response = {

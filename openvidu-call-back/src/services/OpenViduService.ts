@@ -144,7 +144,10 @@ export class OpenViduService {
 
 	public async listRecordingsBySessionIdAndDate(sessionId: string, date: number) {
 		const recordingList: Recording[] = await this.listAllRecordings();
-		return recordingList.filter((recording) => recording.sessionId === sessionId && date <= recording.createdAt);
+		return recordingList.filter((recording) => {
+			const recordingDateEnd = recording.createdAt + recording.duration * 1000;
+			return recording.sessionId === sessionId && recordingDateEnd >= date;
+		});
 	}
 
 	public async startBroadcasting(sessionId: string, url: string): Promise<void> {

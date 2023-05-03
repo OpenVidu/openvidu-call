@@ -220,7 +220,7 @@ public class OpenViduService {
 		List<Recording> recordings = this.listAllRecordings();
 		List<Recording> recordingsAux = new ArrayList<Recording>();
 		for (Recording recording : recordings) {
-			if (recording.getSessionId().equals(sessionId) && date <= recording.getCreatedAt()) {
+			if (recording.getSessionId().equals(sessionId) && recording.getCreatedAt() + recording.getDuration() * 1000 >= date) {
 				recordingsAux.add(recording);
 			}
 		}
