@@ -22,10 +22,10 @@ app.get('/', async (req: Request, res: Response) => {
 		const isModeratorSessionValid = openviduService.isModeratorSessionValid(sessionId, req.cookies);
 		const isParticipantSessionValid = openviduService.isParticipantSessionValid(sessionId, req.cookies);
 		let recordings = [];
-		if (!!sessionId && IS_RECORDING_ENABLED) {
+		if (IS_RECORDING_ENABLED) {
 			if (isAdminSessionValid) {
 				recordings = await openviduService.listAllRecordings();
-			} else if (isModeratorSessionValid || isParticipantSessionValid) {
+			} else if (Boolean(sessionId) && (isModeratorSessionValid || isParticipantSessionValid)) {
 				const date = openviduService.getDateFromCookie(req.cookies);
 				recordings = await openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
 			}

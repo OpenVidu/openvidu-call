@@ -67,10 +67,10 @@ public class RecordingController {
 			boolean isParticipantSessionValid = openviduService.isParticipantSessionValid(sessionId, participantToken);
 			boolean isAdminSessionValid = authService.isAdminSessionValid(adminToken);
 
-			if (!sessionId.isEmpty() && IS_RECORDING_ENABLED) {
+			if (IS_RECORDING_ENABLED) {
 				if (isAdminSessionValid) {
 					recordings = this.openviduService.listAllRecordings();
-				} else if(isModeratorSessionValid || isParticipantSessionValid) {
+				} else if(!sessionId.isEmpty() && (isModeratorSessionValid || isParticipantSessionValid)) {
 					String cookie = isParticipantSessionValid ? participantToken : moderatorToken;
 					long date = openviduService.getDateFromCookie(cookie);
 					recordings = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
