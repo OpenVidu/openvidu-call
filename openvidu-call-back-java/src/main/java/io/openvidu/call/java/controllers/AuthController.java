@@ -1,6 +1,5 @@
 package io.openvidu.call.java.controllers;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +89,18 @@ public class AuthController {
 					cookie.setMaxAge(cookieAdminMaxAge);
 					cookie.setSecure(CALL_OPENVIDU_CERTTYPE.equals("selfsigned"));
 					res.addCookie(cookie);
+					
+					Cookie moderatorCookie = new Cookie(OpenViduService.MODERATOR_TOKEN_NAME, "");
+					moderatorCookie.setPath("/");
+					moderatorCookie.setMaxAge(0);
+					res.addCookie(moderatorCookie);
+					
+					Cookie participantCookie = new Cookie(OpenViduService.PARTICIPANT_TOKEN_NAME, "");
+					participantCookie.setPath("/");
+					participantCookie.setMaxAge(0);
+					res.addCookie(participantCookie);
 
-					AdminSessionData data = new AdminSessionData(new Date().getTime() + cookieAdminMaxAge * 1000);
+					AdminSessionData data = new AdminSessionData(System.currentTimeMillis() + cookieAdminMaxAge * 1000);
 					authService.adminSessions.put(id, data);
 				}
 				List<Recording> recordings = openviduService.listAllRecordings();

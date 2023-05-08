@@ -38,6 +38,8 @@ app.post('/admin/login', async (req: Request, res: Response) => {
 					maxAge: cookieAdminMaxAge,
 					secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned'
 				});
+				res.cookie(openviduService.PARTICIPANT_TOKEN_NAME, '', { maxAge: 0 });
+				res.cookie(openviduService.MODERATOR_TOKEN_NAME, '', { maxAge: 0 });
 				authService.adminSessions.set(id, { expires: new Date().getTime() + cookieAdminMaxAge });
 			}
 			const recordings = await openviduService.listAllRecordings();
