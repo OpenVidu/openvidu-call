@@ -98,7 +98,7 @@ public class RecordingController {
 	}
 
 	@PostMapping("/start")
-	public ResponseEntity<?> startRecording(@RequestBody(required = false) Map<String, String> params,
+	public ResponseEntity<?> startRecording(@RequestBody(required = true) Map<String, String> params,
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken) {
 
 		try {
@@ -137,7 +137,7 @@ public class RecordingController {
 	}
 
 	@PostMapping("/stop")
-	public ResponseEntity<?> stopRecording(@RequestBody(required = false) Map<String, String> params,
+	public ResponseEntity<?> stopRecording(@RequestBody(required = true) Map<String, String> params,
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorToken) {
 		try {
 			String sessionId = params.get("sessionId");

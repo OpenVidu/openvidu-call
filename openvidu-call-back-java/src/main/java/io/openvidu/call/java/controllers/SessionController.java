@@ -45,7 +45,7 @@ public class SessionController {
 
 	@PostMapping("/sessions")
 	public ResponseEntity<Map<String, Object>> createConnection(
-			@RequestBody(required = false) Map<String, Object> params,
+			@RequestBody(required = true) Map<String, Object> params,
 			@CookieValue(name = OpenViduService.MODERATOR_TOKEN_NAME, defaultValue = "") String moderatorCookie,
 			@CookieValue(name = OpenViduService.PARTICIPANT_TOKEN_NAME, defaultValue = "") String participantCookie,
 			HttpServletResponse res) {

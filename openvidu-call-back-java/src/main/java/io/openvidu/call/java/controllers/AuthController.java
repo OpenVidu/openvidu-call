@@ -67,7 +67,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/admin/login")
-	public ResponseEntity<?> adminLogin(@RequestBody(required = false) Map<String, String> params,
+	public ResponseEntity<?> adminLogin(@RequestBody(required = true) Map<String, String> params,
 			@CookieValue(name = AuthService.ADMIN_COOKIE_NAME, defaultValue = "") String adminToken,
 			HttpServletResponse res) {
 
