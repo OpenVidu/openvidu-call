@@ -1,5 +1,6 @@
 import { Connection, ConnectionProperties, OpenVidu, OpenViduRole, Recording, Session, SessionProperties } from 'openvidu-node-client';
 import { OPENVIDU_SECRET, OPENVIDU_URL } from '../config';
+import { RetryOptions } from '../utils';
 
 export class OpenViduService {
 	MODERATOR_TOKEN_NAME = 'ovCallModeratorToken';
@@ -100,27 +101,58 @@ export class OpenViduService {
 		}
 	}
 
-	public async createSession(sessionId: string): Promise<Session> {
-		console.log('Creating session: ', sessionId);
-		let sessionProperties: SessionProperties = { customSessionId: sessionId };
-		const session = await this.openvidu.createSession(sessionProperties);
-		await session.fetch();
-		return session;
+	public async createSession(sessionId: string, retryOptions = new RetryOptions()): Promise<Session> {
+		while (retryOptions.canRetry()) {
+			try {
+				console.log('Creating session: ', sessionId);
+				let sessionProperties: SessionProperties = { customSessionId: sessionId };
+				const session = await this.openvidu.createSession(sessionProperties);
+				await session.fetch();
+				return session;
+			} catch (error) {
+				const status = error.message;
+				if (status >= 501 && status <= 504) {
+					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
+					// to allow fault tolerance
+					console.log('Error creating session: ', status, 'Retrying session creation...', retryOptions);
+					await retryOptions.retrySleep();
+				} else {
+					console.log("Unknown error creating session: ", error);
+					throw error;
+				}
+			}
+		}
+		throw new Error('Max retries exceeded while creating connection');
 	}
 
-	public async createConnection(session: Session, nickname: string, role: OpenViduRole): Promise<Connection> {
-		console.log(`Requesting token for session ${session.sessionId}`);
-		let connectionProperties: ConnectionProperties = { role };
-		if (!!nickname) {
-			connectionProperties.data = JSON.stringify({
-				openviduCustomConnectionId: nickname
-			});
+	public async createConnection(session: Session, nickname: string, role: OpenViduRole, retryOptions = new RetryOptions()): Promise<Connection> {
+		while (retryOptions.canRetry()) {
+			try {
+				console.log(`Requesting token for session ${session.sessionId}`);
+				let connectionProperties: ConnectionProperties = { role };
+				if (!!nickname) {
+					connectionProperties.data = JSON.stringify({
+						openviduCustomConnectionId: nickname
+					});
+				}
+				console.log('Connection Properties:', connectionProperties);
+				const connection = await session.createConnection(connectionProperties);
+				this.edition = new URL(connection.token).searchParams.get('edition');
+				return connection;
+			} catch (error) {
+				const status = Number(error.message);
+				if (status >= 501 && status <= 504) {
+					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
+					// to allow fault tolerance
+					console.log('Error creating connection: ', status, 'Retrying connection creation...', retryOptions);
+					await retryOptions.retrySleep();
+				} else {
+					console.log("Unknown error creating connection: ", error);
+					throw error;
+				}
+			}
 		}
-		console.log('Connection Properties:', connectionProperties);
-		const connection = await session.createConnection(connectionProperties);
-		this.edition = new URL(connection.token).searchParams.get('edition');
-
-		return connection;
+		throw new Error('Max retries exceeded while creating connection');
 	}
 
 	public async startRecording(sessionId: string): Promise<Recording> {
