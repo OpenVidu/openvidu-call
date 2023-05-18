@@ -14,6 +14,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.openvidu.call.java.models.RecordingData;
+import io.openvidu.call.java.utils.RetryException;
+import io.openvidu.call.java.utils.RetryOptions;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.OpenVidu;
@@ -159,17 +161,45 @@ public class OpenViduService {
 		}
 	}
 
-	public Session createSession(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("customSessionId", sessionId);
-		SessionProperties properties = SessionProperties.fromJson(params).build();
-		Session session = openvidu.createSession(properties);
-		session.fetch();
-		return session;
+	public Session createSession(String sessionId)
+			throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
+		RetryOptions retryOptions = new RetryOptions();
+		return createSession(sessionId, retryOptions);
+	}
+
+	private Session createSession(String sessionId, RetryOptions retryOptions)
+			throws OpenViduJavaClientException, OpenViduHttpException, InterruptedException, RetryException {
+		while(retryOptions.canRetry()) {
+			try {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("customSessionId", sessionId);
+				SessionProperties properties = SessionProperties.fromJson(params).build();
+				Session session = openvidu.createSession(properties);
+				session.fetch();
+				return session;
+			} catch (OpenViduHttpException e) {
+				if (e.getStatus() == 502 || e.getStatus() == 503 || e.getStatus() == 504) {
+					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
+					// to allow fault tolerance
+					System.err.println("Error creating session: " + e.getMessage()
+						+ ". Retrying session creation..." + retryOptions.toString());
+					retryOptions.retrySleep();
+				} else {
+					System.err.println("Error creating session: " + e.getMessage());
+					throw e;
+				}
+			}
+		}
+		throw new RetryException("Max retries exceeded");
 	}
 
 	public Connection createConnection(Session session, String nickname, OpenViduRole role)
-			throws OpenViduJavaClientException, OpenViduHttpException {
+			throws OpenViduJavaClientException, OpenViduHttpException, RetryException, InterruptedException {
+		return createConnection(session, nickname, role, new RetryOptions());
+	}
+
+	private Connection createConnection(Session session, String nickname, OpenViduRole role, RetryOptions retryOptions)
+			throws OpenViduJavaClientException, OpenViduHttpException, RetryException, InterruptedException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		Map<String, Object> connectionData = new HashMap<String, Object>();
 
@@ -180,7 +210,28 @@ public class OpenViduService {
 		params.put("data", connectionData.toString());
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
 
-		Connection connection = session.createConnection(properties);
+		Connection connection = null;
+		while (retryOptions.canRetry()) {
+			try {
+				connection = session.createConnection(properties);
+				break;
+			} catch (OpenViduHttpException e) {
+				if (e.getStatus() == 502 || e.getStatus() == 503 || e.getStatus() == 504) {
+					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
+					// to allow fault tolerance
+					System.err.println("Error creating connection: " + e.getMessage()
+						+ ". Retrying connection creation..." + retryOptions.toString());
+					retryOptions.retrySleep();
+				} else {
+					System.err.println("Error creating connection: " + e.getMessage());
+					throw e;
+				}
+			}
+		}
+
+		if (connection == null) {
+			throw new RetryException("Max retries exceeded");
+		}
 
 		MultiValueMap<String, String> tokenParams = UriComponentsBuilder
 				.fromUriString(connection.getToken()).build().getQueryParams();

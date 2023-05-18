@@ -142,11 +142,20 @@ public class SessionController {
 			}
 
 			if (IS_RECORDING_ENABLED) {
-				if (date == -1) {
-					date = openviduService.getDateFromCookie(moderatorCookie);
+				try {
+					if (date == -1) {
+						date = openviduService.getDateFromCookie(moderatorCookie);
+					}
+					List<Recording> recordings = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
+					response.put("recordings", recordings);
+				} catch (OpenViduHttpException e) {
+					if (e.getStatus() == 501) {
+						System.out.println("Recording is disabled in OpenVidu Server.");
+					}
+				} catch (Exception e) {
+					System.out.println("Unknown error listing recordings");
+					e.printStackTrace();
 				}
-				List<Recording> recordings = openviduService.listRecordingsBySessionIdAndDate(sessionId, date);
-				response.put("recordings", recordings);
 			}
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
@@ -164,6 +173,10 @@ public class SessionController {
 				System.err.println(e.getMessage());
 				return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println(e.getMessage());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
