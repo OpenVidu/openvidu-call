@@ -4,18 +4,21 @@
  * This class is used to retry the connection to OpenVidu Server when it is not available
  */
 export class RetryOptions {
-    private retries: number;
-    private incrementSleepOnRetry: number;
-    private maxRetries: number;
-    private msRetrySleep: number;
-    private multiplier: number;
+    private _retries: number;
+    private _incrementSleepOnRetry: number;
+    private _maxRetries: number;
+    private _msRetrySleep: number;
+    private _multiplier: number;
 
     constructor(retries = 1, incrementSleepOnRetry = 10,  maxRetries = 30, msRetrySleep = 150, multiplier = 1.2) {
-        this.retries = retries;
-        this.incrementSleepOnRetry = incrementSleepOnRetry;
-        this.maxRetries = maxRetries;
-        this.msRetrySleep = msRetrySleep;
-        this.multiplier = multiplier;
+        if(retries < 0 || incrementSleepOnRetry < 0 || maxRetries < 0 || msRetrySleep < 0 || multiplier < 0){
+            throw new Error("Parameters cannot be negative.");
+        }
+        this._retries = retries;
+        this._incrementSleepOnRetry = incrementSleepOnRetry;
+        this._maxRetries = maxRetries;
+        this._msRetrySleep = msRetrySleep;
+        this._multiplier = multiplier;
     }
 
     private sleep(ms: number): Promise<void> {
@@ -23,14 +26,34 @@ export class RetryOptions {
     }
 
     public canRetry(): boolean {
-        return this.retries < this.maxRetries;
+        return this._retries < this._maxRetries;
     }
 
     public async retrySleep(): Promise<void> {
-        await this.sleep(this.msRetrySleep);
-        this.retries += 1;
-        if (this.retries > this.incrementSleepOnRetry) {
-            this.msRetrySleep *= this.multiplier;
+        await this.sleep(this._msRetrySleep);
+        this._retries++;
+        if (this._retries > this._incrementSleepOnRetry) {
+            this._msRetrySleep *= this._multiplier;
         }
+    }
+
+    get retries(): number {
+        return this._retries;
+    }
+
+    get incrementSleepOnRetry(): number {
+        return this._incrementSleepOnRetry;
+    }
+
+    get maxRetries(): number {
+        return this._maxRetries;
+    }
+
+    get msRetrySleep(): number {
+        return this._msRetrySleep;
+    }
+
+    get multiplier(): number {
+        return this._multiplier;
     }
 }
