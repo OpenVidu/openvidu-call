@@ -111,7 +111,7 @@ export class OpenViduService {
 				return session;
 			} catch (error) {
 				const status = error.message;
-				if ((status >= 502 && status <= 504) || status === 404) {
+				if ((status >= 502 && status <= 504) || status == 404) {
 					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
 					// to allow fault tolerance
 					// 502 to 504 are returned when OpenVidu Server is not available (stopped, not reachable, etc...)
