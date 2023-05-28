@@ -178,7 +178,7 @@ public class OpenViduService {
 				session.fetch();
 				return session;
 			} catch (OpenViduHttpException e) {
-				if ((e.getStatus() >= 502 && e.getStatus() <= 504) || e.getStatus() == 404) {
+				if ((e.getStatus() >= 500 && e.getStatus() <= 504) || e.getStatus() == 404) {
 					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
 					// to allow fault tolerance
 					// 502 to 504 are returned when OpenVidu Server is not available (stopped, not reachable, etc...)
@@ -219,7 +219,7 @@ public class OpenViduService {
 				connection = session.createConnection(properties);
 				break;
 			} catch (OpenViduHttpException e) {
-				if (e.getStatus() >= 502 && e.getStatus() <= 504) {
+				if (e.getStatus() >= 500 && e.getStatus() <= 504) {
 					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
 					// to allow fault tolerance
 					System.err.println("Error creating connection: " + e.getMessage()
