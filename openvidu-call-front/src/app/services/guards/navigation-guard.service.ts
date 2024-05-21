@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../auth.services';
 import { CallService } from '../call.service';
 
 @Injectable({
 	providedIn: 'root'
 })
-export class NavigationGuardService implements CanActivate {
+export class NavigationGuardService  {
 	constructor(private router: Router, private callService: CallService, private authService: AuthService) {}
 
 	// Check if user can navigate to the route
