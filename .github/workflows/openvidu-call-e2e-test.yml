@@ -22,7 +22,7 @@ jobs:
         COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
         COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
       run: echo Commit openvidu-components-angular
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: '20'
     - name: Build openvidu-browser
@@ -57,7 +57,7 @@ jobs:
         rm -rf openvidu && \
         ls -al
         # tar -cvf artifacts.tar .
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: artifacts
         path: ${{ github.workspace }}/**.tgz
@@ -68,11 +68,11 @@ jobs:
     name: Authentication E2E tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: artifacts
     # - name: Run Selenium Chromedriver
@@ -108,11 +108,11 @@ jobs:
     name: No Authentication E2E tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: artifacts
     # - name: Run Selenium Chromedriver
