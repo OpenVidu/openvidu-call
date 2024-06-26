@@ -15,7 +15,8 @@ $iconFill: #606468;
 $formGap: 0.375rem;
 
 .section1 {
-	background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+	background:
+		linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
 		url('../../../assets/images/bg.webp') top center no-repeat;
 	background-size: cover;
 	height: 100%;
@@ -172,7 +173,7 @@ input[type='submit'] {
 	border-radius: $loginBorderRadus;
 	padding: 0.85rem;
 }
-#session-name-input {
+#room-name-input {
 	border-radius: 0;
 }
 
@@ -221,13 +222,28 @@ input[type='submit'] {
 .login button[type='submit']:hover {
 	background-color: $loginSubmitHoverBackgroundColor;
 }
-
-#session-name-generator-btn {
+#clear-room-name-btn {
+	height: auto;
+	background-color: $loginInputBackgroundColor;
+	border-radius: 0;
+	color: $loginColor;
+	mat-icon {
+		vertical-align: middle;
+	}
+}
+#room-name-generator-btn {
 	height: auto;
 	background-color: $loginInputBackgroundColor;
 	border-radius: $loginBorderRadus;
 	border-bottom-left-radius: 0;
 	border-top-left-radius: 0;
+	color: $loginColor;
+	mat-icon {
+		vertical-align: middle;
+	}
+	&:hover {
+		background-color: $loginInputHoverBackgroundColor;
+	}
 }
 
 p {

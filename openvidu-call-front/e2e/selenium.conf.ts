@@ -1,6 +1,6 @@
 import { Capabilities } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
-import { LAUNCH_MODE } from './config';
+import { LAUNCH_MODE } from './config.js';
 
 interface BrowserConfig {
 	appUrl: string;
@@ -10,7 +10,11 @@ interface BrowserConfig {
 	browserName: string;
 }
 
-let chromeArguments = ['--window-size=1024,768', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'];
+let chromeArguments = [
+	'--window-size=1024,768',
+	'--use-fake-ui-for-media-stream',
+	'--use-fake-device-for-media-stream'
+];
 let chromeArgumentsCI = [
 	'--headless',
 	'--no-sandbox',

@@ -1,108 +1,163 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { RecordingInfo } from 'openvidu-angular';
+import { RecordingInfo } from 'openvidu-components-angular';
 import { lastValueFrom } from 'rxjs';
+import { StorageService } from './storage.service';
 
-interface SessionResponse {
-	cameraToken: string;
-	screenToken: string;
-	recordingEnabled: boolean;
-	isRecordingActive: boolean;
-	recordings?: RecordingInfo[];
-	broadcastingEnabled: boolean;
-	isBroadcastingActive: boolean;
-}
 @Injectable({
 	providedIn: 'root'
 })
 export class RestService {
-	private baseHref: string;
+	// private baseHref: string;
+	private pathPrefix = 'call/api';
 
-	constructor(private http: HttpClient) {
-		this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
+	constructor(
+		private http: HttpClient,
+		private storageService: StorageService
+	) {
+		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
 
-	async login(username: string, password: string): Promise<{ logged: boolean }> {
-		return this.postRequest('auth/login', { username, password });
+	private generateUserHeaders(): HttpHeaders {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+		const userCredentials = this.storageService.getUserCredentials();
+		if (userCredentials?.username && userCredentials?.password) {
+			return headers.append('Authorization', `Basic ${btoa(`${userCredentials.username}:${userCredentials.password}`)}`);
+		}
+
+		return headers;
+	}
+
+	private generateAdminHeaders(): HttpHeaders {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+		const adminCredentials = this.storageService.getAdminCredentials();
+		if (adminCredentials.username && adminCredentials.password) {
+			return headers.set('Authorization', `Basic ${btoa(`${adminCredentials.username}:${adminCredentials.password}`)}`);
+		}
+
+		return headers;
 	}
 
 	async getConfig() {
-		return await this.getRequest('call/config');
+		return this.getRequest(`${this.pathPrefix}/config`);
 	}
 
-	async getTokens(sessionId: string, nickname?: string): Promise<SessionResponse> {
-		return this.postRequest('sessions', { sessionId, nickname });
-	}
-	adminLogin(password: string): Promise<any[]> {
-		return this.postRequest('auth/admin/login', { password });
-	}
-	adminLogout(): Promise<void> {
-		return this.postRequest('auth/admin/logout', {});
+	getToken(roomName: string, participantName: string): Promise<{ token: string }> {
+		const headers = this.generateUserHeaders();
+
+		return this.postRequest(`${this.pathPrefix}/rooms`, { roomName, participantName }, headers);
 	}
 
-	getRecordings() {
-		return this.getRequest(`recordings/`);
+	adminLogin(body: { username: string; password: string }): Promise<{ message: string }> {
+		return this.postRequest(`${this.pathPrefix}/admin/login`, body);
 	}
 
-	startRecording(sessionId: string) {
-		return this.postRequest('recordings/start', { sessionId });
+	adminLogout(): Promise<{ message: string }> {
+		return this.postRequest(`${this.pathPrefix}/admin/logout`, {});
 	}
 
-	stopRecording(sessionId: string) {
-		return this.postRequest('recordings/stop', { sessionId });
+	userLogin(body: { username: string; password: string }): Promise<{ message: string }> {
+		return this.postRequest(`${this.pathPrefix}/login`, body);
 	}
 
-	deleteRecording(recordingId: string): Promise<RecordingInfo[]> {
-		return this.deleteRequest(`recordings/delete/${recordingId}`);
+	userLogout(): Promise<{ message: string }> {
+		return this.postRequest(`${this.pathPrefix}/logout`, {});
 	}
 
-	async startBroadcasting(broadcastUrl: string) {
-		const options = {
-			headers: new HttpHeaders({
-				'Content-Type': 'application/json'
-			})
-		};
-		return this.postRequest('broadcasts/start', { broadcastUrl }, options);
+	getRecordings(continuationToken?: string): Promise<{ recordings: RecordingInfo[]; continuationToken: string }> {
+		let path = `${this.pathPrefix}/admin/recordings`;
+
+		if (continuationToken) {
+			path += `?continuationToken=${continuationToken}`;
+		}
+
+		const headers = this.generateAdminHeaders();
+
+		return this.getRequest(path, headers);
 	}
 
-	stopBroadcasting() {
-		return this.deleteRequest('broadcasts/stop');
+	startRecording(roomName: string): Promise<RecordingInfo> {
+		const headers = this.generateUserHeaders();
+
+		return this.postRequest(`${this.pathPrefix}/recordings`, { roomName }, headers);
 	}
 
-	private postRequest(path: string, body: any, options?: any): Promise<any> {
+	stopRecording(recordingId: string): Promise<RecordingInfo> {
+		const headers = this.generateUserHeaders();
+		return this.putRequest(`${this.pathPrefix}/recordings/${recordingId}`, {}, headers);
+	}
+
+	deleteRecording(recordingId: string): Promise<RecordingInfo> {
+		const headers = this.generateUserHeaders();
+		return this.deleteRequest(`${this.pathPrefix}/recordings/${recordingId}`, headers);
+	}
+
+	deleteRecordingByAdmin(recordingId: string): Promise<RecordingInfo> {
+		const headers = this.generateAdminHeaders();
+		return this.deleteRequest(`${this.pathPrefix}/admin/recordings/${recordingId}`, headers);
+	}
+
+	startBroadcasting(roomName: string, broadcastUrl: string): Promise<any> {
+		const body = { roomName, broadcastUrl };
+		const headers = this.generateUserHeaders();
+		return this.postRequest(`${this.pathPrefix}/broadcasts/`, body, headers);
+	}
+
+	stopBroadcasting(broadcastId: string): Promise<any> {
+		const headers = this.generateUserHeaders();
+		return this.putRequest(`${this.pathPrefix}/broadcasts/${broadcastId}`, {}, headers);
+	}
+
+	private postRequest(path: string, body: any, headers?: HttpHeaders): Promise<any> {
 		try {
-			return lastValueFrom(this.http.post<any>(this.baseHref + path, body, options));
+			return lastValueFrom(this.http.post<any>(path, body, { headers }));
 		} catch (error) {
 			if (error.status === 404) {
 				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
 			}
+
 			throw error;
 		}
 	}
 
-	private getRequest(path: string, responseType?: string): any {
+	private getRequest(path: string, headers?: HttpHeaders): any {
 		try {
-			const options = {};
-			if (responseType) {
-				options['responseType'] = responseType;
-			}
-			return lastValueFrom(this.http.get(`${this.baseHref}${path}`, options));
+			return lastValueFrom(this.http.get(path, { headers }));
 		} catch (error) {
 			if (error.status === 404) {
 				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
 			}
+
 			throw error;
 		}
 	}
 
-	private deleteRequest(path: string) {
+	private deleteRequest(path: string, headers?: HttpHeaders) {
 		try {
-			return lastValueFrom(this.http.delete<any>(`${this.baseHref}${path}`));
+			return lastValueFrom(this.http.delete<any>(path, { headers }));
 		} catch (error) {
 			console.log(error);
+
 			if (error.status === 404) {
 				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
 			}
+
+			throw error;
+		}
+	}
+
+	private putRequest(path: string, body: any = {}, headers?: HttpHeaders) {
+		try {
+			return lastValueFrom(this.http.put<any>(path, body, { headers }));
+		} catch (error) {
+			if (error.status === 404) {
+				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
+			}
+
 			throw error;
 		}
 	}

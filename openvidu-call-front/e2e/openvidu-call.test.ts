@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { Builder, WebDriver } from 'selenium-webdriver';
-
 import { OpenViduCallConfig } from './selenium.conf';
 import { OpenViduCallPO } from './utils.po.test';
 
@@ -75,11 +74,11 @@ describe('Testing MODERATOR ACCESS features', () => {
 			.setChromeOptions(OpenViduCallConfig.browserOptions)
 			.usingServer(OpenViduCallConfig.seleniumAddress);
 
-			if(incognito) {
-				browser.setChromeOptions(browser.getChromeOptions().addArguments('--incognito'));
-			}
+		if (incognito) {
+			browser.setChromeOptions(browser.getChromeOptions().addArguments('--incognito'));
+		}
 
-			return await browser.build();
+		return await browser.build();
 	}
 
 	beforeEach(async () => {
@@ -92,7 +91,6 @@ describe('Testing MODERATOR ACCESS features', () => {
 	});
 
 	it('MODERATOR should have access to BROADCASTING feature', async () => {
-
 		await browser.get(url);
 
 		await utils.waitForElement('#join-btn');
@@ -126,9 +124,8 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await utils.waitForElement('#broadcasting-url-input');
 		expect(await utils.isPresent('.not-allowed-message')).to.be.false;
 
-
 		incognitoBrowser = await createChromeBrowser(true);
-		const incognitoUtils =  new OpenViduCallPO(incognitoBrowser);
+		const incognitoUtils = new OpenViduCallPO(incognitoBrowser);
 
 		await incognitoBrowser.get(`${url}broadcastingSession`);
 
@@ -147,7 +144,6 @@ describe('Testing MODERATOR ACCESS features', () => {
 	});
 
 	it('MODERATOR should have access to RECORDING feature', async () => {
-
 		await browser.get(url);
 
 		const button = await utils.waitForElement('#join-btn');
@@ -170,9 +166,8 @@ describe('Testing MODERATOR ACCESS features', () => {
 		await utils.waitForElement('#start-recording-btn');
 		expect(await utils.isPresent('.not-allowed-message')).to.be.false;
 
-
 		incognitoBrowser = await createChromeBrowser(true);
-		const incognitoUtils =  new OpenViduCallPO(incognitoBrowser);
+		const incognitoUtils = new OpenViduCallPO(incognitoBrowser);
 
 		await incognitoBrowser.get(`${url}recordingSession`);
 

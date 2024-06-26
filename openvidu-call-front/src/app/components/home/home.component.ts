@@ -1,46 +1,74 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+	FormBuilder,
+	FormGroup,
+	UntypedFormBuilder,
+	Validators,
+	FormsModule,
+	ReactiveFormsModule
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/services/auth.services';
-import { CallService } from 'src/app/services/call.service';
+import { ConfigService } from 'src/app/services/config.service';
 import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
 import packageInfo from '../../../../package.json';
+import { RestService } from 'src/app/services/rest.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { NgClass } from '@angular/common';
+import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
 	selector: 'app-home',
 	templateUrl: './home.component.html',
-	styleUrls: ['./home.component.scss']
+	styleUrls: ['./home.component.scss'],
+	standalone: true,
+	imports: [
+    MatToolbar,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    MatButton
+]
 })
 export class HomeComponent implements OnInit, OnDestroy {
-	sessionForm: UntypedFormGroup = new UntypedFormGroup({
-		sessionName: new UntypedFormControl('', [Validators.minLength(6), Validators.required])
-	});
-	loginForm: UntypedFormGroup = new UntypedFormGroup({
-		username: new UntypedFormControl('', []),
-		password: new UntypedFormControl('', [])
-	});
+	roomForm: FormGroup;
+	loginForm: FormGroup;
 	version: string;
 	isPrivateAccess: boolean;
 	username: string;
 	loginError: boolean;
 	serverConnectionError: boolean;
-	isUserLogged: boolean = false;
-	loading: boolean = true;
+	isUserLogged = false;
+	loading = true;
 	private queryParamSubscription: Subscription;
-	private loginSubscription: Subscription;
 
 	constructor(
 		private router: Router,
 		public formBuilder: UntypedFormBuilder,
-		private authService: AuthService,
-		private callService: CallService,
+		private restService: RestService,
+		private storageService: StorageService,
+		private callService: ConfigService,
+		private fb: FormBuilder,
 		private route: ActivatedRoute
-	) {}
+	) {
+		this.loginForm = this.fb.group({
+			username: [this.storageService.getUserName() ?? '', [Validators.required, Validators.minLength(4)]],
+			password: ['', [Validators.required, Validators.minLength(4)]]
+		});
+
+		this.roomForm = this.fb.group({
+			roomName: [this.getRandomName(), [Validators.required, Validators.minLength(6)]]
+		});
+	}
 
 	async ngOnInit() {
 		this.version = packageInfo.version;
-		this.sessionForm.get('sessionName').setValue(this.getRandomName());
 		this.subscribeToQueryParams();
 
 		try {
@@ -48,17 +76,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 			this.isPrivateAccess = this.callService.isPrivateAccess();
 
 			if (this.isPrivateAccess) {
-				this.subscribeToLogin();
-				this.loginForm.get('username').setValidators(Validators.required);
-				this.loginForm.get('username').setValue(this.authService.getUsername());
-				this.loginForm.get('password').setValidators(Validators.required);
-				this.loginForm.get('password').setValue(this.authService.getPassword());
-				await this.authService.loginUsingLocalStorageData();
-			}
+				const userCredentials = this.storageService.getUserCredentials();
 
-			this.username = this.authService.getUsername();
+				if (!userCredentials) return;
+
+				await this.restService.userLogin(userCredentials);
+				this.storageService.setUserCredentials(userCredentials);
+				this.username = this.storageService.getUserName();
+				this.isUserLogged = true;
+				this.loginError = false;
+			}
 		} catch (error) {
-			this.serverConnectionError = true;
+			this.isUserLogged = false;
+			// this.serverConnectionError = true;
+			this.loginError = true;
 		} finally {
 			this.loading = false;
 		}
@@ -66,12 +97,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		if (this.queryParamSubscription) this.queryParamSubscription.unsubscribe();
-		if (this.loginSubscription) this.loginSubscription.unsubscribe();
 	}
 
-	generateSessionName(event) {
+	generateRoomName(event) {
 		event.preventDefault();
-		this.sessionForm.get('sessionName').setValue(this.getRandomName());
+		this.roomForm.get('roomName').setValue(this.getRandomName());
+	}
+
+	clearRoomName() {
+		this.roomForm.get('roomName').setValue('');
 	}
 
 	keyDown(event) {
@@ -86,42 +120,51 @@ export class HomeComponent implements OnInit, OnDestroy {
 		this.loginError = false;
 		this.username = this.loginForm.get('username').value;
 		const password = this.loginForm.get('password').value;
-		await this.authService.login(this.username, password);
-	}
 
-	logout() {
-		this.authService.logout();
-		this.loginError = false;
-	}
-
-	async goToVideoCall() {
-		if (this.sessionForm.valid) {
-			this.navigateToVideoconference();
-		} else {
-			console.error('Session name is not valid');
+		try {
+			await this.restService.userLogin({ username: this.username, password });
+			this.storageService.setUserCredentials({ username: this.username, password });
+			this.isUserLogged = true;
+		} catch (error) {
+			this.isUserLogged = false;
+			this.loginError = true;
+			console.error('Error doing login ', error);
 		}
 	}
 
-	private subscribeToLogin() {
-		this.loginSubscription = this.authService.isLoggedObs.subscribe((isLogged) => {
-			this.isUserLogged = isLogged;
-			this.loginError = this.authService.hadLoginError();
-		});
+	async logout() {
+		try {
+			await this.restService.userLogout();
+			this.storageService.clearUserCredentials();
+			this.loginError = false;
+			this.isUserLogged = false;
+		} catch (error) {
+			console.error('Error doing logout ', error);
+		}
+	}
+
+	async goToVideoCall() {
+		if (this.roomForm.valid) {
+			this.navigateToVideoconference();
+		} else {
+			console.error('Room name is not valid');
+		}
 	}
 
 	private subscribeToQueryParams(): void {
 		this.queryParamSubscription = this.route.queryParams.subscribe((params) => {
-			if (!!params?.sessionId) {
+			const roomName = params?.roomName;
+
+			if (roomName) {
 				this.loginError = true;
-				const sessionId = params.sessionId.replace(/[^\w-]/g, '');
-				this.sessionForm.get('sessionName').setValue(sessionId);
+				this.roomForm.get('roomName').setValue(roomName.replace(/[^\w-]/g, ''));
 			}
 		});
 	}
 
 	private navigateToVideoconference() {
-		const roomName = this.sessionForm.get('sessionName').value.replace(/ /g, '-');
-		this.sessionForm.get('sessionName').setValue(roomName);
+		const roomName = this.roomForm.get('roomName').value.replace(/ /g, '-');
+		this.roomForm.get('roomName').setValue(roomName);
 		this.router.navigate(['/', roomName]);
 	}
 
