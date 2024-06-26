@@ -3,7 +3,7 @@ import { CALL_OPENVIDU_CERTTYPE, CALL_RECORDING, OPENVIDU_URL } from '../config'
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { Recording } from 'openvidu-node-client';
+import { Recording } from 'openvidu-node-client-v2compatibility';
 import { AuthService } from '../services/AuthService';
 import { OpenViduService } from '../services/OpenViduService';
 export const app = express.Router({
@@ -186,6 +186,7 @@ export const proxyGETRecording = createProxyMiddleware({
 		const isModeratorSessionValid = openviduService.isModeratorSessionValid(sessionId, req.cookies);
 		const isParticipantSessionValid = openviduService.isParticipantSessionValid(sessionId, req.cookies);
 
+		console.log(`Downloading recording ${recordingId}`);
 		if (!!sessionId && (isModeratorSessionValid || isParticipantSessionValid || isAdminSessionValid)) {
 			proxyReq.setHeader('Connection', 'keep-alive');
 			proxyReq.setHeader('Authorization', openviduService.getBasicAuth());

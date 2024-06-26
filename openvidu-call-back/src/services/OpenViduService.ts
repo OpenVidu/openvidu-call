@@ -1,4 +1,4 @@
-import { Connection, ConnectionProperties, OpenVidu, OpenViduRole, Recording, Session, SessionProperties } from 'openvidu-node-client';
+import { Connection, ConnectionProperties, OpenVidu, OpenViduRole, Recording, Session, SessionProperties } from 'openvidu-node-client-v2compatibility';
 import { OPENVIDU_SECRET, OPENVIDU_URL } from '../config';
 import { RetryOptions } from '../utils';
 

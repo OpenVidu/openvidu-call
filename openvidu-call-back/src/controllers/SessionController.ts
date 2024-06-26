@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { OpenViduRole, Session } from 'openvidu-node-client';
+import { OpenViduRole, Session } from 'openvidu-node-client-v2compatibility';
 import { CALL_BROADCAST, CALL_RECORDING } from '../config';
 import { OpenViduService } from '../services/OpenViduService';
 

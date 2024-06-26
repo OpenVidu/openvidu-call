@@ -1,6 +1,6 @@
 export const SERVER_PORT = process.env.SERVER_PORT || 5000;
-export const OPENVIDU_URL = process.env.OPENVIDU_URL || 'http://localhost:4443';
-export const OPENVIDU_SECRET = process.env.OPENVIDU_SECRET || 'MY_SECRET';
+export const OPENVIDU_URL = process.env.OPENVIDU_URL || 'http://localhost:7880';
+export const OPENVIDU_SECRET = process.env.OPENVIDU_SECRET || 'secret';
 export const CALL_OPENVIDU_CERTTYPE = process.env.CALL_OPENVIDU_CERTTYPE || 'selfsigned';
 export const CALL_PRIVATE_ACCESS = process.env.CALL_PRIVATE_ACCESS || 'ENABLED';
 export const CALL_USER = process.env.CALL_USER || 'admin';

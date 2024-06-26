@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { RecordingInfo } from 'openvidu-angular';
+import { RecordingInfo } from 'openvidu-angular-v2compatibility';
 import { lastValueFrom } from 'rxjs';
 
 interface SessionResponse {

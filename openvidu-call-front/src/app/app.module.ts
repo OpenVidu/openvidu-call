@@ -23,7 +23,7 @@ import { HomeComponent } from './components/home/home.component';
 
 // OpenVidu Angular
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { OpenViduAngularConfig, OpenViduAngularModule } from 'openvidu-angular';
+import { OpenViduAngularConfig, OpenViduAngularModule } from 'openvidu-angular-v2compatibility';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { HttpRequestInterceptor } from './services/http-interceptor.service';
 

@@ -9,7 +9,7 @@ import {
 	RecordingService,
 	RecordingStatus,
 	TokenModel
-} from 'openvidu-angular';
+} from 'openvidu-angular-v2compatibility';
 
 import { RestService } from '../../services/rest.service';
 
