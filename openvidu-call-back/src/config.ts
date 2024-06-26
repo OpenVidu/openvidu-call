@@ -1,5 +1,5 @@
 // General server configuration
-export const SERVER_PORT = process.env.SERVER_PORT || 5000;
+export const SERVER_PORT = process.env.SERVER_PORT || 6080;
 export const CALL_PRIVATE_ACCESS = process.env.CALL_PRIVATE_ACCESS || 'false';
 export const CALL_USER = process.env.CALL_USER || 'user';
 export const CALL_SECRET = process.env.CALL_SECRET || 'user';
