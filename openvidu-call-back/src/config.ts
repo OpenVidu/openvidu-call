@@ -1,4 +1,4 @@
-export const SERVER_PORT = process.env.SERVER_PORT || 5000;
+export const SERVER_PORT = process.env.SERVER_PORT || 6080;
 export const OPENVIDU_URL = process.env.OPENVIDU_URL || 'http://localhost:7880';
 export const OPENVIDU_SECRET = process.env.OPENVIDU_SECRET || 'secret';
 export const CALL_OPENVIDU_CERTTYPE = process.env.CALL_OPENVIDU_CERTTYPE || 'selfsigned';
