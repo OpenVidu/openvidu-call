@@ -1,5 +1,6 @@
 <ov-videoconference
   [token]="token"
+  [tokenError]="serverError"
   (onTokenRequested)="onTokenRequested($event)"
   (onRoomDisconnected)="onRoomDisconnected()"
   (onRecordingStartRequested)="onRecordingStartRequested($event)"

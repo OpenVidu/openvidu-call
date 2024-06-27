@@ -45,7 +45,7 @@ export class VideoRoomComponent implements OnInit {
 			this.token = token;
 		} catch (error) {
 			console.error(error);
-			this.serverError = error?.error?.message || error?.statusText;
+			this.serverError = error.error;
 		} finally {
 			this.loading = false;
 		}
