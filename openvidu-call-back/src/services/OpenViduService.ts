@@ -110,6 +110,7 @@ export class OpenViduService {
 				await session.fetch();
 				return session;
 			} catch (error) {
+				console.log('Error creating session: ', error);
 				const status = error.message;
 				if ((status >= 500 && status <= 504) || status == 404) {
 					// Retry is used for OpenVidu Enterprise High Availability for reconnecting purposes
@@ -117,7 +118,7 @@ export class OpenViduService {
 					// 502 to 504 are returned when OpenVidu Server is not available (stopped, not reachable, etc...)
 					// 404 is returned when the session does not exist which is returned by fetch operation in createSession
 					// and it is not a possible error after session creation
-					console.log('Error creating session: ', status, 'Retrying session creation...', retryOptions);
+					console.log('Error creating session: ', status, 'Retrying session creation...');
 					await retryOptions.retrySleep();
 				} else {
 					console.log("Unknown error creating session: ", error);
