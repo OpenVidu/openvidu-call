@@ -1,4 +1,4 @@
-type StatusError = 400 | 404 | 406 | 409 | 422 | 500 | 501;
+type StatusError = 400 | 404 | 406 | 409 | 422 | 500 | 503;
 export class OpenViduCallError extends Error {
 	name: string;
 	statusCode: StatusError;
@@ -12,8 +12,12 @@ export class OpenViduCallError extends Error {
 // General errors
 
 export const errorLivekitIsNotAvailable = (): OpenViduCallError => {
-	return new OpenViduCallError('LiveKit Error', 'LiveKit is not available', 500);
+	return new OpenViduCallError('LiveKit Error', 'LiveKit is not available', 503);
 };
+
+export const errorS3NotAvailable = (error: any): OpenViduCallError => {
+	return new OpenViduCallError('S3 Error', `S3 is not available ${error}`, 503);
+}
 
 export const internalError = (error: any): OpenViduCallError => {
 	return new OpenViduCallError('Unexpected error', `Something went wrong ${error}`, 500);

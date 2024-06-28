@@ -22,7 +22,7 @@ import {
 	CALL_AWS_SECRET_KEY,
 	CALL_AWS_S3_WITH_PATH_STYLE_ACCESS
 } from '../config.js';
-import { internalError } from '../models/error.model.js';
+import { errorS3NotAvailable, internalError } from '../models/error.model.js';
 import { Readable } from 'stream';
 import { LoggerService } from './logger.service.js';
 
@@ -93,8 +93,13 @@ export class S3Service {
 				Body: JSON.stringify(body)
 			});
 			return await this.run(command);
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error(`Error putting object in S3: ${error}`);
+
+			if (error.code === 'ECONNREFUSED') {
+				throw errorS3NotAvailable(error);
+			}
+
 			throw internalError(error);
 		}
 	}
@@ -179,6 +184,11 @@ export class S3Service {
 			return response;
 		} catch (error) {
 			this.logger.error(`Error listing objects: ${error}`);
+
+			if ((error as any).code === 'ECONNREFUSED') {
+				throw errorS3NotAvailable(error);
+			}
+
 			throw internalError(error);
 		}
 	}
@@ -192,6 +202,10 @@ export class S3Service {
 			if (error.name === 'NoSuchKey') {
 				this.logger.warn(`Object '${name}' does not exist in S3`);
 				return undefined;
+			}
+
+			if (error.code === 'ECONNREFUSED') {
+				throw errorS3NotAvailable(error);
 			}
 
 			this.logger.error(`Error getting object from S3. Maybe it has been deleted: ${error}`);
@@ -208,8 +222,13 @@ export class S3Service {
 			} else {
 				throw new Error('Empty body response');
 			}
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error(`Error getting object from S3: ${error}`);
+
+			if (error.code === 'ECONNREFUSED') {
+				throw errorS3NotAvailable(error);
+			}
+
 			throw internalError(error);
 		}
 	}

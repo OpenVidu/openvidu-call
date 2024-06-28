@@ -189,54 +189,44 @@ export class RecordingService {
 	}
 
 	private async getRecording(egressId: string): Promise<RecordingInfo> {
-		try {
-			const egressIdSanitized = this.sanitizeRegExp(egressId);
-			const regexPattern = `.*${egressIdSanitized}.*\\.json`;
-			const metadataObject = await this.s3Service.listObjects('.metadata', regexPattern);
+		const egressIdSanitized = this.sanitizeRegExp(egressId);
+		const regexPattern = `.*${egressIdSanitized}.*\\.json`;
+		const metadataObject = await this.s3Service.listObjects('.metadata', regexPattern);
 
-			if (!metadataObject.Contents || metadataObject.Contents.length === 0) {
-				throw errorRecordingNotFound(egressId);
-			}
-
-			const recording = await this.s3Service.getObjectAsJson(metadataObject.Contents[0].Key!) as RecordingInfo;
-			return recording;
-			// return RecordingHelper.toRecordingInfo(recording);
-		} catch (error) {
-			this.logger.error(`Error getting recording ${egressId}: ${error}`);
-			throw error;
+		if (!metadataObject.Contents || metadataObject.Contents.length === 0) {
+			throw errorRecordingNotFound(egressId);
 		}
+
+		const recording = (await this.s3Service.getObjectAsJson(metadataObject.Contents[0].Key!)) as RecordingInfo;
+		return recording;
+		// return RecordingHelper.toRecordingInfo(recording);
 	}
 
 	async getRecordingAsStream(
 		recordingId: string,
 		range?: string
 	): Promise<{ fileSize: number | undefined; fileStream: Readable; start?: number; end?: number }> {
-		try {
-			const egressInfo = await this.getRecording(recordingId);
-			const recordingPath = RecordingHelper.extractFileNameFromUrl(egressInfo.location);
+		const egressInfo = await this.getRecording(recordingId);
+		const recordingPath = RecordingHelper.extractFileNameFromUrl(egressInfo.location);
 
-			if (!recordingPath) throw new Error(`Error extracting path from recording ${recordingId}`);
+		if (!recordingPath) throw new Error(`Error extracting path from recording ${recordingId}`);
 
-			const data = await this.s3Service.getHeaderObject(recordingPath);
-			const fileSize = data.ContentLength;
+		const data = await this.s3Service.getHeaderObject(recordingPath);
+		const fileSize = data.ContentLength;
 
-			if (range && fileSize) {
-				// Parse the range header
-				const parts = range.replace(/bytes=/, '').split('-');
-				const start = parseInt(parts[0], 10);
-				const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-				const fileStream = await this.s3Service.getObjectAsStream(recordingPath, CALL_AWS_S3_BUCKET, {
-					start,
-					end
-				});
-				return { fileSize, fileStream, start, end };
-			} else {
-				const fileStream = await this.s3Service.getObjectAsStream(recordingPath);
-				return { fileSize, fileStream };
-			}
-		} catch (error) {
-			this.logger.error(`Error streaming recording ${recordingId}: ${error}`);
-			throw error;
+		if (range && fileSize) {
+			// Parse the range header
+			const parts = range.replace(/bytes=/, '').split('-');
+			const start = parseInt(parts[0], 10);
+			const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+			const fileStream = await this.s3Service.getObjectAsStream(recordingPath, CALL_AWS_S3_BUCKET, {
+				start,
+				end
+			});
+			return { fileSize, fileStream, start, end };
+		} else {
+			const fileStream = await this.s3Service.getObjectAsStream(recordingPath);
+			return { fileSize, fileStream };
 		}
 	}
 
