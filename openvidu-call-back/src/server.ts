@@ -18,7 +18,9 @@ import {
 	CALL_AWS_S3_BUCKET,
 	CALL_AWS_S3_SERVICE_ENDPOINT,
 	CALL_AWS_ACCESS_KEY,
-	CALL_AWS_SECRET_KEY
+	CALL_AWS_SECRET_KEY,
+	CALL_ADMIN_USER,
+	CALL_AWS_REGION
 } from './config.js';
 
 dotenv.config();
@@ -70,6 +72,7 @@ app.listen(SERVER_PORT, () => {
 		console.log('CALL SECRET: ', credential('****' + CALL_SECRET.slice(-3)));
 	}
 
+	console.log('CALL ADMIN USER: ', credential('****' + CALL_ADMIN_USER.slice(-3)));
 	console.log('CALL ADMIN PASSWORD: ', credential('****' + CALL_ADMIN_SECRET.slice(-3)));
 	console.log('---------------------------------------------------------');
 	console.log(' LIVEKIT Configuration');
@@ -85,6 +88,7 @@ app.listen(SERVER_PORT, () => {
 	console.log('CALL_AWS_S3_SERVICE_ENDPOINT:', text(CALL_AWS_S3_SERVICE_ENDPOINT));
 	console.log('CALL_AWS_ACCESS_KEY:', credential('****' + CALL_AWS_ACCESS_KEY.slice(-3)));
 	console.log('CALL_AWS_SECRET_KEY:', credential('****' + CALL_AWS_SECRET_KEY.slice(-3)));
+	console.log('CALL_AWS_REGION:', text(CALL_AWS_REGION));
 	console.log('---------------------------------------------------------');});
 
 export default app;
