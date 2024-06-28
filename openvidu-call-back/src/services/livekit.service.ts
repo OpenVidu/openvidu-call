@@ -82,7 +82,7 @@ export class LiveKitService {
 		} catch (error: any) {
 			this.logger.error(error);
 
-			if (error.cause.code === 'ECONNREFUSED') {
+			if (error?.cause?.code === 'ECONNREFUSED') {
 				throw errorLivekitIsNotAvailable();
 			}
 
