@@ -174,6 +174,7 @@ app.delete('/delete/:recordingId', async (req: Request, res: Response) => {
 export const proxyGETRecording = createProxyMiddleware({
 	target: `${OPENVIDU_URL}/openvidu/`,
 	secure: CALL_OPENVIDU_CERTTYPE !== 'selfsigned',
+	changeOrigin: true,
 	onProxyReq: (proxyReq, req: Request, res: Response) => {
 		proxyReq.removeHeader('Cookie');
 		const recordingId: string = req.params.recordingId;
