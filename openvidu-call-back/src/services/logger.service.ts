@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { LOG_LEVEL } from '../config.js';
+import { CALL_LOG_LEVEL } from '../config.js';
 
 export class LoggerService {
 	private static instance: LoggerService;
@@ -7,7 +7,7 @@ export class LoggerService {
 
 	private constructor() {
 		this.logger = winston.createLogger({
-			level: LOG_LEVEL,
+			level: CALL_LOG_LEVEL,
 			format: winston.format.combine(
 				winston.format.timestamp({
 					format: 'YYYY-MM-DD HH:mm:ss'

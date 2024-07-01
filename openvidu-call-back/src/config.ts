@@ -5,7 +5,13 @@ export const CALL_USER = process.env.CALL_USER || 'user';
 export const CALL_SECRET = process.env.CALL_SECRET || 'user';
 export const CALL_ADMIN_USER = process.env.CALL_ADMIN_USER || 'admin';
 export const CALL_ADMIN_SECRET = process.env.CALL_ADMIN_SECRET || 'admin';
-export const LOG_LEVEL = process.env.LOG_LEVEL || 'verbose';
+
+/**
+ * Log levels configuration: error, warn, info, verbose, debug, silly
+ *
+ * The default log level is set to 'verbose' if CALL_LOG_LEVEL environment variable is not defined.
+ */
+export const CALL_LOG_LEVEL = process.env.CALL_LOG_LEVEL || 'verbose';
 
 // Livekit configuration
 export const LIVEKIT_URL = process.env.LIVEKIT_URL || 'ws://localhost:7880';
