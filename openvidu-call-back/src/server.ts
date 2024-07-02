@@ -15,10 +15,10 @@ import {
 	CALL_USER,
 	CALL_ADMIN_SECRET,
 	LIVEKIT_URL_PRIVATE,
-	CALL_AWS_S3_BUCKET,
-	CALL_AWS_S3_SERVICE_ENDPOINT,
-	CALL_AWS_ACCESS_KEY,
-	CALL_AWS_SECRET_KEY,
+	CALL_S3_BUCKET,
+	CALL_S3_SERVICE_ENDPOINT,
+	CALL_S3_ACCESS_KEY,
+	CALL_S3_SECRET_KEY,
 	CALL_ADMIN_USER,
 	CALL_AWS_REGION,
 	CALL_LOG_LEVEL
@@ -86,11 +86,11 @@ app.listen(SERVER_PORT, () => {
 	console.log('---------------------------------------------------------');
 	console.log(' S3 Configuration');
 	console.log('---------------------------------------------------------');
-	console.log('CALL_AWS_S3_BUCKET:', text(CALL_AWS_S3_BUCKET));
-	console.log('CALL_AWS_S3_SERVICE_ENDPOINT:', text(CALL_AWS_S3_SERVICE_ENDPOINT));
-	console.log('CALL_AWS_ACCESS_KEY:', credential('****' + CALL_AWS_ACCESS_KEY.slice(-3)));
-	console.log('CALL_AWS_SECRET_KEY:', credential('****' + CALL_AWS_SECRET_KEY.slice(-3)));
-	console.log('CALL_AWS_REGION:', text(CALL_AWS_REGION));
+	console.log('CALL S3 BUCKET:', text(CALL_S3_BUCKET));
+	console.log('CALL S3 SERVICE ENDPOINT:', text(CALL_S3_SERVICE_ENDPOINT));
+	console.log('CALL S3 ACCESS KEY:', credential('****' + CALL_S3_ACCESS_KEY.slice(-3)));
+	console.log('CALL S3 SECRET KEY:', credential('****' + CALL_S3_SECRET_KEY.slice(-3)));
+	console.log('CALL AWS REGION:', text(CALL_AWS_REGION));
 	console.log('---------------------------------------------------------');});
 
 export default app;

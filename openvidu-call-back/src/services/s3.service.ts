@@ -15,12 +15,12 @@ import {
 } from '@aws-sdk/client-s3';
 
 import {
-	CALL_AWS_ACCESS_KEY,
+	CALL_S3_ACCESS_KEY,
 	CALL_AWS_REGION,
-	CALL_AWS_S3_BUCKET,
-	CALL_AWS_S3_SERVICE_ENDPOINT,
-	CALL_AWS_SECRET_KEY,
-	CALL_AWS_S3_WITH_PATH_STYLE_ACCESS
+	CALL_S3_BUCKET,
+	CALL_S3_SERVICE_ENDPOINT,
+	CALL_S3_SECRET_KEY,
+	CALL_S3_WITH_PATH_STYLE_ACCESS
 } from '../config.js';
 import { errorS3NotAvailable, internalError } from '../models/error.model.js';
 import { Readable } from 'stream';
@@ -35,11 +35,11 @@ export class S3Service {
 		const config: S3ClientConfig = {
 			region: CALL_AWS_REGION,
 			credentials: {
-				accessKeyId: CALL_AWS_ACCESS_KEY,
-				secretAccessKey: CALL_AWS_SECRET_KEY
+				accessKeyId: CALL_S3_ACCESS_KEY,
+				secretAccessKey: CALL_S3_SECRET_KEY
 			},
-			endpoint: CALL_AWS_S3_SERVICE_ENDPOINT,
-			forcePathStyle: CALL_AWS_S3_WITH_PATH_STYLE_ACCESS === 'true'
+			endpoint: CALL_S3_SERVICE_ENDPOINT,
+			forcePathStyle: CALL_S3_WITH_PATH_STYLE_ACCESS === 'true'
 		};
 
 		this.s3 = new S3Client(config);
@@ -60,7 +60,7 @@ export class S3Service {
 	 * @param CALL_AWS_S3_BUCKET - The name of the S3 bucket.
 	 * @returns A boolean indicating whether the file exists or not.
 	 */
-	async exists(path: string, bucket: string = CALL_AWS_S3_BUCKET) {
+	async exists(path: string, bucket: string = CALL_S3_BUCKET) {
 		try {
 			await this.getHeaderObject(path, bucket);
 			return true;
@@ -85,7 +85,7 @@ export class S3Service {
 	// 	return this.run(command);
 	// }
 
-	async uploadObject(name: string, body: any, bucket: string = CALL_AWS_S3_BUCKET): Promise<PutObjectCommandOutput> {
+	async uploadObject(name: string, body: any, bucket: string = CALL_S3_BUCKET): Promise<PutObjectCommandOutput> {
 		try {
 			const command = new PutObjectCommand({
 				Bucket: bucket,
@@ -104,7 +104,7 @@ export class S3Service {
 		}
 	}
 
-	async deleteObject(name: string, bucket: string = CALL_AWS_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
+	async deleteObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
 		try {
 			this.logger.info(`Deleting object in S3: ${name}`);
 			const command = new DeleteObjectCommand({ Bucket: bucket, Key: name });
@@ -115,7 +115,7 @@ export class S3Service {
 		}
 	}
 
-	async deleteFolder(folderName: string, bucket: string = CALL_AWS_S3_BUCKET) {
+	async deleteFolder(folderName: string, bucket: string = CALL_S3_BUCKET) {
 		try {
 			const listParams = {
 				Bucket: bucket,
@@ -159,7 +159,7 @@ export class S3Service {
 	async listObjects(
 		subbucket = '',
 		searchPattern = '',
-		bucket: string = CALL_AWS_S3_BUCKET,
+		bucket: string = CALL_S3_BUCKET,
 		maxObjects = 20,
 		continuationToken?: string
 	): Promise<ListObjectsV2CommandOutput> {
@@ -193,7 +193,7 @@ export class S3Service {
 		}
 	}
 
-	async getObjectAsJson(name: string, bucket: string = CALL_AWS_S3_BUCKET): Promise<Object | undefined> {
+	async getObjectAsJson(name: string, bucket: string = CALL_S3_BUCKET): Promise<Object | undefined> {
 		try {
 			const obj = await this.getObject(name, bucket);
 			const str = await obj.Body?.transformToString();
@@ -213,7 +213,7 @@ export class S3Service {
 		}
 	}
 
-	async getObjectAsStream(name: string, bucket: string = CALL_AWS_S3_BUCKET, range?: { start: number; end: number }) {
+	async getObjectAsStream(name: string, bucket: string = CALL_S3_BUCKET, range?: { start: number; end: number }) {
 		try {
 			const obj = await this.getObject(name, bucket, range);
 
@@ -233,7 +233,7 @@ export class S3Service {
 		}
 	}
 
-	async getHeaderObject(name: string, bucket: string = CALL_AWS_S3_BUCKET): Promise<HeadObjectCommandOutput> {
+	async getHeaderObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<HeadObjectCommandOutput> {
 		try {
 			const headParams: HeadObjectCommand = new HeadObjectCommand({
 				Bucket: bucket,
@@ -276,7 +276,7 @@ export class S3Service {
 
 	private async getObject(
 		name: string,
-		bucket: string = CALL_AWS_S3_BUCKET,
+		bucket: string = CALL_S3_BUCKET,
 		range?: { start: number; end: number }
 	): Promise<GetObjectCommandOutput> {
 		const command = new GetObjectCommand({

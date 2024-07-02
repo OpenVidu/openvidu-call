@@ -19,7 +19,7 @@ import { DataTopic } from '../models/signal.model.js';
 import { LoggerService } from './logger.service.js';
 import { RecordingInfo, RecordingStatus } from '../models/recording.model.js';
 import { RecordingHelper } from '../helpers/recording.helper.js';
-import { CALL_AWS_S3_BUCKET } from '../config.js';
+import { CALL_S3_BUCKET } from '../config.js';
 import { RoomService } from './room.service.js';
 
 export class RecordingService {
@@ -219,7 +219,7 @@ export class RecordingService {
 			const parts = range.replace(/bytes=/, '').split('-');
 			const start = parseInt(parts[0], 10);
 			const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-			const fileStream = await this.s3Service.getObjectAsStream(recordingPath, CALL_AWS_S3_BUCKET, {
+			const fileStream = await this.s3Service.getObjectAsStream(recordingPath, CALL_S3_BUCKET, {
 				start,
 				end
 			});

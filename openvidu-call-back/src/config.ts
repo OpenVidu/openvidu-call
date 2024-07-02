@@ -20,9 +20,9 @@ export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
 export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 
 // S3 configuration
-export const CALL_AWS_S3_BUCKET = process.env.CALL_AWS_S3_BUCKET || 'openvidu';
-export const CALL_AWS_S3_SERVICE_ENDPOINT = process.env.CALL_AWS_S3_SERVICE_ENDPOINT || 'http://localhost:9000';
-export const CALL_AWS_ACCESS_KEY = process.env.CALL_AWS_ACCESS_KEY || 'minioadmin';
-export const CALL_AWS_SECRET_KEY = process.env.CALL_AWS_SECRET_KEY || 'minioadmin';
+export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
+export const CALL_S3_SERVICE_ENDPOINT = process.env.CALL_S3_SERVICE_ENDPOINT || 'http://localhost:9000';
+export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || 'minioadmin';
+export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || 'minioadmin';
 export const CALL_AWS_REGION = process.env.CALL_AWS_REGION || 'us-east-1';
-export const CALL_AWS_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_AWS_S3_WITH_PATH_STYLE_ACCESS || 'true';
+export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYLE_ACCESS || 'true';
