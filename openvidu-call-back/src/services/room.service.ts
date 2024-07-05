@@ -1,13 +1,12 @@
 import { CreateOptions, DataPacket_Kind, Room, RoomServiceClient, SendDataOptions } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL_PRIVATE } from '../config.js';
+import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL_PRIVATE, CALL_NAME_ID } from '../config.js';
 import { OpenViduCallError, errorRoomNotFound, internalError } from '../models/error.model.js';
 
 export class RoomService {
 	private static instance: RoomService;
 	private roomClient: RoomServiceClient;
 	private logger = LoggerService.getInstance();
-	private ROOM_OWNER_NAME = 'OpenviduCall';
 
 	private constructor() {
 		const livekitUrlHostname = LIVEKIT_URL_PRIVATE.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:');
@@ -31,7 +30,7 @@ export class RoomService {
 		const roomOptions: CreateOptions = {
 			name: roomName,
 			metadata: JSON.stringify({
-				createdBy: this.ROOM_OWNER_NAME
+				createdBy: CALL_NAME_ID
 			})
 			// emptyTimeout: 315360000,
 			// departureTimeout: 1 // Close the room almost immediately after the last participant leaves for emulating the OV2 behavior
@@ -80,7 +79,7 @@ export class RoomService {
 			}
 
 			const metadata = room.metadata ? JSON.parse(room.metadata) : null;
-			return metadata?.createdBy === this.ROOM_OWNER_NAME;
+			return metadata?.createdBy === CALL_NAME_ID;
 		} catch (error) {
 			console.error('Error in isRoomCreatedByMe:', error);
 			return false;

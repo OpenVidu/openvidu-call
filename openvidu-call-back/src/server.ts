@@ -21,7 +21,8 @@ import {
 	CALL_S3_SECRET_KEY,
 	CALL_ADMIN_USER,
 	CALL_AWS_REGION,
-	CALL_LOG_LEVEL
+	CALL_LOG_LEVEL,
+	CALL_NAME_ID
 } from './config.js';
 
 dotenv.config();
@@ -63,6 +64,7 @@ app.listen(SERVER_PORT, () => {
 	console.log('---------------------------------------------------------');
 	console.log(' OpenVidu Call Configuration');
 	console.log('---------------------------------------------------------');
+	console.log('SERVICE NAME ID: ', text(CALL_NAME_ID));
 	console.log('CALL LOG LEVEL: ', text(CALL_LOG_LEVEL));
 	console.log(
 		'CALL PRIVATE ACCESS: ',
