@@ -76,12 +76,17 @@ export class RoomService {
 				room = await this.getRoom(roomOrRoomName);
 			} else {
 				room = roomOrRoomName;
+
+				// !KNOWN issue: room metadata is empty when track_publish and track_unpublish events are received
+				if (!room.metadata) {
+					room = await this.getRoom(room.name);
+				}
 			}
 
 			const metadata = room.metadata ? JSON.parse(room.metadata) : null;
 			return metadata?.createdBy === CALL_NAME_ID;
 		} catch (error) {
-			console.error('Error in isRoomCreatedByMe:', error);
+			console.warn('Error getting Room while parsing webhook checking if isRoomCreatedByMe:', error);
 			return false;
 		}
 	}

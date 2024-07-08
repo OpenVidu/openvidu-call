@@ -56,8 +56,11 @@ export const webhookHandler = async (req: Request, res: Response) => {
 
 function getRoomOrRoomName(webhookEvent: WebhookEvent) {
 	const { room, egressInfo, ingressInfo } = webhookEvent;
+	const roomName = room?.name ?? egressInfo?.roomName ?? ingressInfo?.roomName ?? '';
 
-	// KNOWN issue: room metadata is empty when track_publish and track_unpublish events are received
+	// !KNOWN issue: room metadata is empty when track_publish and track_unpublish events are received
 	// This not affect OpenVidu Call, but it is a limitation of the LiveKit server
-	return room ?? egressInfo?.roomName ?? ingressInfo?.roomName ?? '';
+
+	// Prefer webhook room object over roomName if available
+	return room ?? roomName;
 }
