@@ -24,8 +24,7 @@ export const webhookHandler = async (req: Request, res: Response) => {
 			isRoomCreatedByMe = roomOrRoomName ? await roomService.isRoomCreatedByMe(roomOrRoomName) : false;
 		}
 
-		// Skip webhook events that are not related to OpenVidu Call only if there is a room or room name
-		// and the room was not created by me
+		// Skip webhook events that are not related to OpenVidu Call
 		if (roomOrRoomName && !isRoomCreatedByMe) {
 			logger.verbose(`Skipping webhook, event is not related to OpenVidu Call: ${eventType}`);
 			return res.status(200).send();

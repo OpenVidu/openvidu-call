@@ -57,7 +57,7 @@ export const errorRecordingAlreadyStarted = (roomName: string): OpenViduCallErro
 // Broadcasting errors
 
 export const errorSessionWithoutParticipants = (roomName: string): OpenViduCallError => {
-	return new OpenViduCallError('Broadcasting Error', `The room '${roomName}' do not have participants`, 406);
+	return new OpenViduCallError('Broadcasting Error', `The room '${roomName}' does not have participants`, 406);
 };
 
 export const errorBroadcastingAlreadyStarted = (roomName: string): OpenViduCallError => {
@@ -70,7 +70,7 @@ export const errorBroadcastingNotStarted = (roomName: string): OpenViduCallError
 
 // Room errors
 export const errorRoomNotFound = (roomName: string): OpenViduCallError => {
-	return new OpenViduCallError('Room Error', `The room '${roomName}' do not exist`, 404);
+	return new OpenViduCallError('Room Error', `The room '${roomName}' does not exist`, 404);
 };
 
 export const errorParticipantAlreadyExists = (participantName: string, roomName: string): OpenViduCallError => {

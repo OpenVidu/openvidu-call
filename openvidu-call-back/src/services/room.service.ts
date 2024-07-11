@@ -86,7 +86,7 @@ export class RoomService {
 			const metadata = room.metadata ? JSON.parse(room.metadata) : null;
 			return metadata?.createdBy === CALL_NAME_ID;
 		} catch (error) {
-			console.warn('Error getting Room while parsing webhook checking if isRoomCreatedByMe:', error);
+			console.warn('Error getting Room while checking webhook. Room may no longer exist. Ignoring');
 			return false;
 		}
 	}
