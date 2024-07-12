@@ -1,3 +1,7 @@
+
+import dotenv from 'dotenv';
+dotenv.config();
+
 // General server configuration
 export const SERVER_PORT = process.env.SERVER_PORT || 6080;
 export const CALL_NAME_ID = process.env.CALL_NAME_ID || 'OpenViduCall';

@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -25,7 +24,6 @@ import {
 	CALL_NAME_ID
 } from './config.js';
 
-dotenv.config();
 const app = express();
 
 // Enable CORS support
