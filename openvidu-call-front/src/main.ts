@@ -6,7 +6,7 @@ import { OpenViduComponentsModule, OpenViduComponentsConfig } from 'openvidu-com
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 
-const config: OpenViduComponentsConfig = {
+const componentsConfig: OpenViduComponentsConfig = {
 	production: environment.production
 };
 
@@ -16,7 +16,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
 	providers: [
-		importProvidersFrom(BrowserModule, OpenViduComponentsModule.forRoot(config), AppRoutingModule),
+		importProvidersFrom(BrowserModule, OpenViduComponentsModule.forRoot(componentsConfig), AppRoutingModule),
 		provideAnimations()
 	]
 }).catch((err) => console.log(err));
