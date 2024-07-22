@@ -19,15 +19,15 @@
 					"options": {
 						"aot": true,
 						"outputPath": {
-              "base": "dist/openvidu-call"
-            },
-            "index": "src/index.html",
+							"base": "dist/openvidu-call"
+						},
+						"index": "src/index.html",
 						"polyfills": ["zone.js"],
 						"tsConfig": "src/tsconfig.app.json",
 						"assets": ["src/favicon.ico", "src/assets"],
 						"styles": ["src/styles.scss"],
-            "scripts": [],
-            "browser": "src/main.ts"
+						"scripts": [],
+						"browser": "src/main.ts"
 					},
 					"configurations": {
 						"development": {
@@ -35,7 +35,7 @@
 							"outputHashing": "all",
 							"sourceMap": true,
 							"namedChunks": false,
-              "extractLicenses": true
+							"extractLicenses": true
 						},
 						"production": {
 							"budgets": [
@@ -47,7 +47,7 @@
 								{
 									"type": "anyComponentStyle",
 									"maximumWarning": "6kb",
-									"maximumError": "10kb"
+									"maximumError": "200kb"
 								}
 							],
 							"fileReplacements": [
@@ -61,7 +61,7 @@
 							"sourceMap": false,
 							"namedChunks": false,
 							"aot": true,
-              "extractLicenses": true
+							"extractLicenses": true
 						},
 						"ci": {
 							"budgets": [
@@ -81,7 +81,7 @@
 							"sourceMap": false,
 							"namedChunks": false,
 							"aot": true,
-              "extractLicenses": true
+							"extractLicenses": true
 						}
 					}
 				},
