@@ -36,4 +36,36 @@ export class OpenViduCallPO {
 		await this.waitForElement('#media-buttons-container');
 		expect(await this.isPresent('#media-buttons-container')).to.be.true;
 	}
+
+	async joinSession(): Promise<void> {
+		await this.waitForElement('#join-button');
+		await this.clickOn('#join-button');
+	}
+
+	async openTab(url: string): Promise<string[]> {
+		const newTabScript = `window.open("${url}")`;
+		await this.browser.executeScript(newTabScript);
+		return this.browser.getAllWindowHandles();
+	}
+
+	async sendKeys(selector: string, keys: string): Promise<void> {
+		const element = await this.waitForElement(selector);
+		await element.sendKeys(keys);
+	}
+
+	async applyVirtualBackground(bgId: string): Promise<void> {
+		await this.waitForElement('#more-options-btn');
+		await this.clickOn('#more-options-btn');
+
+		await this.waitForElement('#virtual-bg-btn');
+		await this.clickOn('#virtual-bg-btn');
+
+		await this.waitForElement('ov-background-effects-panel');
+		await this.browser.sleep(1000);
+		await this.waitForElement(`#effect-${bgId}`);
+
+		await this.clickOn(`#effect-${bgId}`);
+		await this.clickOn('.panel-close-button');
+		await this.browser.sleep(2000);
+	}
 }

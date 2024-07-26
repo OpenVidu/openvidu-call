@@ -10,12 +10,12 @@ interface BrowserConfig {
 	browserName: string;
 }
 
-let chromeArguments = [
+const chromeArguments = [
 	'--window-size=1024,768',
 	'--use-fake-ui-for-media-stream',
 	'--use-fake-device-for-media-stream'
 ];
-let chromeArgumentsCI = [
+const chromeArgumentsCI = [
 	'--headless',
 	'--no-sandbox',
 	'--disable-gpu',
@@ -29,10 +29,12 @@ let chromeArgumentsCI = [
 	'--use-fake-device-for-media-stream'
 ];
 
+const chromeOptions: chrome.Options = new chrome.Options();
+chromeOptions.addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments));
 export const OpenViduCallConfig: BrowserConfig = {
-	appUrl: LAUNCH_MODE === 'CI' ? 'http://localhost:6080/#/' : 'http://localhost:4200/#/',
+	appUrl: LAUNCH_MODE === 'CI' ? 'http://localhost:6080/' : 'http://localhost:6080/',
 	seleniumAddress: LAUNCH_MODE === 'CI' ? 'http://localhost:3000/webdriver' : '',
 	browserName: 'ChromeTest',
 	browserCapabilities: Capabilities.chrome().set('acceptInsecureCerts', true),
-	browserOptions: new chrome.Options().addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments))
+	browserOptions: chromeOptions
 };
