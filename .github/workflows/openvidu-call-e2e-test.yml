@@ -13,133 +13,115 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  prepare_openvidu_angular:
+  prepare_openvidu_components_angular:
     name: Prepare openvidu-angular
     runs-on: ubuntu-latest
     steps:
-    - env:
-        COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
-        COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
-      run: echo Commit openvidu-components-angular
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - name: Build openvidu-browser
-      env:
-        BRANCH_NAME: ${{ github.event.client_payload.branch-name || 'master' }}
-      run: |
-        git clone -b ${BRANCH_NAME} --depth 1 https://github.com/OpenVidu/openvidu.git && \
-        cd openvidu/openvidu-browser && \
-        npm install && \
-        npm run build && \
-        npm pack && \
-        cp openvidu-browser-*.tgz ../../ && \
-        mv openvidu-browser-*.tgz ../openvidu-components-angular
+      - env:
+          COMMIT_MESSAGE: ${{ github.event.client_payload.commit-message }}
+          COMMIT_REF: ${{ github.event.client_payload.commit-ref }}
+        run: echo Commit openvidu-components-angular
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Build openvidu-node-client
-      run: |
-        ls -al && \
-        cd openvidu/openvidu-node-client && \
-        npm install && \
-        npm run build && \
-        npm pack && \
-        mv openvidu-node-client-*.tgz ../../
+      - name: Build openvidu-components-angular
+        run: |
+          git clone --depth 1 https://github.com/OpenVidu/openvidu openvidu && \
+          cd openvidu/openvidu-components-angular && \
+          npm install && \
+          npm run lib:build && \
+          npm run lib:pack && \
+          mv dist/openvidu-components-angular/openvidu-components-angular-*.tgz ../../
+          cd ../../ && \
+          rm -rf openvidu && \
+          ls -al
+          # tar -cvf artifacts.tar .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: ${{ github.workspace }}/**.tgz
+          if-no-files-found: error
 
-    - name: Build openvidu-angular
-      run: |
-        cd openvidu/openvidu-components-angular && \
-        npm install ../../openvidu-browser-*.tgz && \
-        # npm install && \
-        npm run lib:build && \
-        mv dist/openvidu-angular/openvidu-angular-*.tgz ../../
-        cd ../../ && \
-        rm -rf openvidu && \
-        ls -al
-        # tar -cvf artifacts.tar .
-    - uses: actions/upload-artifact@v4
-      with:
-        name: artifacts
-        path: ${{ github.workspace }}/**.tgz
-        if-no-files-found: error
+  # authentication_e2e_test:
+  #   needs: prepare_openvidu_angular
+  #   name: Authentication E2E tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: artifacts
+  #     # - name: Run Selenium Chromedriver
+  #     #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
+  #     - name: Run Browserless Chrome
+  #       run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+  #     - name: Run openvidu-server-kms
+  #       run: |
+  #         docker run -p 4443:4443 --rm -d \
+  #         -e OPENVIDU_SECRET=MY_SECRET \
+  #         openvidu/openvidu-dev:latest
+  #     - name: Install openvidu-angular and dependencies
+  #       run: |
+  #         ls -al && \
+  #         npm install openvidu-angular-*.tgz --prefix openvidu-call-front && \
+  #         npm install openvidu-browser*.tgz --prefix openvidu-call-front && \
+  #         npm install openvidu-node-client-*.tgz --prefix openvidu-call-back
+  #     - name: Build openvidu-call
+  #       run: |
+  #         npm run build --prefix openvidu-call-back && \
+  #         npm run prod:build --prefix openvidu-call-front
+  #     - name: Serve openvidu-call
+  #       env:
+  #         LAUNCH_MODE: CI
+  #         CALL_OPENVIDU_CERTTYPE: selfsigned
+  #       run: node openvidu-call-back/dist/app.js &
+  #     - name: Run openvidu-call AUTH e2e
+  #       run: npm run e2e:auth-ci --prefix openvidu-call-front
 
-  e2e_test_with_authentication:
-    needs: prepare_openvidu_angular
-    name: Authentication E2E tests
+  videoconference_e2e_test:
+    needs: prepare_openvidu_components_angular
+    name: Videconference smoke E2E tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - uses: actions/download-artifact@v4
-      with:
-        name: artifacts
-    # - name: Run Selenium Chromedriver
-    #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
-    - name: Run Browserless Chrome
-      run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
-    - name: Run openvidu-server-kms
-      run: |
-        docker run -p 4443:4443 --rm -d \
-        -e OPENVIDU_SECRET=MY_SECRET \
-        openvidu/openvidu-dev:latest
-    - name: Install openvidu-angular and dependencies
-      run: |
-        ls -al && \
-        npm install openvidu-angular-*.tgz --prefix openvidu-call-front && \
-        npm install openvidu-browser*.tgz --prefix openvidu-call-front && \
-        npm install openvidu-node-client-*.tgz --prefix openvidu-call-back
-    - name: Build openvidu-call
-      run: |
-        npm run build --prefix openvidu-call-back && \
-        npm run prod:build --prefix openvidu-call-front
-    - name: Serve openvidu-call
-      env:
-        LAUNCH_MODE: CI
-        CALL_OPENVIDU_CERTTYPE: selfsigned
-      run: node openvidu-call-back/dist/app.js &
-    - name: Run openvidu-call AUTH e2e
-      run: npm run e2e:auth-ci --prefix openvidu-call-front
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+      # - name: Run Selenium Chromedriver
+      #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
+      - name: Run Browserless Chrome
+        run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+      - name: Run openvidu-local-deployment
+        run: |
+          git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
+          cd openvidu-local-deployment/community
+          ./configure_lan_private_ip_linux.sh
+          docker compose up -d
 
+      - name: Install dependencies and build openvidu-call
+        run: |
+          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
+          npm install --prefix openvidu-call-back && \
+          npm run build --prefix openvidu-call-back && \
+          npm run prod:build --prefix openvidu-call-front
 
-  e2e_test_without_authentication:
-    needs: prepare_openvidu_angular
-    name: No Authentication E2E tests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - uses: actions/download-artifact@v4
-      with:
-        name: artifacts
-    # - name: Run Selenium Chromedriver
-    #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
-    - name: Run Browserless Chrome
-      run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
-    - name: Run openvidu-server-kms
-      run: |
-        docker run -p 4443:4443 --rm -d \
-        -e OPENVIDU_SECRET=MY_SECRET \
-        openvidu/openvidu-dev:latest
-    - name: Install openvidu-angular and dependencies
-      run: |
-        ls -al && \
-        npm install openvidu-angular-*.tgz --prefix openvidu-call-front && \
-        npm install openvidu-browser*.tgz --prefix openvidu-call-front && \
-        npm install openvidu-node-client*.tgz --prefix openvidu-call-back
-    - name: Build openvidu-call
-      run: |
-        npm run build --prefix openvidu-call-back && \
-        npm run prod:build --prefix openvidu-call-front
-
-    - name: Serve openvidu-call
-      env:
-        LAUNCH_MODE: CI
-        CALL_PRIVATE_ACCESS: DISABLED
-        CALL_OPENVIDU_CERTTYPE: selfsigned
-      run: node openvidu-call-back/dist/app.js &
-    - name: Run openvidu-call BASIC e2e
-      run: npm run e2e:basic-ci --prefix openvidu-call-front
+      - name: Wait for openvidu-local-deployment
+        run: |
+          until curl -s -f -o /dev/null http://localhost:7880; do
+            echo "Waiting for openvidu-local-deployment to be ready..."
+            sleep 5
+          done
+      - name: Serve openvidu-call
+        env:
+          LAUNCH_MODE: CI
+          CALL_PRIVATE_ACCESS: false
+        run: node openvidu-call-back/dist/server.js &
+      - name: Run openvidu-call BASIC e2e
+        run: npm run e2e:basic-ci --prefix openvidu-call-front
