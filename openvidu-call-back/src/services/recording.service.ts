@@ -114,8 +114,8 @@ export class RecordingService {
 			if (!recordingPath) throw internalError(`Error extracting path from recording ${egressId}`);
 
 			this.logger.info(`Deleting recording from S3 ${recordingPath}`);
-			// await this.s3Service.deleteObject(recordingPath);
-			await Promise.all([this.s3Service.deleteObject(metadataPath!), this.s3Service.deleteFolder(recordingPath)]);
+
+			await Promise.all([this.s3Service.deleteObject(metadataPath!), this.s3Service.deleteObject(recordingPath)]);
 
 			if (!isRequestedByAdmin) {
 				const signalOptions: SendDataOptions = {

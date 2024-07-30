@@ -104,6 +104,14 @@ export class S3Service {
 		}
 	}
 
+	/**
+	 * Deletes an object from an S3 bucket.
+	 *
+	 * @param name - The name of the object to delete.
+	 * @param bucket - The name of the S3 bucket (optional, defaults to CALL_S3_BUCKET).
+	 * @returns A promise that resolves to the result of the delete operation.
+	 * @throws Throws an error if there was an error deleting the object.
+	 */
 	async deleteObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
 		try {
 			this.logger.info(`Deleting object in S3: ${name}`);
@@ -115,36 +123,39 @@ export class S3Service {
 		}
 	}
 
-	async deleteFolder(folderName: string, bucket: string = CALL_S3_BUCKET) {
-		try {
-			const listParams = {
-				Bucket: bucket,
-				Prefix: folderName.endsWith('/') ? folderName : `${folderName}/`
-			};
-			// Get all objects in the folder
-			const listedObjects: ListObjectsV2CommandOutput = await this.run(new ListObjectsV2Command(listParams));
-			const deleteParams = {
-				Bucket: bucket,
-				Delete: {
-					Objects: listedObjects?.Contents?.map(({ Key }) => ({ Key }))
-				}
-			};
+	// async deleteFolder(folderName: string, bucket: string = CALL_S3_BUCKET) {
+	// 	try {
+	// 		const listParams = {
+	// 			Bucket: bucket,
+	// 			Prefix: folderName.endsWith('/') ? folderName : `${folderName}/`
+	// 		};
+	// 		// Get all objects in the folder
+	// 		const listedObjects: ListObjectsV2CommandOutput = await this.run(new ListObjectsV2Command(listParams));
+	// 		const deleteParams = {
+	// 			Bucket: bucket,
+	// 			Delete: {
+	// 				Objects: listedObjects?.Contents?.map(({ Key }) => ({ Key }))
+	// 			}
+	// 		};
 
-			// Skip if no objects found
-			if (!deleteParams.Delete.Objects || deleteParams.Delete.Objects.length === 0) return;
+	// 		// Skip if no objects found
+	// 		if (!deleteParams.Delete.Objects || deleteParams.Delete.Objects.length === 0){
+	// 			this.logger.error(`No objects found in folder ${folderName}. Nothing to delete`);
+	// 			return;
+	// 		}
 
-			this.logger.info(`Deleting objects in S3: ${deleteParams.Delete.Objects}`);
-			await this.run(new DeleteObjectsCommand(deleteParams));
+	// 		this.logger.info(`Deleting objects in S3: ${deleteParams.Delete.Objects}`);
+	// 		await this.run(new DeleteObjectsCommand(deleteParams));
 
-			if (listedObjects.IsTruncated) {
-				this.logger.verbose(`Folder ${folderName} is truncated, deleting next batch`);
-				await this.deleteFolder(bucket, folderName);
-			}
-		} catch (error) {
-			this.logger.error(`Error deleting folder in S3: ${error}`);
-			throw internalError(error);
-		}
-	}
+	// 		if (listedObjects.IsTruncated) {
+	// 			this.logger.verbose(`Folder ${folderName} is truncated, deleting next batch`);
+	// 			await this.deleteFolder(bucket, folderName);
+	// 		}
+	// 	} catch (error) {
+	// 		this.logger.error(`Error deleting folder in S3: ${error}`);
+	// 		throw internalError(error);
+	// 	}
+	// }
 
 	/**
 	 * Lists objects in an S3 bucket.
