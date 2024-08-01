@@ -31,7 +31,7 @@ describe('Testing recordings', () => {
 		await utils.checkRecordingIsStarting();
 		await utils.checkRecordingIsStarted();
 
-		await browser.sleep(2000);
+		await browser.sleep(4000);
 
 		await utils.stopRecordingFromPanel();
 		await utils.checkRecordingIsStopped();
@@ -72,12 +72,15 @@ describe('Testing recordings', () => {
 		await utils.waitForElement('.recording-item');
 		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
+		await browser.sleep(2000);
+
 		await utils.playRecording();
 
 		await browser.sleep(1000);
 		await utils.waitForElement('app-recording-dialog');
 
-		// participant video and recording video
+		await browser.sleep(1000);
+
 		expect(await utils.getNumberOfElements('video')).equals(2);
 	});
 

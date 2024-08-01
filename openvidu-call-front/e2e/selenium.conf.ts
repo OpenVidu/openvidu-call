@@ -16,6 +16,7 @@ const chromeArguments = [
 	'--use-fake-device-for-media-stream'
 ];
 const chromeArgumentsCI = [
+	'--window-size=1300,1000',
 	'--headless',
 	'--no-sandbox',
 	'--disable-gpu',

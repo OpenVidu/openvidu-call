@@ -14,7 +14,7 @@ on:
 
 jobs:
   prepare_openvidu_components_angular:
-    name: Prepare openvidu-angular
+    name: Prepare openvidu-components-angular
     runs-on: ubuntu-latest
     steps:
       - env:
@@ -80,12 +80,12 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
+        env:
+          CALL_PRIVATE_ACCESS: true
         run: node openvidu-call-back/dist/server.js &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
-          CALL_PRIVATE_ACCESS: true
-
         run: npm run e2e:auth --prefix openvidu-call-front
 
   home_e2e_test:
@@ -218,4 +218,4 @@ jobs:
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:recording --prefix openvidu-call-front
+        run: npm run e2e:recordings --prefix openvidu-call-front
