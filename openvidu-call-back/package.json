@@ -4,7 +4,7 @@
 		"url": "https://github.com/OpenVidu/openvidu-call/issues"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "3.609.0",
+		"@aws-sdk/client-s3": "3.621.0",
 		"chalk": "5.3.0",
 		"dotenv": "16.4.5",
 		"express": "4.19.2",
