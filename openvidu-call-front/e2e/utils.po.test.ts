@@ -37,9 +37,37 @@ export class OpenViduCallPO {
 		expect(await this.isPresent('#media-buttons-container')).to.be.true;
 	}
 
+	async checkLayoutIsPresent(): Promise<void> {
+		await this.waitForElement('#layout-container');
+		expect(await this.isPresent('#layout-container')).to.be.true;
+
+		await this.waitForElement('#layout');
+		expect(await this.isPresent('#layout')).to.be.true;
+	}
+
+	async enableScreenShare(): Promise<void> {
+		await this.waitForElement('#screenshare-btn');
+		await this.clickOn('#screenshare-btn');
+		await this.browser.sleep(500);
+	}
+
+	async disableScreenShare(): Promise<void> {
+		await this.waitForElement('#screenshare-btn');
+		await this.clickOn('#screenshare-btn');
+		await this.browser.sleep(500);
+		await this.waitForElement('#screenshare-menu');
+		await this.clickOn('#disable-screen-button');
+		await this.browser.sleep(1000);
+	}
+
 	async joinSession(): Promise<void> {
 		await this.waitForElement('#join-button');
 		await this.clickOn('#join-button');
+	}
+
+	async leaveRoom(): Promise<void> {
+		await this.waitForElement('#leave-btn');
+		await this.clickOn('#leave-btn');
 	}
 
 	async openTab(url: string): Promise<string[]> {
@@ -67,5 +95,9 @@ export class OpenViduCallPO {
 		await this.clickOn(`#effect-${bgId}`);
 		await this.clickOn('.panel-close-button');
 		await this.browser.sleep(2000);
+	}
+
+	async getNumberOfElements(selector: string): Promise<number> {
+		return (await this.browser.findElements(By.css(selector))).length;
 	}
 }

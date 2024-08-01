@@ -82,9 +82,9 @@ jobs:
   #     - name: Run openvidu-call AUTH e2e
   #       run: npm run e2e:auth-ci --prefix openvidu-call-front
 
-  videoconference_e2e_test:
+  home_e2e_test:
     needs: prepare_openvidu_components_angular
-    name: Videconference smoke E2E tests
+    name: Home tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -94,10 +94,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: artifacts
-      # - name: Run Selenium Chromedriver
-      #   run: docker run -d --shm-size="4g" --network host selenium/standalone-chrome:106.0
-      - name: Run Browserless Chrome
-        run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+      # - name: Run Browserless Chrome
+      #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+      - name: Run Chrome
+        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
@@ -119,9 +119,53 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
+        run: node openvidu-call-back/dist/server.js &
+      - name: Run tests
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
+        run: npm run e2e:home --prefix openvidu-call-front
+
+  room_e2e_test:
+    needs: prepare_openvidu_components_angular
+    name: Room tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+      # - name: Run Browserless Chrome
+      #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+      - name: Run Chrome
+        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
+      - name: Run openvidu-local-deployment
+        run: |
+          git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
+          cd openvidu-local-deployment/community
+          ./configure_lan_private_ip_linux.sh
+          docker compose up -d
+
+      - name: Install dependencies and build openvidu-call
+        run: |
+          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
+          npm install --prefix openvidu-call-back && \
+          npm run build --prefix openvidu-call-back && \
+          npm run prod:build --prefix openvidu-call-front
+
+      - name: Wait for openvidu-local-deployment
+        run: |
+          until curl -s -f -o /dev/null http://localhost:7880; do
+            echo "Waiting for openvidu-local-deployment to be ready..."
+            sleep 5
+          done
+      - name: Serve openvidu-call
         run: node openvidu-call-back/dist/server.js &
-      - name: Run openvidu-call BASIC e2e
-        run: npm run e2e:basic-ci --prefix openvidu-call-front
+      - name: Run tests
+        env:
+          LAUNCH_MODE: CI
+          CALL_PRIVATE_ACCESS: false
+        run: npm run e2e:room --prefix openvidu-call-front
