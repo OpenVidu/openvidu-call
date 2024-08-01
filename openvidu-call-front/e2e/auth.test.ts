@@ -28,61 +28,39 @@ describe('Testing AUTHENTICATION', () => {
 		await browser.quit();
 	});
 
-	it('should show the LOGIN FORM with DISABELD button', async () => {
+	it('should show the login form with join button disabled', async () => {
 		await browser.get(url);
 
 		let element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		await utils.waitForElement('#form-login');
-
-		expect(await utils.isPresent('#form-session')).to.be.false;
-
-		await utils.waitForElement('#login-username');
-
-		await utils.waitForElement('#login-password');
+		await utils.checkLoginFormIsPresent();
 
 		element = await utils.waitForElement('#join-btn');
 		expect(await element.isEnabled()).to.be.false;
 	});
 
-	it('should show an error when LOGIN with WRONG CREDENTIALS', async () => {
+	it('should show an error when login with WRONG CREDENTIALS', async () => {
 		await browser.get(url);
 
 		let element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		await utils.waitForElement('#form-login');
-
-		element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('user');
-
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('user');
-
-		await utils.clickOn('#join-btn');
+		await utils.login('user-fail', 'user-fail');
 
 		element = await utils.waitForElement('#login-error');
 		expect(await element.getText()).to.be.equal('Authentication failed. Try again.');
 	});
 
-	it('should show the SESSION NAME form when LOGIN with VALID CREDENTIALS', async () => {
+	it('should show be able to login', async () => {
 		await browser.get(url);
 
-		let element: WebElement = await utils.waitForElement('#slogan-text');
+		const element: WebElement = await utils.waitForElement('#slogan-text');
 		expect(await element.getText()).to.be.equal('Videoconference rooms in one click');
 
-		await utils.waitForElement('#form-login');
+		await utils.login('user', 'user');
 
-		element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('admin');
-
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('MY_SECRET');
-
-		await utils.clickOn('#join-btn');
-
-		await utils.waitForElement('#form-session');
+		await utils.waitForElement('#form-room');
 
 		expect(await utils.isPresent('prejoin-container')).to.be.false;
 
@@ -94,33 +72,17 @@ describe('Testing AUTHENTICATION', () => {
 		await browser.get(url);
 
 		await utils.waitForElement('#slogan-text');
-		await utils.waitForElement('#form-login');
 
-		let element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('admin');
+		await utils.login('user', 'user');
 
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('MY_SECRET');
+		await utils.waitForElement('#form-room');
 
-		await utils.clickOn('#join-btn');
-
-		await utils.waitForElement('#form-session');
-
-		element = await utils.waitForElement('#logout-content span');
-		expect(await element.getText()).equal('Hi admin, do you want to logout?');
+		const element = await utils.waitForElement('#logout-content span');
+		expect(await element.getText()).equal('Hi user, do you want to logout?');
 
 		await utils.clickOn('#logout-btn');
 
-		await utils.waitForElement('#form-login');
-
-		element = await utils.waitForElement('#login-username input');
-		expect(await element.getAttribute('value')).equal('admin');
-
-		element = await utils.waitForElement('#login-password input');
-		expect(await element.getAttribute('value')).equal('MY_SECRET');
-
-		element = await utils.waitForElement('#join-btn');
-		expect(await element.isEnabled()).to.be.true;
+		await utils.checkLoginFormIsPresent();
 
 		expect(await utils.isPresent('#logout-btn')).to.be.false;
 
@@ -131,21 +93,15 @@ describe('Testing AUTHENTICATION', () => {
 		expect(await utils.isPresent('#logout-btn')).to.be.false;
 	});
 
-	it('should be able to JOIN with a VALID CREDENTIALS AND SESSION', async () => {
+	it('should be able to do login and join room', async () => {
 		await browser.get(url);
 
 		await utils.waitForElement('#slogan-text');
 		await utils.waitForElement('#form-login');
 
-		let element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('admin');
+		await utils.login('user', 'user');
 
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('MY_SECRET');
-
-		await utils.clickOn('#join-btn');
-
-		await utils.waitForElement('#form-session');
+		await utils.waitForElement('#form-room');
 
 		expect(await utils.isPresent('#prejoin-container')).to.be.false;
 
@@ -154,49 +110,31 @@ describe('Testing AUTHENTICATION', () => {
 		await utils.checkPrejoinIsPresent();
 	});
 
-	it('should REDIRECT to the ROOT PATH with SAME SESSION NAME', async () => {
+	it('should redirect to login page if try to force the url without be logged', async () => {
 		await browser.get(`${url}testSession`);
 
 		await utils.waitForElement('#slogan-text');
 
 		await utils.waitForElement('#form-login');
 
-		expect(await utils.isPresent('#form-session')).to.be.false;
+		expect(await utils.isPresent('#form-room')).to.be.false;
 
 		await utils.waitForElement('#login-username');
 
 		await utils.waitForElement('#login-password');
 
-		let element = await utils.waitForElement('#join-btn');
+		const element = await utils.waitForElement('#join-btn');
 		expect(await element.isEnabled()).to.be.false;
-
-		element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('admin');
-
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('MY_SECRET');
-
-		await utils.clickOn('#join-btn');
-
-		element = await utils.waitForElement('#form-session input');
-		expect(await element.getAttribute('value')).equal('testSession');
 	});
 
-	it('should ENTER to the PREJOIN PAGE refreshing AFTER LOGIN', async () => {
+	it('should show the prejoin page when reloading the page', async () => {
 		await browser.get(`${url}`);
 
 		await utils.waitForElement('#slogan-text');
 		await utils.waitForElement('#form-login');
 
-		let element = await utils.waitForElement('#login-username input');
-		await element.sendKeys('admin');
-
-		element = await utils.waitForElement('#login-password input');
-		await element.sendKeys('MY_SECRET');
-
-		await utils.clickOn('#join-btn');
-
-		await utils.waitForElement('#form-session');
+		await utils.login('user', 'user');
+		await utils.waitForElement('#form-room');
 
 		expect(await utils.isPresent('#prejoin-container')).to.be.false;
 

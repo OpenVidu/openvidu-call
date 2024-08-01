@@ -60,6 +60,28 @@ export class OpenViduCallPO {
 		await this.browser.sleep(1000);
 	}
 
+	async checkLoginFormIsPresent(): Promise<void> {
+		await this.waitForElement('#form-login');
+
+		expect(await this.isPresent('#form-room')).to.be.false;
+
+		await this.waitForElement('#login-username');
+
+		await this.waitForElement('#login-password');
+	}
+
+	async login(username: string, password: string): Promise<void> {
+		await this.waitForElement('#form-login');
+
+		let element = await this.waitForElement('#login-username input');
+		await element.sendKeys(username);
+
+		element = await this.waitForElement('#login-password input');
+		await element.sendKeys(password);
+
+		await this.clickOn('#join-btn');
+	}
+
 	async joinSession(): Promise<void> {
 		await this.waitForElement('#join-button');
 		await this.clickOn('#join-button');
