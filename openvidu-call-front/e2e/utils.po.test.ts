@@ -100,4 +100,60 @@ export class OpenViduCallPO {
 	async getNumberOfElements(selector: string): Promise<number> {
 		return (await this.browser.findElements(By.css(selector))).length;
 	}
+
+	async startRecordingFromToolbar(): Promise<void> {
+		await this.waitForElement('#more-options-btn');
+		await this.clickOn('#more-options-btn');
+
+		await this.waitForElement('#recording-btn');
+		await this.clickOn('#recording-btn');
+	}
+
+	async stopRecordingFromToolbar(): Promise<void> {
+		await this.waitForElement('#more-options-btn');
+		await this.clickOn('#more-options-btn');
+		await this.waitForElement('#recording-btn');
+		await this.clickOn('#recording-btn');
+	}
+
+	async stopRecordingFromPanel(): Promise<void> {
+		await this.waitForElement('ov-activities-panel');
+		await this.waitForElement('#stop-recording-btn');
+		await this.clickOn('#stop-recording-btn');
+	}
+
+	async deleteRecording(): Promise<void> {
+		await this.waitForElement('.recording-item');
+		await this.waitForElement('#delete-recording-btn');
+		await this.clickOn('#delete-recording-btn');
+
+		await this.waitForElement('app-delete-dialog');
+		await this.waitForElement('#delete-recording-confirm-btn');
+		await this.clickOn('#delete-recording-confirm-btn');
+	}
+
+	async playRecording() {
+		await this.waitForElement('.recording-item');
+		await this.waitForElement('#play-recording-btn');
+		await this.clickOn('#play-recording-btn');
+	}
+
+	async checkRecordingIsStopped(): Promise<void> {
+		await this.waitForElement('#recording-status.stopped');
+	}
+
+	async checkRecordingIsStarting(): Promise<void> {
+		await this.waitForElement('ov-activities-panel');
+		await this.waitForElement('#recording-status.starting');
+	}
+
+	async checkRecordingIsStopping(): Promise<void> {
+		await this.waitForElement('ov-activities-panel');
+		await this.waitForElement('#recording-status.stopping');
+	}
+
+	async checkRecordingIsStarted(): Promise<void> {
+		await this.waitForElement('#recording-status.started');
+		await this.waitForElement('#recording-tag');
+	}
 }

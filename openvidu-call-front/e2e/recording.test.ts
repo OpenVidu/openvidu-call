@@ -1,10 +1,7 @@
 import { expect } from 'chai';
-import { Builder, WebDriver, WebElement } from 'selenium-webdriver';
+import { Builder, WebDriver } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
 import { OpenViduCallPO } from './utils.po.test';
-import * as fs from 'fs';
-import { PNG } from 'pngjs';
-import pixelmatch from 'pixelmatch';
 
 const url = OpenViduCallConfig.appUrl;
 
@@ -22,6 +19,24 @@ describe('Testing recordings', () => {
 			.build();
 	}
 
+	async function connectStartAndStopRecording() {
+		await browser.get(`${url}${randomRoomName}`);
+
+		await utils.checkPrejoinIsPresent();
+		await utils.joinSession();
+
+		await utils.checkToolbarIsPresent();
+
+		await utils.startRecordingFromToolbar();
+		await utils.checkRecordingIsStarting();
+		await utils.checkRecordingIsStarted();
+
+		await browser.sleep(2000);
+
+		await utils.stopRecordingFromPanel();
+		await utils.checkRecordingIsStopped();
+	}
+
 	beforeEach(async () => {
 		browser = await createChromeBrowser();
 		utils = new OpenViduCallPO(browser);
@@ -32,12 +47,39 @@ describe('Testing recordings', () => {
 		await browser.quit();
 	});
 
-	it('should be able to record the session', async () => {});
+	it('should be able to record the session', async () => {
+		await connectStartAndStopRecording();
 
-	it('should be able to delete a recording', async () => {});
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+	});
 
-	it('should be able to play a recording', async () => {});
+	it('should be able to delete a recording', async () => {
+		await connectStartAndStopRecording();
 
-	it('should be able to download a recording', async () => {});
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
+		await utils.deleteRecording();
+
+		await browser.sleep(500);
+		expect(await utils.getNumberOfElements('.recording-item')).equals(0);
+	});
+
+	it('should be able to play a recording', async () => {
+		await connectStartAndStopRecording();
+
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+
+		await utils.playRecording();
+
+		await browser.sleep(1000);
+		await utils.waitForElement('app-recording-dialog');
+
+		// participant video and recording video
+		expect(await utils.getNumberOfElements('video')).equals(2);
+	});
+
+	// it('should be able to download a recording', async () => {});
 });
