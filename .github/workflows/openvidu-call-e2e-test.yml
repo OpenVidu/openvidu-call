@@ -14,7 +14,7 @@ on:
 
 jobs:
   prepare_openvidu_components_angular:
-    name: Prepare openvidu-components-angular
+    name: Setup
     runs-on: ubuntu-latest
     steps:
       - env:
@@ -45,7 +45,7 @@ jobs:
 
   auth_e2e_test:
     needs: prepare_openvidu_components_angular
-    name: Atuhentication tests
+    name: Auth tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
