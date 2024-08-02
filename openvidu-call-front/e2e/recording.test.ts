@@ -60,6 +60,8 @@ describe('Testing recordings', () => {
 		await utils.waitForElement('.recording-item');
 		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
+		await browser.sleep(2000);
+
 		await utils.deleteRecording();
 
 		await browser.sleep(500);
