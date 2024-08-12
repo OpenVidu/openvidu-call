@@ -1,62 +1,59 @@
 {
+	"name": "openvidu-call-server",
+	"version": "3.0.0-beta2",
+	"description": "OpenVidu Call Server",
 	"author": "OpenVidu",
+	"license": "Apache-2.0",
+	"homepage": "https://github.com/OpenVidu/openvidu-call#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/OpenVidu/openvidu-call.git"
+	},
 	"bugs": {
 		"url": "https://github.com/OpenVidu/openvidu-call/issues"
+	},
+	"keywords": [
+		"openvidu",
+		"webrtc",
+		"openvidu-call"
+	],
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"start": "node dist/src/server.js",
+		"dev": "cross-env USE_HTTPS=false TESTING_MODE=ENABLED nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
+		"lint": "eslint src --fix",
+		"format": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'",
+		"prepare": "npm run build",
+		"pack": "npm pack"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.621.0",
 		"chalk": "5.3.0",
+		"cors": "2.8.5",
 		"dotenv": "16.4.5",
 		"express": "4.19.2",
 		"express-basic-auth": "1.2.1",
 		"livekit-server-sdk": "2.5.1",
 		"winston": "3.13.0"
 	},
-	"description": "OpenVidu Call Server",
 	"devDependencies": {
 		"@types/chai": "4.3.5",
 		"@types/cookie-parser": "1.4.3",
 		"@types/cors": "2.8.17",
 		"@types/express": "4.17.17",
-		"@types/mocha": "10.0.1",
 		"@types/node": "20.12.7",
-		"@types/sinon": "10.0.16",
-		"@types/supertest": "2.0.12",
 		"@typescript-eslint/eslint-plugin": "6.7.3",
 		"@typescript-eslint/parser": "6.7.3",
 		"chai": "4.3.8",
-		"cors": "2.8.5",
 		"cross-env": "7.0.3",
 		"eslint": "8.50.0",
 		"eslint-config-prettier": "9.0.0",
-		"mocha": "^10.2.0",
 		"nodemon": "3.1.0",
 		"prettier": "3.0.3",
-		"sinon": "15.2.0",
-		"supertest": "6.3.3",
 		"ts-node": "10.9.2",
 		"typescript": "5.4.5"
-	},
-	"homepage": "https://github.com/OpenVidu/openvidu-call#readme",
-	"keywords": [
-		"openvidu",
-		"webrtc",
-		"openvidu-call"
-	],
-	"license": "Apache-2.0",
-	"main": "src/server.ts",
-	"type": "module",
-	"name": "openvidu-call-server",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/OpenVidu/openvidu-call.git"
-	},
-	"scripts": {
-		"build": "tsc",
-		"dev:start": "cross-env USE_HTTPS=false TESTING_MODE=ENABLED nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
-		"test": "cross-env NODE_ENV=test USE_HTTPS=false TESTING_MODE=ENABLED mocha --require ts-node/register tests/**/*.test.ts --exit",
-		"lint": "eslint src --fix",
-		"format": "prettier --ignore-path ../gitignore . --write"
-	},
-	"version": "3.0.0-beta2"
+	}
 }
