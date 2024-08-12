@@ -26,7 +26,7 @@ if [ -z "${LIVEKIT_API_SECRET}" ]; then
 fi
 
 cd /opt/openvidu-call
-node dist/server.js &
+node dist/src/server.js &
 
 # Save the PID of the Node.js process
 node_pid=$!
