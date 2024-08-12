@@ -36,14 +36,14 @@ const createApp = () => {
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
 
-	app.use(express.static(path.join(__dirname, 'public/browser')));
+	app.use(express.static(path.join(__dirname, '../public/browser')));
 	app.use(express.json());
 
 	// Setup routes
 	app.use('/call/api', apiRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
-		res.sendFile(path.join(__dirname, 'public/browser', 'index.html'));
+		res.sendFile(path.join(__dirname, '../public/browser', 'index.html'));
 	});
 
 	return app;
