@@ -101,7 +101,15 @@ const startServer = (app: express.Application) => {
 	});
 };
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+/**
+ * Determines if the current module is the main entry point of the application.
+ * @returns {boolean} True if this module is the main entry point, false otherwise.
+ */
+const isMainModule = (): boolean => {
+	return import.meta.url === `file://${process.argv[1]}`;
+};
+
+if (isMainModule()) {
 	const app = createApp();
 	startServer(app);
 }
