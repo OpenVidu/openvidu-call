@@ -82,7 +82,7 @@ jobs:
       - name: Serve openvidu-call
         env:
           CALL_PRIVATE_ACCESS: true
-        run: node openvidu-call-back/dist/server.js &
+        run: npm run start --prefix openvidu-call-back &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
@@ -125,7 +125,7 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: node openvidu-call-back/dist/server.js &
+        run: npm run start --prefix openvidu-call-back &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
@@ -169,7 +169,7 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: node openvidu-call-back/dist/server.js &
+        run: npm run start --prefix openvidu-call-back &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
@@ -213,7 +213,7 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: node openvidu-call-back/dist/server.js &
+        run: npm run start --prefix openvidu-call-back &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
