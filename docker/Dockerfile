@@ -7,7 +7,11 @@ ARG BASE_HREF=/
 
 COPY . .
 
-# Build OpenVidu Call frontend
+# Install openvidu-call-back dependencies
+RUN cd openvidu-call-back && npm install \
+    npm run build
+
+# Build openvidu-call-back frontend
 RUN cd openvidu-call-front && npm install && \
     npm run prod:build ${BASE_HREF} && \
     cd ../ && rm -rf openvidu-call-front
@@ -17,12 +21,6 @@ FROM node:20-alpine3.19
 WORKDIR /opt/openvidu-call
 
 COPY --from=openvidu-call-build /openvidu-call/openvidu-call-back .
-
-RUN npm install -g npm
-
-# Install backend dependencies and build it for production
-RUN npm install && \
-    npm run build
 
 # Entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
