@@ -8,7 +8,7 @@ ARG BASE_HREF=/
 COPY . .
 
 # Install openvidu-call-back dependencies
-RUN cd openvidu-call-back && npm install \
+RUN cd openvidu-call-back && npm install && \
     npm run build
 
 # Build openvidu-call-back frontend
