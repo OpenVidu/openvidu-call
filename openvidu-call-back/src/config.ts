@@ -1,6 +1,11 @@
 
 import dotenv from 'dotenv';
-dotenv.config();
+
+if (process.env.CALL_CONFIG_DIR) {
+    dotenv.config({ path: process.env.CALL_CONFIG_DIR });
+} else {
+    dotenv.config();
+}
 
 // General server configuration
 export const SERVER_PORT = process.env.SERVER_PORT || 6080;
