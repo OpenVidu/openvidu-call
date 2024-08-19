@@ -17,7 +17,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
-import { RestService } from '@services/rest.service';
+import { HttpService } from '@services/http.service';
 import { StorageService } from '@services/storage.service';
 
 import packageInfo from '../../../../package.json';
@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	constructor(
 		private router: Router,
 		public formBuilder: UntypedFormBuilder,
-		private restService: RestService,
+		private httpService: HttpService,
 		private storageService: StorageService,
 		private callService: ConfigService,
 		private fb: FormBuilder,
@@ -84,7 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 				if (!userCredentials) return;
 
-				await this.restService.userLogin(userCredentials);
+				await this.httpService.userLogin(userCredentials);
 				this.storageService.setUserCredentials(userCredentials);
 				this.username = this.storageService.getUserName();
 				this.isUserLogged = true;
@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 		const password = this.loginForm.get('password').value;
 
 		try {
-			await this.restService.userLogin({ username: this.username, password });
+			await this.httpService.userLogin({ username: this.username, password });
 			this.storageService.setUserCredentials({ username: this.username, password });
 			this.isUserLogged = true;
 		} catch (error) {
@@ -138,7 +138,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 	async logout() {
 		try {
-			await this.restService.userLogout();
+			await this.httpService.userLogout();
 			this.storageService.clearUserCredentials();
 			this.loginError = false;
 			this.isUserLogged = false;

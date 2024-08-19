@@ -7,7 +7,7 @@ import { StorageService } from './storage.service';
 @Injectable({
 	providedIn: 'root'
 })
-export class RestService {
+export class HttpService {
 	// private baseHref: string;
 	private pathPrefix = 'call/api';
 

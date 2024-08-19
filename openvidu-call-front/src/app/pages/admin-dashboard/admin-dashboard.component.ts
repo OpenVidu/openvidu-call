@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RestService } from '@services/rest.service';
+import { HttpService } from '@services/http.service';
 import { StorageService } from '@services/storage.service';
 import { OpenViduComponentsModule, ApiDirectiveModule } from 'openvidu-components-angular';
 
@@ -17,7 +17,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 	error: any;
 	private continuationToken: string;
 	constructor(
-		private restService: RestService,
+		private httpService: HttpService,
 		private storageService: StorageService
 	) {}
 
@@ -41,9 +41,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
 	async onLoginClicked(credentials: { username: string; password: string }) {
 		try {
-			await this.restService.adminLogin(credentials);
+			await this.httpService.adminLogin(credentials);
 			this.storageService.setAdminCredentials(credentials);
-			const { recordings, continuationToken } = await this.restService.getRecordings();
+			const { recordings, continuationToken } = await this.httpService.getRecordings();
 			this.recordings = recordings;
 			this.continuationToken = continuationToken;
 			this.isParticipantLoggedIn = true;
@@ -60,7 +60,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 			this.storageService.clearAdminCredentials();
 			this.recordings = [];
 			this.continuationToken = null;
-			await this.restService.adminLogout();
+			await this.httpService.adminLogout();
 		} catch (error) {
 			console.error(error);
 		}
@@ -69,14 +69,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 	async onLoadMoreRecordingsRequested() {
 		if (!this.continuationToken) return console.warn('No more recordings to load');
 
-		const response = await this.restService.getRecordings(this.continuationToken);
+		const response = await this.httpService.getRecordings(this.continuationToken);
 		this.recordings = response.recordings;
 		this.continuationToken = response.continuationToken;
 	}
 
 	async onRefreshRecordingsClicked() {
 		try {
-			const response = await this.restService.getRecordings();
+			const response = await this.httpService.getRecordings();
 			this.recordings = response.recordings;
 			this.continuationToken = response.continuationToken;
 		} catch (error) {
@@ -86,8 +86,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
 	async onDeleteRecordingClicked(recordingId: string) {
 		try {
-			await this.restService.deleteRecordingByAdmin(recordingId);
-			const response = await this.restService.getRecordings();
+			await this.httpService.deleteRecordingByAdmin(recordingId);
+			const response = await this.httpService.getRecordings();
 			this.recordings = response.recordings;
 			this.continuationToken = response.continuationToken;
 		} catch (error) {

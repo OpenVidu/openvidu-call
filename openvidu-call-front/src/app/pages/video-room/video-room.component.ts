@@ -11,7 +11,7 @@ import {
 } from 'openvidu-components-angular';
 import { MatIcon } from '@angular/material/icon';
 
-import { RestService } from '@services/rest.service';
+import { HttpService } from '@services/http.service';
 
 @Component({
 	selector: 'app-video-room',
@@ -28,7 +28,7 @@ export class VideoRoomComponent implements OnInit {
 	loading = true;
 
 	constructor(
-		private restService: RestService,
+		private httpService: HttpService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {}
@@ -41,7 +41,7 @@ export class VideoRoomComponent implements OnInit {
 
 	async onTokenRequested(participantName: string) {
 		try {
-			const { token } = await this.restService.getToken(this.roomName, participantName);
+			const { token } = await this.httpService.getToken(this.roomName, participantName);
 			this.token = token;
 		} catch (error) {
 			console.error(error);
@@ -60,7 +60,7 @@ export class VideoRoomComponent implements OnInit {
 	async onRecordingStartRequested(event: RecordingStartRequestedEvent) {
 		try {
 			const { roomName } = event;
-			await this.restService.startRecording(roomName);
+			await this.httpService.startRecording(roomName);
 		} catch (error) {
 			console.error(error);
 		}
@@ -72,7 +72,7 @@ export class VideoRoomComponent implements OnInit {
 
 			if(!recordingId) throw new Error('Recording ID not found when stopping recording');
 
-			await this.restService.stopRecording(recordingId);
+			await this.httpService.stopRecording(recordingId);
 		} catch (error) {
 			console.error(error);
 		}
@@ -84,7 +84,7 @@ export class VideoRoomComponent implements OnInit {
 
 			if(!recordingId) throw new Error('Recording ID not found when deleting recording');
 
-			await this.restService.deleteRecording(recordingId);
+			await this.httpService.deleteRecording(recordingId);
 		} catch (error) {
 			console.error(error);
 		}
@@ -93,7 +93,7 @@ export class VideoRoomComponent implements OnInit {
 	async onBroadcastingStartRequested(event: BroadcastingStartRequestedEvent) {
 		try {
 			const { roomName, broadcastUrl } = event;
-			await this.restService.startBroadcasting(roomName, broadcastUrl);
+			await this.httpService.startBroadcasting(roomName, broadcastUrl);
 		} catch (error) {
 			console.error(error);
 		}
@@ -102,7 +102,7 @@ export class VideoRoomComponent implements OnInit {
 	async onBroadcastingStopRequested(event: BroadcastingStopRequestedEvent) {
 		try {
 			const { broadcastingId } = event;
-			await this.restService.stopBroadcasting(broadcastingId);
+			await this.httpService.stopBroadcasting(broadcastingId);
 		} catch (error) {
 			console.error(error);
 		}

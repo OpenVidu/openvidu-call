@@ -2,13 +2,13 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { ConfigService } from '../services/config.service';
 import { StorageService } from '../services/storage.service';
-import { RestService } from '../services/rest.service';
+import { HttpService } from '../services/http.service';
 import { CanActivateFn } from '@angular/router';
 
 export const roomGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const configService = inject(ConfigService);
 	const storageService = inject(StorageService);
-	const restService = inject(RestService);
+	const restService = inject(HttpService);
 	const router = inject(Router);
 
 	try {

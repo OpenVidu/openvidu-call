@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RestService } from './rest.service';
+import { HttpService } from '@services/http.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -8,7 +8,7 @@ export class ConfigService {
 	private config: { isPrivate: boolean };
 	private initialization: Promise<void>;
 
-	constructor(private restService: RestService) {}
+	constructor(private restService: HttpService) {}
 
 	async initialize(): Promise<void> {
 		if (!this.initialization) {
