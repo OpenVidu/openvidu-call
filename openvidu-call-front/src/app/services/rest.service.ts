@@ -23,8 +23,12 @@ export class RestService {
 			'Content-Type': 'application/json'
 		});
 		const userCredentials = this.storageService.getUserCredentials();
+
 		if (userCredentials?.username && userCredentials?.password) {
-			return headers.append('Authorization', `Basic ${btoa(`${userCredentials.username}:${userCredentials.password}`)}`);
+			return headers.append(
+				'Authorization',
+				`Basic ${btoa(`${userCredentials.username}:${userCredentials.password}`)}`
+			);
 		}
 
 		return headers;
@@ -35,8 +39,16 @@ export class RestService {
 			'Content-Type': 'application/json'
 		});
 		const adminCredentials = this.storageService.getAdminCredentials();
-		if (adminCredentials.username && adminCredentials.password) {
-			return headers.set('Authorization', `Basic ${btoa(`${adminCredentials.username}:${adminCredentials.password}`)}`);
+
+		if (!adminCredentials) {
+			console.error('Admin credentials not found');
+			return headers;
+		}
+
+		const { username, password } = adminCredentials;
+
+		if (username && password) {
+			return headers.set('Authorization', `Basic ${btoa(`${username}:${password}`)}`);
 		}
 
 		return headers;

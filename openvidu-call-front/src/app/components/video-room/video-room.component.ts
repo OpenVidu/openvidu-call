@@ -69,6 +69,9 @@ export class VideoRoomComponent implements OnInit {
 	async onRecordingStopRequested(event: RecordingStopRequestedEvent) {
 		try {
 			const { recordingId } = event;
+
+			if(!recordingId) throw new Error('Recording ID not found when stopping recording');
+
 			await this.restService.stopRecording(recordingId);
 		} catch (error) {
 			console.error(error);
@@ -78,6 +81,9 @@ export class VideoRoomComponent implements OnInit {
 	async onRecordingDeleteRequested(event: RecordingDeleteRequestedEvent) {
 		try {
 			const { recordingId } = event;
+
+			if(!recordingId) throw new Error('Recording ID not found when deleting recording');
+
 			await this.restService.deleteRecording(recordingId);
 		} catch (error) {
 			console.error(error);

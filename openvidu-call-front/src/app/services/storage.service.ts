@@ -20,7 +20,7 @@ export class StorageService {
 		this.set(Storage.ADMIN_CREDENTIALS, encodedCredentials);
 	}
 
-	getAdminCredentials(): { username: string; password: string } {
+	getAdminCredentials(): { username: string; password: string } | undefined {
 		const encodedCredentials = this.get(Storage.ADMIN_CREDENTIALS);
 
 		if (encodedCredentials) {
@@ -28,7 +28,7 @@ export class StorageService {
 			return { username, password };
 		}
 
-		return null;
+		return undefined;
 	}
 
 	clearAdminCredentials() {
