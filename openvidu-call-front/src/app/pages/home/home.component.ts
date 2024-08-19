@@ -7,18 +7,22 @@ import {
 	FormsModule,
 	ReactiveFormsModule
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ConfigService } from 'src/app/services/config.service';
-import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
-import packageInfo from '../../../../package.json';
-import { RestService } from 'src/app/services/rest.service';
-import { StorageService } from 'src/app/services/storage.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { NgClass } from '@angular/common';
 import { MatToolbar } from '@angular/material/toolbar';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { Subscription } from 'rxjs';
+
+import { ConfigService } from '@services/config.service';
+import { RestService } from '@services/rest.service';
+import { StorageService } from '@services/storage.service';
+
+import packageInfo from '../../../../package.json';
+
+import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
 
 @Component({
 	selector: 'app-home',

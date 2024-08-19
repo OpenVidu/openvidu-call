@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RestService } from 'src/app/services/rest.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { RestService } from '@services/rest.service';
+import { StorageService } from '@services/storage.service';
 import { OpenViduComponentsModule, ApiDirectiveModule } from 'openvidu-components-angular';
 
 @Component({

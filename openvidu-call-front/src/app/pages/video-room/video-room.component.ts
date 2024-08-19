@@ -9,9 +9,9 @@ import {
 	OpenViduComponentsModule,
 	ApiDirectiveModule
 } from 'openvidu-components-angular';
-import { RestService } from '../../services/rest.service';
 import { MatIcon } from '@angular/material/icon';
 
+import { RestService } from '@services/rest.service';
 
 @Component({
 	selector: 'app-video-room',
