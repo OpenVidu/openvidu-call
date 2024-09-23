@@ -1,34 +1,53 @@
-# Build OpenVidu Call for production
-FROM --platform=linux/amd64 node:20 as openvidu-call-build
+### Stage 1: Build the frontend
+FROM --platform=linux/amd64 node:20 as build-frontend
 
-WORKDIR /openvidu-call
+USER node
+
+WORKDIR /app/frontend
 
 ARG BASE_HREF=/
 
-COPY . .
+COPY --chown=node:node openvidu-call-front/package*.json ./
 
-# Install openvidu-call-back dependencies
-RUN cd openvidu-call-back && npm install && \
-    npm run build
+RUN npm install
 
-# Build openvidu-call-back frontend
-RUN cd openvidu-call-front && npm install && \
-    npm run prod:build ${BASE_HREF} && \
-    cd ../ && rm -rf openvidu-call-front
+COPY --chown=node:node openvidu-call-front/ ./
 
-FROM node:20-alpine3.19
+RUN npm run build
+
+### Stage 2: Build the backend
+FROM node:20 as build-backend
+
+USER node
+
+WORKDIR /app/backend
+
+COPY --chown=node:node openvidu-call-back/package*.json ./
+
+RUN npm install
+
+COPY --chown=node:node openvidu-call-back/ ./
+
+RUN npm run build
+
+# Copy static files from the frontend build
+COPY --from=build-frontend /app/frontend/dist/openvidu-call /app/backend/dist/public
+
+
+### Stage 3: Final production image
+FROM node:20-alpine as production
 
 WORKDIR /opt/openvidu-call
 
-COPY --from=openvidu-call-build /openvidu-call/openvidu-call-back .
+COPY --from=build-backend /app/backend/dist ./dist
+COPY --from=build-backend /app/backend/package*.json ./
 
-# Entrypoint
+RUN npm install --production && npm cache clean --force
+
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN apk add --no-cache  curl && \
-    chmod +x /usr/local/bin/entrypoint.sh && \
-    chown -R node:node /opt/openvidu-call
 
-USER node
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+	chown -R node:node /opt/openvidu-call
 
 EXPOSE $SERVER_PORT
 
