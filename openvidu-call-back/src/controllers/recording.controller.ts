@@ -83,7 +83,7 @@ export const streamRecording = async (req: Request, res: Response) => {
 
 	try {
 		logger.info(`Streaming recording ${recordingId}`);
-		const { fileSize, fileStream, start, end } = await recordingService.getRecordingAsStream(recordingId);
+		const { fileSize, fileStream, start, end } = await recordingService.getRecordingAsStream(recordingId, range);
 
 		res.setHeader('Accept-Ranges', 'bytes');
 
