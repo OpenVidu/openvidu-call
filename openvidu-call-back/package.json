@@ -26,7 +26,6 @@
 		"dev": "cross-env USE_HTTPS=false TESTING_MODE=ENABLED nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
 		"lint": "eslint src --fix",
 		"format": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'",
-		"prepare": "npm run build",
 		"pack": "npm pack"
 	},
 	"dependencies": {

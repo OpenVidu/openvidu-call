@@ -53,7 +53,7 @@
   "scripts": {
     "dev:start": "ng serve --configuration development --port=5080 --host=0.0.0.0",
     "dev:build": "./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back/public/",
-    "prod:build": "func() { ./node_modules/@angular/cli/bin/ng.js build --output-path ../openvidu-call-back/dist/public/ --configuration production --base-href=\"${1:-/}\"; }; func",
+    "build": "func() { ./node_modules/@angular/cli/bin/ng.js build --configuration production --base-href=\"${1:-/}\"; }; func",
     "e2e:all": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/**/*.test.js",
     "e2e:home": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/home.test.js",
     "e2e:room": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/room.test.js",

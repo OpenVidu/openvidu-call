@@ -71,7 +71,8 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
           npm install --prefix openvidu-call-back && \
           npm run build --prefix openvidu-call-back && \
-          npm run prod:build --prefix openvidu-call-front
+          npm run build --prefix openvidu-call-front && \
+          mv openvidu-call-front/dist/openvidu-call/ ../openvidu-call-back/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -116,7 +117,8 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
           npm install --prefix openvidu-call-back && \
           npm run build --prefix openvidu-call-back && \
-          npm run prod:build --prefix openvidu-call-front
+          npm run build --prefix openvidu-call-front && \
+          mv openvidu-call-front/dist/openvidu-call/ ../openvidu-call-back/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -160,7 +162,8 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
           npm install --prefix openvidu-call-back && \
           npm run build --prefix openvidu-call-back && \
-          npm run prod:build --prefix openvidu-call-front
+          npm run build --prefix openvidu-call-front && \
+          mv openvidu-call-front/dist/openvidu-call/ ../openvidu-call-back/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -204,7 +207,8 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
           npm install --prefix openvidu-call-back && \
           npm run build --prefix openvidu-call-back && \
-          npm run prod:build --prefix openvidu-call-front
+          npm run build --prefix openvidu-call-front && \
+          mv openvidu-call-front/dist/openvidu-call/ ../openvidu-call-back/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
