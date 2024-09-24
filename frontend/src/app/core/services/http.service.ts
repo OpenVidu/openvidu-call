@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RecordingInfo } from 'openvidu-components-angular';
 import { lastValueFrom } from 'rxjs';
-import { StorageService } from './storage.service';
+import { StorageAppService } from './storage.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -13,7 +13,7 @@ export class HttpService {
 
 	constructor(
 		private http: HttpClient,
-		private storageService: StorageService
+		private storageService: StorageAppService
 	) {
 		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
@@ -22,7 +22,7 @@ export class HttpService {
 		const headers = new HttpHeaders({
 			'Content-Type': 'application/json'
 		});
-		const userCredentials = this.storageService.getUserCredentials();
+		const userCredentials = this.storageService.getParticipantCredentials();
 
 		if (userCredentials?.username && userCredentials?.password) {
 			return headers.append(

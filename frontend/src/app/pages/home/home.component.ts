@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
 import { HttpService } from '@services/http.service';
-import { StorageService } from '@services/storage.service';
+import { StorageAppService } from '@services/storage.service';
 
 import packageInfo from '../../../../package.json';
 
@@ -29,16 +29,7 @@ import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 
 	templateUrl: './home.component.html',
 	styleUrls: ['./home.component.scss'],
 	standalone: true,
-	imports: [
-    MatToolbar,
-    MatIconButton,
-    MatTooltip,
-    MatIcon,
-    FormsModule,
-    ReactiveFormsModule,
-    NgClass,
-    MatButton
-]
+	imports: [MatToolbar, MatIconButton, MatTooltip, MatIcon, FormsModule, ReactiveFormsModule, NgClass, MatButton]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 	roomForm: FormGroup;
@@ -56,13 +47,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 		private router: Router,
 		public formBuilder: UntypedFormBuilder,
 		private httpService: HttpService,
-		private storageService: StorageService,
+		private storageService: StorageAppService,
 		private callService: ConfigService,
 		private fb: FormBuilder,
 		private route: ActivatedRoute
 	) {
 		this.loginForm = this.fb.group({
-			username: [this.storageService.getUserName() ?? '', [Validators.required, Validators.minLength(4)]],
+			username: [this.storageService.getParticipantName() ?? '', [Validators.required, Validators.minLength(4)]],
 			password: ['', [Validators.required, Validators.minLength(4)]]
 		});
 
@@ -80,13 +71,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 			this.isPrivateAccess = this.callService.isPrivateAccess();
 
 			if (this.isPrivateAccess) {
-				const userCredentials = this.storageService.getUserCredentials();
+				const userCredentials = this.storageService.getParticipantCredentials();
 
 				if (!userCredentials) return;
 
 				await this.httpService.userLogin(userCredentials);
-				this.storageService.setUserCredentials(userCredentials);
-				this.username = this.storageService.getUserName();
+				this.storageService.setParticipantCredentials(userCredentials);
+				this.username = this.storageService.getParticipantName();
 				this.isUserLogged = true;
 				this.loginError = false;
 			}
@@ -127,7 +118,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 		try {
 			await this.httpService.userLogin({ username: this.username, password });
-			this.storageService.setUserCredentials({ username: this.username, password });
+			this.storageService.setParticipantCredentials({ username: this.username, password });
 			this.isUserLogged = true;
 		} catch (error) {
 			this.isUserLogged = false;
@@ -139,7 +130,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 	async logout() {
 		try {
 			await this.httpService.userLogout();
-			this.storageService.clearUserCredentials();
+			this.storageService.clearParticipantCredentials();
 			this.loginError = false;
 			this.isUserLogged = false;
 		} catch (error) {

@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
-
-const enum Storage {
-	ADMIN_CREDENTIALS = 'ovCallAdminAuth',
-	USER_CREDENTIALS = 'ovCallUserAuth',
-	USER_NAME = 'ovCallUserName'
-}
+import { LoggerService, StorageService } from 'openvidu-components-angular';
+import { STORAGE_PREFIX, StorageAppKeys } from '../models/storage.model';
 
 /**
  * @internal
@@ -12,16 +8,19 @@ const enum Storage {
 @Injectable({
 	providedIn: 'root'
 })
-export class StorageService {
-	private storage = window.localStorage;
+export class StorageAppService extends StorageService {
+	constructor(loggerSrv: LoggerService) {
+		super(loggerSrv);
+		this.PREFIX_KEY = STORAGE_PREFIX;
+	}
 
 	setAdminCredentials(credentials: { username: string; password: string }) {
 		const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
-		this.set(Storage.ADMIN_CREDENTIALS, encodedCredentials);
+		this.set(StorageAppKeys.ADMIN_CREDENTIALS, encodedCredentials);
 	}
 
 	getAdminCredentials(): { username: string; password: string } | undefined {
-		const encodedCredentials = this.get(Storage.ADMIN_CREDENTIALS);
+		const encodedCredentials = this.get(StorageAppKeys.ADMIN_CREDENTIALS);
 
 		if (encodedCredentials) {
 			const [username, password] = atob(encodedCredentials).split(':');
@@ -32,25 +31,17 @@ export class StorageService {
 	}
 
 	clearAdminCredentials() {
-		this.remove(Storage.ADMIN_CREDENTIALS);
+		this.remove(StorageAppKeys.ADMIN_CREDENTIALS);
 	}
 
-	setUserName(username: string) {
-		this.set(Storage.USER_NAME, username);
-	}
-
-	getUserName(): string {
-		return this.get(Storage.USER_NAME);
-	}
-
-	setUserCredentials(credentials: { username: string; password: string }) {
+	setParticipantCredentials(credentials: { username: string; password: string }) {
 		const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
-		this.setUserName(credentials.username);
-		this.set(Storage.USER_CREDENTIALS, encodedCredentials);
+		this.setParticipantName(credentials.username);
+		this.set(StorageAppKeys.PARTICIPANT_CREDENTIALS, encodedCredentials);
 	}
 
-	getUserCredentials(): { username: string; password: string } | null {
-		const encodedCredentials = this.get(Storage.USER_CREDENTIALS);
+	getParticipantCredentials(): { username: string; password: string } | null {
+		const encodedCredentials = this.get(StorageAppKeys.PARTICIPANT_CREDENTIALS);
 
 		if (encodedCredentials) {
 			const [username, password] = atob(encodedCredentials).split(':');
@@ -60,30 +51,7 @@ export class StorageService {
 		return null;
 	}
 
-	clearUserCredentials() {
-		this.remove(Storage.USER_CREDENTIALS);
-	}
-
-	private set(key: string, item: any) {
-		const value = JSON.stringify({ item: item });
-		this.storage.setItem(key, value);
-	}
-
-	private get(key: string): any {
-		const str = this.storage.getItem(key);
-
-		if (str) {
-			return JSON.parse(str).item;
-		}
-
-		return null;
-	}
-
-	private remove(key: string) {
-		this.storage.removeItem(key);
-	}
-
-	public clear() {
-		this.storage.clear();
+	clearParticipantCredentials() {
+		this.remove(StorageAppKeys.PARTICIPANT_CREDENTIALS);
 	}
 }

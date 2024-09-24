@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '@services/http.service';
-import { StorageService } from '@services/storage.service';
+import { StorageAppService } from '@services/storage.service';
 import { OpenViduComponentsModule, ApiDirectiveModule } from 'openvidu-components-angular';
 
 @Component({
@@ -18,7 +18,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 	private continuationToken: string;
 	constructor(
 		private httpService: HttpService,
-		private storageService: StorageService
+		private storageService: StorageAppService
 	) {}
 
 	async ngOnInit() {
