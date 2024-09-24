@@ -7,13 +7,10 @@ WORKDIR /app/frontend
 
 ARG BASE_HREF=/
 
-COPY --chown=node:node frontend/package*.json ./
-
-RUN npm install
-
 COPY --chown=node:node frontend/ ./
 
-RUN npm run build
+RUN npm install && \
+    npm run build
 
 ### Stage 2: Build the backend
 FROM node:20 as build-backend
