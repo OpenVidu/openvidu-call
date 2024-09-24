@@ -1,5 +1,5 @@
 ### Stage 1: Build the frontend
-FROM --platform=linux/amd64 node:20 as build-frontend
+FROM node:20 as build-frontend
 
 USER node
 
