@@ -29,6 +29,11 @@ export const LIVEKIT_URL_PRIVATE = process.env.LIVEKIT_URL_PRIVATE || LIVEKIT_UR
 export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
 export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 
+// export const LIVEKIT_URL = process.env.LIVEKIT_URL || 'wss://call.openvidu.io';
+// export const LIVEKIT_URL_PRIVATE = process.env.LIVEKIT_URL_PRIVATE || LIVEKIT_URL;
+// export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'APIWZHJbPh9ANkd';
+// export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'xIewKYpYWA8x2N8fxWolqxK1AohMlL06F1cS7yJuDmj';
+
 // S3 configuration
 export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
 export const CALL_S3_SERVICE_ENDPOINT = process.env.CALL_S3_SERVICE_ENDPOINT || 'http://localhost:9000';

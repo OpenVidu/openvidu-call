@@ -7,11 +7,11 @@ WORKDIR /app/frontend
 
 ARG BASE_HREF=/
 
-COPY --chown=node:node openvidu-call-front/package*.json ./
+COPY --chown=node:node frontend/package*.json ./
 
 RUN npm install
 
-COPY --chown=node:node openvidu-call-front/ ./
+COPY --chown=node:node frontend/ ./
 
 RUN npm run build
 
@@ -22,11 +22,11 @@ USER node
 
 WORKDIR /app/backend
 
-COPY --chown=node:node openvidu-call-back/package*.json ./
+COPY --chown=node:node backend/package*.json ./
 
 RUN npm install
 
-COPY --chown=node:node openvidu-call-back/ ./
+COPY --chown=node:node backend/ ./
 
 RUN npm run build
 

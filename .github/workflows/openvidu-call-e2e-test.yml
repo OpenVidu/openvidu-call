@@ -68,11 +68,11 @@ jobs:
 
       - name: Install dependencies and build openvidu-call
         run: |
-          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
-          npm install --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-front && \
-          mv openvidu-call-front/dist/openvidu-call/ openvidu-call-back/dist/public/
+          npm install openvidu-components-angular-*.tgz --prefix frontend && \
+          npm install --prefix backend && \
+          npm run build --prefix backend && \
+          npm run build --prefix frontend && \
+          mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -83,11 +83,11 @@ jobs:
       - name: Serve openvidu-call
         env:
           CALL_PRIVATE_ACCESS: true
-        run: npm run start --prefix openvidu-call-back &
+        run: npm run start --prefix backend &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
-        run: npm run e2e:auth --prefix openvidu-call-front
+        run: npm run e2e:auth --prefix frontend
 
   home_e2e_test:
     needs: prepare_openvidu_components_angular
@@ -114,11 +114,11 @@ jobs:
 
       - name: Install dependencies and build openvidu-call
         run: |
-          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
-          npm install --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-front && \
-          mv openvidu-call-front/dist/openvidu-call/ openvidu-call-back/dist/public/
+          npm install openvidu-components-angular-*.tgz --prefix frontend && \
+          npm install --prefix backend && \
+          npm run build --prefix backend && \
+          npm run build --prefix frontend && \
+          mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -127,12 +127,12 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: npm run start --prefix openvidu-call-back &
+        run: npm run start --prefix backend &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:home --prefix openvidu-call-front
+        run: npm run e2e:home --prefix frontend
 
   room_e2e_test:
     needs: prepare_openvidu_components_angular
@@ -159,11 +159,11 @@ jobs:
 
       - name: Install dependencies and build openvidu-call
         run: |
-          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
-          npm install --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-front && \
-          mv openvidu-call-front/dist/openvidu-call/ openvidu-call-back/dist/public/
+          npm install openvidu-components-angular-*.tgz --prefix frontend && \
+          npm install --prefix backend && \
+          npm run build --prefix backend && \
+          npm run build --prefix frontend && \
+          mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -172,12 +172,12 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: npm run start --prefix openvidu-call-back &
+        run: npm run start --prefix backend &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:room --prefix openvidu-call-front
+        run: npm run e2e:room --prefix frontend
 
   recording_e2e_test:
     needs: prepare_openvidu_components_angular
@@ -204,11 +204,11 @@ jobs:
 
       - name: Install dependencies and build openvidu-call
         run: |
-          npm install openvidu-components-angular-*.tgz --prefix openvidu-call-front && \
-          npm install --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-back && \
-          npm run build --prefix openvidu-call-front && \
-          mv openvidu-call-front/dist/openvidu-call/ openvidu-call-back/dist/public/
+          npm install openvidu-components-angular-*.tgz --prefix frontend && \
+          npm install --prefix backend && \
+          npm run build --prefix backend && \
+          npm run build --prefix frontend && \
+          mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
         run: |
@@ -217,9 +217,9 @@ jobs:
             sleep 5
           done
       - name: Serve openvidu-call
-        run: npm run start --prefix openvidu-call-back &
+        run: npm run start --prefix backend &
       - name: Run tests
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:recordings --prefix openvidu-call-front
+        run: npm run e2e:recordings --prefix frontend

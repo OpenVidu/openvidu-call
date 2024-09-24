@@ -1,5 +1,5 @@
 import { Capabilities } from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
+import * as chrome from 'selenium-webdriver/chrome.js';
 import { LAUNCH_MODE } from './config.js';
 
 interface BrowserConfig {

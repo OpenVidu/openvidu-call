@@ -53,6 +53,5 @@ Thumbs.db
 *.browserslistrc
 .git/*
 
-openvidu-call-back-java/src/main/resources/static/
 
-openvidu-call-back/public/
+backend/public/
