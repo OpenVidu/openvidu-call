@@ -23,7 +23,7 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"start": "node dist/src/server.js",
-		"dev": "cross-env USE_HTTPS=false TESTING_MODE=ENABLED nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
+		"dev:start": "cross-env USE_HTTPS=false TESTING_MODE=ENABLED nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
 		"lint": "eslint src --fix",
 		"format": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'",
 		"pack": "npm pack"
