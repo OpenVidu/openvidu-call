@@ -85,8 +85,6 @@ export const streamRecording = async (req: Request, res: Response) => {
 		logger.info(`Streaming recording ${recordingId}`);
 		const { fileSize, fileStream, start, end } = await recordingService.getRecordingAsStream(recordingId, range);
 
-		res.setHeader('Accept-Ranges', 'bytes');
-
 		if (range && fileSize && start !== undefined && end !== undefined) {
 			const contentLength = end - start + 1;
 
@@ -94,7 +92,7 @@ export const streamRecording = async (req: Request, res: Response) => {
 				'Content-Range': `bytes ${start}-${end}/${fileSize}`,
 				'Accept-Ranges': 'bytes',
 				'Content-Length': contentLength,
-				'Content-Type': 'video/webm'
+				'Content-Type': 'video/mp4'
 			});
 
 			fileStream.on('error', (streamError) => {
@@ -104,6 +102,7 @@ export const streamRecording = async (req: Request, res: Response) => {
 
 			fileStream.pipe(res).on('finish', () => res.end());
 		} else {
+			res.setHeader('Accept-Ranges', 'bytes');
 			res.setHeader('Content-Type', 'video/mp4');
 
 			if (fileSize) res.setHeader('Content-Length', fileSize);

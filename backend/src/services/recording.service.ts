@@ -206,6 +206,7 @@ export class RecordingService {
 		recordingId: string,
 		range?: string
 	): Promise<{ fileSize: number | undefined; fileStream: Readable; start?: number; end?: number }> {
+		const RECORDING_FILE_PORTION_SIZE = 5 * 1024 * 1024; // 5MB
 		const egressInfo = await this.getRecording(recordingId);
 		const recordingPath = RecordingHelper.extractFileNameFromUrl(egressInfo.location);
 
@@ -218,7 +219,8 @@ export class RecordingService {
 			// Parse the range header
 			const parts = range.replace(/bytes=/, '').split('-');
 			const start = parseInt(parts[0], 10);
-			const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+			const endRange = parts[1] ? parseInt(parts[1], 10) : start + RECORDING_FILE_PORTION_SIZE;
+			const end = Math.min(endRange, fileSize - 1);
 			const fileStream = await this.s3Service.getObjectAsStream(recordingPath, CALL_S3_BUCKET, {
 				start,
 				end
