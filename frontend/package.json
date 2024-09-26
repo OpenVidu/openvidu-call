@@ -54,6 +54,7 @@
     "dev:start": "ng serve --configuration development --port=5080 --host=0.0.0.0",
     "dev:build": "./node_modules/@angular/cli/bin/ng.js build --output-path ../backend/public/",
     "build": "func() { ./node_modules/@angular/cli/bin/ng.js build --configuration production --base-href=\"${1:-/}\"; }; func",
+    "build-and-copy": "npm run build && mkdir -p ../backend/dist/public && cp -r dist/openvidu-call/* ../backend/dist/public",
     "e2e:all": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/**/*.test.js",
     "e2e:home": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/home.test.js",
     "e2e:room": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/room.test.js",

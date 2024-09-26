@@ -25,10 +25,10 @@ RUN npm install
 
 COPY --chown=node:node backend/ ./
 
-RUN npm run build
-
 # Copy static files from the frontend build
 COPY --from=build-frontend /app/frontend/dist/openvidu-call /app/backend/dist/public
+
+RUN npm run build
 
 
 ### Stage 3: Final production image
