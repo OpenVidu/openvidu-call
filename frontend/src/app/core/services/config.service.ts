@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '@services/http.service';
+import { ServerConfigurationResponse } from '../models/server.model';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ConfigService {
-	private config: { isPrivate: boolean } | undefined;
+	private config: ServerConfigurationResponse | undefined;
 	private initialization: Promise<void> | undefined;
 
 	constructor(private httpService: HttpService) {}
@@ -24,7 +25,7 @@ export class ConfigService {
 		} catch (error) {
 			console.error('Failed to load configuration:', error);
 			// Handle the error as needed, e.g., set default config or notify the user
-			this.config = { isPrivate: true }; // Default value in case of error
+			this.config = { isPrivateAccess: true }; // Default value in case of error
 		}
 	}
 
@@ -34,6 +35,6 @@ export class ConfigService {
 			throw new Error('ConfigService not initialized. Call initialize() before accessing config.');
 		}
 
-		return this.config?.isPrivate ?? true;
+		return this.config?.isPrivateAccess ?? true;
 	}
 }
