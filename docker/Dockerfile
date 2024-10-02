@@ -10,7 +10,7 @@ ARG BASE_HREF=/
 COPY --chown=node:node frontend/ ./
 
 RUN npm install && \
-    npm run build
+    npm run build ${BASE_HREF}
 
 ### Stage 2: Build the backend
 FROM node:20 as build-backend
@@ -24,6 +24,8 @@ COPY --chown=node:node backend/package*.json ./
 RUN npm install
 
 COPY --chown=node:node backend/ ./
+
+RUN mkdir -p /app/backend/dist/src && chown -R node:node /app/backend/dist
 
 # Copy static files from the frontend build
 COPY --from=build-frontend /app/frontend/dist/openvidu-call /app/backend/dist/public
