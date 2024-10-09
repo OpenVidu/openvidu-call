@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RecordingInfo } from 'openvidu-components-angular';
 import { lastValueFrom } from 'rxjs';
-import { StorageAppService } from './storage.service';
+import { StorageAppService } from '@services/storage.service';
 
 @Injectable({
 	providedIn: 'root'

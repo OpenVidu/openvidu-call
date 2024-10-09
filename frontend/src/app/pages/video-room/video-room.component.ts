@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
 import {
 	BroadcastingStartRequestedEvent,
 	BroadcastingStopRequestedEvent,
@@ -9,7 +10,6 @@ import {
 	OpenViduComponentsModule,
 	ApiDirectiveModule
 } from 'openvidu-components-angular';
-import { MatIcon } from '@angular/material/icon';
 
 import { HttpService } from '@services/http.service';
 

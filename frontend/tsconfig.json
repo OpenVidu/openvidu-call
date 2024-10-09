@@ -17,9 +17,9 @@
 		"paths": {
 			"core-js/es7/reflect": ["./node_modules/core-js/proposals/reflect-metadata"],
 			"@app/*": ["src/app/*"],
-			"@core/*": ["src/app/core/*"],
-			"@services/*": ["src/app/core/services/*"],
-			"@guards/*": ["src/app/core/guards/*"],
+			"@services/*": ["src/app/services/*"],
+			"@models/*": ["src/app/models/*"],
+			"@guards/*": ["src/app/guards/*"],
 			"@pages/*": ["src/app/pages/*"],
 			"@environment/*": ["src/environments/*"]
 		},

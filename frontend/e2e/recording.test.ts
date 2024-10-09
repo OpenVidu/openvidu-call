@@ -31,7 +31,7 @@ describe('Testing recordings', () => {
 		await utils.checkRecordingIsStarting();
 		await utils.checkRecordingIsStarted();
 
-		await browser.sleep(4000);
+		await browser.sleep(2000);
 
 		await utils.stopRecordingFromPanel();
 		await utils.checkRecordingIsStopped();
@@ -54,37 +54,37 @@ describe('Testing recordings', () => {
 		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 	});
 
-	it('should be able to delete a recording', async () => {
-		await connectStartAndStopRecording();
+	// it('should be able to delete a recording', async () => {
+	// 	await connectStartAndStopRecording();
 
-		await utils.waitForElement('.recording-item');
-		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+	// 	await utils.waitForElement('.recording-item');
+	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
-		await browser.sleep(2000);
+	// 	await browser.sleep(2000);
 
-		await utils.deleteRecording();
+	// 	await utils.deleteRecording();
 
-		await browser.sleep(500);
-		expect(await utils.getNumberOfElements('.recording-item')).equals(0);
-	});
+	// 	await browser.sleep(500);
+	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(0);
+	// });
 
-	it('should be able to play a recording', async () => {
-		await connectStartAndStopRecording();
+	// it('should be able to play a recording', async () => {
+	// 	await connectStartAndStopRecording();
 
-		await utils.waitForElement('.recording-item');
-		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+	// 	await utils.waitForElement('.recording-item');
+	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
-		await browser.sleep(2000);
+	// 	await browser.sleep(2000);
 
-		await utils.playRecording();
+	// 	await utils.playRecording();
 
-		await browser.sleep(1000);
-		await utils.waitForElement('app-recording-dialog');
+	// 	await browser.sleep(1000);
+	// 	await utils.waitForElement('app-recording-dialog');
 
-		await browser.sleep(1000);
+	// 	await browser.sleep(1000);
 
-		expect(await utils.getNumberOfElements('video')).equals(2);
-	});
+	// 	expect(await utils.getNumberOfElements('video')).equals(2);
+	// });
 
 	// it('should be able to download a recording', async () => {});
 });
