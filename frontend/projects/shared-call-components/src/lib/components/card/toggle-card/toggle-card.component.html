@@ -1,0 +1,16 @@
+<mat-card class="toggle-card" [style.background-color]="cardBackgroundColor">
+	<div class="card-content">
+		<div class="icon-container" [style.background-color]="iconBackgroundColor">
+			<mat-icon class="card-icon">{{ icon }}</mat-icon>
+		</div>
+		<div class="text-container">
+			<div class="card-title">{{ title || '' }}</div>
+			<div class="card-subtitle">{{ description || 'OpenVidu' }}</div>
+		</div>
+	</div>
+
+	<div class="card-footer">
+		<span>{{ title }} is {{ toggleValue ? 'active' : 'disabled' }}</span>
+		<mat-slide-toggle [checked]="toggleValue" (change)="onToggleChange($event)"></mat-slide-toggle>
+	</div>
+</mat-card>

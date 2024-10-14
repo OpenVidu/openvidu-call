@@ -11,7 +11,7 @@ import {
 	ApiDirectiveModule
 } from 'openvidu-components-angular';
 
-import { HttpService } from '@services/http.service';
+import { HttpService } from 'shared-call-components';
 
 @Component({
 	selector: 'app-video-room',

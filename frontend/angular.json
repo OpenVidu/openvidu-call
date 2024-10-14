@@ -7,7 +7,7 @@
 			"root": "",
 			"sourceRoot": "src",
 			"projectType": "application",
-			"prefix": "app",
+			"prefix": "ov",
 			"schematics": {
 				"@schematics/angular:component": {
 					"style": "scss"
@@ -131,6 +131,41 @@
 					"options": {
 						"protractorConfig": "e2e/protractor.conf.js",
 						"devServerTarget": "openvidu-call:serve"
+					}
+				}
+			}
+		},
+		"shared-call-components": {
+			"projectType": "library",
+			"root": "projects/shared-call-components",
+			"sourceRoot": "projects/shared-call-components/src",
+			"prefix": "ov",
+			"schematics": {
+				"@schematics/angular:component": {
+					"style": "scss"
+				}
+			},
+			"architect": {
+				"build": {
+					"builder": "@angular-devkit/build-angular:ng-packagr",
+					"options": {
+						"project": "projects/shared-call-components/ng-package.json"
+					},
+					"configurations": {
+						"production": {
+							"tsConfig": "projects/shared-call-components/tsconfig.lib.prod.json"
+						},
+						"development": {
+							"tsConfig": "projects/shared-call-components/tsconfig.lib.json"
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"test": {
+					"builder": "@angular-devkit/build-angular:karma",
+					"options": {
+						"tsConfig": "projects/shared-call-components/tsconfig.spec.json",
+						"polyfills": ["zone.js", "zone.js/testing"]
 					}
 				}
 			}

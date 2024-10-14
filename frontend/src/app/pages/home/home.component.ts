@@ -16,9 +16,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { ConfigService } from '@services/config.service';
-import { HttpService } from '@services/http.service';
-import { StorageAppService } from '@services/storage.service';
+import { ConfigService } from '@app/services/config.service';
+import { StorageAppService } from '@app/services/storage.service';
+import { HttpService } from 'shared-call-components';
 
 import packageInfo from '../../../../package.json';
 
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute
 	) {
 		this.loginForm = this.fb.group({
-			username: [this.storageService.getParticipantName() ?? '', [Validators.required, Validators.minLength(4)]],
+			username: [/*this.storageService.getParticipantName() ??*/ '', [Validators.required, Validators.minLength(4)]],
 			password: ['', [Validators.required, Validators.minLength(4)]]
 		});
 
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 				await this.httpService.userLogin(userCredentials);
 				this.storageService.setParticipantCredentials(userCredentials);
-				this.username = this.storageService.getParticipantName();
+				// this.username = this.storageService.getParticipantName();
 				this.isUserLogged = true;
 				this.loginError = false;
 			}

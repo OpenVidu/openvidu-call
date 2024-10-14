@@ -1,0 +1,14 @@
+<mat-card class="logo-card" [style.background-color]="cardBackgroundColor">
+	<div class="card-content" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+		<div class="logo-container">
+			<img [src]="logoSrc" alt="App Logo" class="app-logo" />
+			@if (isHovering && isEnabled) {
+				<mat-icon class="select-icon">add_a_photo</mat-icon>
+			}
+		</div>
+		<div class="text-container">
+			<div class="card-title">{{ title || '' }}</div>
+			<div class="card-subtitle">{{ description || 'Select your app logo' }}</div>
+		</div>
+	</div>
+</mat-card>
