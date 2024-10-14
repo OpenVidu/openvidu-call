@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '@app/services/http.service';
-import { ServerConfigurationResponse } from '@models/server.model';
+import { ServerConfigurationResponse } from '@app/models/server.model';
+import { HttpService } from 'shared-call-components';
 
 @Injectable({
 	providedIn: 'root'

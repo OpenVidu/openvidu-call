@@ -17,11 +17,13 @@
 		"paths": {
 			"core-js/es7/reflect": ["./node_modules/core-js/proposals/reflect-metadata"],
 			"@app/*": ["src/app/*"],
-			"@services/*": ["src/app/services/*"],
-			"@models/*": ["src/app/models/*"],
-			"@guards/*": ["src/app/guards/*"],
-			"@pages/*": ["src/app/pages/*"],
-			"@environment/*": ["src/environments/*"]
+			"@lib/*": ["projects/shared-call-components/src/lib/*"],
+			// "@services/*": ["src/app/services/*"],
+			// "@models/*": ["src/app/models/*"],
+			// "@guards/*": ["src/app/guards/*"],
+			// "@pages/*": ["src/app/pages/*"],
+			"@environment/*": ["src/environments/*"],
+			"shared-call-components": ["dist/shared-call-components"]
 		},
 		"useDefineForClassFields": false
 	}

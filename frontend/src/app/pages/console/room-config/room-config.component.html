@@ -1,0 +1,36 @@
+<ov-dynamic-grid [maxColumns]="3">
+	<!-- Recording Toggle -->
+	<ov-toggle-card
+		[title]="'Recording'"
+		[description]="'Allow record your rooms for later use'"
+		[icon]="'radio_button_checked'"
+		[iconBackgroundColor]="'#e23e3e'"
+		[cardBackgroundColor]="'#ffffff'"
+		[toggleValue]="recordingEnabled"
+		(onToggleValueChanged)="onRecordingToggle($event)"
+	>
+	</ov-toggle-card>
+	<!-- Broadcasting Toggle -->
+	<ov-toggle-card
+		[title]="'Broadcasting'"
+		[description]="'Allow broadcast your rooms to the world'"
+		[icon]="'sensors'"
+		[iconBackgroundColor]="'#5903ca'"
+		[cardBackgroundColor]="'#ffffff'"
+		[toggleValue]="broadcastingEnabled"
+		(onToggleValueChanged)="onBroadcastingToggle($event)"
+	>
+	</ov-toggle-card>
+
+	<!-- Chat Toggle -->
+	<ov-toggle-card
+		[title]="'Chat'"
+		[description]="'Allow the participants to chat'"
+		[icon]="'message'"
+		[iconBackgroundColor]="'#598eff'"
+		[cardBackgroundColor]="'#ffffff'"
+		[toggleValue]="chatEnabled"
+		(onToggleValueChanged)="onChatToggle($event)"
+	>
+	</ov-toggle-card>
+</ov-dynamic-grid>

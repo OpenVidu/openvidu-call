@@ -1,0 +1,89 @@
+#dashboard-container,
+mat-sidenav-container {
+	height: 100%;
+}
+
+.page-content {
+	height: 100%;
+	padding: 15px;
+}
+.toolbar-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-left: 16px;
+}
+
+.toolbar-spacer {
+	flex: 1 1 auto;
+}
+
+mat-toolbar {
+	position: fixed;
+	top: 0;
+	z-index: 2;
+}
+
+mat-sidenav-container {
+	height: 100%;
+}
+
+.expanded {
+	width: 250px;
+}
+.collapsed {
+	width: 70px;
+}
+a {
+	padding: 0;
+}
+
+// Move the content down so that it won't be hidden by the toolbar
+mat-sidenav {
+	background-color: white;
+	padding-top: 3.5rem;
+	@media screen and (min-width: 600px) {
+		padding-top: 4rem;
+	}
+
+	.entry {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem;
+		justify-content: start;
+	}
+
+	.centeredEntry {
+		justify-content: center !important;
+
+	}
+}
+
+// Move the content down so that it won't be hidden by the toolbar
+mat-sidenav-content {
+	padding-top: 3.5rem;
+	@media screen and (min-width: 600px) {
+		padding-top: 4rem;
+	}
+}
+
+.toolbar-spacer {
+	flex: 1 1 auto;
+}
+
+.main-container {
+	padding: 0px 2rem;
+	height: 100%;
+}
+
+.section-title {
+	padding-bottom: 0px;
+}
+
+.menu-button {
+	height: 60px !important;
+	text-align: justify;
+}
+.menu-hr {
+	margin: 0px !important;
+}

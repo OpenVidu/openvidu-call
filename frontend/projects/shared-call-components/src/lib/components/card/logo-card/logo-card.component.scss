@@ -1,0 +1,61 @@
+.logo-card {
+	max-width: 100%;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	transition: box-shadow 0.3s ease-in-out;
+	position: relative; // Para posicionar el icono de selección
+
+	&:hover {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+}
+
+.card-content {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 20px;
+}
+
+.logo-container {
+	position: relative; // Para posicionar el icono de selección
+	border-radius: 4px;
+}
+
+.app-logo {
+	width: 64px; // Ajusta el tamaño del logo
+	height: 64px; // Ajusta el tamaño del logo
+	border-radius: 4px; // Opcional: para esquinas redondeadas
+	object-fit: cover; // Mantiene la proporción de la imagen
+}
+
+.select-icon {
+	position: absolute; // Para que el icono se superponga al logo
+	top: 50%; // Centrado verticalmente
+	left: 50%; // Centrado horizontalmente
+	transform: translate(-50%, -50%); // Ajuste del centro
+	color: #673ab7; // Color del icono
+	font-size: 36px; // Tamaño del icono
+	opacity: 0; // Inicialmente oculto
+	transition: opacity 0.2s ease; // Transición suave
+}
+
+.logo-card:hover .select-icon {
+	opacity: 1; // Mostrar el icono al hacer hover
+}
+
+.text-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.card-title {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #333;
+}
+
+.card-subtitle {
+	font-size: 0.9rem;
+	color: #666;
+}
