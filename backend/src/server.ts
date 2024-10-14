@@ -23,6 +23,7 @@ import {
 	CALL_LOG_LEVEL,
 	CALL_NAME_ID
 } from './config.js';
+import { embeddedRouter } from './routes/embedded.routes.js';
 
 const createApp = () => {
 	const app = express();
@@ -41,6 +42,7 @@ const createApp = () => {
 
 	// Setup routes
 	app.use('/call/api', apiRouter);
+	app.use('/embedded/api', embeddedRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
 		res.sendFile(path.join(__dirname, '../public/browser', 'index.html'));
