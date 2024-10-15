@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { apiRouter, livekitRouter } from './routes/index.js';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url';
+import { indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
+import { apiRouter, livekitRouter } from './routes/index.js';
 import {
 	LIVEKIT_URL,
 	LIVEKIT_API_KEY,
@@ -35,10 +35,7 @@ const createApp = () => {
 		app.use(cors({ origin: SERVER_CORS_ORIGIN }));
 	}
 
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = path.dirname(__filename);
-
-	app.use(express.static(path.join(__dirname, '../public/browser')));
+	app.use(express.static(publicFilesPath));
 	app.use(express.json());
 
 	// Setup routes
@@ -46,7 +43,7 @@ const createApp = () => {
 	app.use('/embedded/api', embeddedRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
-		res.sendFile(path.join(__dirname, '../public/browser', 'index.html'));
+		res.sendFile(indexHtmlPath);
 	});
 
 	return app;
