@@ -1,4 +1,5 @@
 import {
+	_Object,
 	DeleteObjectCommand,
 	DeleteObjectCommandOutput,
 	DeleteObjectsCommand,
@@ -123,76 +124,68 @@ export class S3Service {
 		}
 	}
 
-	// async deleteFolder(folderName: string, bucket: string = CALL_S3_BUCKET) {
-	// 	try {
-	// 		const listParams = {
-	// 			Bucket: bucket,
-	// 			Prefix: folderName.endsWith('/') ? folderName : `${folderName}/`
-	// 		};
-	// 		// Get all objects in the folder
-	// 		const listedObjects: ListObjectsV2CommandOutput = await this.run(new ListObjectsV2Command(listParams));
-	// 		const deleteParams = {
-	// 			Bucket: bucket,
-	// 			Delete: {
-	// 				Objects: listedObjects?.Contents?.map(({ Key }) => ({ Key }))
-	// 			}
-	// 		};
-
-	// 		// Skip if no objects found
-	// 		if (!deleteParams.Delete.Objects || deleteParams.Delete.Objects.length === 0){
-	// 			this.logger.error(`No objects found in folder ${folderName}. Nothing to delete`);
-	// 			return;
-	// 		}
-
-	// 		this.logger.info(`Deleting objects in S3: ${deleteParams.Delete.Objects}`);
-	// 		await this.run(new DeleteObjectsCommand(deleteParams));
-
-	// 		if (listedObjects.IsTruncated) {
-	// 			this.logger.verbose(`Folder ${folderName} is truncated, deleting next batch`);
-	// 			await this.deleteFolder(bucket, folderName);
-	// 		}
-	// 	} catch (error) {
-	// 		this.logger.error(`Error deleting folder in S3: ${error}`);
-	// 		throw internalError(error);
-	// 	}
-	// }
-
 	/**
-	 * Lists objects in an S3 bucket.
+	 * Lists all objects in an S3 bucket with optional subbucket and search pattern filtering.
 	 *
-	 * @param subbucket - The subbucket within the bucket to list objects from.
-	 * @param searchPattern - The search pattern to filter the objects by.
-	 * @param bucket - The name of the S3 bucket.
-	 * @param maxObjects - The maximum number of objects to retrieve.
-	 * @returns A promise that resolves to the list of objects.
-	 * @throws Throws an error if there was an error listing the objects.
+	 * @param {string} [subbucket=''] - The subbucket within the main bucket to list objects from.
+	 * @param {string} [searchPattern=''] - A regex pattern to filter the objects by their keys.
+	 * @param {string} [bucket=CALL_S3_BUCKET] - The name of the S3 bucket. Defaults to CALL_S3_BUCKET.
+	 * @param {number} [maxObjects=1000] - The maximum number of objects to retrieve in one request. Defaults to 1000.
+	 * @returns {Promise<ListObjectsV2CommandOutput>} - A promise that resolves to the output of the ListObjectsV2Command.
+	 * @throws {Error} - Throws an error if there is an issue listing the objects.
 	 */
 	async listObjects(
 		subbucket = '',
 		searchPattern = '',
 		bucket: string = CALL_S3_BUCKET,
-		maxObjects = 20,
-		continuationToken?: string
+		maxObjects = 1000
 	): Promise<ListObjectsV2CommandOutput> {
 		const prefix = subbucket ? `${subbucket}/` : '';
-		const command = new ListObjectsV2Command({
-			Bucket: bucket,
-			Prefix: prefix,
-			MaxKeys: maxObjects,
-			ContinuationToken: continuationToken
-		});
+		let allContents: _Object[] = [];
+		let continuationToken: string | undefined = undefined;
+		let isTruncated = true;
+		let fullResponse: ListObjectsV2CommandOutput | undefined = undefined;
 
 		try {
-			const response: ListObjectsV2CommandOutput = await this.run(command);
-
-			if (searchPattern) {
-				const regex = new RegExp(searchPattern);
-				response.Contents = response.Contents?.filter((object) => {
-					return object.Key && regex.test(object.Key);
+			while (isTruncated) {
+				const command = new ListObjectsV2Command({
+					Bucket: bucket,
+					Prefix: prefix,
+					MaxKeys: maxObjects,
+					ContinuationToken: continuationToken
 				});
+
+				const response: ListObjectsV2CommandOutput = await this.run(command);
+
+				if (!fullResponse) {
+					fullResponse = response;
+				}
+
+				// Filter the objects by the search pattern if it is provided
+				let objects = response.Contents || [];
+
+				if (searchPattern) {
+					const regex = new RegExp(searchPattern);
+					objects = objects.filter((object) => object.Key && regex.test(object.Key));
+				}
+
+				// Add the objects to the list of all objects
+				allContents = allContents.concat(objects);
+
+				// Update the loop control variables
+				isTruncated = response.IsTruncated ?? false;
+				continuationToken = response.NextContinuationToken;
 			}
 
-			return response;
+			if (fullResponse) {
+				fullResponse.Contents = allContents;
+				fullResponse.IsTruncated = false;
+				fullResponse.NextContinuationToken = undefined;
+				fullResponse.MaxKeys = allContents.length;
+				fullResponse.KeyCount = allContents.length;
+			}
+
+			return fullResponse!;
 		} catch (error) {
 			this.logger.error(`Error listing objects: ${error}`);
 

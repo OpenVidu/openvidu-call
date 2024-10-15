@@ -133,14 +133,12 @@ export class RecordingService {
 	}
 
 	/**
-	 * Retrieves the list of recordings.
+	 * Retrieves the list of all recordings.
 	 * @returns A promise that resolves to an array of RecordingInfo objects.
 	 */
-	async getAllRecordings(
-		continuationToken?: string
-	): Promise<{ recordingInfo: RecordingInfo[]; continuationToken?: string }> {
+	async getAllRecordings(): Promise<{ recordingInfo: RecordingInfo[]; continuationToken?: string }> {
 		try {
-			const allEgress = await this.s3Service.listObjects('.metadata', '.json', 'openvidu', 20, continuationToken);
+			const allEgress = await this.s3Service.listObjects('.metadata', '.json');
 			const promises: Promise<RecordingInfo>[] = [];
 
 			allEgress.Contents?.forEach((item) => {
@@ -149,7 +147,7 @@ export class RecordingService {
 				}
 			});
 
-			return { recordingInfo: await Promise.all(promises), continuationToken: allEgress.NextContinuationToken };
+			return { recordingInfo: await Promise.all(promises), continuationToken: undefined };
 		} catch (error) {
 			this.logger.error(`Error getting recordings: ${error}`);
 			throw error;

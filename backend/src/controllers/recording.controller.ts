@@ -52,12 +52,13 @@ export const stopRecording = async (req: Request, res: Response) => {
 
 /**
  * Endpoint only available for the admin user
+ * !WARNING: This will be removed in future versions
  */
 export const getAllRecordings = async (req: Request, res: Response) => {
 	try {
 		logger.info('Getting all recordings');
-		const continuationToken = req.query.continuationToken as string;
-		const response = await recordingService.getAllRecordings(continuationToken);
+		// const continuationToken = req.query.continuationToken as string;
+		const response = await recordingService.getAllRecordings();
 		return res
 			.status(200)
 			.json({ recordings: response.recordingInfo, continuationToken: response.continuationToken });
