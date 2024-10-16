@@ -1,14 +1,14 @@
-
 import dotenv from 'dotenv';
 
 if (process.env.CALL_CONFIG_DIR) {
-    dotenv.config({ path: process.env.CALL_CONFIG_DIR });
+	dotenv.config({ path: process.env.CALL_CONFIG_DIR });
 } else {
-    dotenv.config();
+	dotenv.config();
 }
 
 // General server configuration
 export const SERVER_PORT = process.env.SERVER_PORT || 6080;
+export const SERVER_CORS_ORIGIN = process.env.SERVER_CORS_ORIGIN || '*';
 export const CALL_NAME_ID = process.env.CALL_NAME_ID || 'OpenViduCall';
 export const CALL_PRIVATE_ACCESS = process.env.CALL_PRIVATE_ACCESS || 'false';
 export const CALL_USER = process.env.CALL_USER || 'user';

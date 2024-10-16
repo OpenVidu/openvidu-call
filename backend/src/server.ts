@@ -21,16 +21,17 @@ import {
 	CALL_ADMIN_USER,
 	CALL_AWS_REGION,
 	CALL_LOG_LEVEL,
-	CALL_NAME_ID
+	CALL_NAME_ID,
+	SERVER_CORS_ORIGIN
 } from './config.js';
 
 const createApp = () => {
 	const app = express();
 
 	// Enable CORS support
-	if (process.env.TESTING_MODE === 'ENABLED') {
-		console.log('CORS enabled');
-		app.use(cors({ origin: '*' }));
+	if (SERVER_CORS_ORIGIN) {
+		console.log('CORS Origin:', SERVER_CORS_ORIGIN);
+		app.use(cors({ origin: SERVER_CORS_ORIGIN }));
 	}
 
 	const __filename = fileURLToPath(import.meta.url);
