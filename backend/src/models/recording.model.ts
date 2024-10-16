@@ -26,5 +26,4 @@ export interface RecordingInfo {
 	endedAt?: number;
 	duration?: number;
 	size?: number;
-	location?: string;
 }

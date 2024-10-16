@@ -64,10 +64,9 @@ export class WebhookService {
 				payload = RecordingHelper.toRecordingInfo(egressInfo);
 
 				// Add recording metadata
-				const s3Directory = payload.filename?.split('.')[0];
-				const path = `.metadata/${s3Directory}/${s3Directory}_${payload.id}_${payload.roomId}.json`;
+				const metadataPath = this.generateMetadataPath(payload);
 				await Promise.all([
-					this.s3Service.uploadObject(path, payload),
+					this.s3Service.uploadObject(metadataPath, payload),
 					this.roomService.sendSignal(roomName, payload, { topic })
 				]);
 
@@ -117,10 +116,9 @@ export class WebhookService {
 				payload = RecordingHelper.toRecordingInfo(egressInfo);
 
 				// Update recording metadata
-				const s3Directory = payload.filename?.split('.')[0];
-				const path = `.metadata/${s3Directory}/${s3Directory}_${payload.id}_${payload.roomId}.json`;
+				const metadataPath = this.generateMetadataPath(payload);
 				await Promise.all([
-					this.s3Service.uploadObject(path, payload),
+					this.s3Service.uploadObject(metadataPath, payload),
 					this.roomService.sendSignal(roomName, payload, { topic })
 				]);
 			} else {
@@ -176,5 +174,12 @@ export class WebhookService {
 			destinationSids: participantSid ? [participantSid] : []
 		};
 		await this.roomService.sendSignal(roomName, payload, signalOptions);
+	}
+
+	private generateMetadataPath(payload: RecordingInfo): string {
+		const metadataFilename = `${payload.roomName}-${payload.roomId}`;
+		const recordingFilename = payload.filename?.split('.')[0];
+		const egressId = payload.id;
+		return `.metadata/${metadataFilename}/${recordingFilename}_${egressId}.json`;
 	}
 }

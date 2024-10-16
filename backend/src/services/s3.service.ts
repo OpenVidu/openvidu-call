@@ -2,7 +2,6 @@ import {
 	_Object,
 	DeleteObjectCommand,
 	DeleteObjectCommandOutput,
-	DeleteObjectsCommand,
 	GetObjectCommand,
 	GetObjectCommandOutput,
 	HeadObjectCommand,
@@ -245,6 +244,7 @@ export class S3Service {
 			});
 			return await this.run(headParams);
 		} catch (error) {
+			this.logger.error(`Error getting header object from S3 in ${name}: ${error}`);
 			throw internalError(error);
 		}
 	}
@@ -252,31 +252,6 @@ export class S3Service {
 	quit() {
 		this.s3.destroy();
 	}
-
-	// async uploadStreamToS3(key: string, fileStream: Readable, bucketName: string = CALL_AWS_S3_BUCKET) {
-	// 	try {
-	// 		const parallelUploads3 = new Upload({
-	// 			client: this.s3,
-	// 			params: {
-	// 				Bucket: bucketName,
-	// 				Key: key,
-	// 				Body: fileStream
-	// 			},
-	// 			partSize: 50 * 1024 * 1024, // 50 MB
-	// 			queueSize: 10 // 10 parallel uploads
-	// 		});
-
-	// 		parallelUploads3.on('httpUploadProgress', (progress: Progress) => {
-	// 			const uploadedMB = Math.round((progress.loaded ?? 0) / 1024 / 1024);
-	// 			this.logger.log(`Uploading ${progress.Key} file... ${uploadedMB} MB`);
-	// 		});
-
-	// 		return parallelUploads3.done();
-	// 	} catch (error) {
-	// 		this.logger.error('Error putting object in S3:', error);
-	// 		throw error;
-	// 	}
-	// }
 
 	private async getObject(
 		name: string,

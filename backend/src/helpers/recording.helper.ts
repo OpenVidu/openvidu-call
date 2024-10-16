@@ -12,7 +12,6 @@ export class RecordingHelper {
 		const startedAt = RecordingHelper.extractCreatedAt(egressInfo);
 		const endTimeInMilliseconds = RecordingHelper.extractEndedAt(egressInfo);
 		const filename = RecordingHelper.extractFilename(egressInfo);
-		const location = RecordingHelper.extractLocation(egressInfo);
 		return {
 			id: egressInfo.egressId,
 			roomName: egressInfo.roomName,
@@ -23,8 +22,7 @@ export class RecordingHelper {
 			startedAt,
 			endedAt: endTimeInMilliseconds,
 			duration,
-			size,
-			location
+			size
 		};
 	}
 
@@ -91,30 +89,26 @@ export class RecordingHelper {
 		}
 	}
 
-	static extractFilename(egressInfo: EgressInfo) {
-		return egressInfo.fileResults?.[0]?.filename.split('/').pop();
-	}
+	static extractFilename(recordingInfo: RecordingInfo): string | undefined;
 
-	static extractLocation(egressInfo: EgressInfo) {
-		// TODO: Implement this method
-		return egressInfo.fileResults?.[0]?.location;
-	}
+	static extractFilename(egressInfo: EgressInfo): string | undefined;
 
-	static extractFileNameFromUrl(url: string | undefined): string | null {
-		if (!url) {
-			return null;
+	static extractFilename(info: RecordingInfo | EgressInfo): string | undefined {
+		if (!info) return undefined;
+
+		if ('request' in info) {
+			// EgressInfo
+			return info.fileResults?.[0]?.filename.split('/').pop();
+		} else {
+			// RecordingInfo
+			const { roomName, filename, roomId } = info;
+
+			if (!filename) {
+				return undefined;
+			}
+
+			return roomName ? `${roomName}-${roomId}/${filename}` : filename;
 		}
-
-		// Use a regular expression to capture the desired part of the URL
-		const regex = /https:\/\/[^\/]+\/(.+)/;
-		const match = url.match(regex);
-
-		// Check if there is a match and extract the captured group
-		if (match && match[1]) {
-			return match[1];
-		}
-
-		throw new Error('The URL does not match the expected format.');
 	}
 
 	/**
@@ -146,7 +140,7 @@ export class RecordingHelper {
 	 */
 	static extractCreatedAt(egressInfo: EgressInfo): number {
 		const { startedAt, updatedAt } = egressInfo;
-		const createdAt = startedAt && Number(startedAt) !== 0 ? startedAt : updatedAt ?? 0;
+		const createdAt = startedAt && Number(startedAt) !== 0 ? startedAt : (updatedAt ?? 0);
 		return this.toMilliseconds(Number(createdAt));
 	}
 

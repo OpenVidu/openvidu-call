@@ -44,13 +44,21 @@ export class RecordingService {
 				active: true
 			};
 
-			const activeEgress = await this.livekitService.getEgress(egressOptions);
+			const [activeEgressResult, roomDataResult] = await Promise.allSettled([
+				this.livekitService.getEgress(egressOptions),
+				this.roomService.getRoom(roomName)
+			]);
 
-			if (activeEgress.length > 0) {
+			// Get the results of the promises
+			const activeEgress = activeEgressResult.status === 'fulfilled' ? activeEgressResult.value : null;
+			const roomData = roomDataResult.status === 'fulfilled' ? roomDataResult.value : null;
+
+			// If there is an active egress, it means that the recording is already started
+			if (!activeEgress || activeEgressResult.status === 'rejected') {
 				throw errorRecordingAlreadyStarted(roomName);
 			}
 
-			const recordingId = `${roomName}-${Date.now()}`;
+			const recordingId = `${roomName}-${roomData?.sid || Date.now()}`;
 			const options = this.generateCompositeOptionsFromRequest();
 			const output = this.generateFileOutputFromRequest(recordingId);
 			const egressInfo = await this.livekitService.startRoomComposite(roomName, output, options);
@@ -109,7 +117,7 @@ export class RecordingService {
 				throw errorRecordingNotStopped(egressId);
 			}
 
-			const recordingPath = RecordingHelper.extractFileNameFromUrl(recordingInfo.location);
+			const recordingPath = RecordingHelper.extractFilename(recordingInfo);
 
 			if (!recordingPath) throw internalError(`Error extracting path from recording ${egressId}`);
 
@@ -167,10 +175,12 @@ export class RecordingService {
 			// Get all recordings that match the room name and room ID from the S3 bucket
 			const roomNameSanitized = this.sanitizeRegExp(roomName);
 			const roomIdSanitized = this.sanitizeRegExp(roomId);
-			const regexPattern = `${roomNameSanitized}.*${roomIdSanitized}\\.json`;
+			// Match the room name and room ID in any order
+			const regexPattern = `${roomNameSanitized}.*${roomIdSanitized}|${roomIdSanitized}.*${roomNameSanitized}\\.json`;
 			const metadatagObject = await this.s3Service.listObjects('.metadata', regexPattern);
 
 			if (!metadatagObject.Contents || metadatagObject.Contents.length === 0) {
+				this.logger.verbose(`No recordings found for room ${roomName}. Returning an empty array.`);
 				return [];
 			}
 
@@ -205,8 +215,8 @@ export class RecordingService {
 		range?: string
 	): Promise<{ fileSize: number | undefined; fileStream: Readable; start?: number; end?: number }> {
 		const RECORDING_FILE_PORTION_SIZE = 5 * 1024 * 1024; // 5MB
-		const egressInfo = await this.getRecording(recordingId);
-		const recordingPath = RecordingHelper.extractFileNameFromUrl(egressInfo.location);
+		const recordingInfo: RecordingInfo = await this.getRecording(recordingId);
+		const recordingPath = RecordingHelper.extractFilename(recordingInfo);
 
 		if (!recordingPath) throw new Error(`Error extracting path from recording ${recordingId}`);
 
@@ -245,18 +255,9 @@ export class RecordingService {
 	 * @param fileName - The name of the file (default is 'recording').
 	 * @returns The generated file output object.
 	 */
-	private generateFileOutputFromRequest(recordingId: string, filePathOrFileName?: string): EncodedFileOutput {
-		let filepath: string;
-
-		if (!filePathOrFileName) filePathOrFileName = recordingId;
-
-		const isFilePath = filePathOrFileName.includes('/');
-
-		if (isFilePath) {
-			filepath = filePathOrFileName;
-		} else {
-			filepath = `${recordingId}/${filePathOrFileName}`;
-		}
+	private generateFileOutputFromRequest(recordingId: string): EncodedFileOutput {
+		// Added unique identifier to the file path for avoiding overwriting
+		const filepath = `${recordingId}/${recordingId}-${Date.now()}`;
 
 		return new EncodedFileOutput({
 			fileType: EncodedFileType.DEFAULT_FILETYPE,

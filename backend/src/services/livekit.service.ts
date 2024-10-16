@@ -5,6 +5,7 @@ import {
 	EncodedFileOutput,
 	ListEgressOptions,
 	ParticipantInfo,
+	Room,
 	RoomCompositeOptions,
 	RoomServiceClient,
 	StreamOutput,
