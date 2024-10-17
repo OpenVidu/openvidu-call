@@ -47,13 +47,8 @@ export class ToggleCardComponent {
 	@Input() toggleValue: boolean = false;
 
 	@Output() onToggleValueChanged = new EventEmitter<boolean>();
-	@Output() onTextLinkClicked = new EventEmitter<void>();
 
 	onToggleChange(event: any) {
 		this.onToggleValueChanged.emit(event.checked);
-	}
-
-	onLinkClick() {
-		this.onTextLinkClicked.emit();
 	}
 }

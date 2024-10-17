@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ConsoleNavComponent, ConsoleNavLink } from 'shared-call-components';
+import { Component, OnInit } from '@angular/core';
+import { ConsoleNavComponent, ConsoleNavLink, HttpService } from 'shared-call-components';
 
 @Component({
 	selector: 'app-console',
@@ -8,7 +8,7 @@ import { ConsoleNavComponent, ConsoleNavLink } from 'shared-call-components';
 	templateUrl: './console.component.html',
 	styleUrl: './console.component.scss'
 })
-export class ConsoleComponent {
+export class ConsoleComponent implements OnInit {
 	navLinks: ConsoleNavLink[] = [
 		{ label: 'Overview', route: '/', icon: 'dashboard' },
 		{ label: 'Appearance', route: 'appearance', icon: 'palette' },
@@ -17,8 +17,15 @@ export class ConsoleComponent {
 		{ label: 'Security', route: 'security', icon: 'security' },
 		{ label: 'Integrations', route: 'integrations', icon: 'integration_instructions' },
 		{ label: 'Support', route: 'support', icon: 'support' },
-		{ label: 'About', route: 'about', icon: 'info' },
+		{ label: 'About', route: 'about', icon: 'info' }
 	];
+
+	constructor(private httpService: HttpService) {}
+
+	async ngOnInit() {
+		const globalPreferences = await this.httpService.getGlobalPreferences();
+		console.log(globalPreferences);
+	}
 
 	logout() {
 		console.log('logout');

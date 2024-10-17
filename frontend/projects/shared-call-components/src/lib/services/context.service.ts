@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
 	providedIn: 'root'
@@ -16,6 +17,8 @@ export class ContextService {
 	 * Stores the token for the current session.
 	 */
 	private token: string | null;
+
+	private decodedToken: any;
 
 	/**
 	 * Initializes a new instance of the ContextService class.
@@ -45,7 +48,7 @@ export class ContextService {
 	setToken(token: string): void {
 		this.token = token;
 		console.log(token);
-		//TODO Parse token
+		this.decodeJWTToken(token);
 	}
 
 	/**
@@ -54,5 +57,13 @@ export class ContextService {
 	 */
 	getToken(): string | null {
 		return this.token;
+	}
+
+	getRoomName(): string {
+		return this.decodedToken.room.roomName;
+	}
+
+	private decodeJWTToken(token: string) {
+		this.decodedToken = jwtDecode(token);
 	}
 }

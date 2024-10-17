@@ -10,9 +10,7 @@ export class HttpService {
 	// private baseHref: string;
 	private pathPrefix = 'call/api';
 
-	constructor(
-		private http: HttpClient,
-	) {
+	constructor(private http: HttpClient) {
 		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
 
@@ -54,6 +52,16 @@ export class HttpService {
 		return headers;
 	}
 
+	saveGlobalPreferences(preferences: any): Promise<any> {
+		const headers = this.generateUserHeaders();
+		return this.postRequest(`${this.pathPrefix}/preferences`, preferences, headers);
+	}
+
+	getGlobalPreferences(): Promise<any> {
+		const headers = this.generateUserHeaders();
+		return this.getRequest(`${this.pathPrefix}/preferences`, headers);
+	}
+
 	async getConfig() {
 		return this.getRequest(`${this.pathPrefix}/config`);
 	}
@@ -64,13 +72,13 @@ export class HttpService {
 		return this.postRequest(`${this.pathPrefix}/rooms`, { roomName, participantName }, headers);
 	}
 
-	adminLogin(body: { username: string; password: string }): Promise<{ message: string }> {
-		return this.postRequest(`${this.pathPrefix}/admin/login`, body);
-	}
+	// adminLogin(body: { username: string; password: string }): Promise<{ message: string }> {
+	// 	return this.postRequest(`${this.pathPrefix}/admin/login`, body);
+	// }
 
-	adminLogout(): Promise<{ message: string }> {
-		return this.postRequest(`${this.pathPrefix}/admin/logout`, {});
-	}
+	// adminLogout(): Promise<{ message: string }> {
+	// 	return this.postRequest(`${this.pathPrefix}/admin/logout`, {});
+	// }
 
 	userLogin(body: { username: string; password: string }): Promise<{ message: string }> {
 		return this.postRequest(`${this.pathPrefix}/login`, body);

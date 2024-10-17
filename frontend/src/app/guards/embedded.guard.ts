@@ -6,6 +6,15 @@ export const embeddedGuard: CanActivateFn = async (route: ActivatedRouteSnapshot
 	const contextService = inject(ContextService);
 	const router = inject(Router);
 
+	const isRequestFromIframe = window.self !== window.top;
+
+	if (!isRequestFromIframe) {
+		// Redirect to the unauthorized page if the request is not from an iframe
+		const queryParams = { reason: 'no-iframe' };
+		router.navigate(['embedded/unauthorized'], { queryParams });
+		return false;
+	}
+
 	const isEmbedded = state.url.includes('embedded');
 
 	contextService.setEmbeddedMode(isEmbedded);

@@ -11,7 +11,7 @@ import {
 	ApiDirectiveModule
 } from 'openvidu-components-angular';
 
-import { HttpService } from 'shared-call-components';
+import { ContextService, HttpService } from 'shared-call-components';
 
 @Component({
 	selector: 'app-video-room',
@@ -30,16 +30,26 @@ export class VideoRoomComponent implements OnInit {
 	constructor(
 		private httpService: HttpService,
 		private router: Router,
-		private route: ActivatedRoute
+		private route: ActivatedRoute,
+		private contextService: ContextService
 	) {}
 
 	async ngOnInit() {
+		if (this.contextService.isEmbeddedMode()) {
+			this.roomName = this.contextService.getRoomName();
+			// this.token = this.contextService.getToken();
+			// this.isSessionAlive = true;
+			// this.loading = false;
+			return;
+		}
+
 		this.route.params.subscribe((params: Params) => {
 			this.roomName = params.roomName;
 		});
 	}
 
 	async onTokenRequested(participantName: string) {
+		// TODO: Refactor this method. This sould not run in the embedded mode
 		try {
 			const { token } = await this.httpService.getToken(this.roomName, participantName);
 			this.token = token;
@@ -70,7 +80,7 @@ export class VideoRoomComponent implements OnInit {
 		try {
 			const { recordingId } = event;
 
-			if(!recordingId) throw new Error('Recording ID not found when stopping recording');
+			if (!recordingId) throw new Error('Recording ID not found when stopping recording');
 
 			await this.httpService.stopRecording(recordingId);
 		} catch (error) {
@@ -82,7 +92,7 @@ export class VideoRoomComponent implements OnInit {
 		try {
 			const { recordingId } = event;
 
-			if(!recordingId) throw new Error('Recording ID not found when deleting recording');
+			if (!recordingId) throw new Error('Recording ID not found when deleting recording');
 
 			await this.httpService.deleteRecording(recordingId);
 		} catch (error) {

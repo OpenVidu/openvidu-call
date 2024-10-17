@@ -7,18 +7,22 @@ import { UnauthorizedComponent } from '@app/pages/unauthorized/unauthorized.comp
 import { embeddedGuard } from '@app/guards/embedded.guard';
 import { AppearanceComponent } from '@app/pages/console/appearance/appearance.component';
 import { RoomConfigComponent } from '@app/pages/console/room-config/room-config.component';
+import { nonEmbeddedGuard } from './guards/non-embedded.guard';
 export const routes: Routes = [
 	{ path: '', redirectTo: 'console', pathMatch: 'full' },
-	{ path: 'home', component: HomeComponent },
+	{ path: 'home', component: HomeComponent, canActivate: [nonEmbeddedGuard] },
 	{
 		path: 'console',
 		component: ConsoleComponent,
+		canActivate: [nonEmbeddedGuard],
 		children: [
 			{ path: 'appearance', component: AppearanceComponent },
 			{ path: 'room-config', component: RoomConfigComponent }
 		]
 	},
+	{ path: 'unauthorized', component: UnauthorizedComponent },
+	{ path: ':roomName', component: VideoRoomComponent, canActivate: [roomGuard] },
+	// Embedded mode
 	{ path: 'embedded', component: VideoRoomComponent, canActivate: [embeddedGuard] },
-	{ path: 'embedded/unauthorized', component: UnauthorizedComponent },
-	{ path: ':roomName', component: VideoRoomComponent, canActivate: [roomGuard] }
+	{ path: 'embedded/unauthorized', component: UnauthorizedComponent }
 ];

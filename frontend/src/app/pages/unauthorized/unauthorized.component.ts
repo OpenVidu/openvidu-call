@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'app-unauthorized',
@@ -16,6 +16,8 @@ export class UnauthorizedComponent implements OnInit {
 		this.route.queryParams.subscribe((params) => {
 			if (params['reason'] === 'no-token') {
 				this.message = 'No token provided';
+			} else if (params['reason'] === 'no-iframe') {
+				this.message = 'The page is not accessible directly. Please use the OpenVidu embedded';
 			}
 		});
 	}
