@@ -10,6 +10,10 @@ ARG BASE_HREF=/
 COPY --chown=node:node frontend/ ./
 
 RUN npm install && \
+	npm run lib:build && \
+	npm run lib:pack && \
+	mv dist/shared-call-components/shared-call-components-**.tgz . && \
+	npm install shared-call-components-**.tgz && \
     npm run build ${BASE_HREF}
 
 ### Stage 2: Build the backend
