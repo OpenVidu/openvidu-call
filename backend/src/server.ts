@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
-import { fileURLToPath } from 'url';
+import { sequelize, sequelizeSync } from './config/sequelize.js';
 import { indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
 import { apiRouter, livekitRouter } from './routes/index.js';
 import {
@@ -31,12 +31,14 @@ const createApp = () => {
 
 	// Enable CORS support
 	if (SERVER_CORS_ORIGIN) {
-		console.log('CORS Origin:', SERVER_CORS_ORIGIN);
 		app.use(cors({ origin: SERVER_CORS_ORIGIN }));
 	}
 
 	app.use(express.static(publicFilesPath));
 	app.use(express.json());
+
+	// Initialize Sequelize
+	sequelizeSync();
 
 	// Setup routes
 	app.use('/call/api', apiRouter);
@@ -60,6 +62,7 @@ const logEnvVars = () => {
 	console.log('OpenVidu Call Server Configuration');
 	console.log('---------------------------------------------------------');
 	console.log('SERVICE NAME ID: ', text(CALL_NAME_ID));
+	console.log('CORS ORIGIN:', text(SERVER_CORS_ORIGIN));
 	console.log('CALL LOG LEVEL: ', text(CALL_LOG_LEVEL));
 	console.log(
 		'CALL PRIVATE ACCESS: ',

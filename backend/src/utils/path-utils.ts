@@ -10,6 +10,4 @@ const srcPath = path.resolve(__dirname, '..');
 const publicFilesPath = path.join(srcPath, '../public/browser');
 const indexHtmlPath = path.join(publicFilesPath, 'index.html');
 
-
-
 export { srcPath, publicFilesPath, indexHtmlPath };

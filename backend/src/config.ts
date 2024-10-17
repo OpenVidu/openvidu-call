@@ -36,3 +36,12 @@ export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || 'minioadmin'
 export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || 'minioadmin';
 export const CALL_AWS_REGION = process.env.CALL_AWS_REGION || 'us-east-1';
 export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYLE_ACCESS || 'true';
+
+// Sequelize configuration
+export const DB_NAME = process.env.DB_NAME || 'openvidu';
+
+// 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle';
+export const DB_DIALECT = process.env.DB_DIALECT || 'mysql';
+export const DB_USER = process.env.DB_USER || 'admin';
+export const DB_PASSWORD = process.env.DB_PASSWORD || 'admin';
+export const DB_HOST = process.env.DB_HOST || 'localhost';

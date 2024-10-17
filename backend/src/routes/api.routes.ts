@@ -4,7 +4,7 @@ import * as roomCtrl from '../controllers/room.controller.js';
 import * as recordingCtrl from '../controllers/recording.controller.js';
 import * as broadcastCtrl from '../controllers/broadcasting.controller.js';
 import * as authCtrl from '../controllers/auth.controller.js';
-import { getConfig } from '../controllers/config.controller.js';
+import { getConfig, getGlobalPreferences, savePreferences } from '../controllers/global-preferences.controller.js';
 import { healthCheck } from '../controllers/healthcheck.controller.js';
 import { withAdminAndUserBasicAuth, withAdminBasicAuth, withUserBasicAuth } from '../services/auth.service.js';
 
@@ -35,8 +35,10 @@ apiRouter.post('/logout', authCtrl.logout);
 apiRouter.post('/admin/login', authCtrl.adminLogin);
 apiRouter.post('/admin/logout', authCtrl.adminLogout);
 
-// Config Routes
-apiRouter.get('/config', getConfig);
+// Global Preferences Routes
+apiRouter.post('/preferences', /*withAdminBasicAuth,*/ savePreferences);
+apiRouter.get('/preferences', /*withAdminBasicAuth,*/ getGlobalPreferences);
+apiRouter.get('/config', getConfig); // TODO: remove this route
 
 // Health Check Route
 apiRouter.get('/healthcheck', withAdminAndUserBasicAuth, healthCheck);
