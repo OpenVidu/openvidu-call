@@ -12,10 +12,10 @@ export class ConsoleComponent implements OnInit {
 	navLinks: ConsoleNavLink[] = [
 		{ label: 'Overview', route: '/', icon: 'dashboard' },
 		{ label: 'Appearance', route: 'appearance', icon: 'palette' },
-		{ label: 'Access & Permissions', route: 'access', icon: 'lock' },
+		{ label: 'Access & Permissions', route: 'access-permissions', icon: 'lock' },
 		{ label: 'Room Config', route: 'room-config', icon: 'video_settings' },
-		{ label: 'Security', route: 'security', icon: 'security' },
-		{ label: 'Integrations', route: 'integrations', icon: 'integration_instructions' },
+		{ label: 'Security (PRO)', route: 'security', icon: 'security' },
+		{ label: 'Integrations (PRO)', route: 'integrations', icon: 'integration_instructions' },
 		{ label: 'Support', route: 'support', icon: 'support' },
 		{ label: 'About', route: 'about', icon: 'info' }
 	];
