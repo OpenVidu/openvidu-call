@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-	selector: 'app-unauthorized',
+	selector: 'ov-unauthorized',
 	standalone: true,
 	imports: [],
 	templateUrl: './unauthorized.component.html',

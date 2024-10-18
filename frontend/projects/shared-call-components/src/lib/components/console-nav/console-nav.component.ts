@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { ConsoleNavLink } from '@lib/models/sidenav.model';
+import { ConsoleNavLink } from '../../models/sidenav.model';
 
 @Component({
 	selector: 'ov-console-nav',

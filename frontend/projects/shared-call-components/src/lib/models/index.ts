@@ -1,1 +1,1 @@
-export * from '@lib/models/sidenav.model';
+export * from './sidenav.model';
