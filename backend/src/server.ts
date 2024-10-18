@@ -22,7 +22,12 @@ import {
 	CALL_AWS_REGION,
 	CALL_LOG_LEVEL,
 	CALL_NAME_ID,
-	SERVER_CORS_ORIGIN
+	SERVER_CORS_ORIGIN,
+	DB_HOST,
+	DB_DIALECT,
+	DB_NAME,
+	DB_USER,
+	DB_PASSWORD
 } from './config.js';
 import { embeddedRouter } from './routes/embedded.routes.js';
 
@@ -91,6 +96,14 @@ const logEnvVars = () => {
 	console.log('CALL S3 ACCESS KEY:', credential('****' + CALL_S3_ACCESS_KEY.slice(-3)));
 	console.log('CALL S3 SECRET KEY:', credential('****' + CALL_S3_SECRET_KEY.slice(-3)));
 	console.log('CALL AWS REGION:', text(CALL_AWS_REGION));
+	console.log('---------------------------------------------------------');
+	console.log('Sequelize Configuration');
+	console.log('---------------------------------------------------------');
+	console.log('DB NAME:', text(DB_NAME));
+	console.log('BD DIALECT:', text(DB_DIALECT));
+	console.log('DB HOST:', text(DB_HOST));
+	console.log('DB USER:', credential('****' + DB_USER.slice(-3)));
+	console.log('DB PASSWORD:', credential('****' + DB_PASSWORD.slice(-3)));
 	console.log('---------------------------------------------------------');
 };
 
