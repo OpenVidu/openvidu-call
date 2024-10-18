@@ -18,30 +18,30 @@
 }
 
 .logo-container {
-	position: relative; // Para posicionar el icono de selección
+	position: relative;
 	border-radius: 4px;
 }
 
 .app-logo {
-	width: 64px; // Ajusta el tamaño del logo
-	height: 64px; // Ajusta el tamaño del logo
-	border-radius: 4px; // Opcional: para esquinas redondeadas
-	object-fit: cover; // Mantiene la proporción de la imagen
+	width: 64px;
+	height: 64px;
+	border-radius: 4px;
+	object-fit: contain;
 }
 
 .select-icon {
-	position: absolute; // Para que el icono se superponga al logo
-	top: 50%; // Centrado verticalmente
-	left: 50%; // Centrado horizontalmente
-	transform: translate(-50%, -50%); // Ajuste del centro
-	color: #673ab7; // Color del icono
-	font-size: 36px; // Tamaño del icono
-	opacity: 0; // Inicialmente oculto
-	transition: opacity 0.2s ease; // Transición suave
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #673ab7;
+	font-size: 36px;
+	opacity: 0;
+	transition: opacity 0.2s ease;
 }
 
 .logo-card:hover .select-icon {
-	opacity: 1; // Mostrar el icono al hacer hover
+	opacity: 1;
 }
 
 .text-container {
