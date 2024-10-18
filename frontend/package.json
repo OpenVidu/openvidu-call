@@ -14,7 +14,6 @@
     "jwt-decode": "^4.0.0",
     "openvidu-components-angular": "3.0.0-beta3",
     "rxjs": "7.8.1",
-    "shared-call-components": "file:shared-call-components-0.0.1.tgz",
     "tslib": "^2.3.0",
     "unique-names-generator": "^4.7.1",
     "zone.js": "0.14.10"
@@ -67,7 +66,7 @@
     "lib:serve": "ng build shared-call-components --watch",
     "lib:build": "ng build shared-call-components --configuration production",
     "lib:pack": "cd dist/shared-call-components && npm pack",
-    "lib:sync-call-pro": "rm -rf ../../openvidu-call-pro/frontend/node_modules/shared-call-components && cp dist/shared-call-components/shared-call-components-**.tgz ../../openvidu-call-pro/frontend && cd ../../openvidu-call-pro/frontend && npm install shared-call-components-**.tgz",
+    "lib:sync-call-pro": "npm run build && npm run pack && rm -rf ../../openvidu-call-pro/frontend/node_modules/shared-call-components && cp dist/shared-call-components/shared-call-components-**.tgz ../../openvidu-call-pro/frontend && cd ../../openvidu-call-pro/frontend && npm install shared-call-components-**.tgz",
     "test": "ng test openvidu-call --watch=false --code-coverage",
     "lint": "eslint src --fix",
     "format": "prettier --ignore-path ../gitignore . --write"
