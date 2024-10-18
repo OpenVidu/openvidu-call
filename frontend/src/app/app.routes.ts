@@ -3,11 +3,11 @@ import { HomeComponent } from '@app/pages/home/home.component';
 import { VideoRoomComponent } from '@app/pages/video-room/video-room.component';
 import { ConsoleComponent } from '@app/pages/console/console.component';
 import { roomGuard } from '@app/guards/room.guard';
-import { UnauthorizedComponent } from '@app/pages/unauthorized/unauthorized.component';
 import { embeddedGuard } from '@app/guards/embedded.guard';
 import { AppearanceComponent } from '@app/pages/console/appearance/appearance.component';
 import { RoomConfigComponent } from '@app/pages/console/room-config/room-config.component';
 import { nonEmbeddedGuard } from './guards/non-embedded.guard';
+import { UnauthorizedComponent } from 'shared-call-components';
 export const routes: Routes = [
 	{ path: '', redirectTo: 'console', pathMatch: 'full' },
 	{ path: 'home', component: HomeComponent, canActivate: [nonEmbeddedGuard] },
