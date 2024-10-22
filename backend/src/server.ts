@@ -107,7 +107,17 @@ const startServer = (app: express.Application) => {
  * @returns {boolean} True if this module is the main entry point, false otherwise.
  */
 const isMainModule = (): boolean => {
-	return import.meta.url === `file://${process.argv[1]}`;
+    const importMetaUrl = import.meta.url;
+    let processArgv1 = process.argv[1];
+
+    if (process.platform === "win32") {
+        processArgv1 = processArgv1.replace(/\\/g, "/");
+        processArgv1 = `file:///${processArgv1}`;
+    } else {
+        processArgv1 = `file://${processArgv1}`;
+    }
+
+    return importMetaUrl === processArgv1;
 };
 
 if (isMainModule()) {
