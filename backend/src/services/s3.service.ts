@@ -32,15 +32,24 @@ export class S3Service {
 	protected static instance: S3Service;
 
 	constructor() {
-		const config: S3ClientConfig = {
-			region: CALL_AWS_REGION,
-			credentials: {
+		const config: S3ClientConfig = {};
+
+		if (CALL_AWS_REGION) {
+			config.endpoint = CALL_S3_SERVICE_ENDPOINT;
+		}
+
+		if (CALL_S3_ACCESS_KEY && CALL_S3_SECRET_KEY) {
+			config.credentials = {
 				accessKeyId: CALL_S3_ACCESS_KEY,
 				secretAccessKey: CALL_S3_SECRET_KEY
-			},
-			endpoint: CALL_S3_SERVICE_ENDPOINT,
-			forcePathStyle: CALL_S3_WITH_PATH_STYLE_ACCESS === 'true'
-		};
+			};
+		}
+
+		if (CALL_S3_SERVICE_ENDPOINT) {
+			config.endpoint = CALL_S3_SERVICE_ENDPOINT;
+		}
+
+		config.forcePathStyle = CALL_S3_WITH_PATH_STYLE_ACCESS === 'true';
 
 		this.s3 = new S3Client(config);
 	}
