@@ -35,7 +35,7 @@ export class S3Service {
 		const config: S3ClientConfig = {};
 
 		if (CALL_AWS_REGION) {
-			config.endpoint = CALL_S3_SERVICE_ENDPOINT;
+			config.region = CALL_AWS_REGION;
 		}
 
 		if (CALL_S3_ACCESS_KEY && CALL_S3_SECRET_KEY) {
