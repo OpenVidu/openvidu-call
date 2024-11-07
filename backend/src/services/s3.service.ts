@@ -123,7 +123,14 @@ export class S3Service {
 	 */
 	async deleteObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
 		try {
-			this.logger.info(`Deleting object in S3: ${name}`);
+			const exists = await this.exists(name, bucket);
+
+			if (!exists) {
+				// Force the error to be thrown when the object does not exist
+				throw new Error(`Object '${name}' does not exist in S3`);
+			}
+
+			this.logger.verbose(`Deleting object in S3: ${name}`);
 			const command = new DeleteObjectCommand({ Bucket: bucket, Key: name });
 			return await this.run(command);
 		} catch (error) {
@@ -135,7 +142,7 @@ export class S3Service {
 	/**
 	 * Lists all objects in an S3 bucket with optional subbucket and search pattern filtering.
 	 *
-	 * @param {string} [subbucket=''] - The subbucket within the main bucket to list objects from.
+	 * @param {string} [directory=''] - The subbucket within the main bucket to list objects from.
 	 * @param {string} [searchPattern=''] - A regex pattern to filter the objects by their keys.
 	 * @param {string} [bucket=CALL_S3_BUCKET] - The name of the S3 bucket. Defaults to CALL_S3_BUCKET.
 	 * @param {number} [maxObjects=1000] - The maximum number of objects to retrieve in one request. Defaults to 1000.
@@ -143,12 +150,12 @@ export class S3Service {
 	 * @throws {Error} - Throws an error if there is an issue listing the objects.
 	 */
 	async listObjects(
-		subbucket = '',
+		directory = '',
 		searchPattern = '',
 		bucket: string = CALL_S3_BUCKET,
 		maxObjects = 1000
 	): Promise<ListObjectsV2CommandOutput> {
-		const prefix = subbucket ? `${subbucket}/` : '';
+		const prefix = directory ? `${directory}/` : '';
 		let allContents: _Object[] = [];
 		let continuationToken: string | undefined = undefined;
 		let isTruncated = true;

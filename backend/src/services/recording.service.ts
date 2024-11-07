@@ -19,7 +19,7 @@ import { DataTopic } from '../models/signal.model.js';
 import { LoggerService } from './logger.service.js';
 import { RecordingInfo, RecordingStatus } from '../models/recording.model.js';
 import { RecordingHelper } from '../helpers/recording.helper.js';
-import { CALL_S3_BUCKET } from '../config.js';
+import { CALL_S3_BUCKET, CALL_S3_PARENT_DIRECTORY, CALL_S3_RECORDING_DIRECTORY } from '../config.js';
 import { RoomService } from './room.service.js';
 
 export class RecordingService {
@@ -104,7 +104,8 @@ export class RecordingService {
 	async deleteRecording(egressId: string, isRequestedByAdmin: boolean): Promise<RecordingInfo> {
 		try {
 			// Get the recording object from the S3 bucket
-			const metadataObject = await this.s3Service.listObjects('.metadata', `.*${egressId}.*.json`);
+			const directory = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/.metadata`;
+			const metadataObject = await this.s3Service.listObjects(directory, `.*${egressId}.*.json`);
 
 			if (!metadataObject.Contents || metadataObject.Contents.length === 0) {
 				throw errorRecordingNotFound(egressId);
@@ -117,13 +118,15 @@ export class RecordingService {
 				throw errorRecordingNotStopped(egressId);
 			}
 
-			const recordingPath = RecordingHelper.extractFilename(recordingInfo);
+			const recordingFilename = RecordingHelper.extractFilename(recordingInfo);
 
-			if (!recordingPath) throw internalError(`Error extracting path from recording ${egressId}`);
+			if (!recordingFilename) throw internalError(`Error extracting path from recording ${egressId}`);
 
-			this.logger.info(`Deleting recording from S3 ${recordingPath}`);
+			const recordingPath = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/${recordingFilename}`;
 
 			await Promise.all([this.s3Service.deleteObject(metadataPath!), this.s3Service.deleteObject(recordingPath)]);
+
+			this.logger.info(`Recording ${egressId} deleted successfully`);
 
 			if (!isRequestedByAdmin) {
 				const signalOptions: SendDataOptions = {
@@ -146,7 +149,8 @@ export class RecordingService {
 	 */
 	async getAllRecordings(): Promise<{ recordingInfo: RecordingInfo[]; continuationToken?: string }> {
 		try {
-			const allEgress = await this.s3Service.listObjects('.metadata', '.json');
+			const directory = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/.metadata`;
+			const allEgress = await this.s3Service.listObjects(directory, '.json');
 			const promises: Promise<RecordingInfo>[] = [];
 
 			allEgress.Contents?.forEach((item) => {
@@ -177,7 +181,8 @@ export class RecordingService {
 			const roomIdSanitized = this.sanitizeRegExp(roomId);
 			// Match the room name and room ID in any order
 			const regexPattern = `${roomNameSanitized}.*${roomIdSanitized}|${roomIdSanitized}.*${roomNameSanitized}\\.json`;
-			const metadatagObject = await this.s3Service.listObjects('.metadata', regexPattern);
+			const directory = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/.metadata`;
+			const metadatagObject = await this.s3Service.listObjects(directory, regexPattern);
 
 			if (!metadatagObject.Contents || metadatagObject.Contents.length === 0) {
 				this.logger.verbose(`No recordings found for room ${roomName}. Returning an empty array.`);
@@ -199,7 +204,8 @@ export class RecordingService {
 	private async getRecording(egressId: string): Promise<RecordingInfo> {
 		const egressIdSanitized = this.sanitizeRegExp(egressId);
 		const regexPattern = `.*${egressIdSanitized}.*\\.json`;
-		const metadataObject = await this.s3Service.listObjects('.metadata', regexPattern);
+		const directory = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/.metadata`;
+		const metadataObject = await this.s3Service.listObjects(directory, regexPattern);
 
 		if (!metadataObject.Contents || metadataObject.Contents.length === 0) {
 			throw errorRecordingNotFound(egressId);
@@ -216,10 +222,11 @@ export class RecordingService {
 	): Promise<{ fileSize: number | undefined; fileStream: Readable; start?: number; end?: number }> {
 		const RECORDING_FILE_PORTION_SIZE = 5 * 1024 * 1024; // 5MB
 		const recordingInfo: RecordingInfo = await this.getRecording(recordingId);
-		const recordingPath = RecordingHelper.extractFilename(recordingInfo);
+		const recordingFilename = RecordingHelper.extractFilename(recordingInfo);
 
-		if (!recordingPath) throw new Error(`Error extracting path from recording ${recordingId}`);
+		if (!recordingFilename) throw new Error(`Error extracting path from recording ${recordingId}`);
 
+		const recordingPath = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/${recordingFilename}`;
 		const data = await this.s3Service.getHeaderObject(recordingPath);
 		const fileSize = data.ContentLength;
 
@@ -257,7 +264,7 @@ export class RecordingService {
 	 */
 	private generateFileOutputFromRequest(recordingId: string): EncodedFileOutput {
 		// Added unique identifier to the file path for avoiding overwriting
-		const filepath = `${recordingId}/${recordingId}-${Date.now()}`;
+		const filepath = `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/${recordingId}/${recordingId}-${Date.now()}`;
 
 		return new EncodedFileOutput({
 			fileType: EncodedFileType.DEFAULT_FILETYPE,

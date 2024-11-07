@@ -22,7 +22,9 @@ import {
 	CALL_AWS_REGION,
 	CALL_LOG_LEVEL,
 	CALL_NAME_ID,
-	SERVER_CORS_ORIGIN
+	SERVER_CORS_ORIGIN,
+	CALL_S3_PARENT_DIRECTORY,
+	CALL_S3_RECORDING_DIRECTORY
 } from './config.js';
 
 const createApp = () => {
@@ -85,6 +87,8 @@ const logEnvVars = () => {
 	console.log('S3 Configuration');
 	console.log('---------------------------------------------------------');
 	console.log('CALL S3 BUCKET:', text(CALL_S3_BUCKET));
+	console.log('CALL S3 DIRECTORY:', text(CALL_S3_PARENT_DIRECTORY));
+	console.log('CALL S3 RECORDING DIRECTORY:', text(`${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}`));
 
 	// S3 configuration
 	if (CALL_S3_SERVICE_ENDPOINT) {
@@ -121,17 +125,17 @@ const startServer = (app: express.Application) => {
  * @returns {boolean} True if this module is the main entry point, false otherwise.
  */
 const isMainModule = (): boolean => {
-    const importMetaUrl = import.meta.url;
-    let processArgv1 = process.argv[1];
+	const importMetaUrl = import.meta.url;
+	let processArgv1 = process.argv[1];
 
-    if (process.platform === "win32") {
-        processArgv1 = processArgv1.replace(/\\/g, "/");
-        processArgv1 = `file:///${processArgv1}`;
-    } else {
-        processArgv1 = `file://${processArgv1}`;
-    }
+	if (process.platform === 'win32') {
+		processArgv1 = processArgv1.replace(/\\/g, '/');
+		processArgv1 = `file:///${processArgv1}`;
+	} else {
+		processArgv1 = `file://${processArgv1}`;
+	}
 
-    return importMetaUrl === processArgv1;
+	return importMetaUrl === processArgv1;
 };
 
 if (isMainModule()) {

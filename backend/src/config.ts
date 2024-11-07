@@ -33,8 +33,12 @@ export const LIVEKIT_URL_PRIVATE = process.env.LIVEKIT_URL_PRIVATE || LIVEKIT_UR
 export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
 export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 
-// S3 configuration
+/* S3 configuration */
 export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
+// Parent directory inside the bucket
+export const CALL_S3_PARENT_DIRECTORY = process.env.CALL_S3_PARENT_DIRECTORY || 'openvidu-call';
+// Recording directory inside the parent directory
+export const CALL_S3_RECORDING_DIRECTORY = process.env.CALL_S3_RECORDING_FOLDER || 'recordings';
 export const CALL_S3_SERVICE_ENDPOINT = process.env.CALL_S3_SERVICE_ENDPOINT || undefined;
 export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || undefined;
 export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || undefined;

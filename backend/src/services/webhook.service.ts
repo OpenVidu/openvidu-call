@@ -5,7 +5,7 @@ import { DataTopic } from '../models/signal.model.js';
 import { LiveKitService } from './livekit.service.js';
 import { BroadcastingInfo, BroadcastingStatus } from '../models/broadcasting.model.js';
 import { RecordingInfo, RecordingStatus } from '../models/recording.model.js';
-import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET } from '../config.js';
+import { CALL_S3_PARENT_DIRECTORY, CALL_S3_RECORDING_DIRECTORY, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } from '../config.js';
 import { LoggerService } from './logger.service.js';
 import { RoomService } from './room.service.js';
 import { S3Service } from './s3.service.js';
@@ -180,6 +180,6 @@ export class WebhookService {
 		const metadataFilename = `${payload.roomName}-${payload.roomId}`;
 		const recordingFilename = payload.filename?.split('.')[0];
 		const egressId = payload.id;
-		return `.metadata/${metadataFilename}/${recordingFilename}_${egressId}.json`;
+		return `${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}/.metadata/${metadataFilename}/${recordingFilename}_${egressId}.json`;
 	}
 }
