@@ -1,5 +1,9 @@
 import dotenv from 'dotenv';
 
+if (process.env.NODE_ENV === 'development') {
+	dotenv.config({ path: 'development.env' });
+}
+
 if (process.env.CALL_CONFIG_DIR) {
 	dotenv.config({ path: process.env.CALL_CONFIG_DIR });
 } else {

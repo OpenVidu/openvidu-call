@@ -55,3 +55,4 @@ Thumbs.db
 
 
 backend/public/
+backend/development.env
