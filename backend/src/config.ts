@@ -44,3 +44,8 @@ export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || undefined;
 export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || undefined;
 export const CALL_AWS_REGION = process.env.CALL_AWS_REGION || undefined;
 export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYLE_ACCESS || 'true';
+
+// Deployment related configuration
+export const OPENVIDU_ENVIRONMENT = process.env.OPENVIDU_ENVIRONMENT || undefined;
+export const MODULE_NAME = process.env.MODULE_NAME || 'app';
+export const ENABLED_MODULES = process.env.ENABLED_MODULES || '';

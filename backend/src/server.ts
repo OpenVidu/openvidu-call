@@ -24,7 +24,10 @@ import {
 	CALL_NAME_ID,
 	SERVER_CORS_ORIGIN,
 	CALL_S3_PARENT_DIRECTORY,
-	CALL_S3_RECORDING_DIRECTORY
+	CALL_S3_RECORDING_DIRECTORY,
+	OPENVIDU_ENVIRONMENT,
+	ENABLED_MODULES,
+	MODULE_NAME,
 } from './config.js';
 
 const createApp = () => {
@@ -138,7 +141,20 @@ const isMainModule = (): boolean => {
 	return importMetaUrl === processArgv1;
 };
 
+const checkModuleIsEnabled = () => {
+	if (OPENVIDU_ENVIRONMENT) {
+		const moduleName = MODULE_NAME;
+		const enabledModules = ENABLED_MODULES.split(',').map((module) => module.trim());
+
+		if (!enabledModules.includes(moduleName)) {
+			console.error(`Module ${moduleName} is not enabled`);
+			process.exit(0);
+		}
+	}
+}
+
 if (isMainModule()) {
+	checkModuleIsEnabled();
 	const app = createApp();
 	startServer(app);
 }
