@@ -29,6 +29,15 @@ if [ -z "${CALL_CONFIG_DIR}" ]; then
     fi
 fi
 
+# If OPENVIDU_ENVIRONMENT is provided,
+# check if the module 'app' is enabled
+if [ -n "${OPENVIDU_ENVIRONMENT}" ]; then
+    if ! echo ",${ENABLED_MODULES:-}," | grep -q ",app,"; then
+        echo "The module 'app' is not enabled"
+        exit 0
+    fi
+fi
+
 
 cd /opt/openvidu-call || { echo "Can't cd into /opt/openvidu-call"; exit 1; }
 node dist/src/server.js &
