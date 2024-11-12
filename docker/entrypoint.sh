@@ -29,6 +29,11 @@ if [ -z "${CALL_CONFIG_DIR}" ]; then
     fi
 fi
 
+if [ -n "${MODULES_FILE}" ]; then
+    # shellcheck disable=SC1090
+    . "${MODULES_FILE}"
+fi
+
 cd /opt/openvidu-call || { echo "Can't cd into /opt/openvidu-call"; exit 1; }
 node dist/src/server.js &
 

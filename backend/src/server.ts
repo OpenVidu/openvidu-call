@@ -25,7 +25,7 @@ import {
 	SERVER_CORS_ORIGIN,
 	CALL_S3_PARENT_DIRECTORY,
 	CALL_S3_RECORDING_DIRECTORY,
-	OPENVIDU_ENVIRONMENT,
+	MODULES_FILE,
 	ENABLED_MODULES,
 	MODULE_NAME,
 } from './config.js';
@@ -142,7 +142,7 @@ const isMainModule = (): boolean => {
 };
 
 const checkModuleIsEnabled = () => {
-	if (OPENVIDU_ENVIRONMENT) {
+	if (MODULES_FILE) {
 		const moduleName = MODULE_NAME;
 		const enabledModules = ENABLED_MODULES.split(',').map((module) => module.trim());
 
