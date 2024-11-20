@@ -38,7 +38,7 @@ export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
 // Parent directory inside the bucket
 export const CALL_S3_PARENT_DIRECTORY = process.env.CALL_S3_PARENT_DIRECTORY || 'openvidu-call';
 // Recording directory inside the parent directory
-export const CALL_S3_RECORDING_DIRECTORY = process.env.CALL_S3_RECORDING_FOLDER || 'recordings';
+export const CALL_S3_RECORDING_DIRECTORY = process.env.CALL_S3_RECORDING_DIRECTORY || 'recordings';
 export const CALL_S3_SERVICE_ENDPOINT = process.env.CALL_S3_SERVICE_ENDPOINT || undefined;
 export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || undefined;
 export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || undefined;
