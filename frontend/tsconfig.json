@@ -13,7 +13,7 @@
 		"resolveJsonModule": true,
 		"target": "ES2022",
 		"typeRoots": ["node_modules/@types"],
-		"lib": ["es2017", "dom"],
+		"lib": ["es2021", "dom"],
 		"paths": {
 			"core-js/es7/reflect": ["./node_modules/core-js/proposals/reflect-metadata"],
 			"@app/*": ["src/app/*"],
