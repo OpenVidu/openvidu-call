@@ -33,7 +33,7 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 			return preferences as T;
 		} catch (error) {
 			this.handleError(error, 'Error initializing default preferences');
-			throw error;
+			return Promise.resolve({} as T);
 		}
 	}
 
