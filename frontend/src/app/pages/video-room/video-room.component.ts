@@ -14,11 +14,10 @@ import {
 import { HttpService } from '@services/http.service';
 
 @Component({
-	selector: 'app-video-room',
-	templateUrl: './video-room.component.html',
-	styleUrls: ['./video-room.component.scss'],
-	standalone: true,
-	imports: [OpenViduComponentsModule, ApiDirectiveModule, MatIcon]
+    selector: 'app-video-room',
+    templateUrl: './video-room.component.html',
+    styleUrls: ['./video-room.component.scss'],
+    imports: [OpenViduComponentsModule, ApiDirectiveModule, MatIcon]
 })
 export class VideoRoomComponent implements OnInit {
 	roomName = '';

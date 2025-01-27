@@ -25,11 +25,10 @@ import packageInfo from '../../../../package.json';
 import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
 
 @Component({
-	selector: 'app-home',
-	templateUrl: './home.component.html',
-	styleUrls: ['./home.component.scss'],
-	standalone: true,
-	imports: [MatToolbar, MatIconButton, MatTooltip, MatIcon, FormsModule, ReactiveFormsModule, NgClass, MatButton]
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    imports: [MatToolbar, MatIconButton, MatTooltip, MatIcon, FormsModule, ReactiveFormsModule, NgClass, MatButton]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 	roomForm: FormGroup;

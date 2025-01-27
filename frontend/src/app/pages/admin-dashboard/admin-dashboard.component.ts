@@ -4,11 +4,10 @@ import { StorageAppService } from '@services/storage.service';
 import { OpenViduComponentsModule, ApiDirectiveModule } from 'openvidu-components-angular';
 
 @Component({
-	selector: 'app-admin-dashboard',
-	templateUrl: './admin-dashboard.component.html',
-	styleUrls: ['./admin-dashboard.component.scss'],
-	standalone: true,
-	imports: [OpenViduComponentsModule, ApiDirectiveModule]
+    selector: 'app-admin-dashboard',
+    templateUrl: './admin-dashboard.component.html',
+    styleUrls: ['./admin-dashboard.component.scss'],
+    imports: [OpenViduComponentsModule, ApiDirectiveModule]
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
 	recordings = [];

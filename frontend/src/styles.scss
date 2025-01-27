@@ -1,10 +1,12 @@
 @use '@angular/material' as mat;
 @use './assets/styles/openvidu-theme.scss';
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 html {
-	@include mat.core-theme(openvidu-theme.$light-theme);
+	@include mat.elevation-classes();
+	@include mat.app-background();
 	@include mat.all-component-bases(openvidu-theme.$light-theme);
 	@include mat.all-component-colors(openvidu-theme.$light-theme);
 	@include mat.all-component-typographies(openvidu-theme.$light-theme);
