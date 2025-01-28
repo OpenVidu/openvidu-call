@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Build types library
 cd types
 npm install
