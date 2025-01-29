@@ -5,41 +5,34 @@
  * @module routes/embedded
  */
 
-import { Router } from 'express';
-import { swaggerUi, swaggerDocs } from '../config/swagger.js';
+import YAML from 'yamljs';
+import { NextFunction, Router, Response, Request } from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { generateToken } from '../controllers/embedded.controller.js';
+import * as OpenApiValidator from 'express-openapi-validator';
 
 const embeddedRouter = Router();
+
+const openapiSpec = YAML.load('src/config/openapi.yaml');
+// Validate incoming requests against the OpenAPI specification
+const openapiMiddlewareValidator = OpenApiValidator.middleware({
+	apiSpec: openapiSpec,
+	validateRequests: true,
+	validateResponses: true
+});
 
 /**
  * Serve Swagger documentation at /docs endpoint.
  */
-embeddedRouter.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+embeddedRouter.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 
-/**
- * @swagger
- * /embedded/api/example:
- *   get:
- *     summary: Example endpoint
- *     description: Returns a simple example response.
- *     responses:
- *       200:
- *         description: Successful response
- */
-embeddedRouter.get('/example', (req, res) => {
-	res.status(200).json({ message: 'Hello from the embedded API!' });
+embeddedRouter.post('/token', openapiMiddlewareValidator, generateToken);
+
+embeddedRouter.use((err: any, req: Request, res: Response, next: NextFunction) => {
+	// format error
+	res.status(err.status || 500).json({
+		message: err.message,
+		errors: err.errors
+	});
 });
-
-/**
- * @swagger
- * /embedded/api/token:
- *   post:
- *     summary: Generate token
- *     description: Generates a token for the embedded API.
- *     responses:
- *       200:
- *         description: Token generated successfully
- */
-embeddedRouter.post('/token', generateToken);
-
 export { embeddedRouter };

@@ -1,0 +1,66 @@
+openapi: 3.1.1
+info:
+    version: v1
+    title: OpenVidu Embedded API
+    description: 'OpenVidu Embedded API'
+    termsOfService: https://openvidu.io/conditions/terms-of-service/
+    contact:
+        name: OpenVidu
+        email: commercial@openvidu.io
+        url: https://openvidu.io/support/
+
+servers:
+    - url: http://localhost:6080
+      description: Development server
+
+tags:
+    - name: Auth
+      description: Endpoints for authentication and tokens
+
+paths:
+  /embedded/api/token:
+    post:
+      operationId: generateToken
+      summary: Generate an authentication token
+      description: Returns a JWT token for authentication.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:   # Ensure required fields are explicitly defined
+                - participantName
+                - roomName
+              properties:
+                participantName:
+                  type: string
+                  example: "participant123"
+                roomName:
+                  type: string
+                  example: "myRoom"
+      responses:
+        '200':
+          description: Token successfully generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid participantName or roomName"
+        '500':
+          description: Internal server error

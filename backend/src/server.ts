@@ -7,7 +7,6 @@ import { apiRouter, livekitRouter } from './routes/index.js';
 import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
 import { embeddedRouter } from './routes/embedded.routes.js';
 import { GlobalPreferencesService } from './services/index.js';
-import { swaggerDocs, swaggerUi } from './config/swagger.js';
 
 const createApp = () => {
 	const app = express();
@@ -24,7 +23,6 @@ const createApp = () => {
 	app.use('/call/api', apiRouter);
 	app.use('/embedded/api', embeddedRouter);
 	app.use('/livekit', livekitRouter);
-	app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
 		res.sendFile(indexHtmlPath);
 	});
@@ -38,7 +36,7 @@ const startServer = (app: express.Application) => {
 		console.log('---------------------------------------------------------');
 		console.log(' ');
 		console.log('OpenVidu Call Server is listening on port', chalk.cyanBright(SERVER_PORT));
-		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/api-docs`));
+		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/embedded/api/docs`));
 		logEnvVars();
 		container.resolve(GlobalPreferencesService).ensurePreferencesInitialized();
 	});

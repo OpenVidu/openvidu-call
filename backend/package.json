@@ -36,6 +36,7 @@
 		"dotenv": "16.4.5",
 		"express": "4.21.0",
 		"express-basic-auth": "1.2.1",
+		"express-openapi-validator": "^5.4.2",
 		"express-rate-limit": "^7.4.1",
 		"inversify": "^6.2.1",
 		"ioredis": "^5.4.2",
@@ -43,7 +44,8 @@
 		"reflect-metadata": "^0.2.2",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-express": "^5.0.1",
-		"winston": "3.14.2"
+		"winston": "3.14.2",
+		"yamljs": "^0.3.0"
 	},
 	"devDependencies": {
 		"@types/chai": "4.3.19",
@@ -54,6 +56,7 @@
 		"@types/swagger-jsdoc": "^6.0.4",
 		"@types/swagger-ui-express": "^4.1.6",
 		"@types/validator": "^13.12.2",
+		"@types/yamljs": "^0.2.34",
 		"@typescript-eslint/eslint-plugin": "6.7.5",
 		"@typescript-eslint/parser": "6.7.5",
 		"chai": "4.3.10",
