@@ -29,7 +29,6 @@ embeddedRouter.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 embeddedRouter.post('/token', openapiMiddlewareValidator, generateToken);
 
 embeddedRouter.use((err: any, req: Request, res: Response, next: NextFunction) => {
-	// format error
 	res.status(err.status || 500).json({
 		message: err.message,
 		errors: err.errors

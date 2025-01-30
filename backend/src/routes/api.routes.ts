@@ -70,4 +70,4 @@ apiRouter.get('/preferences/appearance', /*withAdminAndUserBasicAuth*/ getAppear
 apiRouter.get('/config', getConfig); // TODO: remove this route
 
 // Health Check Route
-apiRouter.get('/healthcheck', withAdminAndUserBasicAuth, healthCheck);
+apiRouter.get('/health', /*withAdminAndUserBasicAuth,*/ healthCheck);
