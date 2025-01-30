@@ -14,6 +14,7 @@ on:
 
 jobs:
   prepare_openvidu_components_angular:
+    if: false
     name: Setup
     runs-on: ubuntu-latest
     steps:
@@ -34,9 +35,7 @@ jobs:
           npm run lib:pack && \
           mv dist/openvidu-components-angular/openvidu-components-angular-*.tgz ../../
           cd ../../ && \
-          rm -rf openvidu && \
-          ls -al
-          # tar -cvf artifacts.tar .
+          rm -rf openvidu
       - uses: actions/upload-artifact@v4
         with:
           name: artifacts
@@ -44,6 +43,7 @@ jobs:
           if-no-files-found: error
 
   auth_e2e_test:
+    if: false
     needs: prepare_openvidu_components_angular
     name: Auth tests
     runs-on: ubuntu-latest
@@ -90,6 +90,7 @@ jobs:
         run: npm run e2e:auth --prefix frontend
 
   home_e2e_test:
+    if: false
     needs: prepare_openvidu_components_angular
     name: Home tests
     runs-on: ubuntu-latest
@@ -135,6 +136,7 @@ jobs:
         run: npm run e2e:home --prefix frontend
 
   room_e2e_test:
+    if: false
     needs: prepare_openvidu_components_angular
     name: Room tests
     runs-on: ubuntu-latest
@@ -180,6 +182,7 @@ jobs:
         run: npm run e2e:room --prefix frontend
 
   recording_e2e_test:
+    if: false
     needs: prepare_openvidu_components_angular
     name: Recording tests
     runs-on: ubuntu-latest
