@@ -28,7 +28,7 @@
 		"format": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'",
 		"package": "npm run build && npm pack",
 		"lib:sync-call-pro": "npm run package && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
-		"test:api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts"
+		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.673.0",

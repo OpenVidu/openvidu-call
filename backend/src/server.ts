@@ -1,5 +1,5 @@
 import { registerDependencies, container } from './config/dependency-injector.config.js';
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Express } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
 import { indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
@@ -9,7 +9,7 @@ import { embeddedRouter } from './routes/embedded.routes.js';
 import { GlobalPreferencesService } from './services/index.js';
 
 const createApp = () => {
-	const app = express();
+	const app: Express = express();
 
 	// Enable CORS support
 	if (SERVER_CORS_ORIGIN) {
@@ -30,15 +30,20 @@ const createApp = () => {
 	return app;
 };
 
+const initializeGlobalPreferences = async () => {
+	const globalPreferencesService = container.get(GlobalPreferencesService);
+	await globalPreferencesService.ensurePreferencesInitialized();
+};
+
 const startServer = (app: express.Application) => {
-	app.listen(SERVER_PORT, () => {
+	app.listen(SERVER_PORT, async () => {
 		console.log(' ');
 		console.log('---------------------------------------------------------');
 		console.log(' ');
 		console.log('OpenVidu Call Server is listening on port', chalk.cyanBright(SERVER_PORT));
 		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/embedded/api/docs`));
 		logEnvVars();
-		container.resolve(GlobalPreferencesService).ensurePreferencesInitialized();
+		await initializeGlobalPreferences();
 	});
 };
 
@@ -65,3 +70,5 @@ if (isMainModule()) {
 	const app = createApp();
 	startServer(app);
 }
+
+export { registerDependencies, createApp, initializeGlobalPreferences };
