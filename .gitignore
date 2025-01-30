@@ -27,12 +27,6 @@ speed-measure-plugin*.json
 *.sublime-workspace
 
 # IDE - VSCode
-*.vscode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 .history/*
 
 # misc
@@ -59,3 +53,4 @@ backend/public/
 frontend/projects/shared-call-components/src/lib/typings/
 
 backend/src/typings/
+**/*/coverage
