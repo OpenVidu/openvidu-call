@@ -13,7 +13,7 @@ import * as OpenApiValidator from 'express-openapi-validator';
 
 const embeddedRouter = Router();
 
-const openapiSpec = YAML.load('src/config/openapi.yaml');
+const openapiSpec = YAML.load('openapi/embedded-api.yaml');
 // Validate incoming requests against the OpenAPI specification
 const openapiMiddlewareValidator = OpenApiValidator.middleware({
 	apiSpec: openapiSpec,

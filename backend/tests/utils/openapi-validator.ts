@@ -1,18 +1,19 @@
 import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
 import YAML from 'yamljs';
 
 // Load OpenAPI spec
-const openapiSpec = YAML.load('./src/config/openapi.yaml');
+const openapiSpec = YAML.load('openapi/embedded-api.yaml');
 
-const ajv = new Ajv({ allErrors: true });
-addFormats(ajv);
+const ajv = new Ajv({
+	strict: false, // Allow keywords for validation
+	removeAdditional: "failing" // Remove additional properties when validation fails
+  });
+
 
 /**
  * Validates a response against the OpenAPI schema.
  */
 export const validateResponse = (response: any, path: string, method: string): boolean => {
-	return true
 	const methodSchema = openapiSpec.paths[path]?.[method];
 
 	if (!methodSchema || !methodSchema.responses[response.status]) {
@@ -27,11 +28,10 @@ export const validateResponse = (response: any, path: string, method: string): b
 		return false;
 	}
 
-	const validate = ajv.compile(responseSchema);
-	const isValid = validate(response.body);
+	const isValid = ajv.validate(responseSchema, response.body);
 
 	if (!isValid) {
-		console.error(`Validation errors:`, validate.errors);
+		console.error(`Validation errors:`, ajv.errors);
 	}
 
 	return isValid;
