@@ -10,12 +10,6 @@ export const generateToken = async (req: Request, res: Response) => {
 	try {
 		const tokenOptions: TokenOptions = req.body;
 		const { participantName, roomName } = tokenOptions;
-		logger.verbose(`Token generation request received: ${JSON.stringify(req.body)}`);
-
-		if (!participantName || !roomName) {
-			logger.error('Parameters participantName and roomName are required');
-			return res.status(400).json({ error: 'Parameters participantName and roomName are required' });
-		}
 
 		logger.verbose(`Generating token for ${participantName} in room ${roomName}`);
 		const livekitService = container.get(LiveKitService);
