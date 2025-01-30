@@ -42,11 +42,38 @@ jobs:
           path: ${{ github.workspace }}/**.tgz
           if-no-files-found: error
 
-
   backend_embedded_auth_tests:
     name: Embedded Auth API
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout OpenVidu Local Deployment
+        uses: actions/checkout@v4
+        with:
+          repository: OpenVidu/openvidu-local-deployment
+          ref: development
+          path: openvidu-local-deployment
+
+      - name: Configure Local Deployment
+        shell: bash
+        run: |
+          cd openvidu-local-deployment/community
+          ./configure_lan_private_ip_linux.sh
+          docker compose up -d
+      - name: Wait for OpenVidu Local Deployment to Start
+        shell: bash
+        run: |
+          MAX_WAIT_SECONDS=60
+          SECONDS=0
+          until curl -s -f -o /dev/null http://localhost:7880; do
+          if [ $SECONDS -gt $MAX_WAIT_SECONDS ]; then
+              echo "OpenVidu Local Deployment did not start in $MAX_WAIT_SECONDS seconds"
+              exit 1
+          fi
+          echo "Waiting for openvidu-local-deployment to be ready ..."
+          sleep 5
+          SECONDS=$((SECONDS+5))
+          done
+          echo "OpenVidu Local Deployment started in $SECONDS seconds"
       - uses: actions/checkout@v4
         with:
           ref: next
