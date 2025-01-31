@@ -7,6 +7,7 @@ import { apiRouter, livekitRouter } from './routes/index.js';
 import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
 import { embeddedRouter } from './routes/embedded.routes.js';
 import { GlobalPreferencesService } from './services/index.js';
+import { mediaTypeValidatorMiddleware } from './middlewares/content-type.middleware.js';
 
 const createApp = () => {
 	const app: Express = express();
@@ -21,10 +22,13 @@ const createApp = () => {
 
 	// Setup routes
 	app.use('/call/api', apiRouter);
-	app.use('/embedded/api', embeddedRouter);
+	app.use('/v1/embedded/api', mediaTypeValidatorMiddleware, embeddedRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
 		res.sendFile(indexHtmlPath);
+	});
+	app.use((req: Request, res: Response) => {
+		res.status(404).json({ error: 'Not found' });
 	});
 
 	return app;
@@ -41,7 +45,7 @@ const startServer = (app: express.Application) => {
 		console.log('---------------------------------------------------------');
 		console.log(' ');
 		console.log('OpenVidu Call Server is listening on port', chalk.cyanBright(SERVER_PORT));
-		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/embedded/api/docs`));
+		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/v1/embedded/api/docs`));
 		logEnvVars();
 		await initializeGlobalPreferences();
 	});

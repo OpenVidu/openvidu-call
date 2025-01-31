@@ -6,20 +6,14 @@
  */
 
 import YAML from 'yamljs';
-import { NextFunction, Router, Response, Request } from 'express';
+import { Router, Response, Request, NextFunction } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { generateToken } from '../controllers/embedded.controller.js';
-import * as OpenApiValidator from 'express-openapi-validator';
+import { openapiMiddlewareValidator } from '../middlewares/openapi.middleware.js';
 
 const embeddedRouter = Router();
 
 const openapiSpec = YAML.load('openapi/embedded-api.yaml');
-// Validate incoming requests against the OpenAPI specification
-const openapiMiddlewareValidator = OpenApiValidator.middleware({
-	apiSpec: openapiSpec,
-	validateRequests: true,
-	validateResponses: true
-});
 
 /**
  * Serve Swagger documentation at /docs endpoint.
@@ -34,4 +28,5 @@ embeddedRouter.use((err: any, req: Request, res: Response, next: NextFunction) =
 		errors: err.errors
 	});
 });
+
 export { embeddedRouter };

@@ -60,7 +60,6 @@
 		"@types/yamljs": "^0.2.34",
 		"@typescript-eslint/eslint-plugin": "6.7.5",
 		"@typescript-eslint/parser": "6.7.5",
-		"ajv": "^8.17.1",
 		"cross-env": "7.0.3",
 		"eslint": "8.50.0",
 		"eslint-config-prettier": "9.0.0",

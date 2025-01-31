@@ -10,7 +10,7 @@ info:
         url: https://openvidu.io/support/
 
 servers:
-    - url: http://localhost:6080
+    - url: http://localhost:6080/v1
       description: Development server
 
 tags:
@@ -30,17 +30,8 @@ paths:
                 content:
                     application/json:
                         schema:
-                            type: object
-                            required: # Ensure required fields are explicitly defined
-                                - participantName
-                                - roomName
-                            properties:
-                                participantName:
-                                    type: string
-                                    example: 'participant123'
-                                roomName:
-                                    type: string
-                                    example: 'myRoom'
+                            $ref: '#/components/schemas/TokenOptions'
+
             responses:
                 '200':
                     description: Token successfully generated
@@ -57,25 +48,56 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: 'Invalid participantName or roomName'
+                                $ref: "#/components/schemas/Error"
                 '415':
                     description: 'Unsupported Media Type'
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    errors:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                message:
-                                                    type: string
-                                                    example: 'unsupported media type'
+                                $ref: "#/components/schemas/Error"
                 '500':
                     description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+
+components:
+    schemas:
+        TokenOptions:
+            type: object
+            required:
+                - participantName
+                - roomName
+            properties:
+                participantName:
+                    type: string
+                    example: 'participant123'
+                    description: 'The name of the participant.'
+                roomName:
+                    type: string
+                    example: 'myRoom'
+                    description: 'The name of the room the participant will join.'
+                permissions:
+                    type: object
+                    description: 'Optional permissions for the participant.'
+                    properties:
+                        canRecord:
+                            type: boolean
+                            example: true
+                            description: 'If true, the participant can record the session.'
+                        canChat:
+                            type: boolean
+                            example: true
+                            description: 'If true, the participant can chat in the session.'
+        Error:
+            type: object
+            required:
+                - code
+                - message
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string
