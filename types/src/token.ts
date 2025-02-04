@@ -1,13 +1,26 @@
-// export interface OpenViduDecodedToken {
-// 	metadata: string;
-// 	video: VideoGrant;
-// }
-export interface TokenOptions {
+/**
+ * Options for creating an embedded token.
+ */
+export interface EmbeddedTokenOptions {
+	/**
+	 * The name of the room to join.
+	 */
 	roomName: string;
+
+	/**
+	 * The name of the participant.
+	 */
 	participantName: string;
-	permissions?: OpenViduPermissions;
+
+	/**
+	 * Optional permissions for the participant.
+	 */
+	permissions?: EmbeddedParticipantPermissions;
 }
-export interface OpenViduPermissions {
+/**
+ * Interface representing the permissions of an embedded participant.
+ */
+export interface EmbeddedParticipantPermissions {
 	canRecord: boolean;
 	canChat: boolean;
 }

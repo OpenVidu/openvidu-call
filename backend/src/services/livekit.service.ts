@@ -14,7 +14,7 @@ import {
 import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, LIVEKIT_URL_PRIVATE } from '../environment.js';
 import { LoggerService } from './logger.service.js';
 import { errorLivekitIsNotAvailable, errorParticipantAlreadyExists, internalError } from '../models/error.model.js';
-import { TokenOptions } from '@typings-ce';
+import { EmbeddedTokenOptions } from '@typings-ce';
 
 @injectable()
 export class LiveKitService {
@@ -27,8 +27,15 @@ export class LiveKitService {
 		this.roomClient = new RoomServiceClient(livekitUrlHostname, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
 	}
 
-	async generateToken(options: TokenOptions): Promise<string> {
-		const { roomName, participantName } = options;
+	async generateToken(options: EmbeddedTokenOptions): Promise<string> {
+		const { roomName, participantName, permissions } = options;
+
+		if (!permissions) {
+			options.permissions = {
+				canRecord: false,
+				canChat: false
+			};
+		}
 
 		try {
 			if (await this.participantAlreadyExists(roomName, participantName)) {
@@ -50,7 +57,7 @@ export class LiveKitService {
 				permissions: options.permissions
 			})
 		});
-		const permissions: VideoGrant = {
+		const lkPermissions: VideoGrant = {
 			room: roomName,
 			roomCreate: true,
 			roomJoin: true,
@@ -66,7 +73,7 @@ export class LiveKitService {
 			recorder: false,
 			agent: false
 		};
-		at.addGrant(permissions);
+		at.addGrant(lkPermissions);
 		return at.toJwt();
 	}
 

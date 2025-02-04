@@ -4,14 +4,12 @@ import { LiveKitService } from '../services/livekit.service.js';
 import { LoggerService } from '../services/logger.service.js';
 import { OpenViduCallError } from '../models/error.model.js';
 import { RoomService } from '../services/room.service.js';
-import { TokenOptions } from '@typings-ce';
-
-// const logger = LoggerService.getInstance();
+import { EmbeddedTokenOptions } from '@typings-ce';
 
 export const createRoom = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
-	const tokenOptions: TokenOptions = req.body;
+	const tokenOptions: EmbeddedTokenOptions = req.body;
 	const { participantName, roomName } = tokenOptions;
 
 	try {
