@@ -14,8 +14,8 @@ servers:
       description: Development server
 
 tags:
-    - name: Auth
-      description: Endpoints for authentication and tokens
+    - name: EmbeddedAuth
+      description: Endpoints for generating authentication tokens for embedded sessions
 
 paths:
     /embedded/api/token:
@@ -24,13 +24,13 @@ paths:
             summary: Generate an authentication token
             description: Returns a JWT token for authentication.
             tags:
-                - Auth
+                - EmbeddedAuth
             requestBody:
                 required: true
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/TokenOptions'
+                            $ref: '#/components/schemas/EmbeddedTokenOptions'
 
             responses:
                 '200':
@@ -48,23 +48,34 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Error"
+                                $ref: '#/components/schemas/Error'
                 '415':
                     description: 'Unsupported Media Type'
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Error"
+                                $ref: '#/components/schemas/Error'
                 '500':
                     description: Internal server error
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Error"
+                                $ref: '#/components/schemas/Error'
 
 components:
     schemas:
-        TokenOptions:
+        EmbeddedParticipantPermissions:
+            type: object
+            properties:
+                canRecord:
+                    type: boolean
+                    example: true
+                    description: 'If true, the participant can record the session.'
+                canChat:
+                    type: boolean
+                    example: true
+                    description: 'If true, the participant can chat in the session.'
+        EmbeddedTokenOptions:
             type: object
             required:
                 - participantName
@@ -79,17 +90,7 @@ components:
                     example: 'myRoom'
                     description: 'The name of the room the participant will join.'
                 permissions:
-                    type: object
-                    description: 'Optional permissions for the participant.'
-                    properties:
-                        canRecord:
-                            type: boolean
-                            example: true
-                            description: 'If true, the participant can record the session.'
-                        canChat:
-                            type: boolean
-                            example: true
-                            description: 'If true, the participant can chat in the session.'
+                    $ref: '#/components/schemas/EmbeddedParticipantPermissions'
         Error:
             type: object
             required:
