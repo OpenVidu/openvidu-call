@@ -3,11 +3,18 @@
 	"version": "1.0.0",
 	"description": "A TypeScript client for OpenVidu Embedded API",
 	"main": "dist/npm/index.js",
+	"files": [
+		"dist/npm",
+		"package.json",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
+		"clean": "rm -rf dist",
 		"compile:npm": "tsup --config tsup.config.npm.ts",
 		"compile:browser": "tsup --config tsup.config.browser.ts",
-		"package": "npm run compile:npm && npm pack",
-		"bundle": "npm run compile:browser"
+		"package": "npm run clean && npm run compile:npm && npm pack",
+		"bundle": "npm run clean && npm run compile:browser"
 	},
 	"license": "Apache-2.0",
 	"dependencies": {
