@@ -5,13 +5,13 @@ type EmbeddedTokenOptions = {
 	/**
 	 * The name of the participant.
 	 *
-	 * @example "participant123"
+	 * @example "OpenVidu"
 	 */
 	participantName: string;
 	/**
 	 * The name of the room the participant will join.
 	 *
-	 * @example "myRoom"
+	 * @example "OpenViduEmbedded"
 	 */
 	roomName: string;
 	permissions?: EmbeddedParticipantPermissions | undefined;
@@ -21,18 +21,20 @@ type EmbeddedParticipantPermissions = Partial<{
 	 * If true, the participant can record the session.
 	 *
 	 * @example true
+	 * @default true
 	 */
 	canRecord: boolean;
 	/**
 	 * If true, the participant can chat in the session.
 	 *
 	 * @example true
+	 * @default true
 	 */
 	canChat: boolean;
 }>;
 
 const EmbeddedParticipantPermissions: z.ZodType<EmbeddedParticipantPermissions> = z
-	.object({ canRecord: z.boolean(), canChat: z.boolean() })
+	.object({ canRecord: z.boolean().default(true), canChat: z.boolean().default(true) })
 	.partial()
 	.strict()
 	.passthrough();
@@ -57,11 +59,11 @@ const endpoints = makeApi([
 		method: 'post',
 		path: '/embedded/api/token',
 		alias: 'generateToken',
-		description: `Returns a JWT token for authentication.`,
 		requestFormat: 'json',
 		parameters: [
 			{
 				name: 'body',
+				description: `Options for generating a token`,
 				type: 'Body',
 				schema: EmbeddedTokenOptions
 			}
