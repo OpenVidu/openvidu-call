@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: commercial@openvidu.io
+    name: OpenVidu
+    url: https://openvidu.io/support/
+  description: OpenVidu Embedded API
+  termsOfService: https://openvidu.io/conditions/terms-of-service/
+  title: OpenVidu Embedded API
+  version: v1
+servers:
+- description: Development server
+  url: http://localhost:6080/v1
+tags:
+- description: Endpoints for generating authentication tokens for embedded sessions
+  name: EmbeddedAuth
+paths:
+  /embedded/api/token:
+    post:
+      operationId: generateToken
+      requestBody:
+        $ref: '#/components/requestBodies/EmbeddedTokenOptions'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/generateToken_200_response'
+          description: Token successfully generated
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Generate an embedded authentication token
+      tags:
+      - EmbeddedAuth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  requestBodies:
+    EmbeddedTokenOptions:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmbeddedTokenOptions'
+      description: Options for generating a token
+  schemas:
+    EmbeddedTokenOptions:
+      example:
+        permissions:
+          canRecord: true
+          canChat: true
+        participantName: OpenVidu
+        roomName: OpenViduEmbedded
+      properties:
+        participantName:
+          description: The name of the participant.
+          example: OpenVidu
+          type: string
+        roomName:
+          description: The name of the room the participant will join.
+          example: OpenViduEmbedded
+          type: string
+        permissions:
+          $ref: '#/components/schemas/EmbeddedParticipantPermissions'
+      required:
+      - participantName
+      - roomName
+      type: object
+    EmbeddedParticipantPermissions:
+      example:
+        canRecord: true
+        canChat: true
+      properties:
+        canRecord:
+          default: true
+          description: "If true, the participant can record the session."
+          example: true
+          type: boolean
+        canChat:
+          default: true
+          description: "If true, the participant can chat in the session."
+          example: true
+          type: boolean
+      type: object
+    Error:
+      example:
+        code: 0
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    generateToken_200_response:
+      example:
+        token: eyJhbGciOiJIUzI1...
+      properties:
+        token:
+          example: eyJhbGciOiJIUzI1...
+          type: string
+      type: object
+

@@ -29,7 +29,8 @@
 		"package": "npm run build && npm pack",
 		"lib:sync-call-pro": "npm run package && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
 		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts",
-		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts"
+		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts",
+		"generate:embedded-java-client": "node scripts/generate-embedded-client.js java"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.673.0",
@@ -50,6 +51,7 @@
 		"yamljs": "^0.3.0"
 	},
 	"devDependencies": {
+		"@openapitools/openapi-generator-cli": "^2.16.3",
 		"@types/cookie-parser": "1.4.7",
 		"@types/cors": "2.8.17",
 		"@types/express": "4.17.21",

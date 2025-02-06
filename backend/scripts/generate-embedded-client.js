@@ -14,18 +14,25 @@ const LANGUAGE = args[0];
 
 switch (LANGUAGE) {
 	case 'ts': {
-		const CLIENT_DIR = '../sdk/client-ts/src/client';
+		const CLIENT_OUTPUT_DIR = '../sdk/client-ts/src/client';
 		const INDEX_FILE = '../sdk/client-ts/src/index.ts';
 		const MARKER = '// --- BEGIN TYPES EXPORTS ---';
 		console.log('Generating TypeScript client...');
 
 		try {
 			// Remove old TypeScript files
-			execSync(`rm -rf ${CLIENT_DIR}/**/*.ts`);
+			execSync(`rm -rf ${CLIENT_OUTPUT_DIR}/**/*.ts`);
 
 			// Generate new client using openapi-zod-client
 			execSync(
-				`npx openapi-zod-client 'openapi/embedded-api.yaml' -p .prettierrc --with-docs=true --strict-objects --export-schemas --export-types --group-strategy=none --output ${CLIENT_DIR}/embedded-api.ts`
+				`npx openapi-zod-client 'openapi/embedded-api.yaml' \
+				-p .prettierrc \
+				--with-docs=true \
+				--strict-objects \
+				--export-schemas \
+				--export-types \
+				--group-strategy=none \
+				--output ${CLIENT_OUTPUT_DIR}/embedded-api.ts`
 			);
 		} catch (error) {
 			console.error('Error generating TypeScript client:', error);
@@ -48,7 +55,7 @@ switch (LANGUAGE) {
 		indexFileContent += `${MARKER}\n`;
 
 		// Extract the types from the generated client
-		const generatedClientFile = `${CLIENT_DIR}/embedded-api.ts`;
+		const generatedClientFile = `${CLIENT_OUTPUT_DIR}/embedded-api.ts`;
 		const schemasMatch = fs.readFileSync(generatedClientFile, 'utf-8').match(/schemas\s*=\s*\{\s*([^}]*)\}/);
 
 		if (!schemasMatch) {
@@ -70,12 +77,52 @@ switch (LANGUAGE) {
 		const exportTypes = schemas
 			.map((schema) => `export type ${schema} = z.infer<typeof schemas.${schema}>;`)
 			.join('\n');
-		indexFileContent += exportTypes + '\n'; // Append types after the marker
+		indexFileContent += exportTypes + '\n';
 
 		// Write the updated content back to the index file
 		fs.writeFileSync(INDEX_FILE, indexFileContent);
 
 		console.log('TypeScript client generated at sdk/client-ts/');
+
+		break;
+	}
+
+	case 'java': {
+		try {
+			const CLIENT_OUTPUT_DIR = '../sdk/client-java';
+
+			// Remove old Embedded Java client
+			execSync(`rm -rf ${CLIENT_OUTPUT_DIR}`);
+			const additionalProperties = [
+				'developerEmail=commercial@openvidu.io',
+				'developerName=OpenVidu',
+				'developerOrganization=openvidu.io',
+				'developerOrganizationUrl=https://openvidu.io',
+				'licenseName=Apache-2.0',
+				'annotationLibrary=swagger2',
+				'library=restclient'
+			].join(',');
+			execSync(`
+				npx openapi-generator-cli generate \
+				-g java \
+				-i openapi/embedded-api.yaml \
+				-o ${CLIENT_OUTPUT_DIR} \
+				--api-package io.openvidu.embedded.api \
+				--model-package io.openvidu.embedded.model \
+				--invoker-package io.openvidu.embedded.invoker \
+				--package-name io.openvidu.embedded \
+				--http-user-agent OpenViduEmbeddedJavaClient \
+				--group-id io.openvidu \
+				--artifact-id openvidu-embedded-client \
+				--artifact-version 1.0.0 \
+				--additional-properties ${additionalProperties}
+
+
+			`);
+		} catch (error) {
+			console.error('Error generating Java client:', error);
+			process.exit(1);
+		}
 
 		break;
 	}

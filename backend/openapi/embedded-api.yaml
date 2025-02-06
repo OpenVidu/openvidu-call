@@ -21,16 +21,12 @@ paths:
     /embedded/api/token:
         post:
             operationId: generateToken
-            summary: Generate an authentication token
-            description: Returns a JWT token for authentication.
+            summary: Generate an embedded authentication token
+            # description: Returns a JWT token for authentication.
             tags:
                 - EmbeddedAuth
             requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/EmbeddedTokenOptions'
+                $ref: '#/components/requestBodies/EmbeddedTokenOptions'
 
             responses:
                 '200':
@@ -63,18 +59,15 @@ paths:
                                 $ref: '#/components/schemas/Error'
 
 components:
+    requestBodies:
+        EmbeddedTokenOptions:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/EmbeddedTokenOptions'
+            description: Options for generating a token
+
     schemas:
-        EmbeddedParticipantPermissions:
-            type: object
-            properties:
-                canRecord:
-                    type: boolean
-                    example: true
-                    description: 'If true, the participant can record the session.'
-                canChat:
-                    type: boolean
-                    example: true
-                    description: 'If true, the participant can chat in the session.'
         EmbeddedTokenOptions:
             type: object
             required:
@@ -83,14 +76,27 @@ components:
             properties:
                 participantName:
                     type: string
-                    example: 'participant123'
+                    example: 'OpenVidu'
                     description: 'The name of the participant.'
                 roomName:
                     type: string
-                    example: 'myRoom'
+                    example: 'OpenViduEmbedded'
                     description: 'The name of the room the participant will join.'
                 permissions:
                     $ref: '#/components/schemas/EmbeddedParticipantPermissions'
+        EmbeddedParticipantPermissions:
+            type: object
+            properties:
+                canRecord:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: 'If true, the participant can record the session.'
+                canChat:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: 'If true, the participant can chat in the session.'
         Error:
             type: object
             required:
