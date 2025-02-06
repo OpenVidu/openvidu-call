@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   EmbeddedTokenOptions.JSON_PROPERTY_ROOM_NAME,
   EmbeddedTokenOptions.JSON_PROPERTY_PERMISSIONS
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T14:33:32.619759274+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T16:34:25.888068618+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
 public class EmbeddedTokenOptions {
   public static final String JSON_PROPERTY_PARTICIPANT_NAME = "participantName";
   @jakarta.annotation.Nonnull

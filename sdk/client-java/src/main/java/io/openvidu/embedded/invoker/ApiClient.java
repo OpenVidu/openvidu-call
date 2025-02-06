@@ -56,7 +56,7 @@ import io.openvidu.embedded.invoker.auth.HttpBasicAuth;
 import io.openvidu.embedded.invoker.auth.HttpBearerAuth;
 import io.openvidu.embedded.invoker.auth.ApiKeyAuth;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T14:33:32.619759274+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T16:34:25.888068618+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
 public class ApiClient extends JavaTimeFormatter {
     public enum CollectionFormat {
         CSV(","), TSV("\t"), SSV(" "), PIPES("|"), MULTI(null);
@@ -74,7 +74,7 @@ public class ApiClient extends JavaTimeFormatter {
     private final HttpHeaders defaultHeaders = new HttpHeaders();
     private final MultiValueMap<String, String> defaultCookies = new LinkedMultiValueMap<>();
 
-    private String basePath = "http://localhost:6080/v1";
+    private String basePath = "http://localhost:6080/v1/embedded/api";
 
     private final RestClient restClient;
     private final DateFormat dateFormat;

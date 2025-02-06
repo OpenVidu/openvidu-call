@@ -1,10 +1,10 @@
 # EmbeddedAuthApi
 
-All URIs are relative to *http://localhost:6080/v1*
+All URIs are relative to *http://localhost:6080/v1/embedded/api*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**generateToken**](EmbeddedAuthApi.md#generateToken) | **POST** /embedded/api/token | Generate an embedded authentication token |
+| [**generateToken**](EmbeddedAuthApi.md#generateToken) | **POST** /token | Generate an embedded authentication token |
 
 
 
@@ -27,7 +27,7 @@ import io.openvidu.embedded.api.EmbeddedAuthApi;
 public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
-        defaultClient.setBasePath("http://localhost:6080/v1");
+        defaultClient.setBasePath("http://localhost:6080/v1/embedded/api");
 
         EmbeddedAuthApi apiInstance = new EmbeddedAuthApi(defaultClient);
         EmbeddedTokenOptions embeddedTokenOptions = new EmbeddedTokenOptions(); // EmbeddedTokenOptions | Options for generating a token

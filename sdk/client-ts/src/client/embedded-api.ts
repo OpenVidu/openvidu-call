@@ -57,7 +57,7 @@ export const schemas = {
 const endpoints = makeApi([
 	{
 		method: 'post',
-		path: '/embedded/api/token',
+		path: '/token',
 		alias: 'generateToken',
 		requestFormat: 'json',
 		parameters: [

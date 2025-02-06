@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
   EmbeddedParticipantPermissions.JSON_PROPERTY_CAN_RECORD,
   EmbeddedParticipantPermissions.JSON_PROPERTY_CAN_CHAT
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T14:33:32.619759274+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-06T16:34:25.888068618+01:00[Europe/Madrid]", comments = "Generator version: 7.11.0")
 public class EmbeddedParticipantPermissions {
   public static final String JSON_PROPERTY_CAN_RECORD = "canRecord";
   @jakarta.annotation.Nullable

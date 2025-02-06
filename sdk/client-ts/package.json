@@ -1,5 +1,5 @@
 {
-	"name": "openvidu-embedded-client-ts",
+	"name": "openvidu-embedded-ts-client",
 	"version": "1.0.0",
 	"description": "A TypeScript client for OpenVidu Embedded API",
 	"main": "dist/npm/index.js",

@@ -29,6 +29,7 @@
 		"package": "npm run build && npm pack",
 		"lib:sync-call-pro": "npm run package && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
 		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts",
+		"generate:embedded-clients": "node scripts/generate-embedded-client.js all",
 		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts",
 		"generate:embedded-java-client": "node scripts/generate-embedded-client.js java"
 	},

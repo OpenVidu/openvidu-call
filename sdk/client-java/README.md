@@ -4,7 +4,7 @@ OpenVidu Embedded API
 
 - API version: v1
 
-- Build date: 2025-02-06T14:33:32.619759274+01:00[Europe/Madrid]
+- Build date: 2025-02-06T16:34:25.888068618+01:00[Europe/Madrid]
 
 - Generator version: 7.11.0
 
@@ -93,7 +93,7 @@ public class EmbeddedAuthApiExample {
 
     public static void main(String[] args) {
         ApiClient defaultClient = new ApiClient();
-        defaultClient.setBasePath("http://localhost:6080/v1");
+        defaultClient.setBasePath("http://localhost:6080/v1/embedded/api");
         
         EmbeddedAuthApi apiInstance = new EmbeddedAuthApi(defaultClient);
         EmbeddedTokenOptions embeddedTokenOptions = new EmbeddedTokenOptions(); // EmbeddedTokenOptions | Options for generating a token
@@ -114,11 +114,11 @@ public class EmbeddedAuthApiExample {
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:6080/v1*
+All URIs are relative to *http://localhost:6080/v1/embedded/api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*EmbeddedAuthApi* | [**generateToken**](docs/EmbeddedAuthApi.md#generateToken) | **POST** /embedded/api/token | Generate an embedded authentication token
+*EmbeddedAuthApi* | [**generateToken**](docs/EmbeddedAuthApi.md#generateToken) | **POST** /token | Generate an embedded authentication token
 
 
 ## Documentation for Models

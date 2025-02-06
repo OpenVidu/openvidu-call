@@ -10,12 +10,12 @@ info:
   version: v1
 servers:
 - description: Development server
-  url: http://localhost:6080/v1
+  url: http://localhost:6080/v1/embedded/api
 tags:
 - description: Endpoints for generating authentication tokens for embedded sessions
   name: EmbeddedAuth
 paths:
-  /embedded/api/token:
+  /token:
     post:
       operationId: generateToken
       requestBody:
