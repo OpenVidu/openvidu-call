@@ -8,7 +8,7 @@ For running the frontend you need to have installed [Node.js](https://nodejs.org
 
 ```bash
 npm install
-dev:start
+start:dev
 ```
 
 This will start the frontend in development mode. The server will listen on port 5080.
@@ -19,7 +19,7 @@ For building the frontend you can run the following command:
 
 ```bash
 npm install
-npm run build
+npm run build:prod
 ```
 
 

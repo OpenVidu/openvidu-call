@@ -11,7 +11,7 @@ cd ..
 # Build backend
 cd backend
 npm install
-npm run build
+npm run build:prod
 cd ..
 
 # Build frontend

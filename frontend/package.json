@@ -53,23 +53,27 @@
   "name": "openvidu-call",
   "private": true,
   "scripts": {
-    "dev:start": "ng serve --configuration development --port=5080 --host=0.0.0.0",
-    "dev:build": "./node_modules/@angular/cli/bin/ng.js build --output-path ../backend/public/",
-    "install:lib": "npm run lib:build && npm run lib:pack && npm install ../shared-call-components/dist/shared-call-components/shared-call-components-**.tgz",
-    "build": "func() { ./node_modules/@angular/cli/bin/ng.js build --configuration production --base-href=\"${1:-/}\"; }; func",
-    "build-and-copy": "npm run build && mkdir -p ../backend/dist/public && cp -r dist/openvidu-call/* ../backend/dist/public",
-    "e2e:all": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/**/*.test.js",
-    "e2e:home": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/home.test.js",
-    "e2e:room": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/room.test.js",
-    "e2e:recordings": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/recording.test.js",
-    "e2e:auth": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/auth.test.js",
+    "start:dev": "ng serve --configuration development --port=5080 --host=0.0.0.0",
+    "build:dev": "./node_modules/@angular/cli/bin/ng.js build --output-path ../backend/public/",
+    "install:libs": "npm run lib:build && npm run lib:pack && npm install ../shared-call-components/dist/shared-call-components/shared-call-components-**.tgz",
+
+    "build:prod": "func() { ./node_modules/@angular/cli/bin/ng.js build --configuration production --base-href=\"${1:-/}\"; }; func",
+    "sync:backend": "npm run build:prod && mkdir -p ../backend/dist/public && cp -r dist/openvidu-call/* ../backend/dist/public",
+
+    "e2e:run-all": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/**/*.test.js",
+    "e2e:run-home": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/home.test.js",
+    "e2e:run-room": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/room.test.js",
+    "e2e:run-recordings": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/recording.test.js",
+    "e2e:run-auth": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/auth.test.js",
+
     "lib:serve": "ng build shared-call-components --watch",
     "lib:build": "ng build shared-call-components --configuration production",
     "lib:pack": "cd dist/shared-call-components && npm pack",
-    "lib:sync-call-pro": "npm run lib:build && npm run lib:pack && cp dist/shared-call-components/shared-call-components-**.tgz ../../openvidu-call-pro/frontend",
-    "test": "ng test openvidu-call --watch=false --code-coverage",
-    "lint": "eslint src --fix",
-    "format": "prettier --ignore-path ../gitignore . --write"
+    "lib:sync-pro": "npm run lib:build && npm run lib:pack && cp dist/shared-call-components/shared-call-components-**.tgz ../../openvidu-call-pro/frontend",
+
+    "test:unit": "ng test openvidu-call --watch=false --code-coverage",
+    "lint:fix": "eslint src --fix",
+    "format:code": "prettier --ignore-path ../gitignore . --write"
   },
   "version": "3.0.0-beta3"
 }

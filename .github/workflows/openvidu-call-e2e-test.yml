@@ -117,8 +117,8 @@ jobs:
         run: |
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
-          npm run build --prefix backend && \
-          npm run build --prefix frontend && \
+          npm run build:prod --prefix backend && \
+          npm run build:prod --prefix frontend && \
           mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
@@ -134,7 +134,7 @@ jobs:
       - name: Run tests
         env:
           LAUNCH_MODE: CI
-        run: npm run e2e:auth --prefix frontend
+        run: npm run e2e:run-auth --prefix frontend
 
   home_e2e_test:
     if: false
@@ -164,8 +164,8 @@ jobs:
         run: |
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
-          npm run build --prefix backend && \
-          npm run build --prefix frontend && \
+          npm run build:prod --prefix backend && \
+          npm run build:prod --prefix frontend && \
           mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
@@ -180,7 +180,7 @@ jobs:
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:home --prefix frontend
+        run: npm run e2e:run-home --prefix frontend
 
   room_e2e_test:
     if: false
@@ -210,8 +210,8 @@ jobs:
         run: |
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
-          npm run build --prefix backend && \
-          npm run build --prefix frontend && \
+          npm run build:prod --prefix backend && \
+          npm run build:prod --prefix frontend && \
           mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
@@ -226,7 +226,7 @@ jobs:
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:room --prefix frontend
+        run: npm run e2e:run-room --prefix frontend
 
   recording_e2e_test:
     if: false
@@ -256,8 +256,8 @@ jobs:
         run: |
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
-          npm run build --prefix backend && \
-          npm run build --prefix frontend && \
+          npm run build:prod --prefix backend && \
+          npm run build:prod --prefix frontend && \
           mv frontend/dist/openvidu-call/ backend/dist/public/
 
       - name: Wait for openvidu-local-deployment
@@ -272,4 +272,4 @@ jobs:
         env:
           LAUNCH_MODE: CI
           CALL_PRIVATE_ACCESS: false
-        run: npm run e2e:recordings --prefix frontend
+        run: npm run e2e:run-recordings --prefix frontend

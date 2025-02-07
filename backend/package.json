@@ -21,17 +21,17 @@
 	"types": "dist/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
-		"start": "node dist/src/server.js",
-		"dev:start": "cross-env USE_HTTPS=false SERVER_CORS_ORIGIN=* nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
-		"lint": "eslint src --fix",
-		"format": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'",
-		"package": "npm run build && npm pack",
-		"lib:sync-call-pro": "npm run package && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
+		"build:prod": "tsc",
+		"start:prod": "node dist/src/server.js",
+		"start:dev": "cross-env USE_HTTPS=false SERVER_CORS_ORIGIN=* nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
+		"package:build": "npm run build:prod && npm pack",
+		"lib:sync-pro": "npm run package:build && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
 		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts",
 		"generate:embedded-clients": "node scripts/generate-embedded-client.js all",
 		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts",
-		"generate:embedded-java-client": "node scripts/generate-embedded-client.js java"
+		"generate:embedded-java-client": "node scripts/generate-embedded-client.js java",
+		"lint:fix": "eslint src --fix",
+		"format:code": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.673.0",

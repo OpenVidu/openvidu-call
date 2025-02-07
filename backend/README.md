@@ -8,7 +8,7 @@ For running the backend you need to have installed [Node.js](https://nodejs.org/
 
 ```bash
 npm install
-npm run dev:start
+npm run start:dev
 ```
 
 This will start the backend in development mode. The server will listen on port 6080.
@@ -20,5 +20,5 @@ For building the backend you can run the following command:
 
 ```bash
 npm install
-npm run build
+npm run build:prod
 ```

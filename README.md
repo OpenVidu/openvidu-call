@@ -139,7 +139,7 @@ cd openvidu-call
 
 ```bash
 cd backend && \
-npm run dev:start
+npm run start:dev
 ```
 
 **4. Start the Frontend**
@@ -148,7 +148,7 @@ Opening a new tab, under root directory:
 
 ```bash
 cd frontend && \
-npm run dev:start
+npm run start:dev
 ```
 
 After running these commands, you can access the frontend application at [http://localhost:5080](http://localhost:5080).

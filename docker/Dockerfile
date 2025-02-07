@@ -8,7 +8,7 @@ WORKDIR /app/call-common-types
 COPY --chown=node:node types/ ./
 
 RUN npm install && \
-	npm run build && \
+	npm run build:prod && \
 	npm pack && \
 	rm -rf node_modules dist
 
@@ -30,7 +30,7 @@ RUN npm install && \
 	npm run lib:pack && \
 	mv dist/shared-call-components/shared-call-components-**.tgz . && \
 	npm install shared-call-components-**.tgz && \
-    npm run build ${BASE_HREF}
+    npm run build:prod ${BASE_HREF}
 
 ### Stage 2: Build the backend
 FROM node:20 as build-backend
@@ -51,7 +51,7 @@ RUN mkdir -p /app/backend/dist/src && chown -R node:node /app/backend/dist
 # Copy static files from the frontend build
 COPY --from=build-frontend /app/frontend/dist/openvidu-call /app/backend/dist/public
 
-RUN npm run build
+RUN npm run build:prod
 
 
 ### Stage 3: Final production image
