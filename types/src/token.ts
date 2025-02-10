@@ -23,4 +23,5 @@ export interface EmbeddedTokenOptions {
 export interface EmbeddedParticipantPermissions {
 	canRecord: boolean;
 	canChat: boolean;
+	//TODO: Add more permissions as needed
 }

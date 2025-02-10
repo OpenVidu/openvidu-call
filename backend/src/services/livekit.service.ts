@@ -30,13 +30,6 @@ export class LiveKitService {
 	async generateToken(options: EmbeddedTokenOptions): Promise<string> {
 		const { roomName, participantName, permissions } = options;
 
-		if (!permissions) {
-			options.permissions = {
-				canRecord: false,
-				canChat: false
-			};
-		}
-
 		try {
 			if (await this.participantAlreadyExists(roomName, participantName)) {
 				this.logger.error(`Participant ${participantName} already exists in room ${roomName}`);
@@ -54,7 +47,7 @@ export class LiveKitService {
 			name: participantName,
 			metadata: JSON.stringify({
 				livekitUrl: LIVEKIT_URL,
-				permissions: options.permissions
+				permissions
 			})
 		});
 		const lkPermissions: VideoGrant = {

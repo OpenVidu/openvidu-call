@@ -9,11 +9,19 @@ export const generateToken = async (req: Request, res: Response) => {
 
 	try {
 		const tokenOptions: EmbeddedTokenOptions = req.body;
-		const { participantName, roomName } = tokenOptions;
+		const { participantName, roomName, permissions } = tokenOptions;
 
 		logger.verbose(`Generating token for ${participantName} in room ${roomName}`);
-		//TODO: Create a new service Embedded service for specific embedded operations
 		const livekitService = container.get(LiveKitService);
+
+		//TODO: Create a new service Embedded service for specific embedded operations
+		if (!permissions) {
+			tokenOptions.permissions = {
+				canRecord: true,
+				canChat: true
+			};
+		}
+
 		const token = await livekitService.generateToken(tokenOptions);
 
 		return res.status(200).json({ token });
