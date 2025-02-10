@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
 export const mediaTypeValidatorMiddleware = (req: Request, res: Response, next: NextFunction) => {
+	if (req.method === 'GET') {
+		return next();
+	}
+
 	const supportedMediaTypes = ['application/json'];
 	const contentType = req.headers['content-type'];
 
