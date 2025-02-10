@@ -7,6 +7,65 @@ export class OpenViduCallPO {
 
 	constructor(private browser: WebDriver) {}
 
+	async createIframe(url: string): Promise<void> {
+		await this.browser.executeScript(
+			`const iframe = document.createElement('iframe');
+			iframe.id = 'test-iframe';
+			iframe.style.width = '100%';
+			iframe.style.height = '500px';
+			iframe.src = '${url}';
+			iframe.allow = 'camera; microphone; display-capture; fullscreen';
+			iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
+
+			document.body.appendChild(iframe);`
+		);
+	}
+
+	async waitForIframe(): Promise<void> {
+		await this.browser.wait(
+			until.elementLocated(By.id('test-iframe')),
+			this.TIMEOUT,
+			'Time out waiting for iframe',
+			this.POLL_TIMEOUT
+		);
+	}
+
+	async switchToIframe(): Promise<void> {
+		const iframe = await this.browser.findElement(By.id('test-iframe'));
+		await this.browser.switchTo().frame(iframe);
+	}
+
+	async buildIframeAndSwitch(url: string): Promise<void> {
+		await this.createIframe(url);
+		await this.waitForIframe();
+		await this.switchToIframe();
+	}
+
+	async removeIframe(): Promise<void> {
+		await this.browser.executeScript(`document.getElementById('test-iframe')?.remove();`);
+	}
+
+	async getJWTToken(roomName = 'TestRoom', participantName = 'TestParticipant'): Promise<string> {
+		const token = await fetch('http://localhost:6080/v1/embedded/api/token', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				roomName,
+				participantName
+			})
+		});
+
+		const tokenJson: any = await token.json();
+		console.log(tokenJson);
+		return tokenJson.token;
+	}
+
+	async getExpiredJWTToken(): Promise<string> {
+		return 'eyJhbGciOiJIUzI1NiJ9.eyJtZXRhZGF0YSI6IntcImxpdmVraXRVcmxcIjpcIndzOi8vbG9jYWxob3N0Ojc4ODBcIixcInBlcm1pc3Npb25zXCI6e1wiY2FuUmVjb3JkXCI6dHJ1ZSxcImNhbkNoYXRcIjp0cnVlfX0iLCJuYW1lIjoiVGVzdFBhcnRpY2lwYW50IiwidmlkZW8iOnsicm9vbSI6IlRlc3RSb29tIiwicm9vbUNyZWF0ZSI6dHJ1ZSwicm9vbUpvaW4iOnRydWUsInJvb21MaXN0Ijp0cnVlLCJyb29tUmVjb3JkIjp0cnVlLCJyb29tQWRtaW4iOnRydWUsImluZ3Jlc3NBZG1pbiI6ZmFsc2UsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZSwiY2FuUHVibGlzaERhdGEiOnRydWUsImNhblVwZGF0ZU93bk1ldGFkYXRhIjpmYWxzZSwiaGlkZGVuIjpmYWxzZSwicmVjb3JkZXIiOmZhbHNlLCJhZ2VudCI6ZmFsc2V9LCJpc3MiOiJkZXZrZXkiLCJleHAiOjE3MzkyMDA0OTMsIm5iZiI6MCwic3ViIjoiVGVzdFBhcnRpY2lwYW50In0.7BEE9sdDrkG2VtEkmlJtAfH1YAnOHprBd2HyBLyu8TY';
+	}
+
 	async waitForElement(selector: string): Promise<WebElement> {
 		return await this.browser.wait(
 			until.elementLocated(By.css(selector)),
@@ -82,7 +141,7 @@ export class OpenViduCallPO {
 		await this.clickOn('#join-btn');
 	}
 
-	async joinSession(): Promise<void> {
+	async joinRoom(): Promise<void> {
 		await this.waitForElement('#join-button');
 		await this.clickOn('#join-button');
 	}
@@ -90,6 +149,11 @@ export class OpenViduCallPO {
 	async leaveRoom(): Promise<void> {
 		await this.waitForElement('#leave-btn');
 		await this.clickOn('#leave-btn');
+	}
+
+	async getRoomName(): Promise<string> {
+		const element = await this.waitForElement('#session-name');
+		return element.getText();
 	}
 
 	async openTab(url: string): Promise<string[]> {

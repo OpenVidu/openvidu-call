@@ -41,7 +41,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 	});
@@ -51,7 +51,7 @@ describe('Testing Room', () => {
 		await browser.get(fixedUrl);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 
@@ -59,7 +59,7 @@ describe('Testing Room', () => {
 		await browser.switchTo().window(tabs[1]);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.waitForElement('.error');
 		expect(await utils.isPresent('.error')).to.be.true;
@@ -71,7 +71,7 @@ describe('Testing Room', () => {
 
 		await utils.checkPrejoinIsPresent();
 
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.waitForElement('#local-element-camera');
 		const localVideo = await utils.waitForElement('.OV_video-element');
@@ -83,7 +83,7 @@ describe('Testing Room', () => {
 		await browser.switchTo().window(tabs[1]);
 		await utils.checkPrejoinIsPresent();
 		await utils.sendKeys('#name-input', 'participant2');
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		// check if second tab received the remote video
 		await utils.waitForElement('#local-element-camera');
@@ -102,7 +102,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 		await utils.checkPrejoinIsPresent();
 
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 		await utils.checkLayoutIsPresent();
@@ -132,7 +132,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 		await utils.checkLayoutIsPresent();
@@ -147,7 +147,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.waitForElement('#chat-panel-btn');
 		await utils.clickOn('#chat-panel-btn');
@@ -165,7 +165,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.waitForElement('#activities-panel-btn');
 		await utils.clickOn('#activities-panel-btn');
@@ -178,7 +178,7 @@ describe('Testing Room', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 

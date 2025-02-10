@@ -23,7 +23,7 @@ describe('Testing recordings', () => {
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
-		await utils.joinSession();
+		await utils.joinRoom();
 
 		await utils.checkToolbarIsPresent();
 
