@@ -45,6 +45,7 @@ export class LiveKitService {
 		const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
 			identity: participantName,
 			name: participantName,
+			ttl: '24h',
 			metadata: JSON.stringify({
 				livekitUrl: LIVEKIT_URL,
 				permissions
