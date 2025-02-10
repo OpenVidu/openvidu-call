@@ -60,7 +60,7 @@ standaloneRouter.post('/admin/login', loginLimiter, authCtrl.adminLogin);
 standaloneRouter.post('/admin/logout', authCtrl.adminLogout);
 
 // Global Preferences Routes
-// apiRouter.get('/preferences', /*withAdminBasicAuth,*/ getGlobalPreferences);
+// standaloneRouter.get('/preferences', /*withAdminBasicAuth,*/ getGlobalPreferences);
 
 standaloneRouter.put('/preferences/room', /*withAdminBasicAuth,*/ updateRoomPreferences);
 standaloneRouter.get('/preferences/room', /*withAdminBasicAuth,*/ getRoomPreferences);

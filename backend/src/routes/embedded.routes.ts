@@ -10,10 +10,11 @@ import { Router, Response, Request, NextFunction } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { generateToken } from '../controllers/embedded.controller.js';
 import { openapiMiddlewareValidator } from '../middlewares/openapi.middleware.js';
+import { getOpenApiSpecPath } from '../utils/path-utils.js';
 
 const embeddedRouter = Router();
 
-const openapiSpec = YAML.load('openapi/embedded-api.yaml');
+const openapiSpec = YAML.load(getOpenApiSpecPath());
 
 /**
  * Serve Swagger documentation at /docs endpoint.
