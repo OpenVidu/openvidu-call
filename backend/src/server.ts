@@ -3,7 +3,7 @@ import express, { Request, Response, Express } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
 import { indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
-import { apiRouter, livekitRouter } from './routes/index.js';
+import { standaloneRouter, livekitRouter } from './routes/index.js';
 import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
 import { embeddedRouter } from './routes/embedded.routes.js';
 import { GlobalPreferencesService } from './services/index.js';
@@ -21,7 +21,7 @@ const createApp = () => {
 	app.use(express.json());
 
 	// Setup routes
-	app.use('/call/api', apiRouter);
+	app.use('/call/api', standaloneRouter);
 	app.use('/v1/embedded/api', mediaTypeValidatorMiddleware, embeddedRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
