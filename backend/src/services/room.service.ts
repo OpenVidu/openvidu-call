@@ -25,7 +25,7 @@ export class RoomService {
 				createdBy: CALL_NAME_ID
 			})
 			// emptyTimeout: 315360000,
-			// departureTimeout: 1 // Close the room almost immediately after the last participant leaves for emulating the OV2 behavior
+			// departureTimeout: 1
 		};
 
 		return this.roomClient.createRoom(roomOptions);
