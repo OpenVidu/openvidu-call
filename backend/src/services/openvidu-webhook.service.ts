@@ -2,6 +2,7 @@ import { inject, injectable } from '../config/dependency-injector.config.js';
 import { Room } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
 import { CALL_WEBHOOK_URL } from '../environment.js';
+import { OpenViduWebhookEvent } from '../models/webhook.model.js';
 
 @injectable()
 export class OpenViduWebhookService {
@@ -17,7 +18,7 @@ export class OpenViduWebhookService {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					event: 'room_finished',
+					event: OpenViduWebhookEvent.ROOM_FINISHED,
 					room: {
 						name: room.name
 					}
@@ -30,7 +31,6 @@ export class OpenViduWebhookService {
 
 	private async fetchWithRetry(url: string, options: RequestInit, retries = 5, delay = 300): Promise<void> {
 		try {
-			// Try to fetch the URL
 			const response = await fetch(url, options);
 
 			if (!response.ok) {
