@@ -10,9 +10,9 @@ import {
 	AboutComponent,
 	SecurityPreferencesComponent,
 	OverviewComponent,
-	embeddedGuard,
-	nonEmbeddedGuard,
-	standardGuard,
+	embeddedModeGuard,
+	standaloneModeGuard,
+	ensureValidTokenOrRoomNameGuard,
 	VideoRoomComponent,
 	ConsoleLoginComponent
 } from 'shared-call-components';
@@ -21,17 +21,17 @@ export const routes: Routes = [
 	{
 		path: 'embedded',
 		component: VideoRoomComponent,
-		canActivate: [embeddedGuard]
+		canActivate: [embeddedModeGuard]
 	},
 	{ path: 'embedded/unauthorized', component: UnauthorizedComponent },
 
-	{ path: '', redirectTo: 'console', pathMatch: 'full' },
-	{ path: 'home', component: HomeComponent, canActivate: [nonEmbeddedGuard] },
-	{path: 'login', component: ConsoleLoginComponent},
+	{ path: '', component: VideoRoomComponent, canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard] },
+	{ path: 'home', component: HomeComponent, canActivate: [standaloneModeGuard] },
+	{ path: 'login', component: ConsoleLoginComponent },
 	{
 		path: 'console',
 		component: ConsoleComponent,
-		canActivate: [nonEmbeddedGuard, /* checkAdminTokenGuard */],
+		canActivate: [standaloneModeGuard /* checkAdminTokenGuard */],
 		children: [
 			{ path: '', redirectTo: 'overview', pathMatch: 'full' },
 			{ path: 'overview', component: OverviewComponent },
@@ -39,11 +39,12 @@ export const routes: Routes = [
 			{ path: 'appearance', component: AppearanceComponent },
 			{ path: 'room-preferences', component: RoomPreferencesComponent },
 			{ path: 'security-preferences', component: SecurityPreferencesComponent },
-			{ path: 'about', component: AboutComponent }
+			{ path: 'about', component: AboutComponent },
+			{ path: '**', redirectTo: 'overview' }
 		]
 	},
-	{ path: ':roomName', component: VideoRoomComponent, canActivate: [standardGuard, nonEmbeddedGuard] },
 	{ path: 'unauthorized', component: UnauthorizedComponent },
+	{ path: ':roomName', component: VideoRoomComponent, canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard] },
 
 	// Redirect all other routes to home
 	{ path: '**', redirectTo: 'home' }

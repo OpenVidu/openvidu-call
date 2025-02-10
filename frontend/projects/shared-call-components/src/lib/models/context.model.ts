@@ -9,8 +9,8 @@ export interface ContextData {
 
 export enum ApplicationMode {
 	EMBEDDED = 'embedded',
-	STANDARD = 'standard',
-	STANDARD_WITH_TOKEN = 'standard_with_token'
+	STANDALONE = 'standalone',
+	STANDALONE_WITH_TOKEN = 'standalone_with_token'
 }
 
 export enum Edition {

@@ -1,7 +1,8 @@
-@if (!serverError) {
+@if (!serverError && !loading) {
 	<ov-videoconference
 		[token]="token"
 		[tokenError]="serverError"
+		[participantName]="participantName"
 		[prejoin]="featureFlags.showPrejoin"
 		[toolbarChatPanelButton]="featureFlags.showChat"
 		[toolbarRecordingButton]="featureFlags.showRecording"

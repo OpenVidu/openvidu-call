@@ -16,7 +16,7 @@ export class ContextService {
 		participantName: '',
 		token: '',
 		decodedToken: {},
-		mode: ApplicationMode.STANDARD,
+		mode: ApplicationMode.STANDALONE,
 		edition: Edition.CE
 	};
 
@@ -33,8 +33,8 @@ export class ContextService {
 	}
 
 	/**
-	 * Sets the embedded mode of the application.
-	 * @param isEmbedded - A boolean indicating whether the application is in embedded mode.
+	 * Sets the application mode.
+	 * @param mode - An ApplicationMode value representing the application mode.
 	 */
 	setApplicationMode(mode: ApplicationMode): void {
 		this.log.d('Setting application mode', mode);
@@ -49,12 +49,12 @@ export class ContextService {
 		return this.context.mode === ApplicationMode.EMBEDDED;
 	}
 
-	isStandardMode(): boolean {
-		return this.context.mode === ApplicationMode.STANDARD;
+	isStandaloneMode(): boolean {
+		return this.context.mode === ApplicationMode.STANDALONE;
 	}
 
-	isStandardModeWithToken(): boolean {
-		return this.context.mode === ApplicationMode.STANDARD_WITH_TOKEN;
+	isStandaloneModeWithToken(): boolean {
+		return this.context.mode === ApplicationMode.STANDALONE_WITH_TOKEN;
 	}
 
 	/**
@@ -62,12 +62,17 @@ export class ContextService {
 	 * @param token - A string representing the token.
 	 */
 	setToken(token: string): void {
-		this.context.token = token;
-		this.context.decodedToken = this.decodeJWTToken(token);
-		this.setRoomName(this.context.decodedToken.video.room);
-		this.setParticipantName(this.context.decodedToken.name);
-		//TODO: do the same with permissions
-		console.log('DECODED TOKEN----', this.context.decodedToken);
+		try {
+			this.context.decodedToken = this.getValidDecodedToken(token);
+			this.context.token = token;
+			this.setRoomName(this.context.decodedToken.video.room);
+			this.setParticipantName(this.context.decodedToken.name);
+			//TODO: do the same with permissions
+			console.log('DECODED TOKEN----', this.context.decodedToken);
+		} catch (error: any) {
+			this.log.e('Error setting token in context', error);
+			throw new Error('Error setting token', error);
+		}
 	}
 
 	/**
@@ -81,7 +86,6 @@ export class ContextService {
 	 * @throws {Error} If the token parameters are invalid.
 	 */
 	async getToken(): Promise<string> {
-		this.log.d('Getting token');
 		const { roomName, participantName, token } = this.context;
 
 		this.validateTokenParameters(roomName, participantName);
@@ -151,9 +155,26 @@ export class ContextService {
 		return newToken;
 	}
 
-	private decodeJWTToken(token: string) {
+	private getValidDecodedToken(token: string) {
+		this.checkIsJWTValid(token);
 		const decodedToken: any = jwtDecode(token);
 		decodedToken.metadata = JSON.parse(decodedToken.metadata);
+
+		if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
+			throw new Error('Token is expired. Please, request a new one');
+		}
+
 		return decodedToken;
+	}
+
+	private checkIsJWTValid(token: string) {
+		if (!token || typeof token !== 'string') {
+			throw new Error('Invalid token. Token must be a string');
+		}
+
+		const tokenParts = token.split('.');
+		if (tokenParts.length !== 3) {
+			throw new Error('Invalid token. Token must be a valid JWT');
+		}
 	}
 }

@@ -28,11 +28,11 @@ import { HttpService, ContextService, GlobalPreferencesService } from '../../ser
 })
 export class VideoRoomComponent implements OnInit {
 	roomName = '';
+	participantName = '';
 	token = '';
 	isSessionAlive = false;
 	serverError = '';
 	loading = true;
-
 	chatPreferences: ChatPreferences = { enabled: true };
 	recordingPreferences: RecordingPreferences = { enabled: true };
 	broadcastingPreferences: BroadcastingPreferences = { enabled: true };
@@ -60,9 +60,10 @@ export class VideoRoomComponent implements OnInit {
 			await this.loadRoomPreferences();
 
 			this.roomName = this.contextService.getRoomName();
+			this.participantName = this.contextService.getParticipantName();
 
 			const needToConfigureFlagsFromToken =
-				this.contextService.isStandardModeWithToken() || this.contextService.isEmbeddedMode();
+				this.contextService.isStandaloneModeWithToken() || this.contextService.isEmbeddedMode();
 
 			if (needToConfigureFlagsFromToken) {
 				this.configureFetureFlagsFromTokenPermissions();
@@ -76,7 +77,7 @@ export class VideoRoomComponent implements OnInit {
 
 	async onTokenRequested(participantName: string) {
 		try {
-			if (this.contextService.isStandardMode()) {
+			if (this.contextService.isStandaloneMode()) {
 				// As token is not provided, we need to set the participant name from
 				// ov-videoconference event
 				this.contextService.setParticipantName(participantName);

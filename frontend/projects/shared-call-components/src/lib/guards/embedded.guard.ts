@@ -3,8 +3,12 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { ContextService } from '../services';
 import { ApplicationMode } from '../models';
 
-
-export const embeddedGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+/**
+ * This guard ensures that the route is only accessible when the application is embedded within an iframe.
+ * If the request is not coming from an iframe (e.g., direct access from the browser), the user will be redirected to the 'unauthorized' page.
+ * Additionally, it checks if a 'token' query parameter is present in the URL. If not, the user will be redirected to the 'unauthorized' page.
+ */
+export const embeddedModeGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const contextService = inject(ContextService);
 	const router = inject(Router);
 
@@ -28,11 +32,16 @@ export const embeddedGuard: CanActivateFn = async (route: ActivatedRouteSnapshot
 			// Redirect to the unauthorized page if the token is not provided
 			const queryParams = { reason: 'no-token' };
 			router.navigate(['embedded/unauthorized'], { queryParams });
-
 			return false;
 		}
 
-		contextService.setToken(tokenParameter);
+		try {
+			contextService.setToken(tokenParameter);
+		} catch (error) {
+			const queryParams = { reason: 'invalid-token' };
+			router.navigate(['embedded/unauthorized'], { queryParams });
+			return false;
+		}
 	}
 
 	// Allow access to the requested page

@@ -14,12 +14,23 @@ export class UnauthorizedComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.route.queryParams.subscribe((params) => {
-			if (params['reason'] === 'no-token') {
-				this.message = 'No token provided';
-			} else if (params['reason'] === 'no-iframe') {
-				this.message = 'The page is not accessible directly. Please use the OpenVidu embedded';
-			} else if (params['reason'] === 'embedded') {
-				this.message = 'The page is not accessible directly. Please use the OpenVidu embedded';
+			const reason = params['reason'];
+			switch (reason) {
+				case 'invalid-token':
+					this.message = 'The token provided is invalid';
+					break;
+				case 'no-token':
+					this.message = 'No token provided';
+					break;
+				case 'no-iframe-allowed':
+					this.message = 'The page is not accessible directly from an iframe. Please use the OpenVidu Embedded';
+					break;
+				case 'embedded':
+					this.message = 'The page is not accessible directly. Please use the OpenVidu Embedded';
+					break;
+				default:
+					this.message = 'Unauthorized access';
+					break;
 			}
 		});
 	}

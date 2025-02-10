@@ -1,3 +1,3 @@
 export * from './embedded.guard';
-export * from './non-embedded.guard';
-export * from './standard.guard';
+export * from './standalone.guard';
+export * from './token-room-name.guard';
