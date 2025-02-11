@@ -1,7 +1,7 @@
 import { inject, injectable } from '../config/dependency-injector.config.js';
 import { Room } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { CALL_WEBHOOK_URL } from '../environment.js';
+import { CALL_WEBHOOK_ENABLED, CALL_WEBHOOK_URL } from '../environment.js';
 import { OpenViduWebhookEvent } from '../models/webhook.model.js';
 
 @injectable()
@@ -9,6 +9,8 @@ export class OpenViduWebhookService {
 	constructor(@inject(LoggerService) protected logger: LoggerService) {}
 
 	async sendRoomFinishedWebhook(room: Room): Promise<void> {
+		if (!this.isWebhookEnabled()) return;
+
 		this.logger.verbose(`Sending room finished webhook for room ${room.name}`);
 
 		try {
@@ -46,5 +48,9 @@ export class OpenViduWebhookService {
 			// Retry the request after a delay with exponential backoff
 			return this.fetchWithRetry(url, options, retries - 1, delay * 2);
 		}
+	}
+
+	private isWebhookEnabled(): boolean {
+		return !!CALL_WEBHOOK_URL && CALL_WEBHOOK_ENABLED === 'true';
 	}
 }

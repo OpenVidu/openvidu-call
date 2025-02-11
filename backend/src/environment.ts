@@ -17,6 +17,7 @@ export const CALL_SECRET = process.env.CALL_SECRET || 'user';
 export const CALL_ADMIN_USER = process.env.CALL_ADMIN_USER || 'admin';
 export const CALL_ADMIN_SECRET = process.env.CALL_ADMIN_SECRET || 'admin';
 export const CALL_PREFERENCES_STORAGE_MODE = process.env.CALL_PREFERENCES_STORAGE_MODE || 's3';
+export const CALL_WEBHOOK_ENABLED = process.env.CALL_WEBHOOK_ENABLED || 'false';
 export const CALL_WEBHOOK_URL = process.env.CALL_WEBHOOK_URL || 'http://localhost:8080/';
 
 /**
