@@ -25,7 +25,8 @@ export const ensureValidTokenOrRoomNameGuard: CanActivateFn = async (
 		return false;
 	}
 
-	const tokenParameter = route.queryParams['token'];
+	const queryParams = route.queryParams;
+	const tokenParameter = queryParams['token'];
 
 	if (tokenParameter) {
 		// Standard mode with token
@@ -38,16 +39,17 @@ export const ensureValidTokenOrRoomNameGuard: CanActivateFn = async (
 			return false;
 		}
 	} else {
+		const roomName = route.params['roomName'] || '';
+
 		// Standard mode without token
-		contextService.setApplicationMode(ApplicationMode.STANDALONE);
 		// As token is not provided, we need to get the room name from the URL
-		const roomName = state.url.replace('/', '').trim();
 		if (!roomName) {
 			// Redirect to the home page if the room name is not provided
 			router.navigate(['/home']);
 			return false;
 		}
 
+		contextService.setApplicationMode(ApplicationMode.STANDALONE);
 		contextService.setRoomName(roomName);
 	}
 

@@ -148,6 +148,15 @@ describe('Testing Standalone Mode', () => {
 
 		await utils.removeIframe();
 	});
+
+	it('should redirect to home page if no token and room name are provided', async () => {
+		await browser.get(url);
+		expect(await browser.getCurrentUrl()).to.include('home');
+
+		await browser.get(url + '/?invalidParam=123');
+		expect(await browser.getCurrentUrl()).to.include('home');
+
+	});
 });
 
 describe('Testing Console Routes', () => {
