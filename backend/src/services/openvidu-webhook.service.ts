@@ -28,6 +28,7 @@ export class OpenViduWebhookService {
 			});
 		} catch (error) {
 			this.logger.error(`Error sending room finished webhook: ${error}`);
+			throw error;
 		}
 	}
 

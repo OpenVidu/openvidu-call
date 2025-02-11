@@ -9,7 +9,7 @@ on:
       - next
 
 jobs:
-  backend_embedded_auth_tests:
+  embedded_auth_tests:
     name: Embedded Auth API
     runs-on: ubuntu-latest
     steps:
@@ -59,3 +59,24 @@ jobs:
           cd backend
           npm install
           npm run test:embedded-auth-api
+
+  openvidu_webhook_tests:
+    name: OpenVidu Webhooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: next
+          path: openvidu-call
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run openvidu-call backend
+        run: |
+          cd openvidu-call
+          ./prepare.sh
+          cd backend
+          npm install
+          npm run test:integration-webhooks
