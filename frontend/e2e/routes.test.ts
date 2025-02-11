@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { Builder, WebDriver } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
 import { OpenViduCallPO } from './utils.po.test';
+import { EDITION } from './config';
 
 const url = OpenViduCallConfig.appUrl;
 
@@ -48,7 +49,7 @@ describe('Testing Embedded Mode', () => {
 
 	it('should allow access if accessed from iframe with valid token', async () => {
 		// access to a page under the same domain
-		await browser.get('http://localhost:5080/unauthorized');
+		await browser.get(`${url}/unauthorized`);
 		const token = await utils.getJWTToken();
 		// Inject an iframe with the token
 		await utils.buildIframeAndSwitch(`${url}/embedded?token=${token}`);
@@ -63,7 +64,7 @@ describe('Testing Embedded Mode', () => {
 
 	it('should redirect to "unauthorized" if token is expired in embedded mode', async () => {
 		// access to a page under the same domain
-		await browser.get('http://localhost:5080/unauthorized');
+		await browser.get(`${url}/unauthorized`);
 		const expiredToken = await utils.getExpiredJWTToken();
 		await utils.buildIframeAndSwitch(url + `/embedded?token=${expiredToken}`);
 
@@ -194,7 +195,7 @@ describe('Testing Console Routes', () => {
 		await utils.waitForElement('ov-access-permissions');
 	});
 
-	it('should load the "appearance" route inside "console"', async () => {
+	(EDITION === 'CE' ? it : it.skip)('should load the "appearance" route inside "console"', async () => {
 		await browser.get(url + '/console/appearance');
 		await utils.waitForElement('ov-appearance');
 		await utils.waitForElement('ov-pro-feature-card');

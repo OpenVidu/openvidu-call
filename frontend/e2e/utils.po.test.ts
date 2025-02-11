@@ -58,7 +58,6 @@ export class OpenViduCallPO {
 		});
 
 		const tokenJson: any = await token.json();
-		console.log(tokenJson);
 		return tokenJson.token;
 	}
 
