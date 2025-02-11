@@ -1,6 +1,6 @@
 import { Capabilities } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome.js';
-import { LAUNCH_MODE } from './config.js';
+import { APP_URL, LAUNCH_MODE } from './config.js';
 
 interface BrowserConfig {
 	appUrl: string;
@@ -33,7 +33,7 @@ const chromeArgumentsCI = [
 const chromeOptions: chrome.Options = new chrome.Options();
 chromeOptions.addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments));
 export const OpenViduCallConfig: BrowserConfig = {
-	appUrl: LAUNCH_MODE === 'CI' ? 'http://localhost:6080' : 'http://localhost:5080',
+	appUrl: APP_URL,
 	seleniumAddress: LAUNCH_MODE === 'CI' ? 'http://localhost:4444/wd/hub' : '',
 	browserName: 'ChromeTest',
 	browserCapabilities: Capabilities.chrome().set('acceptInsecureCerts', true),
