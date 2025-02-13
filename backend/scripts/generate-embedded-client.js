@@ -1,39 +1,6 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 
-// Check if the script is called with the correct number of arguments
-const args = process.argv.slice(2);
-
-if (args.length === 0) {
-	console.log('Usage: node generate-embedded-client.js <language>');
-	console.log('Example: node generate-embedded-client.js typescript');
-	process.exit(1);
-}
-
-const LANGUAGE = args[0];
-
-switch (LANGUAGE) {
-	case 'all': {
-		generateTypeScriptClient();
-		generateJavaClient();
-		break;
-	}
-
-	case 'ts': {
-		generateTypeScriptClient();
-		break;
-	}
-
-	case 'java': {
-		generateJavaClient();
-		break;
-	}
-
-	default:
-		console.log(`Language ${LANGUAGE} not supported`);
-		process.exit(1);
-}
-
 const generateTypeScriptClient = () => {
 	const CLIENT_OUTPUT_DIR = '../sdk/client-ts/src/client';
 	const INDEX_FILE = '../sdk/client-ts/src/index.ts';
@@ -141,5 +108,38 @@ const generateJavaClient = () => {
 		process.exit(1);
 	}
 };
+
+// Check if the script is called with the correct number of arguments
+const args = process.argv.slice(2);
+
+if (args.length === 0) {
+	console.log('Usage: node generate-embedded-client.js <language>');
+	console.log('Example: node generate-embedded-client.js typescript');
+	process.exit(1);
+}
+
+const LANGUAGE = args[0];
+
+switch (LANGUAGE) {
+	case 'all': {
+		generateTypeScriptClient();
+		generateJavaClient();
+		break;
+	}
+
+	case 'ts': {
+		generateTypeScriptClient();
+		break;
+	}
+
+	case 'java': {
+		generateJavaClient();
+		break;
+	}
+
+	default:
+		console.log(`Language ${LANGUAGE} not supported`);
+		process.exit(1);
+}
 
 console.log(`OpenVidu Embedded ${LANGUAGE} client generated successfully`);
