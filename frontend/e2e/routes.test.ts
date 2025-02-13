@@ -48,8 +48,6 @@ describe('Testing Embedded Mode', () => {
 	});
 
 	it('should allow access if accessed from iframe with valid token', async () => {
-		// access to a page under the same domain
-		await browser.get(`${url}/unauthorized`);
 		const token = await utils.getJWTToken();
 		// Inject an iframe with the token
 		await utils.buildIframeAndSwitch(`${url}/embedded?token=${token}`);
@@ -63,8 +61,6 @@ describe('Testing Embedded Mode', () => {
 	});
 
 	it('should redirect to "unauthorized" if token is expired in embedded mode', async () => {
-		// access to a page under the same domain
-		await browser.get(`${url}/unauthorized`);
 		const expiredToken = await utils.getExpiredJWTToken();
 		await utils.buildIframeAndSwitch(url + `/embedded?token=${expiredToken}`);
 
@@ -72,6 +68,34 @@ describe('Testing Embedded Mode', () => {
 		expect(await browser.getCurrentUrl()).to.include('unauthorized');
 
 		await utils.removeIframe();
+	});
+
+	it('should redirect to a internal URL if provided in embedded mode', async () => {
+		const redirectUrl = '/console/overview';
+		const token = await utils.getJWTToken();
+		await utils.buildIframeAndSwitch(`${url}/embedded?token=${token}&redirectUrl=${redirectUrl}`);
+
+		await utils.checkLayoutIsPresent();
+		await utils.checkToolbarIsPresent();
+
+		await utils.leaveRoom();
+
+		await utils.waitForElement('#unauthorized-content');
+		expect(await browser.getCurrentUrl()).to.include('embedded/unauthorized');
+	});
+
+	it('should redirect to a external URL if provided in embedded mode', async () => {
+		const redirectUrl = 'https://openvidu.io';
+		const token = await utils.getJWTToken();
+		await utils.buildIframeAndSwitch(`${url}/embedded?token=${token}&redirectUrl=${redirectUrl}`);
+
+		await utils.checkLayoutIsPresent();
+		await utils.checkToolbarIsPresent();
+
+		await utils.leaveRoom();
+
+		const iframeUrl = await utils.getIframeUrl();
+		expect(iframeUrl).to.include(redirectUrl);
 	});
 });
 
@@ -155,7 +179,22 @@ describe('Testing Standalone Mode', () => {
 
 		await browser.get(url + '/?invalidParam=123');
 		expect(await browser.getCurrentUrl()).to.include('home');
+	});
 
+	it('should NOT redirect to a redirect URL if provided in standalone mode', async () => {
+		await browser.get(`${url}/room123?redirectUrl=https://openvidu.io`);
+
+		await utils.checkPrejoinIsPresent();
+
+		await utils.joinRoom();
+
+		await utils.checkLayoutIsPresent();
+		await utils.checkToolbarIsPresent();
+
+		await utils.leaveRoom();
+
+		const redirectUrl = await browser.getCurrentUrl();
+		expect(redirectUrl).to.include(url);
 	});
 });
 

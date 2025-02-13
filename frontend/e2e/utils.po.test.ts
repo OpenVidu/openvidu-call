@@ -8,6 +8,8 @@ export class OpenViduCallPO {
 	constructor(private browser: WebDriver) {}
 
 	async createIframe(url: string): Promise<void> {
+		// access to a page under the same domain
+		await this.browser.get(`${url}/unauthorized`);
 		await this.browser.executeScript(
 			`const iframe = document.createElement('iframe');
 			iframe.id = 'test-iframe';
@@ -39,6 +41,10 @@ export class OpenViduCallPO {
 		await this.createIframe(url);
 		await this.waitForIframe();
 		await this.switchToIframe();
+	}
+
+	async getIframeUrl(): Promise<string> {
+		return this.browser.executeScript('return window.location.href');
 	}
 
 	async removeIframe(): Promise<void> {
