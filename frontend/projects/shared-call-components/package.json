@@ -9,7 +9,7 @@
 		"@angular/forms": "^17.0.0 || ^18.0.0",
 		"@angular/material": "^17.0.0 || ^18.0.0",
     "jwt-decode": "^4.0.0",
-    "openvidu-components-angular": "^3.0.0-beta3"
+    "openvidu-components-angular": "^3.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
