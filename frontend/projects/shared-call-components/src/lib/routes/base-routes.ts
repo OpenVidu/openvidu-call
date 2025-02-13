@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { UnauthorizedComponent } from '../components';
-import { embeddedModeGuard, standaloneModeGuard, ensureValidTokenOrRoomNameGuard } from '../guards';
+import { embeddedModeGuard, standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard } from '../guards';
 import {
 	AboutComponent,
 	AccessPermissionsComponent,
@@ -19,7 +19,7 @@ export const baseRoutes: Routes = [
 	{
 		path: 'embedded',
 		component: VideoRoomComponent,
-		canActivate: [embeddedModeGuard]
+		canActivate: [embeddedModeGuard, redirectUrlGuard]
 	},
 	{ path: 'embedded/unauthorized', component: UnauthorizedComponent },
 

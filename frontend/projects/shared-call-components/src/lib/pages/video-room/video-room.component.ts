@@ -30,7 +30,6 @@ export class VideoRoomComponent implements OnInit {
 	roomName = '';
 	participantName = '';
 	token = '';
-	isSessionAlive = false;
 	serverError = '';
 	loading = true;
 	chatPreferences: ChatPreferences = { enabled: true };
@@ -93,13 +92,29 @@ export class VideoRoomComponent implements OnInit {
 		this.cdr.detectChanges();
 	}
 
-	onRoomDisconnected() {
+	onParticipantLeft() {
+		console.warn('Participant left the room. Redirecting to:');
+
 		if (this.contextService.isEmbeddedMode()) {
-			console.error('Embedded mode is not implemented');
+			const redirectURL = this.contextService.getRedirectURL();
+			if (redirectURL) {
+				// Check if the redirect URL is an external URL
+				const isExternalURL = /^https?:\/\//.test(redirectURL);
+
+				if (isExternalURL) {
+					console.log('Redirecting to external URL:', redirectURL);
+					window.location.href = redirectURL;
+				} else {
+					console.log('Participant left the room. Redirecting to internal route:', redirectURL);
+					this.router.navigate([redirectURL], { replaceUrl: true });
+				}
+			} else {
+				console.warn('Participant left the room. Redirecting to:', `/`);
+				this.router.navigate([`/`]);
+			}
 			return;
 		}
 
-		this.isSessionAlive = false;
 		this.router.navigate([`/`]);
 	}
 

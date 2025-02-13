@@ -17,7 +17,8 @@ export class ContextService {
 		token: '',
 		decodedToken: {},
 		mode: ApplicationMode.STANDALONE,
-		edition: Edition.CE
+		edition: Edition.CE,
+		redirectUrl: ''
 	};
 
 	private log;
@@ -73,6 +74,14 @@ export class ContextService {
 			this.log.e('Error setting token in context', error);
 			throw new Error('Error setting token', error);
 		}
+	}
+
+	setRedirectUrl(redirectUrl: string): void {
+		this.context.redirectUrl = redirectUrl;
+	}
+
+	getRedirectURL(): string {
+		return this.context.redirectUrl;
 	}
 
 	/**

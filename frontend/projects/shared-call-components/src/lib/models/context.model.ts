@@ -4,7 +4,8 @@ export interface ContextData {
 	token: string;
 	decodedToken: any;
 	mode: ApplicationMode;
-	edition: Edition
+	edition: Edition,
+	redirectUrl: string;
 }
 
 export enum ApplicationMode {
