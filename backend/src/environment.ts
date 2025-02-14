@@ -4,7 +4,11 @@ import chalk from 'chalk';
 if (process.env.CALL_CONFIG_DIR) {
 	dotenv.config({ path: process.env.CALL_CONFIG_DIR });
 } else {
-	dotenv.config();
+	if (process.env.NODE_ENV === 'development') {
+		dotenv.config({ path: '.env.development' });
+	} else {
+		dotenv.config();
+	}
 }
 
 // General server configuration
@@ -69,7 +73,6 @@ export function checkModuleEnabled() {
 		}
 	}
 }
-
 
 export const logEnvVars = () => {
 	const credential = chalk.yellow;
