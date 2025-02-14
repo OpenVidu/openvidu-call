@@ -114,18 +114,8 @@ cd openvidu-call
 ```
 
 > [!NOTE]
-> **The script prepare and build all necessary dependencies (shared-call-components and typings) for running the frontend and backend.**
+> **The script prepare and build all necessary dependencies ( typings) for running the frontend and backend.**
 >
-> - For listening to changes to the **shared-call-components** library, you can run the following command:
->
->   Stop the frontend server and run the following command:
->
->   ```bash
->   cd openvidu-call/frontend
->   npm run lib:serve
->   ```
->
->   After that you can run the frontend server again.
 >
 > - For building the **typings**, you can run the following command:
 >

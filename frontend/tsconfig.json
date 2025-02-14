@@ -28,7 +28,8 @@
 			// "@guards/*": ["src/app/guards/*"],
 			// "@pages/*": ["src/app/pages/*"],
 			"@environment/*": ["src/environments/*"],
-			"shared-call-components": ["dist/shared-call-components"]
+			// "shared-call-components": ["dist/shared-call-components"]
+			"shared-call-components": ["projects/shared-call-components/src/public-api.ts"]
 		},
 		"importHelpers": true,
 		"target": "ES2022",

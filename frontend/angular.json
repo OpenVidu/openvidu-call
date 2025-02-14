@@ -33,7 +33,9 @@
 							"optimization": false,
 							"outputHashing": "all",
 							"sourceMap": true,
-							"extractLicenses": false
+							"extractLicenses": false,
+							"deleteOutputPath": true,
+							"clearScreen": true
 						},
 						"production": {
 							"budgets": [

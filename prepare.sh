@@ -17,5 +17,5 @@ cd ..
 # Build frontend
 cd frontend
 npm install
-npm run lib:build
+# npm run lib:build
 cd ..
