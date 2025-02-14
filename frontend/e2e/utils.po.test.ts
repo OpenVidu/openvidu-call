@@ -51,7 +51,11 @@ export class OpenViduCallPO {
 		await this.browser.executeScript(`document.getElementById('test-iframe')?.remove();`);
 	}
 
-	async getJWTToken(roomName = 'TestRoom', participantName = 'TestParticipant'): Promise<string> {
+	async getJWTToken(roomName?: string, participantName?: string): Promise<string> {
+		if(!roomName) roomName = 'TestRoom-'+ Math.random().toString(36).substring(7);
+
+		if(!participantName) participantName = 'ParticipantName-' + Math.random().toString(36).substring(7);
+
 		const token = await fetch('http://localhost:6080/v1/embedded/api/token', {
 			method: 'POST',
 			headers: {

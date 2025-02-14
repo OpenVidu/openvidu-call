@@ -12,7 +12,7 @@
 		[toolbarBackgroundEffectsButton]="featureFlags.showBackgrounds"
 		[toolbarActivitiesPanelButton]="featureFlags.showActivityPanel"
 		(onTokenRequested)="onTokenRequested($event)"
-		(onParticipantLeft)="onParticipantLeft()"
+		(onParticipantLeft)="onParticipantLeft($event)"
 		(onRecordingStartRequested)="onRecordingStartRequested($event)"
 		(onRecordingStopRequested)="onRecordingStopRequested($event)"
 		(onRecordingDeleteRequested)="onRecordingDeleteRequested($event)"

@@ -8,7 +8,8 @@ import {
 	RecordingStartRequestedEvent,
 	RecordingStopRequestedEvent,
 	OpenViduComponentsModule,
-	ApiDirectiveModule
+	ApiDirectiveModule,
+	ParticipantLeftEvent
 } from 'openvidu-components-angular';
 
 import {
@@ -92,30 +93,12 @@ export class VideoRoomComponent implements OnInit {
 		this.cdr.detectChanges();
 	}
 
-	onParticipantLeft() {
+	onParticipantLeft(event: ParticipantLeftEvent) {
 		console.warn('Participant left the room. Redirecting to:');
+		const redirectURL = this.contextService.getRedirectURL() || '/';
+		const isExternalURL = /^https?:\/\//.test(redirectURL);
 
-		if (this.contextService.isEmbeddedMode()) {
-			const redirectURL = this.contextService.getRedirectURL();
-			if (redirectURL) {
-				// Check if the redirect URL is an external URL
-				const isExternalURL = /^https?:\/\//.test(redirectURL);
-
-				if (isExternalURL) {
-					console.log('Redirecting to external URL:', redirectURL);
-					window.location.href = redirectURL;
-				} else {
-					console.log('Participant left the room. Redirecting to internal route:', redirectURL);
-					this.router.navigate([redirectURL], { replaceUrl: true });
-				}
-			} else {
-				console.warn('Participant left the room. Redirecting to:', `/`);
-				this.router.navigate([`/`]);
-			}
-			return;
-		}
-
-		this.router.navigate([`/`]);
+		this.redirectTo(redirectURL, isExternalURL);
 	}
 
 	async onRecordingStartRequested(event: RecordingStartRequestedEvent) {
@@ -207,4 +190,15 @@ export class VideoRoomComponent implements OnInit {
 
 		this.featureFlags.showPrejoin = false;
 	}
+
+	private redirectTo(url: string, isExternal: boolean) {
+		if (isExternal) {
+			console.log('Redirecting to external URL:', url);
+			window.location.href = url;
+		} else {
+			console.log('Redirecting to internal route:', url);
+			this.router.navigate([url], { replaceUrl: true });
+		}
+	}
+
 }

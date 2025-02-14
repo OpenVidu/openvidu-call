@@ -173,6 +173,18 @@ describe('Testing Standalone Mode', () => {
 		await utils.removeIframe();
 	});
 
+	it('should redirect to "unauthorized" if external URL and token provided without embedded path', async () => {
+		const redirectUrl = 'https://openvidu.io';
+		const token = await utils.getJWTToken();
+		await utils.buildIframeAndSwitch(`${url}/?token=${token}&redirectUrl=${redirectUrl}`);
+
+		await utils.waitForElement('#unauthorized-content');
+
+		await utils.waitForElement('#error-reason');
+
+		await utils.removeIframe();
+	});
+
 	it('should redirect to home page if no token and room name are provided', async () => {
 		await browser.get(url);
 		expect(await browser.getCurrentUrl()).to.include('home');
@@ -181,21 +193,34 @@ describe('Testing Standalone Mode', () => {
 		expect(await browser.getCurrentUrl()).to.include('home');
 	});
 
-	it('should NOT redirect to a redirect URL if provided in standalone mode', async () => {
-		await browser.get(`${url}/room123?redirectUrl=https://openvidu.io`);
-
+	it('should redirect to an external URL without token provided', async () => {
+		const redirectUrl = 'https://openvidu.io';
+		await browser.get(`${url}/Room123?redirectUrl=${redirectUrl}`);
 		await utils.checkPrejoinIsPresent();
-
 		await utils.joinRoom();
+		await utils.checkLayoutIsPresent();
+		await utils.checkToolbarIsPresent();
+
+		await utils.leaveRoom();
+
+		const currentUrl = await browser.getCurrentUrl();
+		expect(currentUrl).to.include(redirectUrl);
+	});
+
+	it('should redirect to an external URL with token provided', async () => {
+		const redirectUrl = 'https://openvidu.io';
+		const token = await utils.getJWTToken();
+		await browser.get(`${url}/?token=${token}&redirectUrl=${redirectUrl}`);
 
 		await utils.checkLayoutIsPresent();
 		await utils.checkToolbarIsPresent();
 
 		await utils.leaveRoom();
 
-		const redirectUrl = await browser.getCurrentUrl();
-		expect(redirectUrl).to.include(url);
+		const currentUrl = await browser.getCurrentUrl();
+		expect(currentUrl).to.include(redirectUrl);
 	});
+
 });
 
 describe('Testing Console Routes', () => {

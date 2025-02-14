@@ -23,7 +23,7 @@ export const baseRoutes: Routes = [
 	},
 	{ path: 'embedded/unauthorized', component: UnauthorizedComponent },
 
-	{ path: '', component: VideoRoomComponent, canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard] },
+	{ path: '', component: VideoRoomComponent, canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard] },
 	{ path: 'login', component: ConsoleLoginComponent },
 	{
 		path: 'console',
@@ -44,7 +44,7 @@ export const baseRoutes: Routes = [
 	{
 		path: ':roomName',
 		component: VideoRoomComponent,
-		canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard]
+		canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard]
 	},
 
 	// Redirect all other routes to home
