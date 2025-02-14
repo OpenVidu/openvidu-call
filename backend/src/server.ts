@@ -22,7 +22,7 @@ const createApp = () => {
 
 	// Setup routes
 	app.use('/call/api', standaloneRouter);
-	app.use('/v1/embedded/api', mediaTypeValidatorMiddleware, embeddedRouter);
+	app.use('/embedded/api/v1', mediaTypeValidatorMiddleware, embeddedRouter);
 	app.use('/livekit', livekitRouter);
 	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
 		res.sendFile(indexHtmlPath);
@@ -45,7 +45,7 @@ const startServer = (app: express.Application) => {
 		console.log('---------------------------------------------------------');
 		console.log(' ');
 		console.log('OpenVidu Call Server is listening on port', chalk.cyanBright(SERVER_PORT));
-		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/v1/embedded/api/docs`));
+		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/embedded/api/v1/docs`));
 		logEnvVars();
 		await initializeGlobalPreferences();
 	});

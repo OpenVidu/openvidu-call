@@ -7,7 +7,8 @@ import { LiveKitService } from '../../../src/services/livekit.service.js';
 import { LoggerService } from '../../../src/services/logger.service.js';
 
 const apiVersion = 'v1';
-const baseUrl = '/embedded/api/token';
+const baseUrl = `/embedded/api/`;
+const endpoint = '/token';
 describe('Embedded Auth API Tests', () => {
 	let app: Express;
 
@@ -23,7 +24,7 @@ describe('Embedded Auth API Tests', () => {
 	it('✅ Should generate a token with valid input', async () => {
 		console.log;
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				participantName: 'OpenVidu',
 				roomName: 'TestRoom'
@@ -36,7 +37,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('✅ Should generate a token with valid input and some permissions', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				participantName: 'OpenVidu',
 				roomName: 'TestRoom',
@@ -53,7 +54,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 400 when missing participantName', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				roomName: 'TestRoom'
 			})
@@ -65,7 +66,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 400 when missing roomName', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				participantName: 'OpenVidu'
 			})
@@ -77,7 +78,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 400 when participantName has wrong type', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				participantName: 22,
 				roomName: 'TestRoom'
@@ -89,7 +90,7 @@ describe('Embedded Auth API Tests', () => {
 	});
 
 	it('❌ Should return 400 when missing body request', async () => {
-		const response = await request(app).post(`/${apiVersion}${baseUrl}`).send().expect(415);
+		const response = await request(app).post(`${baseUrl}${apiVersion}${endpoint}`).send().expect(415);
 
 		expect(response.body).toHaveProperty('error');
 		expect(response.body.error).toContain('Unsupported Media Type');
@@ -109,7 +110,7 @@ describe('Embedded Auth API Tests', () => {
 		const mockLoggerService = container.get(LoggerService);
 		mockLoggerService.error = jest.fn();
 
-		const response = await request(app).post(`/${apiVersion}${baseUrl}`).send({
+		const response = await request(app).post(`${baseUrl}${apiVersion}${endpoint}`).send({
 			participantName: 'testParticipant',
 			roomName: 'testRoom'
 		});
@@ -122,7 +123,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 400 when permissions have wrong types', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
 				participantName: 'OpenVidu',
 				roomName: 'TestRoom',
@@ -139,7 +140,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 404 when requesting a non-existent API version (v2)', async () => {
 		const response = await request(app)
-			.post(`/v2${baseUrl}`)
+			.post(`${baseUrl}v2${endpoint}`)
 			.send({
 				participantName: 'OpenVidu',
 				roomName: 'TestRoom'
@@ -153,7 +154,7 @@ describe('Embedded Auth API Tests', () => {
 
 	it('❌ Should return 415 when unsupported content type is provided', async () => {
 		const response = await request(app)
-			.post(`/${apiVersion}${baseUrl}`)
+			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.set('Content-Type', 'application/xml') // Unsupported content type
 			.send('<xml><participantName>OpenVidu</participantName><roomName>TestRoom</roomName></xml>')
 			.expect(415);

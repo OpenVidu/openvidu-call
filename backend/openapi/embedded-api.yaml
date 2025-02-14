@@ -10,7 +10,7 @@ info:
         url: https://openvidu.io/support/
 
 servers:
-    - url: http://localhost:6080/v1/embedded/api
+    - url: http://localhost:6080/embedded/api/v1
       description: Development server
 
 tags:

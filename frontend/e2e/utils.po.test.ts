@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { By, until, WebDriver, WebElement } from 'selenium-webdriver';
+import { EMBEDDED_API_URL } from './config';
 
 export class OpenViduCallPO {
 	private TIMEOUT = 30 * 1000;
@@ -56,7 +57,7 @@ export class OpenViduCallPO {
 
 		if(!participantName) participantName = 'ParticipantName-' + Math.random().toString(36).substring(7);
 
-		const token = await fetch('http://localhost:6080/v1/embedded/api/token', {
+		const token = await fetch(`${EMBEDDED_API_URL}/token`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
