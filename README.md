@@ -138,10 +138,11 @@ Opening a new tab, under root directory:
 
 ```bash
 cd frontend && \
-npm run start:dev
+npm run build:dev
 ```
+This command will build the frontend application and move the files to the backend project. It will also listen for changes in the frontend application and rebuild the application when changes are detected.
 
-After running these commands, you can access the frontend application at [http://localhost:5080](http://localhost:5080).
+After running these commands, you can access the frontend application at [http://localhost:6080](http://localhost:6080).
 
 
 ## Build (with docker)
