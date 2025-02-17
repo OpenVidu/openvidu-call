@@ -1,6 +1,8 @@
 import { Capabilities } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome.js';
-import { APP_URL, LAUNCH_MODE } from './config.js';
+import { APP_URL, LAUNCH_MODE } from './config';
+import * as path from 'path';
+
 
 interface BrowserConfig {
 	appUrl: string;
@@ -8,6 +10,7 @@ interface BrowserConfig {
 	browserCapabilities: Capabilities;
 	browserOptions: chrome.Options;
 	browserName: string;
+	downloadDir?: string;
 }
 
 const chromeArguments = [
@@ -29,13 +32,21 @@ const chromeArgumentsCI = [
 	'--use-fake-ui-for-media-stream',
 	'--use-fake-device-for-media-stream'
 ];
+const downloadDir = path.resolve(__dirname, 'Downloads');
 
 const chromeOptions: chrome.Options = new chrome.Options();
 chromeOptions.addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments));
+chromeOptions.setUserPreferences({
+	'download.default_directory': downloadDir, // Forzar descargas aquí
+	'download.prompt_for_download': false,
+	'download.directory_upgrade': true,
+	'safebrowsing.enabled': true
+});
 export const OpenViduCallConfig: BrowserConfig = {
 	appUrl: APP_URL,
 	seleniumAddress: LAUNCH_MODE === 'CI' ? 'http://localhost:4444/wd/hub' : '',
 	browserName: 'ChromeTest',
 	browserCapabilities: Capabilities.chrome().set('acceptInsecureCerts', true),
-	browserOptions: chromeOptions
+	browserOptions: chromeOptions,
+	downloadDir: downloadDir
 };

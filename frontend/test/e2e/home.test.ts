@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { Builder, WebDriver } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
-import { OpenViduCallPO } from './utils.po.test';
+import { OpenViduCallPO } from './utils.po';
 
-const url = OpenViduCallConfig.appUrl;
+const APP_URL = OpenViduCallConfig.appUrl;
 
 describe('Testing Home page', () => {
 	let browser: WebDriver;
@@ -30,7 +30,7 @@ describe('Testing Home page', () => {
 	});
 
 	it('should show ONLY the ROOM NAME input', async () => {
-		await browser.get(url);
+		await browser.get(APP_URL);
 
 		expect(await utils.isPresent('#login-username')).to.be.false;
 
@@ -45,7 +45,7 @@ describe('Testing Home page', () => {
 	});
 
 	it('should generate a random room name', async () => {
-		await browser.get(`${url}`);
+		await browser.get(`${APP_URL}`);
 
 		const element = await utils.waitForElement('#room-name-input');
 		expect(await utils.isPresent('#room-name-input')).to.be.true;
@@ -58,7 +58,7 @@ describe('Testing Home page', () => {
 	});
 
 	it('should show the prejoin page after inserting a room name', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 	});

@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import { Builder, WebDriver, WebElement } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
-import { OpenViduCallPO } from './utils.po.test';
+import { OpenViduCallPO } from './utils.po';
 import * as fs from 'fs';
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-const url = OpenViduCallConfig.appUrl;
+const APP_URL = OpenViduCallConfig.appUrl;
 
-describe('Testing Room', () => {
+describe('Testing Room Functionality', () => {
 	let browser: WebDriver;
 	let utils: OpenViduCallPO;
 	let randomRoomName = '';
@@ -38,7 +38,7 @@ describe('Testing Room', () => {
 	}
 
 	it('should show the toolbar and media buttons', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinRoom();
@@ -47,7 +47,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should show error trying to join a room with the same name', async () => {
-		const fixedUrl = `${url}${randomRoomName}`;
+		const fixedUrl = `${APP_URL}/${randomRoomName}`;
 		await browser.get(fixedUrl);
 
 		await utils.checkPrejoinIsPresent();
@@ -66,7 +66,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should start a videoconference and display the video elements', async () => {
-		const fixedUrl = `${url}${randomRoomName}`;
+		const fixedUrl = `${APP_URL}/${randomRoomName}`;
 		await browser.get(fixedUrl);
 
 		await utils.checkPrejoinIsPresent();
@@ -99,7 +99,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should be able to share the screen', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 		await utils.checkPrejoinIsPresent();
 
 		await utils.joinRoom();
@@ -129,7 +129,7 @@ describe('Testing Room', () => {
 
 	it('should be able to leave the session', async () => {
 
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinRoom();
@@ -144,7 +144,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should show the chat and send a message', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinRoom();
@@ -162,7 +162,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should show the activities panel', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinRoom();
@@ -175,7 +175,7 @@ describe('Testing Room', () => {
 	});
 
 	it('should apply a virtual background', async () => {
-		await browser.get(`${url}${randomRoomName}`);
+		await browser.get(`${APP_URL}/${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinRoom();

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Builder, WebDriver, WebElement } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
-import { OpenViduCallPO } from './utils.po.test';
+import { OpenViduCallPO } from './utils.po';
 
 const url = OpenViduCallConfig.appUrl;
 
