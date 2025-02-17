@@ -46,7 +46,7 @@ describe('Testing Room Functionality', () => {
 		await utils.checkToolbarIsPresent();
 	});
 
-	it('should show error trying to join a room with the same name', async () => {
+	it('should show error trying to join a room with the same participant name', async () => {
 		const fixedUrl = `${APP_URL}/${randomRoomName}`;
 		await browser.get(fixedUrl);
 
