@@ -14,7 +14,7 @@ import {
 import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, LIVEKIT_URL_PRIVATE } from '../environment.js';
 import { LoggerService } from './logger.service.js';
 import { errorLivekitIsNotAvailable, errorParticipantAlreadyExists, internalError } from '../models/error.model.js';
-import { EmbeddedTokenOptions } from '@typings-ce';
+import { EmbeddedParticipantPermissions, EmbeddedTokenOptions } from '@typings-ce';
 
 @injectable()
 export class LiveKitService {
@@ -48,7 +48,7 @@ export class LiveKitService {
 			ttl: '24h',
 			metadata: JSON.stringify({
 				livekitUrl: LIVEKIT_URL,
-				permissions
+				permissions: this.generateTokenPermissions(permissions)
 			})
 		});
 		const lkPermissions: VideoGrant = {
@@ -120,5 +120,12 @@ export class LiveKitService {
 
 	isEgressParticipant(participant: ParticipantInfo): boolean {
 		return participant.identity.startsWith('EG_') && participant.permission?.recorder === true;
+	}
+
+	private generateTokenPermissions(permissions?: EmbeddedParticipantPermissions): EmbeddedParticipantPermissions {
+		return {
+			canRecord: permissions?.canRecord ?? true,
+			canChat: permissions?.canChat ?? true
+		};
 	}
 }

@@ -2,7 +2,11 @@ openapi: 3.0.1
 info:
     version: v1
     title: OpenVidu Embedded API
-    description: 'OpenVidu Embedded API'
+    description: >
+        The OpenVidu Embedded API allows seamless integration of interactive video rooms
+        into external applications via an iframe. This API provides endpoints to manage
+        participants, generate secure access URLs, and configure session settings for
+        an embedded experience.
     termsOfService: https://openvidu.io/conditions/terms-of-service/
     contact:
         name: OpenVidu
@@ -14,49 +18,59 @@ servers:
       description: Development server
 
 tags:
-    - name: EmbeddedAuth
-      description: Endpoints for generating authentication tokens for embedded sessions
+    - name: Participants
+      description: Operations related to managing participants in an embedded room.
 
 paths:
-    /token:
+    /participant:
         post:
-            operationId: generateToken
-            summary: Generate an embedded authentication token
-            # description: Returns a JWT token for authentication.
+            operationId: addParticipant
+            summary: Generate a participant URL for an embedded room
+            description: Generates a secure URL that allows a participant to join an embedded room.
+
             tags:
-                - EmbeddedAuth
+                - Participants
             requestBody:
                 $ref: '#/components/requestBodies/EmbeddedTokenOptions'
 
             responses:
                 '200':
-                    description: Token successfully generated
+                    description: Successfully generated the embedded URL for the participant
                     content:
                         application/json:
                             schema:
                                 type: object
                                 properties:
-                                    token:
+                                    embeddedURL:
                                         type: string
-                                        example: 'eyJhbGciOiJIUzI1...'
+                                        example: 'https://example.com/embedded?token=eyJhbGciOiJIUzI1...'
                 '400':
-                    description: Invalid credentials
+                    description: Bad Request — Invalid or missing input parameters
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Error'
+                            example:
+                                code: 400
+                                message: 'request/body must have required property <property>'
                 '415':
                     description: 'Unsupported Media Type'
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Error'
+                            example:
+                                code: 415
+                                message: 'Unsupported Media Type'
                 '500':
                     description: Internal server error
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Error'
+                            example:
+                                code: 500
+                                message: 'Internal server error'
 
 components:
     requestBodies:
@@ -65,7 +79,9 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/EmbeddedTokenOptions'
-            description: Options for generating a token
+            description: >
+                Contains the options required to generate a secure URL for a participant to join an embedded room.
+                The request body includes details like the participant's name, room name, permissions and more.
 
     schemas:
         EmbeddedTokenOptions:
@@ -77,13 +93,26 @@ components:
                 participantName:
                     type: string
                     example: 'OpenVidu'
-                    description: 'The name of the participant.'
+                    description: >
+                        The name of the participant. This will be used to identify the participant in the room.
                 roomName:
                     type: string
                     example: 'OpenViduEmbedded'
-                    description: 'The name of the room the participant will join.'
+                    description: The name of the room the participant will join
+                # redirectURL:
+                #     type: string
+                #     format: uri
+                #     example: 'https://openvidu.io'
+                #     description: >
+                #         An optional URL to redirect the participant to after they successfully leave the embedded room or
+                #         when the room is closed. If not provided, the participant will be redirected to the root URL.
+
                 permissions:
                     $ref: '#/components/schemas/EmbeddedParticipantPermissions'
+                    description: >
+                        Permissions granted to the participant in the embedded room. By default, the participant
+                        will have full permissions unless specified otherwise.
+
         EmbeddedParticipantPermissions:
             type: object
             properties:
@@ -91,12 +120,14 @@ components:
                     type: boolean
                     default: true
                     example: true
-                    description: 'If true, the participant can record the session.'
+                    description: >
+                        If true, the participant is allowed to record the room.
                 canChat:
                     type: boolean
                     default: true
                     example: true
-                    description: 'If true, the participant can chat in the session.'
+                    description: >
+                        If true, the participant can send and receive chat messages during the room.
         Error:
             type: object
             required:

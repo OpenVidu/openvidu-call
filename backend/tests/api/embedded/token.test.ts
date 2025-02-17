@@ -117,8 +117,8 @@ describe('Embedded Auth API Tests', () => {
 
 		// Assert: Check that the status is 500 and error message is correct
 		expect(response.status).toBe(500);
-		expect(response.body.error).toBe('Error generating token');
-		expect(mockLoggerService.error).toHaveBeenCalledWith('Error generating token: Error: LiveKit Error');
+		expect(response.body.error).toBe('Internal server error');
+		expect(mockLoggerService.error).toHaveBeenCalledWith('Internal server error: Error: LiveKit Error');
 	});
 
 	it('❌ Should return 400 when permissions have wrong types', async () => {
