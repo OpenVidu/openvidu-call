@@ -18,8 +18,8 @@ servers:
       description: Development server
 
 tags:
-    - name: Participants
-      description: Operations related to managing participants in an embedded room.
+    - name: OpenViduEmbedded
+      description: Operations related to managing embedded rooms in OpenVidu.
 
 paths:
     /participant:
@@ -27,12 +27,14 @@ paths:
             operationId: addParticipant
             summary: Generate a participant URL for an embedded room
             description: Generates a secure URL that allows a participant to join an embedded room.
-
             tags:
-                - Participants
+                - OpenViduEmbedded
             requestBody:
-                $ref: '#/components/requestBodies/EmbeddedTokenOptions'
-
+                required: true
+                content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/EmbeddedTokenOptions'
             responses:
                 '200':
                     description: Successfully generated the embedded URL for the participant
@@ -73,16 +75,6 @@ paths:
                                 message: 'Internal server error'
 
 components:
-    requestBodies:
-        EmbeddedTokenOptions:
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/EmbeddedTokenOptions'
-            description: >
-                Contains the options required to generate a secure URL for a participant to join an embedded room.
-                The request body includes details like the participant's name, room name, permissions and more.
-
     schemas:
         EmbeddedTokenOptions:
             type: object
@@ -106,13 +98,11 @@ components:
                 #     description: >
                 #         An optional URL to redirect the participant to after they successfully leave the embedded room or
                 #         when the room is closed. If not provided, the participant will be redirected to the root URL.
-
                 permissions:
                     $ref: '#/components/schemas/EmbeddedParticipantPermissions'
                     description: >
                         Permissions granted to the participant in the embedded room. By default, the participant
                         will have full permissions unless specified otherwise.
-
         EmbeddedParticipantPermissions:
             type: object
             properties:

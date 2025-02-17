@@ -1,0 +1,22 @@
+{
+  "name": "openvidu-embedded-ts-client",
+  "version": "1.0.0",
+  "description": "OpenAPI client for openvidu-embedded-ts-client",
+  "author": "OpenAPI-Generator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openvidu/openvidu-call.git"
+  },
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc && tsc -p tsconfig.esm.json",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^4.0 || ^5.0"
+  }
+}

@@ -1,0 +1,16 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+README.md
+package.json
+src/apis/OpenViduEmbeddedClient.ts
+src/apis/index.ts
+src/index.ts
+src/models/AddParticipant200Response.ts
+src/models/EmbeddedParticipantPermissions.ts
+src/models/EmbeddedTokenOptions.ts
+src/models/ModelError.ts
+src/models/index.ts
+src/runtime.ts
+tsconfig.esm.json
+tsconfig.json
