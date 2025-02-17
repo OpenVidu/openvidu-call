@@ -32,7 +32,7 @@
 		"start:dev": "cross-env NODE_ENV=development nodemon -I --exec node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server.ts",
 		"package:build": "npm run build:prod && npm pack",
 		"lib:sync-pro": "npm run package:build && cp openvidu-call-server-*.tgz ../../openvidu-call-pro/backend",
-		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/token.test.ts",
+		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/participants.test.ts",
 		"test:integration-webhooks": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/services/openvidu-webhook.service.test.ts",
 		"generate:embedded-clients": "node scripts/generate-embedded-client.js all",
 		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts",

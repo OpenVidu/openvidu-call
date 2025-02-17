@@ -8,7 +8,7 @@ import { LoggerService } from '../../../src/services/logger.service.js';
 
 const apiVersion = 'v1';
 const baseUrl = `/embedded/api/`;
-const endpoint = '/token';
+const endpoint = '/participant';
 describe('Embedded Auth API Tests', () => {
 	let app: Express;
 
@@ -21,7 +21,7 @@ describe('Embedded Auth API Tests', () => {
 		await stopTestServer();
 	});
 
-	it('✅ Should generate a token with valid input', async () => {
+	it('✅ Should generate a embedded url with valid input', async () => {
 		console.log;
 		const response = await request(app)
 			.post(`${baseUrl}${apiVersion}${endpoint}`)
@@ -31,11 +31,11 @@ describe('Embedded Auth API Tests', () => {
 			})
 			.expect(200);
 
-		expect(response.body).toHaveProperty('token');
-		expect(typeof response.body.token).toBe('string');
+		expect(response.body).toHaveProperty('embeddedURL');
+		expect(typeof response.body.embeddedURL).toBe('string');
 	});
 
-	it('✅ Should generate a token with valid input and some permissions', async () => {
+	it('✅ Should generate an embedded url with valid input and some permissions', async () => {
 		const response = await request(app)
 			.post(`${baseUrl}${apiVersion}${endpoint}`)
 			.send({
@@ -48,8 +48,8 @@ describe('Embedded Auth API Tests', () => {
 			})
 			.expect(200);
 
-		expect(response.body).toHaveProperty('token');
-		expect(typeof response.body.token).toBe('string');
+		expect(response.body).toHaveProperty('embeddedURL');
+		expect(typeof response.body.embeddedURL).toBe('string');
 	});
 
 	it('❌ Should return 400 when missing participantName', async () => {

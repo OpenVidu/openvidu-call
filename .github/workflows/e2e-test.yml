@@ -248,6 +248,10 @@ jobs:
       name: Recordings tests
       runs-on: ubuntu-latest
       steps:
+        - name: Install ffmpeg
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
         - name: Checkout OpenVidu Local Deployment
           uses: actions/checkout@v4
           with:
@@ -285,9 +289,17 @@ jobs:
 
         - uses: actions/setup-node@v4
           with:
-            node-version: '20'
+            node-version: '22.13.1'
         - name: Run Chrome
-          run: docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:${{ env.CHROME_VERSION }}
+          run: |
+            mkdir -p /tmp/downloads
+            docker run --network=host \
+              -v /tmp/downloads:/tmp/downloads \
+              -d selenium/standalone-chrome:${{ env.CHROME_VERSION }}
+            # grant permissions to the /tmp/downloads folder
+            docker exec -u root \
+              $(docker ps -q --filter ancestor=selenium/standalone-chrome:${{ env.CHROME_VERSION }}) \
+              chmod 777 /tmp/downloads
 
         - name: Prepare openvidu-call
           run: |

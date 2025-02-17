@@ -86,6 +86,16 @@ describe('Testing Recording Functionality', () => {
 	});
 
 	it('should be able to download a recording', async () => {
+		if (!downloadDir) {
+			throw new Error('Download directory is not defined');
+		}
+
+		//remove all files from download directory
+
+		fs.readdirSync(downloadDir).forEach((file) => {
+			fs.unlinkSync(`${downloadDir}/${file}`);
+		});
+
 		await connectStartAndStopRecording();
 
 		await utils.waitForElement('.recording-item');
@@ -97,11 +107,6 @@ describe('Testing Recording Functionality', () => {
 		await utils.clickOn('#download-recording-btn');
 
 		await browser.sleep(2000);
-
-		// Check if file is downloaded
-		if (!downloadDir) {
-			throw new Error('Download directory is not defined');
-		}
 
 		const files = fs.readdirSync(downloadDir);
 		const downloadedFile = files.find((file) => file.includes(randomRoomName));
@@ -140,6 +145,5 @@ describe('Testing Recording Functionality', () => {
 		await browser.sleep(1000);
 
 		expect(await utils.getNumberOfElements('.recording-item')).equals(3);
-
 	});
 });
