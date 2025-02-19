@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: commercial@openvidu.io
+    name: OpenVidu
+    url: https://openvidu.io/support/
+  description: |
+    The OpenVidu Embedded API allows seamless integration of interactive video rooms into external applications via an iframe. This API provides endpoints to manage participants, generate secure access URLs, and configure session settings for an embedded experience.
+  termsOfService: https://openvidu.io/conditions/terms-of-service/
+  title: OpenVidu Embedded API
+  version: v1
+servers:
+- description: Development server
+  url: http://localhost:6080/embedded/api/v1
+tags:
+- description: Operations related to managing embedded rooms in OpenVidu.
+  name: OpenViduEmbedded
+paths:
+  /participant:
+    post:
+      description: Generates a secure URL that allows a participant to join an embedded
+        room.
+      operationId: addParticipant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddedTokenOptions'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addParticipant_200_response'
+          description: Successfully generated the embedded URL for the participant
+        "400":
+          content:
+            application/json:
+              example:
+                code: 400
+                message: request/body must have required property <property>
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request — Invalid or missing input parameters
+        "415":
+          content:
+            application/json:
+              example:
+                code: 415
+                message: Unsupported Media Type
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              example:
+                code: 500
+                message: Internal server error
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Generate a participant URL for an embedded room
+      tags:
+      - OpenViduEmbedded
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    EmbeddedTokenOptions:
+      example:
+        permissions:
+          canRecord: true
+          canChat: true
+        participantName: OpenVidu
+        roomName: OpenViduEmbedded
+      properties:
+        participantName:
+          description: |
+            The name of the participant. This will be used to identify the participant in the room.
+          example: OpenVidu
+          type: string
+        roomName:
+          description: The name of the room the participant will join
+          example: OpenViduEmbedded
+          type: string
+        permissions:
+          $ref: '#/components/schemas/EmbeddedParticipantPermissions'
+      required:
+      - participantName
+      - roomName
+      type: object
+    EmbeddedParticipantPermissions:
+      example:
+        canRecord: true
+        canChat: true
+      properties:
+        canRecord:
+          default: true
+          description: |
+            If true, the participant is allowed to record the room.
+          example: true
+          type: boolean
+        canChat:
+          default: true
+          description: |
+            If true, the participant can send and receive chat messages during the room.
+          example: true
+          type: boolean
+      type: object
+    Error:
+      example:
+        code: 0
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    addParticipant_200_response:
+      example:
+        embeddedURL: https://example.com/embedded?token=eyJhbGciOiJIUzI1...
+      properties:
+        embeddedURL:
+          example: https://example.com/embedded?token=eyJhbGciOiJIUzI1...
+          type: string
+      type: object
+

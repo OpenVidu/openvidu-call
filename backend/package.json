@@ -35,7 +35,8 @@
 		"test:embedded-auth-api": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/api/embedded/participants.test.ts",
 		"test:integration-webhooks": "node --experimental-vm-modules node_modules/.bin/jest --forceExit tests/services/openvidu-webhook.service.test.ts",
 		"generate:embedded-clients": "node scripts/generate-embedded-client.js all",
-		"generate:embedded-ts-client": "node scripts/generate-embedded-client.js ts",
+		"generate:embedded-js-client": "node scripts/generate-embedded-client.js js",
+		"generate:embedded-node-client": "node scripts/generate-embedded-client.js node",
 		"generate:embedded-java-client": "node scripts/generate-embedded-client.js java",
 		"lint:fix": "eslint src --fix",
 		"format:code": "prettier --ignore-path .gitignore --write '**/*.{ts,js,json,md}'"
