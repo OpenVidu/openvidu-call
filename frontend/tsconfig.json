@@ -42,5 +42,5 @@
 		"strictInputAccessModifiers": true,
 		"strictTemplates": true
 	},
-	"exclude": ["node_modules", "dist", "test", "e2e", "src/test.ts", "src/**/*.spec.ts"]
+	"exclude": ["node_modules", "dist", "tests", "e2e", "src/test.ts", "src/**/*.spec.ts"]
 }

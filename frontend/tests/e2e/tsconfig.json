@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"target": "es6",
+		"module": "CommonJS",
+		"strict": true,
+		"outDir": "./dist",
+		"rootDir": "./",
+		"lib": ["es6"],
+		"types": ["mocha", "node"],
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
+	},
+	"include": ["*.test.ts", "**/*.test.ts"],
+	"exclude": ["node_modules"]
+}

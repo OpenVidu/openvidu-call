@@ -1,0 +1,37 @@
+{
+	"folders": [
+		// {
+		// 	"path": "."
+		// },
+		{
+			"name": "types",
+			"path": "types"
+		},
+		{
+			"name": "backend",
+			"path": "backend"
+		},
+		{
+			"name": "frontend",
+			"path": "frontend"
+		},
+		{
+			"name": "webcomponent",
+			"path": "frontend/webcomponent",
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": ["openvidu-call", "types", "frontend"],
+		"mochaExplorer.files": "tests/e2e/**/*.test.ts",
+		"mochaExplorer.require": ".mocharc.js",
+		// "mochaExplorer.files": "./frontend/tests/e2e/**/*.test.ts",
+		// "mochaExplorer.mochaPath": "./frontend/node_modules/mocha",
+		// "mochaExplorer.require": "ts-node/register",
+		// "mochaExplorer.configFile": "./frontend/.mocharc.js",
+		// "mochaExplorer.timeout": 30000,
+		// "mochaExplorer.env": {
+		//   "NODE_ENV": "test"
+		// }
+
+	}
+}
