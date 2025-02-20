@@ -1,0 +1,1 @@
+export const WEBCOMPONENT_ROOM_URL = 'http://localhost:5080/';

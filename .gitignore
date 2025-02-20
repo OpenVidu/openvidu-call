@@ -53,3 +53,5 @@ frontend/projects/shared-call-components/src/lib/typings/
 
 backend/src/typings/
 **/*/coverage
+
+frontend/webcomponent/**/openvidu-meet.**.js

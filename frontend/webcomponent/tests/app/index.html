@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<title>OpenVidu Meet WebComponent</title>
+		<script src="./openvidu-meet.bundle.min.js"></script>
+	</head>
+	<body>
+		<openvidu-meet room-url="http://localhost:5080/kakaka" new-attribute="2"></openvidu-meet>
+
+		<script>
+			const meet = document.querySelector('openvidu-meet');
+
+			// Events
+			meet.addEventListener('room-created', (event) => {
+				console.log('ROOM CREATED RECEIVED!!!:', event.detail);
+			});
+
+			// Commands
+			// meet.leaveRoom();
+			// meet.toggleChat();
+		</script>
+	</body>
+</html>
