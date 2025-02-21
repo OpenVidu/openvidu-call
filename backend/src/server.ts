@@ -1,17 +1,20 @@
-import { registerDependencies, container } from './config/dependency-injector.config.js';
 import express, { Response, Express } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
-import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
-import { livekitRouter } from './routes/index.js';
-import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
-import { GlobalPreferencesService } from './services/index.js';
-import { broadcastingRouter } from './routes/broadcasting.routes.js';
-import { recordingRouter } from './routes/recording.routes.js';
-import { preferencesRouter } from './routes/preferences.routes.js';
-import { roomRouter } from './routes/room.routes.js';
 import YAML from 'yamljs';
 import swaggerUi from 'swagger-ui-express';
+import { registerDependencies, container } from './config/dependency-injector.config.js';
+import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
+import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
+import {
+	authRouter,
+	broadcastingRouter,
+	livekitRouter,
+	preferencesRouter,
+	recordingRouter,
+	roomRouter
+} from './routes/index.js';
+import { GlobalPreferencesService } from './services/index.js';
 
 const createApp = () => {
 	const app: Express = express();
@@ -25,14 +28,15 @@ const createApp = () => {
 	app.use(express.static(publicFilesPath));
 	app.use(express.json());
 
-	// Setup routes
-	// app.use('/call/api', standaloneRouter);
-
 	app.use('/meet/api/v1/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 	app.use('/meet/api/v1/rooms', /*mediaTypeValidatorMiddleware,*/ roomRouter);
 	app.use('/meet/api/v1/recordings', /*mediaTypeValidatorMiddleware,*/ recordingRouter);
 	app.use('/meet/api/v1/broadcast', /*mediaTypeValidatorMiddleware,*/ broadcastingRouter);
+	app.use('/meet/api/v1/auth', /*mediaTypeValidatorMiddleware,*/ authRouter);
+
+	// TODO: This route should be part of the rooms router
 	app.use('/meet/api/v1/preferences', /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
+
 	app.use('/meet/health', (res: Response) => res.status(200).send('OK'));
 	app.use('/livekit/webhook', livekitRouter);
 	app.get(/^(?!\/api).*$/, (res: Response) => res.sendFile(indexHtmlPath));
