@@ -36,13 +36,7 @@ export const createRoom = async (req: Request, res: Response) => {
 		return res.status(200).json({ token });
 	} catch (error) {
 		logger.error(`Error creating room '${roomName}' with participant '${participantName}'`);
-		console.error(error);
-
-		if (error instanceof OpenViduCallError) {
-			res.status(error.statusCode).json({ name: error.name, message: error.message });
-		} else {
-			res.status(500).json({ name: 'Room Error', message: 'Failed to create room' });
-		}
+		handleError(res, error);
 	}
 };
 
@@ -57,9 +51,7 @@ export const getRooms = async (req: Request, res: Response) => {
 		return res.status(200).json(rooms);
 	} catch (error) {
 		logger.error('Error getting rooms');
-		console.error(error);
-
-		res.status(500).json({ name: 'Room Error', message: 'Failed to get rooms' });
+		handleError(res, error);
 	}
 };
 
@@ -76,9 +68,7 @@ export const getRoom = async (req: Request, res: Response) => {
 		return res.status(200).json(room);
 	} catch (error) {
 		logger.error(`Error getting room with id '${roomId}'`);
-		console.error(error);
-
-		res.status(500).json({ name: 'Room Error', message: 'Failed to get room' });
+		handleError(res, error);
 	}
 };
 
@@ -95,7 +85,17 @@ export const deleteRoom = async (req: Request, res: Response) => {
 		return res.status(200).json({ message: 'Room deleted' });
 	} catch (error) {
 		logger.error(`Error deleting room with id '${roomId}'`);
-		console.error(error);
-		res.status(500).json({ name: 'Room Error', message: 'Failed to delete room' });
+		handleError(res, error);
+	}
+};
+
+const handleError = (res: Response, error: OpenViduCallError | unknown) => {
+	const logger = container.get(LoggerService);
+	logger.error(String(error));
+
+	if (error instanceof OpenViduCallError) {
+		res.status(error.statusCode).json({ name: error.name, message: error.message });
+	} else {
+		res.status(500).json({ name: 'Room Error', message: 'Room operation failed' });
 	}
 };
