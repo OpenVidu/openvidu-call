@@ -5,7 +5,7 @@
 
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { S3PreferenceStorage } from './s3-preferences-storage.js';
-import { CALL_PREFERENCES_STORAGE_MODE } from '../../environment.js';
+import { MEET_PREFERENCES_STORAGE_MODE } from '../../environment.js';
 import { inject, injectable } from '../../config/dependency-injector.config.js';
 import { LoggerService } from '../logger.service.js';
 
@@ -17,7 +17,7 @@ export class GlobalPreferencesStorageFactory {
 	) {}
 
 	create(): PreferencesStorage {
-		const storageMode = CALL_PREFERENCES_STORAGE_MODE;
+		const storageMode = MEET_PREFERENCES_STORAGE_MODE;
 
 		switch (storageMode) {
 			case 's3':

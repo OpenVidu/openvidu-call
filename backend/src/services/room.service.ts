@@ -1,12 +1,15 @@
 import { inject, injectable } from '../config/dependency-injector.config.js';
 import { CreateOptions, DataPacket_Kind, Room, RoomServiceClient, SendDataOptions } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL_PRIVATE, CALL_NAME_ID } from '../environment.js';
+import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL_PRIVATE, MEET_NAME_ID } from '../environment.js';
 import { OpenViduCallError, errorRoomNotFound, internalError } from '../models/error.model.js';
 
 @injectable()
 export class RoomService {
 	private roomClient: RoomServiceClient;
+
+	// TODO: REMOVE this and save in mongo
+	private roomsMap: Map<string, string[]> = new Map();
 
 	constructor(@inject(LoggerService) protected logger: LoggerService) {
 		const livekitUrlHostname = LIVEKIT_URL_PRIVATE.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:');
@@ -22,13 +25,27 @@ export class RoomService {
 		const roomOptions: CreateOptions = {
 			name: roomName,
 			metadata: JSON.stringify({
-				createdBy: CALL_NAME_ID
+				createdBy: MEET_NAME_ID
 			})
 			// emptyTimeout: 315360000,
 			// departureTimeout: 1
 		};
 
 		return this.roomClient.createRoom(roomOptions);
+	}
+
+	/**
+	 * Retrieves a list of rooms.
+	 * @returns A Promise that resolves to an array of Room objects.
+	 * @throws If there was an error retrieving the rooms.
+	 */
+	async getRooms(): Promise<Room[]> {
+		try {
+			return await this.roomClient.listRooms();
+		} catch (error) {
+			this.logger.error(`Error getting rooms ${error}`);
+			throw internalError(`Error getting rooms: ${error}`);
+		}
 	}
 
 	/**
@@ -55,6 +72,26 @@ export class RoomService {
 	}
 
 	/**
+	 * Deletes a room by its name.
+	 * @param roomName - The name of the room to delete.
+	 * @returns A Promise that resolves to the deleted Room object.
+	 * @throws If there was an error deleting the room or if the room was not found.
+	 */
+	async deleteRoom(roomName: string): Promise<Room> {
+		try {
+			const room = await this.getRoom(roomName);
+			await this.roomClient.deleteRoom(roomName);
+			return room;
+		} catch (error) {
+			if (error instanceof OpenViduCallError) {
+				throw error;
+			}
+
+			throw internalError(`Error deleting room: ${error}`);
+		}
+	}
+
+	/**
 	 * Checks if a room was created by the current user.
 	 *
 	 * @param roomOrRoomName - The room object or the room name.
@@ -76,7 +113,7 @@ export class RoomService {
 			}
 
 			const metadata = room.metadata ? JSON.parse(room.metadata) : null;
-			return metadata?.createdBy === CALL_NAME_ID;
+			return metadata?.createdBy === MEET_NAME_ID;
 		} catch (error) {
 			console.warn('Error getting Room while checking webhook. Room may no longer exist. Ignoring');
 			return false;

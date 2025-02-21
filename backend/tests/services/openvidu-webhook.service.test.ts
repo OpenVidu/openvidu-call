@@ -5,7 +5,7 @@ import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals
 
 import { Room } from 'livekit-server-sdk';
 import { OpenViduWebhookEvent } from '../../src/models/webhook.model';
-import { CALL_WEBHOOK_URL } from '../../src/environment';
+import { MEET_WEBHOOK_URL } from '../../src/environment';
 
 describe('OpenVidu Webhook Service', () => {
 	let webhookService: OpenViduWebhookService;
@@ -52,7 +52,7 @@ describe('OpenVidu Webhook Service', () => {
 
 		expect(loggerMock.verbose).toHaveBeenCalledWith(`Sending room finished webhook for room ${mockRoom.name}`);
 
-		expect(fetch).toHaveBeenCalledWith(CALL_WEBHOOK_URL, {
+		expect(fetch).toHaveBeenCalledWith(MEET_WEBHOOK_URL, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({

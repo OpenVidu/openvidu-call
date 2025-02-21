@@ -1,6 +1,6 @@
 import { injectable } from '../config/dependency-injector.config.js';
 import winston from 'winston';
-import { CALL_LOG_LEVEL } from '../environment.js';
+import { MEET_LOG_LEVEL } from '../environment.js';
 
 @injectable()
 export class LoggerService {
@@ -8,7 +8,7 @@ export class LoggerService {
 
 	constructor() {
 		this.logger = winston.createLogger({
-			level: CALL_LOG_LEVEL,
+			level: MEET_LOG_LEVEL,
 			format: winston.format.combine(
 				winston.format.timestamp({
 					format: 'YYYY-MM-DD HH:mm:ss'

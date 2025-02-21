@@ -45,3 +45,57 @@ export const createRoom = async (req: Request, res: Response) => {
 		}
 	}
 };
+
+export const getRooms = async (req: Request, res: Response) => {
+	const logger = container.get(LoggerService);
+
+	try {
+		logger.verbose('Getting rooms');
+
+		const roomService = container.get(RoomService);
+		const rooms = await roomService.getRooms();
+		return res.status(200).json(rooms);
+	} catch (error) {
+		logger.error('Error getting rooms');
+		console.error(error);
+
+		res.status(500).json({ name: 'Room Error', message: 'Failed to get rooms' });
+	}
+};
+
+export const getRoom = async (req: Request, res: Response) => {
+	const logger = container.get(LoggerService);
+
+	const { roomId } = req.params;
+
+	try {
+		logger.verbose(`Getting room with id '${roomId}'`);
+
+		const roomService = container.get(RoomService);
+		const room = await roomService.getRoom(roomId);
+		return res.status(200).json(room);
+	} catch (error) {
+		logger.error(`Error getting room with id '${roomId}'`);
+		console.error(error);
+
+		res.status(500).json({ name: 'Room Error', message: 'Failed to get room' });
+	}
+};
+
+export const deleteRoom = async (req: Request, res: Response) => {
+	const logger = container.get(LoggerService);
+
+	const { roomId } = req.params;
+
+	try {
+		logger.verbose(`Deleting room with id '${roomId}'`);
+
+		const roomService = container.get(RoomService);
+		await roomService.deleteRoom(roomId);
+		return res.status(200).json({ message: 'Room deleted' });
+	} catch (error) {
+		logger.error(`Error deleting room with id '${roomId}'`);
+		console.error(error);
+		res.status(500).json({ name: 'Room Error', message: 'Failed to delete room' });
+	}
+};

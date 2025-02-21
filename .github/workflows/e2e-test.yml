@@ -145,7 +145,7 @@ jobs:
   #         done
   #     - name: Serve openvidu-call
   #       env:
-  #         CALL_PRIVATE_ACCESS: true
+  #         MEET_PRIVATE_ACCESS: true
   #       run: npm run start --prefix backend &
   #     - name: Run tests
   #       env:
@@ -195,7 +195,7 @@ jobs:
   #     - name: Run tests
   #       env:
   #         LAUNCH_MODE: CI
-  #         CALL_PRIVATE_ACCESS: false
+  #         MEET_PRIVATE_ACCESS: false
   #       run: npm run e2e:run-home --prefix frontend
 
   # room_e2e_test:
@@ -241,7 +241,7 @@ jobs:
   #     - name: Run tests
   #       env:
   #         LAUNCH_MODE: CI
-  #         CALL_PRIVATE_ACCESS: false
+  #         MEET_PRIVATE_ACCESS: false
   #       run: npm run e2e:run-room --prefix frontend
 
   recording_e2e_test:

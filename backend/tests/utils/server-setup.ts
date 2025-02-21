@@ -7,7 +7,7 @@ import { SERVER_PORT } from '../../src/environment.js';
 import { Server } from 'http';
 
 let server: Server
-const baseUrl = '/call/api/health';
+const baseUrl = '/meet/health';
 
 export const startTestServer = async (): Promise<Express> => {
 	registerDependencies();

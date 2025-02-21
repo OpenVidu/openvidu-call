@@ -1,16 +1,21 @@
 import { registerDependencies, container } from './config/dependency-injector.config.js';
-import express, { Request, Response, Express } from 'express';
+import express, { Response, Express } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
-import { indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
-import { standaloneRouter, livekitRouter } from './routes/index.js';
+import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
+import { livekitRouter } from './routes/index.js';
 import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
-import { embeddedRouter } from './routes/embedded.routes.js';
 import { GlobalPreferencesService } from './services/index.js';
-import { mediaTypeValidatorMiddleware } from './middlewares/content-type.middleware.js';
+import { broadcastingRouter } from './routes/broadcasting.routes.js';
+import { recordingRouter } from './routes/recording.routes.js';
+import { preferencesRouter } from './routes/preferences.routes.js';
+import { roomRouter } from './routes/room.routes.js';
+import YAML from 'yamljs';
+import swaggerUi from 'swagger-ui-express';
 
 const createApp = () => {
 	const app: Express = express();
+	const openapiSpec = YAML.load(getOpenApiSpecPath());
 
 	// Enable CORS support
 	if (SERVER_CORS_ORIGIN) {
@@ -21,15 +26,17 @@ const createApp = () => {
 	app.use(express.json());
 
 	// Setup routes
-	app.use('/call/api', standaloneRouter);
-	app.use('/embedded/api/v1', mediaTypeValidatorMiddleware, embeddedRouter);
-	app.use('/livekit', livekitRouter);
-	app.get(/^(?!\/api).*$/, (req: Request, res: Response) => {
-		res.sendFile(indexHtmlPath);
-	});
-	app.use((req: Request, res: Response) => {
-		res.status(404).json({ error: 'Not found' });
-	});
+	// app.use('/call/api', standaloneRouter);
+
+	app.use('/meet/api/v1/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
+	app.use('/meet/api/v1/rooms', /*mediaTypeValidatorMiddleware,*/ roomRouter);
+	app.use('/meet/api/v1/recordings', /*mediaTypeValidatorMiddleware,*/ recordingRouter);
+	app.use('/meet/api/v1/broadcast', /*mediaTypeValidatorMiddleware,*/ broadcastingRouter);
+	app.use('/meet/api/v1/preferences', /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
+	app.use('/meet/health', (res: Response) => res.status(200).send('OK'));
+	app.use('/livekit/webhook', livekitRouter);
+	app.get(/^(?!\/api).*$/, (res: Response) => res.sendFile(indexHtmlPath));
+	app.use((res: Response) => res.status(404).json({ error: 'Not found' }));
 
 	return app;
 };
@@ -44,8 +51,8 @@ const startServer = (app: express.Application) => {
 		console.log(' ');
 		console.log('---------------------------------------------------------');
 		console.log(' ');
-		console.log('OpenVidu Call Server is listening on port', chalk.cyanBright(SERVER_PORT));
-		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/embedded/api/v1/docs`));
+		console.log('OpenVidu Meet is listening on port', chalk.cyanBright(SERVER_PORT));
+		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/meet/api/v1/docs`));
 		logEnvVars();
 		await initializeGlobalPreferences();
 	});

@@ -15,12 +15,12 @@ import {
 } from '@aws-sdk/client-s3';
 
 import {
-	CALL_S3_ACCESS_KEY,
-	CALL_AWS_REGION,
-	CALL_S3_BUCKET,
-	CALL_S3_SERVICE_ENDPOINT,
-	CALL_S3_SECRET_KEY,
-	CALL_S3_WITH_PATH_STYLE_ACCESS
+	MEET_S3_ACCESS_KEY,
+	MEET_AWS_REGION,
+	MEET_S3_BUCKET,
+	MEET_S3_SERVICE_ENDPOINT,
+	MEET_S3_SECRET_KEY,
+	MEET_S3_WITH_PATH_STYLE_ACCESS
 } from '../environment.js';
 import { errorS3NotAvailable, internalError } from '../models/error.model.js';
 import { Readable } from 'stream';
@@ -34,13 +34,13 @@ export class S3Service {
 	constructor(@inject(LoggerService) protected logger: LoggerService) {
 		console.log('CE S3Service constructor');
 		const config: S3ClientConfig = {
-			region: CALL_AWS_REGION,
+			region: MEET_AWS_REGION,
 			credentials: {
-				accessKeyId: CALL_S3_ACCESS_KEY,
-				secretAccessKey: CALL_S3_SECRET_KEY
+				accessKeyId: MEET_S3_ACCESS_KEY,
+				secretAccessKey: MEET_S3_SECRET_KEY
 			},
-			endpoint: CALL_S3_SERVICE_ENDPOINT,
-			forcePathStyle: CALL_S3_WITH_PATH_STYLE_ACCESS === 'true'
+			endpoint: MEET_S3_SERVICE_ENDPOINT,
+			forcePathStyle: MEET_S3_WITH_PATH_STYLE_ACCESS === 'true'
 		};
 
 		this.s3 = new S3Client(config);
@@ -50,10 +50,10 @@ export class S3Service {
 	 * Checks if a file exists in the specified S3 bucket.
 	 *
 	 * @param path - The path of the file to check.
-	 * @param CALL_AWS_S3_BUCKET - The name of the S3 bucket.
+	 * @param MEET_AWS_S3_BUCKET - The name of the S3 bucket.
 	 * @returns A boolean indicating whether the file exists or not.
 	 */
-	async exists(path: string, bucket: string = CALL_S3_BUCKET) {
+	async exists(path: string, bucket: string = MEET_S3_BUCKET) {
 		try {
 			await this.getHeaderObject(path, bucket);
 			return true;
@@ -65,20 +65,20 @@ export class S3Service {
 	// copyObject(
 	// 	path: string,
 	// 	newFileName: string,
-	// 	bucket: string = CALL_AWS_S3_BUCKET
+	// 	bucket: string = MEET_AWS_S3_BUCKET
 	// ): Promise<CopyObjectCommandOutput> {
 	// 	const newKey = path.replace(path.substring(path.lastIndexOf('/') + 1), newFileName);
 
 	// 	const command = new CopyObjectCommand({
 	// 		Bucket: bucket,
-	// 		CopySource: `${CALL_AWS_S3_BUCKET}/${path}`,
+	// 		CopySource: `${MEET_AWS_S3_BUCKET}/${path}`,
 	// 		Key: newKey
 	// 	});
 
 	// 	return this.run(command);
 	// }
 
-	async saveObject(name: string, body: any, bucket: string = CALL_S3_BUCKET): Promise<PutObjectCommandOutput> {
+	async saveObject(name: string, body: any, bucket: string = MEET_S3_BUCKET): Promise<PutObjectCommandOutput> {
 		try {
 			const command = new PutObjectCommand({
 				Bucket: bucket,
@@ -101,11 +101,11 @@ export class S3Service {
 	 * Deletes an object from an S3 bucket.
 	 *
 	 * @param name - The name of the object to delete.
-	 * @param bucket - The name of the S3 bucket (optional, defaults to CALL_S3_BUCKET).
+	 * @param bucket - The name of the S3 bucket (optional, defaults to MEET_S3_BUCKET).
 	 * @returns A promise that resolves to the result of the delete operation.
 	 * @throws Throws an error if there was an error deleting the object.
 	 */
-	async deleteObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
+	async deleteObject(name: string, bucket: string = MEET_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
 		try {
 			this.logger.info(`Deleting object in S3: ${name}`);
 			const command = new DeleteObjectCommand({ Bucket: bucket, Key: name });
@@ -121,7 +121,7 @@ export class S3Service {
 	 *
 	 * @param {string} [subbucket=''] - The subbucket within the main bucket to list objects from.
 	 * @param {string} [searchPattern=''] - A regex pattern to filter the objects by their keys.
-	 * @param {string} [bucket=CALL_S3_BUCKET] - The name of the S3 bucket. Defaults to CALL_S3_BUCKET.
+	 * @param {string} [bucket=MEET_S3_BUCKET] - The name of the S3 bucket. Defaults to MEET_S3_BUCKET.
 	 * @param {number} [maxObjects=1000] - The maximum number of objects to retrieve in one request. Defaults to 1000.
 	 * @returns {Promise<ListObjectsV2CommandOutput>} - A promise that resolves to the output of the ListObjectsV2Command.
 	 * @throws {Error} - Throws an error if there is an issue listing the objects.
@@ -129,7 +129,7 @@ export class S3Service {
 	async listObjects(
 		subbucket = '',
 		searchPattern = '',
-		bucket: string = CALL_S3_BUCKET,
+		bucket: string = MEET_S3_BUCKET,
 		maxObjects = 1000
 	): Promise<ListObjectsV2CommandOutput> {
 		const prefix = subbucket ? `${subbucket}/` : '';
@@ -189,7 +189,7 @@ export class S3Service {
 		}
 	}
 
-	async getObjectAsJson(name: string, bucket: string = CALL_S3_BUCKET): Promise<Object | undefined> {
+	async getObjectAsJson(name: string, bucket: string = MEET_S3_BUCKET): Promise<Object | undefined> {
 		try {
 			const obj = await this.getObject(name, bucket);
 			const str = await obj.Body?.transformToString();
@@ -209,7 +209,7 @@ export class S3Service {
 		}
 	}
 
-	async getObjectAsStream(name: string, bucket: string = CALL_S3_BUCKET, range?: { start: number; end: number }) {
+	async getObjectAsStream(name: string, bucket: string = MEET_S3_BUCKET, range?: { start: number; end: number }) {
 		try {
 			const obj = await this.getObject(name, bucket, range);
 
@@ -229,7 +229,7 @@ export class S3Service {
 		}
 	}
 
-	async getHeaderObject(name: string, bucket: string = CALL_S3_BUCKET): Promise<HeadObjectCommandOutput> {
+	async getHeaderObject(name: string, bucket: string = MEET_S3_BUCKET): Promise<HeadObjectCommandOutput> {
 		try {
 			const headParams: HeadObjectCommand = new HeadObjectCommand({
 				Bucket: bucket,
@@ -248,7 +248,7 @@ export class S3Service {
 
 	private async getObject(
 		name: string,
-		bucket: string = CALL_S3_BUCKET,
+		bucket: string = MEET_S3_BUCKET,
 		range?: { start: number; end: number }
 	): Promise<GetObjectCommandOutput> {
 		const command = new GetObjectCommand({

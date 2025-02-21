@@ -9,7 +9,7 @@ import { lastValueFrom } from 'rxjs';
 })
 export class HttpService {
 	// private baseHref: string;
-	protected pathPrefix = 'call/api';
+	protected pathPrefix = 'meet/api/v1';
 
 	constructor(protected http: HttpClient) {
 		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');

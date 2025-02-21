@@ -1,9 +1,9 @@
 import {
-	CALL_ADMIN_SECRET,
-	CALL_ADMIN_USER,
-	CALL_PRIVATE_ACCESS,
-	CALL_SECRET,
-	CALL_USER,
+	MEET_ADMIN_SECRET,
+	MEET_ADMIN_USER,
+	MEET_PRIVATE_ACCESS,
+	MEET_SECRET,
+	MEET_USER,
 	LIVEKIT_API_KEY,
 	LIVEKIT_API_SECRET
 } from '../environment.js';
@@ -31,8 +31,8 @@ export class AuthService {
 	}
 
 	authenticateUser(username: string, password: string): boolean {
-		if (CALL_PRIVATE_ACCESS === 'true') {
-			return username === CALL_USER && password === CALL_SECRET;
+		if (MEET_PRIVATE_ACCESS === 'true') {
+			return username === MEET_USER && password === MEET_SECRET;
 		}
 
 		return true;
@@ -40,7 +40,7 @@ export class AuthService {
 
 	// TODO: use hash and salt for password storage
 	authenticateAdmin(username: string, password: string): boolean {
-		return username === CALL_ADMIN_USER && password === CALL_ADMIN_SECRET;
+		return username === MEET_ADMIN_USER && password === MEET_ADMIN_SECRET;
 	}
 
 	validateCredentials(username: string, password: string): string[] {

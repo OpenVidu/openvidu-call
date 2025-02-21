@@ -4,6 +4,6 @@ import { lkWebhookHandler } from '../controllers/livekit-webhook.controller.js';
 const livekitRouter = Router();
 
 livekitRouter.use(express.raw({ type: 'application/webhook+json' }));
-livekitRouter.post('/webhook', lkWebhookHandler);
+livekitRouter.post('/', lkWebhookHandler);
 
 export { livekitRouter };

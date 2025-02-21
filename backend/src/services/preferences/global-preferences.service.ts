@@ -8,7 +8,7 @@ import { LoggerService } from '../logger.service.js';
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { GlobalPreferencesStorageFactory } from './global-preferences.factory.js';
 import { OpenViduCallError } from '../../models/error.model.js';
-import { CALL_NAME_ID } from '../../environment.js';
+import { MEET_NAME_ID } from '../../environment.js';
 import { injectable, inject } from '../../config/dependency-injector.config.js';
 
 @injectable()
@@ -118,7 +118,7 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 	 */
 	protected getDefaultPreferences(): GlobalPreferences {
 		return {
-			projectId: CALL_NAME_ID,
+			projectId: MEET_NAME_ID,
 			roomPreferences: {
 				recordingPreferences: { enabled: true },
 				broadcastingPreferences: { enabled: true },

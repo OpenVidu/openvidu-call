@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import basicAuth from 'express-basic-auth';
 
 import { AuthService } from '../services/auth.service.js';
-import { CALL_ADMIN_SECRET, CALL_ADMIN_USER, CALL_PRIVATE_ACCESS, CALL_SECRET, CALL_USER } from '../environment.js';
+import { MEET_ADMIN_SECRET, MEET_ADMIN_USER, MEET_PRIVATE_ACCESS, MEET_SECRET, MEET_USER } from '../environment.js';
 
 
 // TODO: Implement the authMiddleware function
@@ -27,12 +27,12 @@ import { CALL_ADMIN_SECRET, CALL_ADMIN_USER, CALL_PRIVATE_ACCESS, CALL_SECRET, C
 
 // Configure basic auth middleware for user and admin access
 export const withAdminAndUserBasicAuth = (req: Request, res: Response, next: NextFunction) => {
-	if (CALL_PRIVATE_ACCESS === 'true') {
+	if (MEET_PRIVATE_ACCESS === 'true') {
 		// Configure basic auth middleware if access is private
 		const basicAuthMiddleware = basicAuth({
 			users: {
-				[CALL_USER]: CALL_SECRET,
-				[CALL_ADMIN_USER]: CALL_ADMIN_SECRET
+				[MEET_USER]: MEET_SECRET,
+				[MEET_ADMIN_USER]: MEET_ADMIN_SECRET
 			},
 			challenge: true,
 			unauthorizedResponse: () => 'Unauthorized'
@@ -47,7 +47,7 @@ export const withAdminAndUserBasicAuth = (req: Request, res: Response, next: Nex
 // Configure basic auth middleware for admin access
 export const withAdminBasicAuth = basicAuth({
 	users: {
-		[CALL_ADMIN_USER]: CALL_ADMIN_SECRET
+		[MEET_ADMIN_USER]: MEET_ADMIN_SECRET
 	},
 	challenge: true,
 	unauthorizedResponse: () => 'Unauthorized'
@@ -55,11 +55,11 @@ export const withAdminBasicAuth = basicAuth({
 
 // Configure basic auth middleware for user access
 export const withUserBasicAuth = (req: Request, res: Response, next: NextFunction) => {
-	if (CALL_PRIVATE_ACCESS === 'true') {
+	if (MEET_PRIVATE_ACCESS === 'true') {
 		// Configure basic auth middleware if access is private
 		const basicAuthMiddleware = basicAuth({
 			users: {
-				[CALL_USER]: CALL_SECRET
+				[MEET_USER]: MEET_SECRET
 			},
 			challenge: true,
 			unauthorizedResponse: () => 'Unauthorized'
