@@ -12,11 +12,12 @@ import { ConsoleNavLink } from '../../models/sidenav.model';
 export class ConsoleComponent {
 	navLinks: ConsoleNavLink[] = [
 		{ label: 'Overview', route: 'overview', icon: 'dashboard' },
-		{ label: 'Access & Permissions', route: 'access-permissions', icon: 'lock' },
-		{ label: 'Appearance', route: 'appearance', icon: 'palette' },
-		{ label: 'Room Preferences', route: 'room-preferences', icon: 'video_settings' },
-		{ label: 'Security', route: 'security-preferences', icon: 'security' },
-		{ label: 'About', route: 'about', icon: 'info' }
+		{ label: 'Rooms', route: 'room-preferences', icon: 'video_settings' },
+		{ label: 'Recordings', route: 'recordings', icon: 'radio_button_checked' },
+		// { label: 'Access & Permissions', route: 'access-permissions', icon: 'lock' },
+		// { label: 'Appearance', route: 'appearance', icon: 'palette' },
+		// { label: 'Security', route: 'security-preferences', icon: 'security' },
+		// { label: 'About', route: 'about', icon: 'info' }
 	];
 
 	constructor() {}
