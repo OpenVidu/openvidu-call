@@ -24,21 +24,23 @@
 		[opened]="isMobile ? 'false' : 'true'"
 	>
 		<mat-nav-list>
-			<ng-container *ngFor="let link of navLinks">
-				<a
-					mat-list-item
-					class="menu-button"
-					[routerLink]="link.route"
-					(click)="link.clickHandler ? link.clickHandler() : null"
-				>
-					<span class="entry" [ngClass]="isSideMenuCollapsed ? 'centeredEntry' : 'entry'">
-						<mat-icon>{{ link.icon }}</mat-icon>
-						@if (!isSideMenuCollapsed) {
-							{{ link.label }}
-						}
-					</span>
-				</a>
-			</ng-container>
+			@for (link of navLinks; track link.route) {
+				<ng-container>
+					<a
+						mat-list-item
+						class="menu-button"
+						[routerLink]="link.route"
+						(click)="link.clickHandler ? link.clickHandler() : null"
+					>
+						<span class="entry" [ngClass]="isSideMenuCollapsed ? 'centeredEntry' : 'entry'">
+							<mat-icon>{{ link.icon }}</mat-icon>
+							@if (!isSideMenuCollapsed) {
+								{{ link.label }}
+							}
+						</span>
+					</a>
+				</ng-container>
+			}
 		</mat-nav-list>
 
 		@if (!isSideMenuCollapsed) {
