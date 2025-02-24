@@ -1,161 +1,159 @@
+import { uid } from 'uid/single';
 import { inject, injectable } from '../config/dependency-injector.config.js';
-import { CreateOptions, DataPacket_Kind, Room, RoomServiceClient, SendDataOptions } from 'livekit-server-sdk';
+import { CreateOptions, Room, SendDataOptions } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL_PRIVATE, MEET_NAME_ID } from '../environment.js';
-import { OpenViduCallError, errorRoomNotFound, internalError } from '../models/error.model.js';
+import { MEET_NAME_ID } from '../environment.js';
+import { OpenViduRoom, OpenViduRoomOptions } from '../typings/ce/room.js';
+import { LiveKitService } from './livekit.service.js';
 
+/**
+ * Service for managing OpenVidu Meet rooms.
+ *
+ * This service provides methods to create, list, retrieve, delete, and send signals to OpenVidu rooms.
+ * It uses the LiveKitService to interact with the underlying LiveKit rooms.
+ */
 @injectable()
 export class RoomService {
-	private roomClient: RoomServiceClient;
-
 	// TODO: REMOVE this and save in mongo
 	private roomsMap: Map<string, string[]> = new Map();
 
-	constructor(@inject(LoggerService) protected logger: LoggerService) {
-		const livekitUrlHostname = LIVEKIT_URL_PRIVATE.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:');
-		this.roomClient = new RoomServiceClient(livekitUrlHostname, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
-	}
+	constructor(
+		@inject(LoggerService) protected logger: LoggerService,
+		@inject(LiveKitService) protected livekitService: LiveKitService
+	) {}
 
 	/**
-	 * Creates a new room with the specified name.
-	 * @param roomName - The name of the room to create.
-	 * @returns A Promise that resolves to the created Room object.
+	 * Creates a room with the specified options.
 	 */
-	createRoom(roomName: string): Promise<Room> {
-		const roomOptions: CreateOptions = {
-			name: roomName,
+	/**
+	 * Creates an OpenVidu room with the specified options.
+	 *
+	 * @param {string} baseUrl - The base URL for the room.
+	 * @param {OpenViduRoomOptions} options - The options for creating the OpenVidu room.
+	 * @returns {Promise<OpenViduRoom>} A promise that resolves to the created OpenVidu room.
+	 *
+	 * @throws {Error} If the room creation fails.
+	 *
+	 */
+	async createOpenViduRoom(baseUrl: string, options: OpenViduRoomOptions): Promise<OpenViduRoom> {
+		const { roomNamePrefix, endDate } = options;
+		const creationTime = Date.now();
+		const livekitRoomOptions: CreateOptions = {
+			name: `${roomNamePrefix}${uid(15)}`,
 			metadata: JSON.stringify({
-				createdBy: MEET_NAME_ID
-			})
-			// emptyTimeout: 315360000,
+				createdBy: MEET_NAME_ID,
+				baseUrl,
+				roomOptions: options
+			}),
+			// TODO: Add more options
+			emptyTimeout: endDate - creationTime
+			// maxParticipants: 4,
 			// departureTimeout: 1
 		};
 
-		return this.roomClient.createRoom(roomOptions);
+		const livekitRoom = await this.livekitService.createRoom(livekitRoomOptions);
+		console.log('Room created:', livekitRoom);
+		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(livekitRoom);
+
+		//TODO Save it in BBDD
+		// this.roomsMap.set(roomOptions.name, []);
+
+		return openviduRoom;
 	}
 
 	/**
 	 * Retrieves a list of rooms.
-	 * @returns A Promise that resolves to an array of Room objects.
+	 * @returns A Promise that resolves to an array of {@link OpenViduRoom} objects.
 	 * @throws If there was an error retrieving the rooms.
 	 */
-	async getRooms(): Promise<Room[]> {
-		try {
-			return await this.roomClient.listRooms();
-		} catch (error) {
-			this.logger.error(`Error getting rooms ${error}`);
-			throw internalError(`Error getting rooms: ${error}`);
-		}
+	async listOpenViduRooms(): Promise<OpenViduRoom[]> {
+		const livekitRooms = await this.livekitService.listRooms();
+		return livekitRooms.map((livekitRoom) => this.toOpenViduRoom(livekitRoom));
 	}
 
 	/**
-	 * Retrieves a room by its name.
+	 * Retrieves an OpenVidu room by its name.
+	 *
 	 * @param roomName - The name of the room to retrieve.
-	 * @returns A Promise that resolves to the retrieved Room object.
-	 * @throws If there was an error retrieving the room or if the room was not found.
+	 * @returns A promise that resolves to an {@link OpenViduRoom} object.
 	 */
-	async getRoom(roomName: string): Promise<Room> {
-		let rooms: Room[] = [];
-
-		try {
-			rooms = await this.roomClient.listRooms([roomName]);
-		} catch (error) {
-			this.logger.error(`Error getting room ${error}`);
-			throw internalError(`Error getting room: ${error}`);
-		}
-
-		if (rooms.length === 0) {
-			throw errorRoomNotFound(roomName);
-		}
-
-		return rooms[0];
+	async getOpenViduRoom(roomName: string): Promise<OpenViduRoom> {
+		const livekitRoom = await this.livekitService.getRoom(roomName);
+		return this.toOpenViduRoom(livekitRoom);
 	}
 
 	/**
-	 * Deletes a room by its name.
-	 * @param roomName - The name of the room to delete.
-	 * @returns A Promise that resolves to the deleted Room object.
-	 * @throws If there was an error deleting the room or if the room was not found.
+	 * Deletes an OpenVidu room by its name.
+	 *
+	 * This method retrieves the OpenVidu room details and then deletes the room
+	 * using the LiveKit service. The details of the deleted room are returned.
+	 *
+	 * @param roomName - The name of the room to be deleted.
+	 * @returns A promise that resolves to the details of the deleted OpenVidu room.
 	 */
-	async deleteRoom(roomName: string): Promise<Room> {
-		try {
-			const room = await this.getRoom(roomName);
-			await this.roomClient.deleteRoom(roomName);
-			return room;
-		} catch (error) {
-			if (error instanceof OpenViduCallError) {
-				throw error;
-			}
-
-			throw internalError(`Error deleting room: ${error}`);
-		}
+	async deleteOpenViduRoom(roomName: string): Promise<OpenViduRoom> {
+		const openviduRoom = await this.getOpenViduRoom(roomName);
+		await this.livekitService.deleteRoom(roomName);
+		return openviduRoom;
 	}
 
 	/**
-	 * Checks if a room was created by the current user.
+	 * Checks if a room was created by the OpenVidu Meet application.
 	 *
 	 * @param roomOrRoomName - The room object or the room name.
-	 * @returns A promise that resolves to a boolean indicating whether the room was created by the current user.
+	 * @returns A promise that resolves to a boolean indicating if the room was created by OpenVidu Meet.
 	 */
-	async isRoomCreatedByMe(roomOrRoomName: Room | string): Promise<boolean> {
+	async isRoomCreatedByOpenViduMeet(roomOrRoomName: Room | string): Promise<boolean> {
 		try {
-			let room: Room;
+			const roomName = typeof roomOrRoomName === 'string' ? roomOrRoomName : roomOrRoomName.name;
+			const livekitRoom = await this.livekitService.getRoom(roomName);
 
-			if (typeof roomOrRoomName === 'string') {
-				room = await this.getRoom(roomOrRoomName);
-			} else {
-				room = roomOrRoomName;
-
-				// !KNOWN issue: room metadata is empty when track_publish and track_unpublish events are received
-				if (!room.metadata) {
-					room = await this.getRoom(room.name);
-				}
+			if (!livekitRoom) {
+				console.warn(`Room ${roomName} not found or no longer exists.`);
+				return false;
 			}
 
-			const metadata = room.metadata ? JSON.parse(room.metadata) : null;
+			// Parse metadata safely, defaulting to an empty object if null/undefined
+			const metadata = livekitRoom.metadata ? JSON.parse(livekitRoom.metadata) : {};
 			return metadata?.createdBy === MEET_NAME_ID;
 		} catch (error) {
-			console.warn('Error getting Room while checking webhook. Room may no longer exist. Ignoring');
+			console.error('Error checking if room was created by me:', error);
 			return false;
 		}
 	}
 
 	/**
-	 * Sends a signal to the specified room.
+	 * Sends a signal to participants in a specified room.
 	 *
-	 * @param roomName - The name of the room.
-	 * @param rawData - The raw data to be sent as a signal.
-	 * @param options - The options for sending the signal.
-	 * @returns A Promise that resolves to the updated Room object after sending the signal.
-	 * @throws {OpenViduCallError} If there is an error sending the signal.
-	 * @throws {Error} If the room is not found or if there is no RoomServiceClient available.
+	 * @param roomName - The name of the room where the signal will be sent.
+	 * @param rawData - The raw data to be sent as the signal.
+	 * @param options - Options for sending the data, including the topic and destination identities.
+	 * @returns A promise that resolves when the signal has been sent.
 	 */
-	async sendSignal(roomName: string, rawData: any, options: SendDataOptions): Promise<Room> {
-		try {
-			if (this.roomClient) {
-				const room = await this.getRoom(roomName);
+	async sendSignal(roomName: string, rawData: any, options: SendDataOptions): Promise<void> {
+		this.logger.verbose(
+			`Sending signal "${options.topic}" to ${
+				options.destinationIdentities ? `participant(s) ${options.destinationIdentities}` : 'all participants'
+			} in room "${roomName}".`
+		);
+		this.livekitService.sendData(roomName, rawData, options);
+	}
 
-				if (!room) throw errorRoomNotFound(roomName);
-
-				const data: Uint8Array = new TextEncoder().encode(JSON.stringify(rawData));
-				this.logger.verbose(
-					`Sending signal "${options.topic}" to ${
-						options.destinationIdentities
-							? `participant(s) ${options.destinationIdentities}`
-							: 'all participants'
-					} in room "${roomName}".`
-				);
-				await this.roomClient.sendData(roomName, data, DataPacket_Kind.RELIABLE, options);
-				return room;
-			} else {
-				throw internalError(`No RoomServiceClient available`);
-			}
-		} catch (error) {
-			if (error instanceof OpenViduCallError) {
-				throw error;
-			}
-
-			throw internalError(`Error sending signal: ${error}`);
-		}
+	/**
+	 * Converts a LiveKit room to an OpenVidu room.
+	 *
+	 * @param livekitRoom - The LiveKit room to be converted.
+	 * @returns The converted OpenVidu room.
+	 */
+	private toOpenViduRoom(livekitRoom: Room): OpenViduRoom {
+		const metadata = livekitRoom.metadata ? JSON.parse(livekitRoom.metadata) : null;
+		const roomOptions: OpenViduRoomOptions = metadata.roomOptions;
+		const openviduRoom: OpenViduRoom = {
+			roomId: livekitRoom.name,
+			startDate: Number(livekitRoom.creationTime) * 1000,
+			endDate: roomOptions.endDate,
+			roomUrl: `${metadata.baseUrl}/${livekitRoom.name}`
+		};
+		return openviduRoom;
 	}
 }

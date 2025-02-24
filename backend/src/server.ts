@@ -14,7 +14,7 @@ import {
 	recordingRouter,
 	roomRouter
 } from './routes/index.js';
-import { GlobalPreferencesService } from './services/index.js';
+import { GlobalPreferencesService, RoomService } from './services/index.js';
 
 const createApp = () => {
 	const app: Express = express();

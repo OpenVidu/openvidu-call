@@ -1,19 +1,28 @@
 import { inject, injectable } from '../config/dependency-injector.config.js';
 import {
 	AccessToken,
+	CreateOptions,
+	DataPacket_Kind,
 	EgressClient,
 	EgressInfo,
 	EncodedFileOutput,
 	ListEgressOptions,
 	ParticipantInfo,
+	Room,
 	RoomCompositeOptions,
 	RoomServiceClient,
+	SendDataOptions,
 	StreamOutput,
 	VideoGrant
 } from 'livekit-server-sdk';
 import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, LIVEKIT_URL_PRIVATE } from '../environment.js';
 import { LoggerService } from './logger.service.js';
-import { errorLivekitIsNotAvailable, errorParticipantAlreadyExists, internalError } from '../models/error.model.js';
+import {
+	errorLivekitIsNotAvailable,
+	errorParticipantAlreadyExists,
+	errorRoomNotFound,
+	internalError
+} from '../models/error.model.js';
 import { EmbeddedParticipantPermissions, EmbeddedTokenOptions } from '@typings-ce';
 
 @injectable()
@@ -25,6 +34,64 @@ export class LiveKitService {
 		const livekitUrlHostname = LIVEKIT_URL_PRIVATE.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:');
 		this.egressClient = new EgressClient(livekitUrlHostname, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
 		this.roomClient = new RoomServiceClient(livekitUrlHostname, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
+	}
+
+	async createRoom(options: CreateOptions): Promise<Room> {
+		try {
+			return await this.roomClient.createRoom(options);
+		} catch (error) {
+			this.logger.error(`Error creating room ${error}`);
+			throw internalError(`Error creating room: ${error}`);
+		}
+	}
+
+	async getRoom(roomName: string): Promise<Room> {
+		let rooms: Room[] = [];
+
+		try {
+			rooms = await this.roomClient.listRooms([roomName]);
+		} catch (error) {
+			this.logger.error(`Error getting room ${error}`);
+			throw internalError(`Error getting room: ${error}`);
+		}
+
+		if (rooms.length === 0) {
+			throw errorRoomNotFound(roomName);
+		}
+
+		return rooms[0];
+	}
+
+	async listRooms(): Promise<Room[]> {
+		try {
+			return await this.roomClient.listRooms();
+		} catch (error) {
+			this.logger.error(`Error getting rooms ${error}`);
+			throw internalError(`Error getting rooms: ${error}`);
+		}
+	}
+
+	async deleteRoom(roomName: string): Promise<void> {
+		try {
+			await this.roomClient.deleteRoom(roomName);
+		} catch (error) {
+			this.logger.error(`Error deleting room ${error}`);
+			throw internalError(`Error deleting room: ${error}`);
+		}
+	}
+
+	async sendData(roomName: string, rawData: Record<string, any>, options: SendDataOptions): Promise<void> {
+		try {
+			if (this.roomClient) {
+				const data: Uint8Array = new TextEncoder().encode(JSON.stringify(rawData));
+				await this.roomClient.sendData(roomName, data, DataPacket_Kind.RELIABLE, options);
+			} else {
+				throw internalError(`No RoomServiceClient available`);
+			}
+		} catch (error) {
+			this.logger.error(`Error sending data ${error}`);
+			throw internalError(`Error sending data: ${error}`);
+		}
 	}
 
 	async generateToken(options: EmbeddedTokenOptions): Promise<string> {

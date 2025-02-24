@@ -12,6 +12,7 @@ import {
 	errorRecordingAlreadyStarted,
 	errorRecordingNotFound,
 	errorRecordingNotStopped,
+	errorRoomNotFound,
 	internalError
 } from '../models/error.model.js';
 import { S3Service } from './s3.service.js';
@@ -25,7 +26,6 @@ import { inject, injectable } from '../config/dependency-injector.config.js';
 
 @injectable()
 export class RecordingService {
-
 	constructor(
 		@inject(S3Service) protected s3Service: S3Service,
 		@inject(LiveKitService) protected livekitService: LiveKitService,
@@ -40,21 +40,25 @@ export class RecordingService {
 				active: true
 			};
 
-			const [activeEgressResult, roomDataResult] = await Promise.allSettled([
+			const [activeEgressResult, roomResult] = await Promise.allSettled([
 				this.livekitService.getEgress(egressOptions),
-				this.roomService.getRoom(roomName)
+				this.livekitService.getRoom(roomName)
 			]);
 
 			// Get the results of the promises
 			const activeEgress = activeEgressResult.status === 'fulfilled' ? activeEgressResult.value : null;
-			const roomData = roomDataResult.status === 'fulfilled' ? roomDataResult.value : null;
+			const room = roomResult.status === 'fulfilled' ? roomResult.value : null;
 
 			// If there is an active egress, it means that the recording is already started
 			if (!activeEgress || activeEgressResult.status === 'rejected') {
 				throw errorRecordingAlreadyStarted(roomName);
 			}
 
-			const recordingId = `${roomName}-${roomData?.sid || Date.now()}`;
+			if (!room) {
+				throw errorRoomNotFound(roomName);
+			}
+
+			const recordingId = `${roomName}-${room.sid || Date.now()}`;
 			const options = this.generateCompositeOptionsFromRequest();
 			const output = this.generateFileOutputFromRequest(recordingId);
 			const egressInfo = await this.livekitService.startRoomComposite(roomName, output, options);

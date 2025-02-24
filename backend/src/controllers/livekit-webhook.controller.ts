@@ -25,7 +25,7 @@ export const lkWebhookHandler = async (req: Request, res: Response) => {
 		let isRoomCreatedByMe = false;
 
 		if (roomOrRoomName) {
-			isRoomCreatedByMe = roomOrRoomName ? await roomService.isRoomCreatedByMe(roomOrRoomName) : false;
+			isRoomCreatedByMe = roomOrRoomName ? await roomService.isRoomCreatedByOpenViduMeet(roomOrRoomName) : false;
 		}
 
 		// Skip webhook events that are not related to OpenVidu Call
