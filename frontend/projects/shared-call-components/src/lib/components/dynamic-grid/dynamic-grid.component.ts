@@ -1,39 +1,65 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
 	selector: 'ov-dynamic-grid',
 	standalone: true,
 	imports: [CommonModule, MatGridListModule],
 	templateUrl: './dynamic-grid.component.html',
-	styleUrl: './dynamic-grid.component.scss'
+	styleUrls: ['./dynamic-grid.component.scss'],
+	encapsulation: ViewEncapsulation.Emulated // Ensures styles do not affect other components
 })
 export class DynamicGridComponent implements OnInit {
-	@Input() maxColumns: number = 3; // Maximum number of columns
-	columns: number = 1; // Current number of columns
-	private itemsCount: number = 0;
+	/** Maximum number of columns */
+	@Input() maxColumns: number = 3;
 
-	ngOnInit() {
-		this.updateColumns();
+	/** Spacing between items (e.g., '16px') */
+	@Input() gutter: string = '16px';
+
+	/** Layout mode: 'grid' | 'masonry' */
+	@Input() layoutMode: 'grid' | 'masonry' = 'grid';
+
+	/** Enable or disable the header */
+	@Input() withHeader: boolean = false;
+
+	/** Controls the current number of columns */
+	columns: number = 1;
+
+	constructor(private breakpointObserver: BreakpointObserver) {}
+
+	ngOnInit(): void {
+		this.setupGrid();
 	}
 
-	@HostListener('window:resize', ['$event'])
-	onResize() {
-		this.updateColumns();
+	/** Configures the grid to respond to size changes */
+	private setupGrid(): void {
+		this.breakpointObserver
+			.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
+			.subscribe((result) => {
+				if (result.breakpoints[Breakpoints.XSmall]) {
+					this.columns = Math.min(1, this.maxColumns);
+				} else if (result.breakpoints[Breakpoints.Small]) {
+					this.columns = Math.min(2, this.maxColumns);
+				} else if (result.breakpoints[Breakpoints.Medium]) {
+					this.columns = Math.min(3, this.maxColumns);
+				} else if (result.breakpoints[Breakpoints.Large]) {
+					this.columns = Math.min(4, this.maxColumns);
+				} else if (result.breakpoints[Breakpoints.XLarge]) {
+					this.columns = Math.min(5, this.maxColumns);
+				}
+			});
 	}
 
-	private updateColumns() {
-		// Count the number of items
-		const content = document.querySelector('.card-container');
-		if (content) {
-			this.itemsCount = content.childElementCount;
-			const containerWidth = content.clientWidth;
-			const columnWidth = 350; // Minimum width of each card
-
-			// Calculate the number of columns based on the container width
-			const calculatedColumns = Math.floor(containerWidth / columnWidth);
-			this.columns = Math.min(calculatedColumns, this.maxColumns, this.itemsCount); // Set the number of columns
+	/**
+	 * Calculates the span of a card.
+	 * @param span Number of columns the card should occupy.
+	 */
+	getColSpan(span: number | undefined): number {
+		if (span && span >= 1 && span <= this.maxColumns) {
+			return span;
 		}
+		return 1;
 	}
 }

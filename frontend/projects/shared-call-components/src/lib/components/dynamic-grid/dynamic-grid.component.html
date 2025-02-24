@@ -1,3 +1,17 @@
-<div class="card-container" [ngStyle]="{ 'grid-template-columns': 'repeat(' + columns + ', 1fr)' }">
-	<ng-content></ng-content>
+<div class="dynamic-grid-container">
+	<ng-container *ngIf="withHeader">
+		<ng-content select="[header]"></ng-content>
+	</ng-container>
+
+	<div
+		class="card-container"
+		[ngClass]="layoutMode"
+		[ngStyle]="{
+			'grid-template-columns': 'repeat(' + columns + ', 1fr)',
+			gap: gutter
+		}"
+		role="grid"
+	>
+		<ng-content></ng-content>
+	</div>
 </div>

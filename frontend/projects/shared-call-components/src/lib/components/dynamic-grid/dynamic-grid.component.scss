@@ -1,5 +1,64 @@
-.card-container {
-	display: grid;
-	grid-gap: 16px;
+.dynamic-grid-container {
 	width: 100%;
+	height: 100%;
+
+	.grid-header {
+		padding: 16px;
+		background-color: rgba(0, 0, 0, 0.04);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+		h2 {
+			margin: 0;
+			font-size: 1.5rem;
+			color: #3f51b5;
+		}
+	}
+
+	.card-container {
+		display: grid;
+		width: 100%;
+		margin: 16px 0;
+		transition: all 0.3s ease;
+
+		&.masonry {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+
+		&.grid {
+		}
+
+		::ng-deep .grid-item {
+			background: #fff;
+			border: 1px solid #e0e0e0;
+			border-radius: 4px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.3s ease;
+		}
+
+		::ng-deep .grid-item[data-span='2'] {
+			grid-column: span 2;
+		}
+
+		::ng-deep .grid-item[data-span='3'] {
+			grid-column: span 3;
+		}
+
+		::ng-deep .grid-item[data-span='4'] {
+			grid-column: span 4;
+		}
+
+		&.masonry .grid-item {
+			width: calc(100% / var(--columns));
+			margin-bottom: var(--gutter);
+		}
+
+		&.masonry {
+			--columns: 1;
+			--gutter: 16px;
+		}
+	}
 }
