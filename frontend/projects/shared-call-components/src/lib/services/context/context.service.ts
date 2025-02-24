@@ -18,7 +18,8 @@ export class ContextService {
 		decodedToken: {},
 		mode: ApplicationMode.STANDALONE,
 		edition: Edition.CE,
-		redirectUrl: ''
+		redirectUrl: '',
+		parentDomain: ''
 	};
 
 	private log;
@@ -30,7 +31,7 @@ export class ContextService {
 		private httpService: HttpService,
 		private loggerService: LoggerService
 	) {
-		this.log = this.loggerService.get('OvCall - ContextService');
+		this.log = this.loggerService.get('OpenVidu Meet - ContextService');
 	}
 
 	/**
@@ -40,6 +41,14 @@ export class ContextService {
 	setApplicationMode(mode: ApplicationMode): void {
 		this.log.d('Setting application mode', mode);
 		this.context.mode = mode;
+	}
+
+	getParentDomain(): string {
+		return this.context.parentDomain;
+	}
+
+	setParentDomain(parentDomain: string): void {
+		this.context.parentDomain = parentDomain;
 	}
 
 	/**
@@ -52,10 +61,6 @@ export class ContextService {
 
 	isStandaloneMode(): boolean {
 		return this.context.mode === ApplicationMode.STANDALONE;
-	}
-
-	isStandaloneModeWithToken(): boolean {
-		return this.context.mode === ApplicationMode.STANDALONE_WITH_TOKEN;
 	}
 
 	/**
