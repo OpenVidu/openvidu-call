@@ -1,4 +1,61 @@
-<ov-dynamic-grid [maxColumns]="3">
+<!-- <div>
+	<h2>Rooms</h2>
+	@for (room of createdRooms; track room.name) {
+		<div>
+			<mat-card>
+				<mat-card-header>
+					<mat-card-title>{{ room.name }}</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<p><strong>📅 Creada:</strong> {{ room.creationTime * 1000 | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+					<p><strong>⌛ Expira:</strong> {{ room.creationTime * 1000 | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+					<p>
+						<strong>👥 Máximo de Participantes:</strong>
+						@if (room.maxParticipants === 0) {
+							<span>Ilimitado</span>
+						} @else {
+							<span>{{ room.maxParticipants }}</span>
+						}
+					</p>
+
+					<button mat-flat-button (click)="openRoom(room.name)">JOIN</button>
+				</mat-card-content>
+			</mat-card>
+		</div>
+	}
+
+	@if (createdRooms.length === 0) {
+		<p>No rooms created yet</p>
+	}
+</div> -->
+<h2>Rooms</h2>
+
+<ov-dynamic-grid [maxColumns]="2" [withHeader]="true" [gutter]="'10px'" [layoutMode]="'grid'">
+	<!-- Custom Header-->
+	<div header>
+		<button mat-flat-button color="primary" (click)="createRoom()">
+			<mat-icon class="icon-left">add</mat-icon>
+			Create Room
+		</button>
+	</div>
+
+	<mat-list class="grid-item" [attr.data-span]="2">
+		@for (item of createdRooms; track item) {
+			<mat-list-item (click)="onRoomClicked(item)" class="list-item">
+				<div class="item-content">
+					<h3 class="item-title">{{ item.roomId }}</h3>
+					<!-- <div class="item-details">
+						<mat-icon class="icon">people</mat-icon>
+						<span>{{ item.peopleCount }} people</span>
+						<mat-icon class="icon">timer</mat-icon>
+						<span>{{ item.lockedText }}</span>
+						<span class="expires">Expires {{ item.expiryDate | date: 'dd/MM/yyyy' }}</span>
+					</div> -->
+				</div>
+			</mat-list-item>
+		}
+	</mat-list>
+
 	<!-- Recording Toggle -->
 	<ov-toggle-card
 		[title]="'Recording'"

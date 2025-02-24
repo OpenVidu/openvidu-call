@@ -1,33 +1,77 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalPreferencesService, NotificationService } from '../../../services';
+import { RoomService, NotificationService } from '../../../services';
 import { DynamicGridComponent, ToggleCardComponent } from '../../../components';
 import { RoomPreferences } from '@typings-ce';
+import { ILogger, LoggerService, Room } from 'openvidu-components-angular';
+import { MatCardModule } from '@angular/material/card';
+import { DatePipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListItem, MatListModule } from '@angular/material/list';
+import { OpenViduRoom } from '@lib/typings/ce/room';
 
 @Component({
 	selector: 'ov-room-preferences',
 	standalone: true,
-	imports: [DynamicGridComponent, ToggleCardComponent],
+	imports: [
+		DynamicGridComponent,
+		ToggleCardComponent,
+		MatListModule,
+		MatCardModule,
+		DatePipe,
+		MatButtonModule,
+		MatIconModule
+	],
 	templateUrl: './room-preferences.component.html',
 	styleUrl: './room-preferences.component.scss'
 })
 export class RoomPreferencesComponent implements OnInit {
+	createdRooms: OpenViduRoom[] = [];
 	private roomPreferences!: RoomPreferences;
 	recordingEnabled = false;
 	broadcastingEnabled = false;
 	chatEnabled = false;
 	backgroundsEnabled = false;
 
+	protected log;
+
 	constructor(
-		private globalPreferencesService: GlobalPreferencesService,
+		protected loggerService: LoggerService,
+
+		private roomService: RoomService,
 		private notificationService: NotificationService
-	) {}
+	) {
+		this.log = this.loggerService.get('OpenVidu Meet - RoomService');
+	}
 
 	async ngOnInit() {
 		try {
-			await this.loadRoomPreferences();
+			const [rooms] = await Promise.all([this.roomService.listRooms(), this.loadRoomPreferences()]);
+			console.log('Rooms:', rooms);
+			this.createdRooms = rooms;
 		} catch (error) {
 			console.error('Error fetching room preferences', error);
 		}
+	}
+
+	async createRoom() {
+		try {
+			const room = await this.roomService.createRoom();
+			this.notificationService.showSnackbar('Room created');
+			this.log.d('Room created:', room);
+			this.createdRooms.push(room);
+		} catch (error) {
+			this.notificationService.showAlert('Error creating room');
+			this.log.e('Error creating room:', error);
+		}
+	}
+
+	openRoom(roomName: string) {
+		window.open(`/${roomName}`, '_blank');
+	}
+
+	onRoomClicked(room: OpenViduRoom) {
+		console.log('Room clicked:', room);
 	}
 
 	async onRecordingToggle(enabled: boolean) {
@@ -35,7 +79,7 @@ export class RoomPreferencesComponent implements OnInit {
 
 		try {
 			this.roomPreferences.recordingPreferences.enabled = enabled;
-			await this.globalPreferencesService.saveRoomPreferences(this.roomPreferences);
+			await this.roomService.saveRoomPreferences(this.roomPreferences);
 			this.recordingEnabled = enabled;
 
 			// TODO: Show a toast message
@@ -50,7 +94,7 @@ export class RoomPreferencesComponent implements OnInit {
 
 		try {
 			this.roomPreferences.broadcastingPreferences.enabled = enabled;
-			await this.globalPreferencesService.saveRoomPreferences(this.roomPreferences);
+			await this.roomService.saveRoomPreferences(this.roomPreferences);
 			this.broadcastingEnabled = enabled;
 			// TODO: Show a toast message
 		} catch (error) {
@@ -64,7 +108,7 @@ export class RoomPreferencesComponent implements OnInit {
 
 		try {
 			this.roomPreferences.chatPreferences.enabled = enabled;
-			await this.globalPreferencesService.saveRoomPreferences(this.roomPreferences);
+			await this.roomService.saveRoomPreferences(this.roomPreferences);
 			this.chatEnabled = enabled;
 			// TODO: Show a toast message
 		} catch (error) {
@@ -78,7 +122,7 @@ export class RoomPreferencesComponent implements OnInit {
 
 		try {
 			this.roomPreferences.virtualBackgroundPreferences.enabled = enabled;
-			await this.globalPreferencesService.saveRoomPreferences(this.roomPreferences);
+			await this.roomService.saveRoomPreferences(this.roomPreferences);
 			this.backgroundsEnabled = enabled;
 			// TODO: Show a toast message
 		} catch (error) {
@@ -93,7 +137,7 @@ export class RoomPreferencesComponent implements OnInit {
 	 * @returns {Promise<void>} A promise that resolves when the room preferences have been loaded and assigned.
 	 */
 	private async loadRoomPreferences() {
-		const preferences = await this.globalPreferencesService.getRoomPreferences();
+		const preferences = await this.roomService.getRoomPreferences();
 		this.roomPreferences = preferences;
 
 		console.log('Room preferences:', preferences);
