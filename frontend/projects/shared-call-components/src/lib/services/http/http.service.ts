@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { OpenViduRoom, OpenViduRoomOptions } from '@lib/typings/ce/room';
 import { GlobalPreferences, RoomPreferences } from '@typings-ce';
-import { RecordingInfo } from 'openvidu-components-angular';
+import { RecordingInfo, Room } from 'openvidu-components-angular';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -15,13 +16,28 @@ export class HttpService {
 		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
 
+	createRoom(options: OpenViduRoomOptions): Promise<OpenViduRoom> {
+		const headers = this.generateHeaders();
+		return this.postRequest(`${this.pathPrefix}/rooms`, options, headers);
+	}
+
+	listRooms(): Promise<OpenViduRoom[]> {
+		//TODO: Add 'fields' query param for filtering rooms by fields
+		return this.getRequest(`${this.pathPrefix}/rooms`);
+	}
+
+	getRoom(roomName: string): Promise<OpenViduRoom> {
+		const headers = this.generateHeaders();
+		return this.getRequest(`${this.pathPrefix}/rooms/${roomName}`, headers);
+	}
+
 	/**
 	 * Retrieves the global preferences.
 	 *
 	 * @returns {Promise<GlobalPreferences>} A promise that resolves to the global preferences.
 	 */
 	getGlobalPreferences(): Promise<GlobalPreferences> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.getRequest(`${this.pathPrefix}/preferences`, headers);
 	}
 
@@ -31,7 +47,7 @@ export class HttpService {
 	 * @returns {Promise<RoomPreferences>} A promise that resolves to the room preferences.
 	 */
 	getRoomPreferences(): Promise<RoomPreferences> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.getRequest(`${this.pathPrefix}/preferences/room`, headers);
 	}
 
@@ -42,7 +58,7 @@ export class HttpService {
 	 * @returns A promise that resolves when the preferences have been successfully saved.
 	 */
 	saveRoomPreferences(preferences: RoomPreferences): Promise<any> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.putRequest(`${this.pathPrefix}/preferences/room`, preferences, headers);
 	}
 
@@ -51,7 +67,7 @@ export class HttpService {
 	}
 
 	getToken(roomName: string, participantName: string): Promise<{ token: string }> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 
 		return this.postRequest(`${this.pathPrefix}/rooms`, { roomName, participantName }, headers);
 	}
@@ -85,18 +101,18 @@ export class HttpService {
 	}
 
 	startRecording(roomName: string): Promise<RecordingInfo> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 
 		return this.postRequest(`${this.pathPrefix}/recordings`, { roomName }, headers);
 	}
 
 	stopRecording(recordingId: string): Promise<RecordingInfo> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.putRequest(`${this.pathPrefix}/recordings/${recordingId}`, {}, headers);
 	}
 
 	deleteRecording(recordingId: string): Promise<RecordingInfo> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.deleteRequest(`${this.pathPrefix}/recordings/${recordingId}`, headers);
 	}
 
@@ -107,12 +123,12 @@ export class HttpService {
 
 	startBroadcasting(roomName: string, broadcastUrl: string): Promise<any> {
 		const body = { roomName, broadcastUrl };
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.postRequest(`${this.pathPrefix}/broadcasts/`, body, headers);
 	}
 
 	stopBroadcasting(broadcastId: string): Promise<any> {
-		const headers = this.generateUserHeaders();
+		const headers = this.generateHeaders();
 		return this.putRequest(`${this.pathPrefix}/broadcasts/${broadcastId}`, {}, headers);
 	}
 
@@ -166,7 +182,7 @@ export class HttpService {
 		}
 	}
 
-	protected generateUserHeaders(): HttpHeaders {
+	protected generateHeaders(): HttpHeaders {
 		const headers = new HttpHeaders({
 			'Content-Type': 'application/json'
 		});
