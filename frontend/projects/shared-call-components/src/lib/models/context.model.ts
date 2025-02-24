@@ -4,14 +4,14 @@ export interface ContextData {
 	token: string;
 	decodedToken: any;
 	mode: ApplicationMode;
-	edition: Edition,
+	edition: Edition;
 	redirectUrl: string;
+	parentDomain: string;
 }
 
 export enum ApplicationMode {
 	EMBEDDED = 'embedded',
 	STANDALONE = 'standalone',
-	STANDALONE_WITH_TOKEN = 'standalone_with_token'
 }
 
 export enum Edition {
