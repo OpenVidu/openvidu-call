@@ -40,7 +40,7 @@ const createApp = () => {
 	app.use('/meet/health', (_req:Request, res: Response) => res.status(200).send('OK'));
 	app.use('/livekit/webhook', livekitRouter);
 	app.get(/^(?!\/api).*$/, (_req: Request, res: Response) => res.sendFile(indexHtmlPath));
-	app.use((res: Response) => res.status(404).json({ error: 'Not found' }));
+	app.use((_req: Request, res: Response) => res.status(404).json({ error: 'Not found' }));
 
 	return app;
 };
