@@ -11,25 +11,17 @@ export const lkWebhookHandler = async (req: Request, res: Response) => {
 
 	try {
 		const lkWebhookService = container.get(LivekitWebhookService);
-		const roomService = container.get(RoomService);
 		const ovWebhookService = container.get(OpenViduWebhookService);
 
 		const webhookEvent: WebhookEvent = await lkWebhookService.getEventFromWebhook(
 			req.body,
 			req.get('Authorization')!
 		);
-
 		const { event: eventType, egressInfo, room, participant } = webhookEvent;
 
-		const roomOrRoomName = getRoomOrRoomName(webhookEvent);
-		let isRoomCreatedByMe = false;
+		const belongsToOpenViduMeet = await lkWebhookService.webhookEventBelongsToOpenViduMeet(webhookEvent);
 
-		if (roomOrRoomName) {
-			isRoomCreatedByMe = roomOrRoomName ? await roomService.isRoomCreatedByOpenViduMeet(roomOrRoomName) : false;
-		}
-
-		// Skip webhook events that are not related to OpenVidu Call
-		if (roomOrRoomName && !isRoomCreatedByMe) {
+		if (!belongsToOpenViduMeet) {
 			logger.verbose(`Skipping webhook, event is not related to OpenVidu Call: ${eventType}`);
 			return res.status(200).send();
 		}
@@ -59,14 +51,3 @@ export const lkWebhookHandler = async (req: Request, res: Response) => {
 
 	return res.status(200).send();
 };
-
-function getRoomOrRoomName(webhookEvent: WebhookEvent) {
-	const { room, egressInfo, ingressInfo } = webhookEvent;
-	const roomName = room?.name ?? egressInfo?.roomName ?? ingressInfo?.roomName ?? '';
-
-	// !KNOWN issue: room metadata is empty when track_publish and track_unpublish events are received
-	// This not affect OpenVidu Call, but it is a limitation of the LiveKit server
-
-	// Prefer webhook room object over roomName if available
-	return room ?? roomName;
-}

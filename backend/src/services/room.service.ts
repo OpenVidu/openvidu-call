@@ -38,6 +38,7 @@ export class RoomService {
 	async createOpenViduRoom(baseUrl: string, options: OpenViduRoomOptions): Promise<OpenViduRoom> {
 		const { roomNamePrefix, endDate } = options;
 		const creationTime = Date.now();
+		console.log('Creating room with options:', options);
 		const livekitRoomOptions: CreateOptions = {
 			name: `${roomNamePrefix}${uid(15)}`,
 			metadata: JSON.stringify({
@@ -46,13 +47,12 @@ export class RoomService {
 				roomOptions: options
 			}),
 			// TODO: Add more options
-			emptyTimeout: endDate - creationTime
+			emptyTimeout: 3600 //endDate - creationTime
 			// maxParticipants: 4,
 			// departureTimeout: 1
 		};
 
 		const livekitRoom = await this.livekitService.createRoom(livekitRoomOptions);
-		console.log('Room created:', livekitRoom);
 		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(livekitRoom);
 
 		//TODO Save it in BBDD
@@ -68,6 +68,7 @@ export class RoomService {
 	 */
 	async listOpenViduRooms(): Promise<OpenViduRoom[]> {
 		const livekitRooms = await this.livekitService.listRooms();
+		console.log('Rooms:', livekitRooms);
 		return livekitRooms.map((livekitRoom) => this.toOpenViduRoom(livekitRoom));
 	}
 
@@ -95,31 +96,6 @@ export class RoomService {
 		const openviduRoom = await this.getOpenViduRoom(roomName);
 		await this.livekitService.deleteRoom(roomName);
 		return openviduRoom;
-	}
-
-	/**
-	 * Checks if a room was created by the OpenVidu Meet application.
-	 *
-	 * @param roomOrRoomName - The room object or the room name.
-	 * @returns A promise that resolves to a boolean indicating if the room was created by OpenVidu Meet.
-	 */
-	async isRoomCreatedByOpenViduMeet(roomOrRoomName: Room | string): Promise<boolean> {
-		try {
-			const roomName = typeof roomOrRoomName === 'string' ? roomOrRoomName : roomOrRoomName.name;
-			const livekitRoom = await this.livekitService.getRoom(roomName);
-
-			if (!livekitRoom) {
-				console.warn(`Room ${roomName} not found or no longer exists.`);
-				return false;
-			}
-
-			// Parse metadata safely, defaulting to an empty object if null/undefined
-			const metadata = livekitRoom.metadata ? JSON.parse(livekitRoom.metadata) : {};
-			return metadata?.createdBy === MEET_NAME_ID;
-		} catch (error) {
-			console.error('Error checking if room was created by me:', error);
-			return false;
-		}
 	}
 
 	/**

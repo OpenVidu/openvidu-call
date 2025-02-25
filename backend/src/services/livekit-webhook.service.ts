@@ -6,7 +6,7 @@ import { DataTopic } from '../models/signal.model.js';
 import { LiveKitService } from './livekit.service.js';
 import { BroadcastingInfo, BroadcastingStatus } from '../models/broadcasting.model.js';
 import { RecordingInfo, RecordingStatus } from '../models/recording.model.js';
-import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET } from '../environment.js';
+import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, MEET_NAME_ID } from '../environment.js';
 import { LoggerService } from './logger.service.js';
 import { RoomService } from './room.service.js';
 import { S3Service } from './s3.service.js';
@@ -37,6 +37,49 @@ export class LivekitWebhookService {
 	 */
 	async getEventFromWebhook(body: string, auth?: string): Promise<WebhookEvent> {
 		return await this.webhookReceiver.receive(body, auth);
+	}
+
+	/**
+	 * !KNOWN ISSUE: Room metadata may be empty when track_publish and track_unpublish events are received.
+	 * This does not affect OpenVidu Meet but is a limitation of the LiveKit server.
+	 *
+	 * We prioritize using the `room` object from the webhook if available.
+	 * Otherwise, fallback to the extracted `roomName`.
+	 */
+	async webhookEventBelongsToOpenViduMeet(webhookEvent: WebhookEvent): Promise<boolean> {
+		// Extract relevant properties from the webhook event
+		const { room, egressInfo, ingressInfo } = webhookEvent;
+
+		if (room) {
+			// Check update room  if webhook is not room_destroyed
+			const metadata = room.metadata ? JSON.parse(room.metadata) : {};
+			return metadata?.createdBy === MEET_NAME_ID;
+		}
+
+		// Get room from roomName
+		try {
+			// Determine the room name from available sources
+			const roomName = egressInfo?.roomName ?? ingressInfo?.roomName ?? '';
+
+			if (!roomName) {
+				this.logger.debug('Room name not found in webhook event');
+				return false;
+			}
+
+			const livekitRoom = await this.livekitService.getRoom(roomName);
+
+			if (!livekitRoom) {
+				this.logger.debug(`Room ${roomName} not found or no longer exists.`);
+				return false;
+			}
+
+			// Parse metadata safely, defaulting to an empty object if null/undefined
+			const metadata = livekitRoom.metadata ? JSON.parse(livekitRoom.metadata) : {};
+			return metadata?.createdBy === MEET_NAME_ID;
+		} catch (error) {
+			this.logger.error('Error checking if room was created by OpenVidu Meet:' + String(error));
+			return false;
+		}
 	}
 
 	async handleEgressUpdated(egressInfo: EgressInfo) {

@@ -65,6 +65,7 @@ export const deleteRoom = async (req: Request, res: Response) => {
 
 		const roomService = container.get(RoomService);
 		await roomService.deleteOpenViduRoom(roomId);
+		logger.info(`Room with id '${roomId}' deleted`);
 		return res.status(200).json({ message: 'Room deleted' });
 	} catch (error) {
 		logger.error(`Error deleting room with id '${roomId}'`);
