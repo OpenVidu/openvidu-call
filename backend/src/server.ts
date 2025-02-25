@@ -1,4 +1,4 @@
-import express, { Response, Express } from 'express';
+import express, { Request, Response, Express } from 'express';
 import cors from 'cors';
 import chalk from 'chalk';
 import YAML from 'yamljs';
@@ -14,7 +14,7 @@ import {
 	recordingRouter,
 	roomRouter
 } from './routes/index.js';
-import { GlobalPreferencesService, RoomService } from './services/index.js';
+import { GlobalPreferencesService } from './services/index.js';
 
 const createApp = () => {
 	const app: Express = express();
@@ -37,9 +37,9 @@ const createApp = () => {
 	// TODO: This route should be part of the rooms router
 	app.use('/meet/api/v1/preferences', /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
 
-	app.use('/meet/health', (res: Response) => res.status(200).send('OK'));
+	app.use('/meet/health', (_req:Request, res: Response) => res.status(200).send('OK'));
 	app.use('/livekit/webhook', livekitRouter);
-	app.get(/^(?!\/api).*$/, (res: Response) => res.sendFile(indexHtmlPath));
+	app.get(/^(?!\/api).*$/, (_req: Request, res: Response) => res.sendFile(indexHtmlPath));
 	app.use((res: Response) => res.status(404).json({ error: 'Not found' }));
 
 	return app;
