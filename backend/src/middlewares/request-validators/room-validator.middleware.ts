@@ -12,7 +12,7 @@ export const validateRoomRequest = (req: Request, res: Response, next: NextFunct
 	if (!result.success) {
 		return res.status(400).json({
 			name: 'Request validation error',
-			messages: result.error.errors.map((err) => err.message)
+			message: result.error.errors.map((err) => err.message)[0]
 		});
 	}
 
