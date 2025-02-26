@@ -1,7 +1,7 @@
 /**
- * Options for creating an embedded token.
+ * Options for creating a participant token.
  */
-export interface EmbeddedTokenOptions {
+export interface TokenOptions {
 	/**
 	 * The name of the room to join.
 	 */
@@ -15,12 +15,12 @@ export interface EmbeddedTokenOptions {
 	/**
 	 * Optional permissions for the participant.
 	 */
-	permissions?: EmbeddedParticipantPermissions;
+	permissions?: ParticipantPermissions;
 }
 /**
- * Interface representing the permissions of an embedded participant.
+ * Interface representing the permissions of a participant.
  */
-export interface EmbeddedParticipantPermissions {
+export interface ParticipantPermissions {
 	canRecord: boolean;
 	canChat: boolean;
 	//TODO: Add more permissions as needed

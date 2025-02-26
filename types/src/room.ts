@@ -8,7 +8,7 @@ interface BaseRoomOptions {
  * Options for creating or configuring a room.
  */
 export interface OpenViduRoomOptions extends BaseRoomOptions {
-	roomNamePrefix: string;
+	roomNamePrefix?: string;
 }
 
 /**
@@ -17,5 +17,7 @@ export interface OpenViduRoomOptions extends BaseRoomOptions {
 export interface OpenViduRoom extends BaseRoomOptions {
 	roomId: string;
 	startDate: number;
-	roomUrl: string;
+	moderatorRoomUrl: string;
+	publisherRoomUrl: string;
+	viewerRoomUrl: string;
 }
