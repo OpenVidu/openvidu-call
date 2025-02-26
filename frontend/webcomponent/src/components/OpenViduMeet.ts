@@ -1,4 +1,3 @@
-import { buildQueryParams } from '../utils/queryParams';
 import { ParentMessage, WebComponentActionType } from '../types/message.type';
 import { CommandsManager } from './CommandsManager';
 import { EventsManager } from './EventsManager';
@@ -9,10 +8,10 @@ import { EventsManager } from './EventsManager';
  *
  * @example
  * ```html
- * <openvidu-meet room-url="https://your-openvidu-server.com/room"></openvidu-meet>
+ * <openvidu-meet roomUrl="https://your-openvidu-server.com/room"></openvidu-meet>
  * ```
  *
- * @attribute room-url - The base URL of the OpenVidu Meet room. This attribute is required.
+ * @attribute roomUrl - The base URL of the OpenVidu Meet room. This attribute is required.
  *
  * @public
  */
@@ -34,7 +33,10 @@ export class OpenViduMeet extends HTMLElement {
 		super();
 		this.attachShadow({ mode: 'open' });
 		this.iframe = document.createElement('iframe');
-		this.iframe.setAttribute('allow', 'camera; microphone; display-capture; fullscreen');
+		this.iframe.setAttribute(
+			'allow',
+			'camera; microphone; display-capture; fullscreen; autoplay; compute-pressure;'
+		);
 
 		this.commandsManager = new CommandsManager(this.iframe, this.allowedOrigin);
 		this.eventsManager = new EventsManager(this);
@@ -72,25 +74,24 @@ export class OpenViduMeet extends HTMLElement {
 	}
 
 	private updateIframeSrc() {
-		const baseUrl = this.getAttribute('room-url') || '';
+		const baseUrl = this.getAttribute('roomUrl') || '';
 		if (!baseUrl) {
-			console.error('The "room-url" attribute is required.');
+			console.error('The "roomUrl" attribute is required.');
 			return;
 		}
 
-		this.allowedOrigin = new URL(baseUrl).origin;
+		const url = new URL(baseUrl);
+		this.allowedOrigin = url.origin;
 		this.commandsManager.setAllowedOrigin(this.allowedOrigin);
 
 		// Update query params
-		const params: { [key: string]: string } = {};
 		Array.from(this.attributes).forEach((attr) => {
-			if (attr.name !== 'room-url') {
-				params[attr.name] = attr.value;
+			if (attr.name !== 'roomUrl') {
+				url.searchParams.set(attr.name, attr.value);
 			}
 		});
 
-		const queryString = buildQueryParams(params);
-		this.iframe.src = `${baseUrl}?${queryString}`;
+		this.iframe.src = url.toString();
 	}
 
 	// Public methods
