@@ -3,7 +3,6 @@ import { Container } from 'inversify';
 import {
 	AuthService,
 	BroadcastingService,
-	EmbeddedService,
 	GlobalPreferencesService,
 	GlobalPreferencesStorageFactory,
 	LiveKitService,
@@ -39,7 +38,6 @@ const registerDependencies = () => {
 	container.bind(S3Service).toSelf().inSingletonScope();
 	container.bind(RecordingService).toSelf().inSingletonScope();
 	container.bind(LivekitWebhookService).toSelf().inSingletonScope();
-	container.bind(EmbeddedService).toSelf().inSingletonScope();
 	container.bind(GlobalPreferencesService).toSelf().inSingletonScope();
 
 	container.bind(S3PreferenceStorage).toSelf().inSingletonScope();

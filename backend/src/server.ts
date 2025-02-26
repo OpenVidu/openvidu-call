@@ -15,6 +15,7 @@ import {
 	roomRouter
 } from './routes/index.js';
 import { GlobalPreferencesService } from './services/index.js';
+import { participantsRouter } from './routes/participants.routes.js';
 
 const createApp = () => {
 	const app: Express = express();
@@ -37,8 +38,12 @@ const createApp = () => {
 	// TODO: This route should be part of the rooms router
 	app.use('/meet/api/v1/preferences', /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
 
+	// Internal routes
+	app.use('/meet/api/participants', participantsRouter);
 	app.use('/meet/health', (_req:Request, res: Response) => res.status(200).send('OK'));
+	//TODO: Que el endpoint empiece por meet
 	app.use('/livekit/webhook', livekitRouter);
+	app.use('/meet/livekit/webhook', livekitRouter);
 	app.get(/^(?!\/api).*$/, (_req: Request, res: Response) => res.sendFile(indexHtmlPath));
 	app.use((_req: Request, res: Response) => res.status(404).json({ error: 'Not found' }));
 
