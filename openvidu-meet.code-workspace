@@ -1,8 +1,8 @@
 {
 	"folders": [
-		// {
-		// 	"path": "."
-		// },
+		{
+			"path": "."
+		},
 		{
 			"name": "types",
 			"path": "types"
@@ -13,17 +13,21 @@
 		},
 		{
 			"name": "frontend",
-			"path": "frontend"
+			"path": "frontend",
+		},
+		{
+			"name": "shared-call-components",
+			"path": "frontend/projects/shared-call-components"
 		},
 		{
 			"name": "webcomponent",
-			"path": "frontend/webcomponent",
+			"path": "frontend/webcomponent"
 		}
 	],
 	"settings": {
 		"jest.disabledWorkspaceFolders": ["openvidu-call", "types", "frontend"],
 		"mochaExplorer.files": "tests/e2e/**/*.test.ts",
-		"mochaExplorer.require": ".mocharc.js",
+		"mochaExplorer.require": ".mocharc.js"
 		// "mochaExplorer.files": "./frontend/tests/e2e/**/*.test.ts",
 		// "mochaExplorer.mochaPath": "./frontend/node_modules/mocha",
 		// "mochaExplorer.require": "ts-node/register",
@@ -32,6 +36,5 @@
 		// "mochaExplorer.env": {
 		//   "NODE_ENV": "test"
 		// }
-
 	}
 }
