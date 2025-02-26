@@ -18,11 +18,11 @@ import { Subscription } from 'rxjs';
 
 // import { ConfigService } from '@app/services/config.service';
 import { StorageAppService } from '@app/services/storage.service';
-import { HttpService } from 'shared-call-components';
+import { HttpService, OpenViduRoomOptions } from 'shared-call-components';
 
 import packageInfo from '../../../../package.json';
 
-import { animals, colors, Config, countries, names, uniqueNamesGenerator } from 'unique-names-generator';
+import { animals, colors, Config, uniqueNamesGenerator } from 'unique-names-generator';
 
 @Component({
 	selector: 'app-home',
@@ -61,7 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 		});
 
 		this.roomForm = this.fb.group({
-			roomName: [this.getRandomName(), [Validators.required, Validators.minLength(6)]]
+			roomNamePrefix: [this.getRandomName(), [Validators.required, Validators.minLength(6)]]
 		});
 	}
 
@@ -99,17 +99,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 	generateRoomName(event: any) {
 		event.preventDefault();
-		this.roomForm.get('roomName')?.setValue(this.getRandomName());
+		this.roomForm.get('roomNamePrefix')?.setValue(this.getRandomName());
 	}
 
 	clearRoomName() {
-		this.roomForm.get('roomName')?.setValue('');
+		this.roomForm.get('roomNamePrefix')?.setValue('');
 	}
 
 	keyDown(event: KeyboardEvent) {
 		if (event.keyCode === 13) {
 			event.preventDefault();
-			this.goToVideoCall();
+			this.goToVideoRoom();
 		}
 	}
 
@@ -141,34 +141,41 @@ export class HomeComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	async goToVideoCall() {
+	async goToVideoRoom() {
 		if (this.roomForm.valid) {
-			this.navigateToVideoconference();
+			const roomNamePrefix = this.roomForm.get('roomNamePrefix')?.value.replace(/ /g, '-');
+
+			try {
+				const options: OpenViduRoomOptions = {
+					roomNamePrefix,
+					endDate: Date.now() + 3600
+				}
+				const room = await this.httpService.createRoom(options);
+				console.warn('Room created ', room);
+				this.roomForm.get('roomNamePrefix')?.setValue(roomNamePrefix);
+				this.router.navigate(['/', roomNamePrefix]);
+			} catch (error) {
+				console.error('Error creating room ', error);
+			}
 		} else {
 			console.error('Room name is not valid');
 		}
 	}
 
 	private subscribeToQueryParams(): void {
-		this.queryParamSubscription = this.route.queryParams.subscribe((params) => {
-			const roomName = params['roomName'];
+		// this.queryParamSubscription = this.route.queryParams.subscribe((params) => {
+		// 	const roomName = params['roomName'];
 
-			if (roomName) {
-				this.loginError = true;
-				this.roomForm.get('roomName')?.setValue(roomName.replace(/[^\w-]/g, ''));
-			}
-		});
-	}
-
-	private navigateToVideoconference() {
-		const roomName = this.roomForm.get('roomName')?.value.replace(/ /g, '-');
-		this.roomForm.get('roomName')?.setValue(roomName);
-		this.router.navigate(['/', roomName]);
+		// 	if (roomName) {
+		// 		this.loginError = true;
+		// 		this.roomForm.get('roomNamePrefix')?.setValue(roomName.replace(/[^\w-]/g, ''));
+		// 	}
+		// });
 	}
 
 	private getRandomName(): string {
 		const configName: Config = {
-			dictionaries: [names, countries, colors, animals],
+			dictionaries: [colors, animals],
 			separator: '-',
 			style: 'lowerCase'
 		};

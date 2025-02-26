@@ -78,32 +78,32 @@
           <form
             [formGroup]="roomForm"
             novalidate
-            (ngSubmit)="goToVideoCall()"
+            (ngSubmit)="goToVideoRoom()"
             id="form-room"
             class="form login"
             >
             <div class="form-field">
-              <label for="room-name-input" [ngClass]="{ error: roomForm.get('roomName')?.invalid }">
+              <label for="room-name-input" [ngClass]="{ error: roomForm.get('roomNamePrefix')?.invalid }">
                 <mat-icon matTooltip="Room name">video_camera_front</mat-icon>
                 <span class="hidden">Room Name</span></label
                 >
                 <input
-                  formControlName="roomName"
+                  formControlName="roomNamePrefix"
                   autocomplete="off"
                   id="room-name-input"
                   type="text"
-                  name="roomName"
+                  name="roomNamePrefix"
                   class="form-input"
                   placeholder="Room Name"
                   (keydown)="keyDown($event)"
                   />
-                  @if (roomForm.get('roomName')?.value) {
+                  @if (roomForm.get('roomNamePrefix')?.value) {
                     <button matSuffix mat-icon-button aria-label="Clear" id="clear-room-name-btn" (click)="clearRoomName()">
                       <mat-icon>close</mat-icon>
                     </button>
                   }
                 <button
-                  matTooltip="Generate new room name"
+                  matTooltip="Generate room name prefix"
                   mat-icon-button
                   id="room-name-generator-btn"
                   (click)="generateRoomName($event)"
@@ -111,7 +111,7 @@
                   <mat-icon>cached</mat-icon>
                 </button>
               </div>
-              @if (roomForm.get('roomName')?.hasError('required')) {
+              @if (roomForm.get('roomNamePrefix')?.hasError('required')) {
                 <div
                   class="roomError"
                   id="requiredNameError"
@@ -119,7 +119,7 @@
                   Room name is required
                 </div>
               }
-              @if (roomForm.get('roomName')?.hasError('minlength')) {
+              @if (roomForm.get('roomNamePrefix')?.hasError('minlength')) {
                 <div class="roomError" id="shortNameError">
                   Room name is too short!
                 </div>
