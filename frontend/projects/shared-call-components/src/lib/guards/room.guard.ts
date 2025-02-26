@@ -13,9 +13,18 @@ export const ensureValidRoomGuard: CanActivateFn = async (
 	const contextService = inject(ContextService);
 	const router = inject(Router);
 
+	const queryParams = route.queryParams;
 	const roomName = route.params['roomName'];
+	const participantName = queryParams['participantName'];
+
+	if (contextService.isEmbeddedMode() && !participantName) {
+		const queryParams = { reason: 'invalid-participant' };
+		router.navigate(['unauthorized'], { queryParams });
+		return false;
+	}
 
 	try {
+		contextService.setParticipantName(participantName);
 		await httpService.getRoom(roomName);
 		contextService.setRoomName(roomName);
 		return true;
