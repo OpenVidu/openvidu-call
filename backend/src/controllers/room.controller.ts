@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 import { LoggerService } from '../services/logger.service.js';
 import { OpenViduCallError } from '../models/error.model.js';
 import { RoomService } from '../services/room.service.js';
-import { EmbeddedTokenOptions } from '@typings-ce';
-import { OpenViduRoomOptions } from '../typings/ce/room.js';
+import { OpenViduRoomOptions } from '@typings-ce';
 
 export const createRoom = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
@@ -23,7 +22,7 @@ export const createRoom = async (req: Request, res: Response) => {
 	}
 };
 
-export const getRooms = async (req: Request, res: Response) => {
+export const getRooms = async (_req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
 	try {

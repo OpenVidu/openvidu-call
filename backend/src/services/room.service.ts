@@ -15,7 +15,7 @@ import { LiveKitService } from './livekit.service.js';
 @injectable()
 export class RoomService {
 	// TODO: REMOVE this and save in mongo
-	private roomsMap: Map<string, string[]> = new Map();
+	private roomsMap: Map<string, OpenViduRoom> = new Map();
 
 	constructor(
 		@inject(LoggerService) protected logger: LoggerService,
@@ -40,7 +40,7 @@ export class RoomService {
 		const creationTime = Date.now();
 		console.log('Creating room with options:', options);
 		const livekitRoomOptions: CreateOptions = {
-			name: `${roomNamePrefix}${uid(15)}`,
+			name: `${roomNamePrefix}${uid(10)}`,
 			metadata: JSON.stringify({
 				createdBy: MEET_NAME_ID,
 				baseUrl,
@@ -56,7 +56,9 @@ export class RoomService {
 		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(livekitRoom);
 
 		//TODO Save it in BBDD
-		// this.roomsMap.set(roomOptions.name, []);
+		this.saveRoomData(openviduRoom);
+
+		console.log('Room created:', this.roomsMap);
 
 		return openviduRoom;
 	}
@@ -115,11 +117,18 @@ export class RoomService {
 		this.livekitService.sendData(roomName, rawData, options);
 	}
 
+	private saveRoomData(room: OpenViduRoom) {
+		const moderatorRoomKey = new URL(room.moderatorRoomUrl).searchParams.get('secret');
+		this.roomsMap.set(room.roomId, room);
+
+		if (moderatorRoomKey) this.roomsMap.set(moderatorRoomKey, room);
+	}
+
 	/**
 	 * Converts a LiveKit room to an OpenVidu room.
 	 *
 	 * @param livekitRoom - The LiveKit room to be converted.
-	 * @returns The converted OpenVidu room.
+	 * @returns The converted kOpenVidu room.
 	 */
 	private toOpenViduRoom(livekitRoom: Room): OpenViduRoom {
 		const metadata = livekitRoom.metadata ? JSON.parse(livekitRoom.metadata) : null;
@@ -128,7 +137,10 @@ export class RoomService {
 			roomId: livekitRoom.name,
 			startDate: Number(livekitRoom.creationTime) * 1000,
 			endDate: roomOptions.endDate,
-			roomUrl: `${metadata.baseUrl}/${livekitRoom.name}`
+			//TODO: Think the way to do it
+			moderatorRoomUrl: `${metadata.baseUrl}/${livekitRoom.name}/?secret=${uid(10)}`,
+			publisherRoomUrl: `${metadata.baseUrl}/${livekitRoom.name}?secret=${uid(10)}`,
+			viewerRoomUrl: `${metadata.baseUrl}/${livekitRoom.name}/?secret=${uid(10)}`,
 		};
 		return openviduRoom;
 	}

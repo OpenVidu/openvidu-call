@@ -23,7 +23,7 @@ import {
 	errorRoomNotFound,
 	internalError
 } from '../models/error.model.js';
-import { EmbeddedParticipantPermissions, EmbeddedTokenOptions } from '@typings-ce';
+import { ParticipantPermissions, TokenOptions } from '@typings-ce';
 
 @injectable()
 export class LiveKitService {
@@ -94,7 +94,7 @@ export class LiveKitService {
 		}
 	}
 
-	async generateToken(options: EmbeddedTokenOptions): Promise<string> {
+	async generateToken(options: TokenOptions): Promise<string> {
 		const { roomName, participantName, permissions } = options;
 
 		try {
@@ -189,7 +189,7 @@ export class LiveKitService {
 		return participant.identity.startsWith('EG_') && participant.permission?.recorder === true;
 	}
 
-	private generateTokenPermissions(permissions?: EmbeddedParticipantPermissions): EmbeddedParticipantPermissions {
+	private generateTokenPermissions(permissions?: ParticipantPermissions): ParticipantPermissions {
 		return {
 			canRecord: permissions?.canRecord ?? true,
 			canChat: permissions?.canChat ?? true
