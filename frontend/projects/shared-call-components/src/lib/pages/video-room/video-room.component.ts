@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import {
@@ -9,7 +9,8 @@ import {
 	RecordingStopRequestedEvent,
 	OpenViduComponentsModule,
 	ApiDirectiveModule,
-	ParticipantLeftEvent
+	ParticipantLeftEvent,
+	Room
 } from 'openvidu-components-angular';
 
 import {
@@ -18,7 +19,13 @@ import {
 	RecordingPreferences,
 	VirtualBackgroundPreferences
 } from '@typings-ce';
-import { HttpService, ContextService, GlobalPreferencesService } from '../../services';
+import { HttpService, ContextService, RoomService } from '../../services';
+import {
+	OpenViduMeetMessage,
+	ParentMessage,
+	WebComponentActionType,
+	WebComponentEventType
+} from 'webcomponent/src/types/message.type';
 
 @Component({
 	selector: 'app-video-room',
@@ -27,7 +34,7 @@ import { HttpService, ContextService, GlobalPreferencesService } from '../../ser
 	standalone: true,
 	imports: [OpenViduComponentsModule, ApiDirectiveModule, MatIcon]
 })
-export class VideoRoomComponent implements OnInit {
+export class VideoRoomComponent implements OnInit, OnDestroy {
 	roomName = '';
 	participantName = '';
 	token = '';
@@ -50,24 +57,24 @@ export class VideoRoomComponent implements OnInit {
 	constructor(
 		protected httpService: HttpService,
 		protected router: Router,
-		protected contextService: ContextService,
-		protected globalPreferencesService: GlobalPreferencesService,
+		protected ctxService: ContextService,
+		protected roomService: RoomService,
 		protected cdr: ChangeDetectorRef
 	) {}
 
 	async ngOnInit() {
 		try {
+			this.roomName = this.ctxService.getRoomName();
+			this.participantName = this.ctxService.getParticipantName();
+
+			if (this.ctxService.isEmbeddedMode()) {
+				this.listenWebcomponentCommands();
+				this.featureFlags.showPrejoin = false;
+			}
+
 			await this.loadRoomPreferences();
 
-			this.roomName = this.contextService.getRoomName();
-			this.participantName = this.contextService.getParticipantName();
-
-			const needToConfigureFlagsFromToken =
-				this.contextService.isStandaloneModeWithToken() || this.contextService.isEmbeddedMode();
-
-			if (needToConfigureFlagsFromToken) {
-				this.configureFetureFlagsFromTokenPermissions();
-			}
+			this.applyParticipantPermissions();
 		} catch (error: any) {
 			console.error('Error fetching room preferences', error);
 			this.serverError = error.error.message || error.message || error.error;
@@ -75,15 +82,52 @@ export class VideoRoomComponent implements OnInit {
 		this.loading = false;
 	}
 
-	async onTokenRequested(participantName: string) {
-		try {
-			if (this.contextService.isStandaloneMode()) {
-				// As token is not provided, we need to set the participant name from
-				// ov-videoconference event
-				this.contextService.setParticipantName(participantName);
+	ngOnDestroy(): void {
+		// Clean up the context service
+		// this.contextService.clearContext();
+		if (this.ctxService.isEmbeddedMode()) window.removeEventListener('message', this.listenWebcomponentCommands);
+	}
+
+	private listenWebcomponentCommands() {
+		// Listen for messages from the iframe
+		window.addEventListener('message', (event) => {
+			const message: ParentMessage = event.data;
+			const parentDomain = this.ctxService.getParentDomain();
+
+			if (!parentDomain) {
+				if (message.action === WebComponentActionType.INITIALIZE) {
+					const { payload } = message;
+					if (!payload || !('domain' in payload)) {
+						console.error('Parent domain not provided in message payload');
+						return;
+					}
+					this.ctxService.setParentDomain(payload['domain']);
+					console.log(`✅ Parent domain set: ${event.origin}`);
+				}
+				return;
 			}
 
-			this.token = await this.contextService.getToken();
+			if (event.origin !== parentDomain) {
+				// console.warn(`⚠️ Untrusted origin: ${event.origin}`);
+				return;
+			}
+
+			console.log('📩 Message received from parent:', event.data);
+			// if (event.data.action === 'hello') {
+			//   console.log('Received action:', event.data.payload);
+			// }
+		});
+	}
+
+	async onTokenRequested(participantName: string) {
+		try {
+			if (this.ctxService.isStandaloneMode()) {
+				// As token is not provided, we need to set the participant name from
+				// ov-videoconference event
+				this.ctxService.setParticipantName(participantName);
+			}
+
+			this.token = await this.ctxService.getToken();
 		} catch (error: any) {
 			console.error(error);
 			this.serverError = error.error;
@@ -93,11 +137,23 @@ export class VideoRoomComponent implements OnInit {
 		this.cdr.detectChanges();
 	}
 
+	onRoomCreated(room: Room) {
+		console.debug('Room created:', room);
+		const message: OpenViduMeetMessage = {
+			eventType: WebComponentEventType.ROOM_CREATED,
+			payload: {
+				roomName: room.name //!FIXME: name is undefined
+			}
+		};
+		if (this.ctxService.isEmbeddedMode()) this.sendMessageToParent(message);
+	}
+
 	onParticipantLeft(event: ParticipantLeftEvent) {
 		console.warn('Participant left the room. Redirecting to:');
-		const redirectURL = this.contextService.getRedirectURL() || '/';
+		const redirectURL = this.ctxService.getRedirectURL() || '/';
 		const isExternalURL = /^https?:\/\//.test(redirectURL);
 
+		//if (this.contextService.isEmbeddedMode()) this.sendMessageToParent(event);
 		this.redirectTo(redirectURL, isExternalURL);
 	}
 
@@ -162,7 +218,7 @@ export class VideoRoomComponent implements OnInit {
 	 * @returns {Promise<void>} A promise that resolves when the room preferences have been loaded and applied.
 	 */
 	private async loadRoomPreferences() {
-		const preferences = await this.globalPreferencesService.getRoomPreferences();
+		const preferences = await this.roomService.getRoomPreferences();
 		// Assign the preferences to the component
 		Object.assign(this, preferences);
 
@@ -179,16 +235,13 @@ export class VideoRoomComponent implements OnInit {
 	 * This method checks the token permissions and sets the feature flags accordingly.
 	 * @private
 	 */
-	private configureFetureFlagsFromTokenPermissions() {
-		if (this.featureFlags.showChat) {
-			this.featureFlags.showChat = this.contextService.canChat();
-		}
-
-		if (this.featureFlags.showRecording) {
-			this.featureFlags.showRecording = this.contextService.canRecord();
-		}
-
-		this.featureFlags.showPrejoin = false;
+	private applyParticipantPermissions() {
+		// if (this.featureFlags.showChat) {
+		// 	this.featureFlags.showChat = this.ctxService.canChat();
+		// }
+		// if (this.featureFlags.showRecording) {
+		// 	this.featureFlags.showRecording = this.ctxService.canRecord();
+		// }
 	}
 
 	private redirectTo(url: string, isExternal: boolean) {
@@ -201,4 +254,11 @@ export class VideoRoomComponent implements OnInit {
 		}
 	}
 
+	private sendMessageToParent(event: OpenViduMeetMessage /*| RoomDisconnectedEvent*/) {
+		// const parentUrl = window.parent.location.href;
+		// const parentOrigin = new URL(parentUrl).origin;
+		console.warn('Sending message to parent :', event);
+		const origin = this.ctxService.getParentDomain();
+		window.parent.postMessage(event, origin);
+	}
 }
