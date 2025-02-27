@@ -10,6 +10,7 @@ import { LoggerService } from 'openvidu-components-angular';
 /**
  * Service to manage the context of the application, including embedded mode and token management.
  */
+// TODO: Save context in local storage
 export class ContextService {
 	private context: ContextData = {
 		roomName: '',
