@@ -37,37 +37,37 @@ export class LoggerService {
 	}
 
 	// Generic method to log messages with a specific level
-	public log(level: string, message: string): void {
-		this.logger.log(level, message);
+	public log(level: string, message: string, ...meta: unknown[]): void {
+		this.logger.log(level, message, ...meta);
 	}
 
 	// Logs a message as an error
-	public error(message: string): void {
-		this.log('error', message);
+	public error(message: string, ...meta: unknown[]): void {
+		this.log('error', message, ...meta);
 	}
 
 	// Logs a message as a warning
-	public warn(message: string): void {
-		this.log('warn', message);
+	public warn(message: string, ...meta: unknown[]): void {
+		this.log('warn', message, ...meta);
 	}
 
 	// Logs a message as general information
-	public info(message: string): void {
-		this.log('info', message);
+	public info(message: string, ...meta: unknown[]): void {
+		this.log('info', message, ...meta);
 	}
 
 	// Logs a message as verbose
-	public verbose(message: string): void {
-		this.log('verbose', message);
+	public verbose(message: string, ...meta: unknown[]): void {
+		this.log('verbose', message, ...meta);
 	}
 
 	// Logs a message for debugging purposes
-	public debug(message: string): void {
-		this.log('debug', message);
+	public debug(message: string, ...meta: unknown[]): void {
+		this.log('debug', message, ...meta);
 	}
 
 	// Logs a message as trivial information
-	public silly(message: string): void {
-		this.log('silly', message);
+	public silly(message: string, ...meta: unknown[]): void {
+		this.log('silly', message, ...meta);
 	}
 }
