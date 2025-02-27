@@ -28,17 +28,17 @@ export const ensureValidTokenOrRoomNameGuard: CanActivateFn = async (
 	const queryParams = route.queryParams;
 	const tokenParameter = queryParams['token'];
 
-	if (tokenParameter) {
-		// Standard mode with token
-		contextService.setApplicationMode(ApplicationMode.STANDALONE_WITH_TOKEN);
-		try {
-			contextService.setToken(tokenParameter);
-		} catch (error) {
-			const queryParams = { reason: 'invalid-token' };
-			router.navigate(['unauthorized'], { queryParams });
-			return false;
-		}
-	} else {
+	// if (tokenParameter) {
+	// 	// Standard mode with token
+	// 	contextService.setApplicationMode(ApplicationMode.STANDALONE_WITH_TOKEN);
+	// 	try {
+	// 		contextService.setToken(tokenParameter);
+	// 	} catch (error) {
+	// 		const queryParams = { reason: 'invalid-token' };
+	// 		router.navigate(['unauthorized'], { queryParams });
+	// 		return false;
+	// 	}
+	// } else {
 		const roomName = route.params['roomName'] || '';
 
 		// Standard mode without token
@@ -51,7 +51,7 @@ export const ensureValidTokenOrRoomNameGuard: CanActivateFn = async (
 
 		contextService.setApplicationMode(ApplicationMode.STANDALONE);
 		contextService.setRoomName(roomName);
-	}
+	// }
 
 	return true;
 };

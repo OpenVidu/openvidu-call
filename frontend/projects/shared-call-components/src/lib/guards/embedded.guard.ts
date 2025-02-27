@@ -26,22 +26,22 @@ export const embeddedModeGuard: CanActivateFn = async (route: ActivatedRouteSnap
 	if (isEmbedded) {
 		contextService.setApplicationMode(ApplicationMode.EMBEDDED);
 
-		const tokenParameter = route.queryParams['token'];
+		// const tokenParameter = route.queryParams['token'];
 
-		if (!tokenParameter) {
-			// Redirect to the unauthorized page if the token is not provided
-			const queryParams = { reason: 'no-token' };
-			router.navigate(['embedded/unauthorized'], { queryParams });
-			return false;
-		}
+		// if (!tokenParameter) {
+		// 	// Redirect to the unauthorized page if the token is not provided
+		// 	const queryParams = { reason: 'no-token' };
+		// 	router.navigate(['embedded/unauthorized'], { queryParams });
+		// 	return false;
+		// }
 
-		try {
-			contextService.setToken(tokenParameter);
-		} catch (error) {
-			const queryParams = { reason: 'invalid-token' };
-			router.navigate(['embedded/unauthorized'], { queryParams });
-			return false;
-		}
+		// try {
+		// 	contextService.setToken(tokenParameter);
+		// } catch (error) {
+		// 	const queryParams = { reason: 'invalid-token' };
+		// 	router.navigate(['embedded/unauthorized'], { queryParams });
+		// 	return false;
+		// }
 	}
 
 	// Allow access to the requested page
