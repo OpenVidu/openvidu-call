@@ -30,7 +30,7 @@ export const getRooms = async (_req: Request, res: Response) => {
 
 		const roomService = container.get(RoomService);
 		const rooms = await roomService.listOpenViduRooms();
-		return res.status(200).json(rooms);
+		return res.status(200).json({count: rooms.length, rooms});
 	} catch (error) {
 		logger.error('Error getting rooms');
 		handleError(res, error);
@@ -40,16 +40,16 @@ export const getRooms = async (_req: Request, res: Response) => {
 export const getRoom = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
-	const { roomId } = req.params;
+	const { roomName } = req.params;
 
 	try {
-		logger.verbose(`Getting room with id '${roomId}'`);
+		logger.verbose(`Getting room with id '${roomName}'`);
 
 		const roomService = container.get(RoomService);
-		const room = await roomService.getOpenViduRoom(roomId);
+		const room = await roomService.getOpenViduRoom(roomName);
 		return res.status(200).json(room);
 	} catch (error) {
-		logger.error(`Error getting room with id '${roomId}'`);
+		logger.error(`Error getting room with id '${roomName}'`);
 		handleError(res, error);
 	}
 };
@@ -57,17 +57,17 @@ export const getRoom = async (req: Request, res: Response) => {
 export const deleteRoom = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
-	const { roomId } = req.params;
+	const { roomName } = req.params;
 
 	try {
-		logger.verbose(`Deleting room with id '${roomId}'`);
+		logger.verbose(`Deleting room with id '${roomName}'`);
 
 		const roomService = container.get(RoomService);
-		await roomService.deleteOpenViduRoom(roomId);
-		logger.info(`Room with id '${roomId}' deleted`);
+		await roomService.deleteOpenViduRoom(roomName);
+		logger.info(`Room with id '${roomName}' deleted`);
 		return res.status(200).json({ message: 'Room deleted' });
 	} catch (error) {
-		logger.error(`Error deleting room with id '${roomId}'`);
+		logger.error(`Error deleting room with id '${roomName}'`);
 		handleError(res, error);
 	}
 };

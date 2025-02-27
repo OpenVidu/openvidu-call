@@ -12,8 +12,7 @@ import {
 	RoomCompositeOptions,
 	RoomServiceClient,
 	SendDataOptions,
-	StreamOutput,
-	VideoGrant
+	StreamOutput
 } from 'livekit-server-sdk';
 import { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, LIVEKIT_URL_PRIVATE } from '../environment.js';
 import { LoggerService } from './logger.service.js';
@@ -40,7 +39,7 @@ export class LiveKitService {
 		try {
 			return await this.roomClient.createRoom(options);
 		} catch (error) {
-			this.logger.error(`Error creating room ${error}`);
+			this.logger.error(`Error creating LiveKit room ${error}`);
 			throw internalError(`Error creating room: ${error}`);
 		}
 	}
@@ -66,16 +65,23 @@ export class LiveKitService {
 		try {
 			return await this.roomClient.listRooms();
 		} catch (error) {
-			this.logger.error(`Error getting rooms ${error}`);
+			this.logger.error(`Error getting LiveKit rooms ${error}`);
 			throw internalError(`Error getting rooms: ${error}`);
 		}
 	}
 
 	async deleteRoom(roomName: string): Promise<void> {
 		try {
+			try {
+				await this.getRoom(roomName);
+			} catch (error) {
+				this.logger.warn(`Livekit Room ${roomName} not found. Skipping deletion.`);
+				return;
+			}
+
 			await this.roomClient.deleteRoom(roomName);
 		} catch (error) {
-			this.logger.error(`Error deleting room ${error}`);
+			this.logger.error(`Error deleting LiveKit room ${error}`);
 			throw internalError(`Error deleting room: ${error}`);
 		}
 	}
@@ -94,8 +100,8 @@ export class LiveKitService {
 		}
 	}
 
-	async generateToken(options: TokenOptions): Promise<string> {
-		const { roomName, participantName, permissions } = options;
+	async generateToken(options: TokenOptions, permissions: ParticipantPermissions): Promise<string> {
+		const { roomName, participantName } = options;
 
 		try {
 			if (await this.participantAlreadyExists(roomName, participantName)) {
@@ -115,26 +121,10 @@ export class LiveKitService {
 			ttl: '24h',
 			metadata: JSON.stringify({
 				livekitUrl: LIVEKIT_URL,
-				permissions: this.generateTokenPermissions(permissions)
+				permissions: permissions.openvidu
 			})
 		});
-		const lkPermissions: VideoGrant = {
-			room: roomName,
-			roomCreate: true,
-			roomJoin: true,
-			roomList: true,
-			roomRecord: true,
-			roomAdmin: true,
-			ingressAdmin: false,
-			canPublish: true,
-			canSubscribe: true,
-			canPublishData: true,
-			canUpdateOwnMetadata: false,
-			hidden: false,
-			recorder: false,
-			agent: false
-		};
-		at.addGrant(lkPermissions);
+		at.addGrant(permissions.livekit);
 		return at.toJwt();
 	}
 
@@ -187,12 +177,5 @@ export class LiveKitService {
 
 	isEgressParticipant(participant: ParticipantInfo): boolean {
 		return participant.identity.startsWith('EG_') && participant.permission?.recorder === true;
-	}
-
-	private generateTokenPermissions(permissions?: ParticipantPermissions): ParticipantPermissions {
-		return {
-			canRecord: permissions?.canRecord ?? true,
-			canChat: permissions?.canChat ?? true
-		};
 	}
 }

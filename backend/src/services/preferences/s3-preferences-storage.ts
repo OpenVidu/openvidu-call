@@ -3,26 +3,28 @@
  * This is used when the application is configured to operate in "s3" mode.
  */
 
-import { GlobalPreferences } from '@typings-ce';
+import { GlobalPreferences, OpenViduRoom } from '@typings-ce';
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { S3Service } from '../s3.service.js';
 import { LoggerService } from '../logger.service.js';
 import { RedisService } from '../redis.service.js';
 import { OpenViduCallError } from '../../models/error.model.js';
-import { inject, injectable  } from '../../config/dependency-injector.config.js';
+import { inject, injectable } from '../../config/dependency-injector.config.js';
 
 @injectable()
-export class S3PreferenceStorage<T extends GlobalPreferences = GlobalPreferences> implements PreferencesStorage {
-	protected readonly PREFERENCES_PATH = '.call-preferences';
-	protected readonly PREFERENCES_KEY = 'call-preferences';
+export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences, R extends OpenViduRoom = OpenViduRoom>
+	implements PreferencesStorage
+{
+	protected readonly PREFERENCES_PATH = '.openvidu-meet';
+	protected readonly GLOBAL_PREFERENCES_KEY = 'openvidu-meet-preferences';
 	constructor(
 		@inject(LoggerService) protected logger: LoggerService,
 		@inject(S3Service) protected s3Service: S3Service,
 		@inject(RedisService) protected redisService: RedisService
 	) {}
 
-	async initialize(defaultPreferences: T): Promise<void> {
-		const existingPreferences = await this.getPreferences();
+	async initialize(defaultPreferences: G): Promise<void> {
+		const existingPreferences = await this.getGlobalPreferences();
 
 		if (existingPreferences) {
 			if (existingPreferences.projectId !== defaultPreferences.projectId) {
@@ -30,25 +32,25 @@ export class S3PreferenceStorage<T extends GlobalPreferences = GlobalPreferences
 					`Existing preferences are associated with a different project (Project ID: ${existingPreferences.projectId}). Replacing them with the default preferences for the current project.`
 				);
 
-				await this.savePreferences(defaultPreferences);
+				await this.saveGlobalPreferences(defaultPreferences);
 			}
 		} else {
 			this.logger.info('Saving default preferences to S3');
-			await this.savePreferences(defaultPreferences);
+			await this.saveGlobalPreferences(defaultPreferences);
 		}
 	}
 
-	async getPreferences(): Promise<T | null> {
+	async getGlobalPreferences(): Promise<G | null> {
 		try {
-			let preferences: T | null = await this.getFromRedis(this.PREFERENCES_KEY);
+			let preferences: G | null = await this.getFromRedis<G>(this.GLOBAL_PREFERENCES_KEY);
 
 			if (!preferences) {
 				// Fallback to fetching from S3 if Redis doesn't have it
 				this.logger.verbose('Preferences not found in Redis. Fetching from S3...');
-				preferences = await this.getFromS3(`${this.PREFERENCES_PATH}/${this.PREFERENCES_KEY}.json`);
+				preferences = await this.getFromS3<G>(`${this.PREFERENCES_PATH}/${this.GLOBAL_PREFERENCES_KEY}.json`);
 
 				if (preferences) {
-					await this.redisService.set(this.PREFERENCES_KEY, JSON.stringify(preferences), false);
+					await this.redisService.set(this.GLOBAL_PREFERENCES_KEY, JSON.stringify(preferences), false);
 				}
 			}
 
@@ -59,14 +61,14 @@ export class S3PreferenceStorage<T extends GlobalPreferences = GlobalPreferences
 		}
 	}
 
-	async savePreferences(preferences: T): Promise<T> {
+	async saveGlobalPreferences(preferences: G): Promise<G> {
 		try {
 			await Promise.all([
 				this.s3Service.saveObject(
-					`${this.PREFERENCES_PATH}/${this.PREFERENCES_KEY}.json`,
+					`${this.PREFERENCES_PATH}/${this.GLOBAL_PREFERENCES_KEY}.json`,
 					JSON.stringify(preferences)
 				),
-				this.redisService.set(this.PREFERENCES_KEY, JSON.stringify(preferences), false)
+				this.redisService.set(this.GLOBAL_PREFERENCES_KEY, JSON.stringify(preferences), false)
 			]);
 			return preferences;
 		} catch (error) {
@@ -75,25 +77,128 @@ export class S3PreferenceStorage<T extends GlobalPreferences = GlobalPreferences
 		}
 	}
 
-	protected async getFromRedis(key: string): Promise<T | null> {
+	async saveOpenViduRoom(ovRoom: R): Promise<R> {
+		const { roomName } = ovRoom;
+
+		try {
+			await Promise.all([
+				this.s3Service.saveObject(
+					`${this.PREFERENCES_PATH}/${roomName}/${roomName}.json`,
+					JSON.stringify(ovRoom)
+				),
+				//TODO: Implement ttl for room preferences
+				this.redisService.set(roomName, JSON.stringify(ovRoom), false)
+			]);
+			return ovRoom;
+		} catch (error) {
+			this.handleError(error, `Error saving Room preferences for room ${roomName}`);
+			throw error;
+		}
+	}
+
+	async getOpenViduRooms(): Promise<R[]> {
+		try {
+			const content = await this.s3Service.listObjects(this.PREFERENCES_PATH);
+			const roomFiles =
+				content.Contents?.filter(
+					(file) =>
+						file?.Key?.endsWith('.json') &&
+						file.Key !== `${this.PREFERENCES_PATH}/${this.GLOBAL_PREFERENCES_KEY}.json`
+				) ?? [];
+
+			if (roomFiles.length === 0) {
+				this.logger.verbose('No OpenVidu rooms found in S3');
+				return [];
+			}
+
+			// Extract room names from file paths
+			const roomNamesList = roomFiles.map((file) => this.extractRoomName(file.Key)).filter(Boolean) as string[];
+			// Fetch room preferences in parallel
+			const rooms = await Promise.all(
+				roomNamesList.map(async (roomName: string) => {
+					try {
+						return roomName ? this.getOpenViduRoom(roomName) : null;
+					} catch (error: any) {
+						this.logger.warn(`Failed to fetch room "${roomName}": ${error.message}`);
+						return Promise.resolve(null);
+					}
+				})
+			);
+
+			// Filter out null values
+			return rooms.filter(Boolean) as R[];
+		} catch (error) {
+			this.handleError(error, 'Error fetching Room preferences');
+			return [];
+		}
+	}
+
+	/**
+	 * Extracts the room name from the given file path.
+	 * Assumes the room name is located one directory before the file name.
+	 * Example: 'path/to/roomName/file.json' -> 'roomName'
+	 * @param filePath - The S3 object key representing the file path.
+	 * @returns The extracted room name or null if extraction fails.
+	 */
+	private extractRoomName(filePath?: string): string | null {
+		if (!filePath) return null;
+
+		const parts = filePath.split('/');
+
+		if (parts.length < 2) {
+			this.logger.warn(`Invalid room file path: ${filePath}`);
+			return null;
+		}
+
+		return parts[parts.length - 2];
+	}
+
+	async getOpenViduRoom(roomName: string): Promise<R | null> {
+		try {
+			const preferences: R | null = await this.getFromRedis<R>(roomName);
+
+			if (!preferences) {
+				this.logger.verbose(`Room preferences not found in Redis. Fetching from S3...`);
+				return await this.getFromS3<R>(`${this.PREFERENCES_PATH}/${roomName}/${roomName}.json`);
+			}
+
+			return preferences;
+		} catch (error) {
+			this.handleError(error, `Error fetching Room preferences for room ${roomName}`);
+			return null;
+		}
+	}
+
+	async deleteOpenViduRoom(roomName: string): Promise<void> {
+		try {
+			await Promise.all([
+				this.s3Service.deleteObject(`${this.PREFERENCES_PATH}/${roomName}/${roomName}.json`),
+				this.redisService.delete(roomName)
+			]);
+		} catch (error) {
+			this.handleError(error, `Error deleting Room preferences for room ${roomName}`);
+		}
+	}
+
+	protected async getFromRedis<U>(key: string): Promise<U | null> {
 		let preferencesCache: string | null = null;
 
 		preferencesCache = await this.redisService.get(key);
 
 		if (preferencesCache) {
 			this.logger.verbose(`Object ${key} found in Redis`);
-			return JSON.parse(preferencesCache) as T;
+			return JSON.parse(preferencesCache) as U;
 		}
 
 		return null;
 	}
 
-	protected async getFromS3(path: string): Promise<T | null> {
+	protected async getFromS3<U>(path: string): Promise<U | null> {
 		const preferences = await this.s3Service.getObjectAsJson(path);
 
 		if (preferences) {
 			this.logger.verbose(`Preferences found in S3 at path: ${path}`);
-			return preferences as T;
+			return preferences as U;
 		}
 
 		return null;

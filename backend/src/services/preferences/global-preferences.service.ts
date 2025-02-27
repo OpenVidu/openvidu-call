@@ -3,7 +3,7 @@
  * regardless of the underlying storage mechanism.
  */
 
-import { GlobalPreferences, RoomPreferences } from '@typings-ce';
+import { GlobalPreferences, OpenViduRoom, RoomPreferences } from '@typings-ce';
 import { LoggerService } from '../logger.service.js';
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { GlobalPreferencesStorageFactory } from './global-preferences.factory.js';
@@ -12,7 +12,10 @@ import { MEET_NAME_ID } from '../../environment.js';
 import { injectable, inject } from '../../config/dependency-injector.config.js';
 
 @injectable()
-export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPreferences> {
+export class GlobalPreferencesService<
+	G extends GlobalPreferences = GlobalPreferences,
+	R extends OpenViduRoom = OpenViduRoom
+> {
 	protected storage: PreferencesStorage;
 	constructor(
 		@inject(LoggerService) protected logger: LoggerService,
@@ -23,17 +26,17 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 
 	/**
 	 * Initializes default preferences if not already initialized.
-	 * @returns {Promise<T>} Default global preferences.
+	 * @returns {Promise<G>} Default global preferences.
 	 */
-	async ensurePreferencesInitialized(): Promise<T> {
+	async ensurePreferencesInitialized(): Promise<G> {
 		const preferences = this.getDefaultPreferences();
 
 		try {
 			await this.storage.initialize(preferences);
-			return preferences as T;
+			return preferences as G;
 		} catch (error) {
 			this.handleError(error, 'Error initializing default preferences');
-			return Promise.resolve({} as T);
+			return Promise.resolve({} as G);
 		}
 	}
 
@@ -41,21 +44,53 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 	 * Retrieves the global preferences, initializing them if necessary.
 	 * @returns {Promise<GlobalPreferences>}
 	 */
-	async getGlobalPreferences(): Promise<T> {
-		const preferences = await this.storage.getPreferences();
+	async getGlobalPreferences(): Promise<G> {
+		const preferences = await this.storage.getGlobalPreferences();
 
-		if (preferences) return preferences as T;
+		if (preferences) return preferences as G;
 
 		return await this.ensurePreferencesInitialized();
 	}
 
+	async saveOpenViduRoom(ovRoom: R): Promise<R> {
+		this.logger.info(`Saving OpenVidu room ${ovRoom.roomName}`);
+		return this.storage.saveOpenViduRoom(ovRoom) as Promise<R>;
+	}
+
+	async getOpenViduRooms(): Promise<R[]> {
+		return this.storage.getOpenViduRooms() as Promise<R[]>;
+	}
+
 	/**
-	 * Retrieves room preferences from global preferences.
-	 * @returns {Promise<RoomPreferences>}
+	 * Retrieves the preferences associated with a specific room.
+	 *
+	 * @param roomName - The unique identifier for the room.
+	 * @returns A promise that resolves to the room's preferences.
+	 * @throws Error if the room preferences are not found.
 	 */
-	async getRoomPreferences(): Promise<RoomPreferences> {
-		const preferences = await this.getGlobalPreferences();
-		return preferences.roomPreferences;
+	async getOpenViduRoom(roomName: string): Promise<R> {
+		const openviduRoom = await this.storage.getOpenViduRoom(roomName);
+
+		if (!openviduRoom) {
+			this.logger.error(`Room preferences not found for room ${roomName}`);
+			throw new Error('Room preferences not found');
+		}
+
+		return openviduRoom as R;
+	}
+
+	async deleteOpenViduRoom(roomName: string): Promise<void> {
+		return this.storage.deleteOpenViduRoom(roomName);
+	}
+
+	async getOpenViduRoomPreferences(roomName: string): Promise<RoomPreferences> {
+		const openviduRoom = await this.getOpenViduRoom(roomName);
+
+		if (!openviduRoom.preferences) {
+			throw new Error('Room preferences not found');
+		}
+
+		return openviduRoom.preferences;
 	}
 
 	/**
@@ -63,24 +98,13 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 	 * @param {RoomPreferences} roomPreferences
 	 * @returns {Promise<GlobalPreferences>}
 	 */
-	async updateRoomPreferences(roomPreferences: RoomPreferences): Promise<T> {
+	async updateOpenViduRoomPreferences(roomName: string, roomPreferences: RoomPreferences): Promise<R> {
 		// TODO: Move validation to the controller layer
 		this.validateRoomPreferences(roomPreferences);
 
-		const existingPreferences = await this.getGlobalPreferences();
-		existingPreferences.roomPreferences = roomPreferences;
-		return this.storage.savePreferences(existingPreferences) as Promise<T>;
-	}
-
-	/**
-	 * Resets room preferences to default values.
-	 * @returns {Promise<T>}
-	 */
-	async resetRoomPreferences(): Promise<T> {
-		const preferences = this.getDefaultPreferences();
-		const existingPreferences = await this.getGlobalPreferences();
-		existingPreferences.roomPreferences = preferences.roomPreferences;
-		return this.storage.savePreferences(existingPreferences) as Promise<T>;
+		const openviduRoom = await this.getOpenViduRoom(roomName);
+		openviduRoom.preferences = roomPreferences;
+		return this.saveOpenViduRoom(openviduRoom);
 	}
 
 	/**
@@ -114,18 +138,12 @@ export class GlobalPreferencesService<T extends GlobalPreferences = GlobalPrefer
 
 	/**
 	 * Returns the default global preferences.
-	 * @returns {GlobalPreferences}
+	 * @returns {G}
 	 */
-	protected getDefaultPreferences(): GlobalPreferences {
+	protected getDefaultPreferences(): G {
 		return {
-			projectId: MEET_NAME_ID,
-			roomPreferences: {
-				recordingPreferences: { enabled: true },
-				broadcastingPreferences: { enabled: true },
-				chatPreferences: { enabled: true },
-				virtualBackgroundPreferences: { enabled: true }
-			}
-		};
+			projectId: MEET_NAME_ID
+		} as G;
 	}
 
 	/**

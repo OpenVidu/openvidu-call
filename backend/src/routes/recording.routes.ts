@@ -10,12 +10,12 @@ recordingRouter.use(bodyParser.urlencoded({ extended: true }));
 recordingRouter.use(bodyParser.json());
 
 // Recording Routes
-recordingRouter.post('/', withUserBasicAuth, withRecordingEnabled, recordingCtrl.startRecording);
-recordingRouter.put('/:recordingId', withUserBasicAuth, withRecordingEnabled, recordingCtrl.stopRecording);
-recordingRouter.get('/:recordingId/stream', withRecordingEnabled, recordingCtrl.streamRecording);
+recordingRouter.post('/', withUserBasicAuth, /*withRecordingEnabled,*/ recordingCtrl.startRecording);
+recordingRouter.put('/:recordingId', withUserBasicAuth,/* withRecordingEnabled,*/ recordingCtrl.stopRecording);
+recordingRouter.get('/:recordingId/stream', /*withRecordingEnabled,*/ recordingCtrl.streamRecording);
 recordingRouter.delete(
 	'/:recordingId',
 	withUserBasicAuth,
-	withRecordingEnabled,
+	/*withRecordingEnabled,*/
 	recordingCtrl.deleteRecording
 );

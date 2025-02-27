@@ -8,21 +8,26 @@ export const withBroadcastingEnabled = async (req: Request, res: Response, next:
 	const logger = container.get(LoggerService);
 
 	try {
-		const preferenceService = container.get(GlobalPreferencesService);
-		const preferences: RoomPreferences | null = await preferenceService.getRoomPreferences();
+		// TODO: Think how get the roomName from the request
 
-		if (preferences) {
-			const { broadcastingPreferences } = preferences;
+		return next();
 
-			if (!broadcastingPreferences.enabled) {
-				return res.status(403).json({ message: 'Broadcasting is disabled in this room.' });
-			}
+		// const preferenceService = container.get(GlobalPreferencesService);
 
-			return next();
-		}
+		// const preferences: RoomPreferences | null = await preferenceService.getOpenViduRoomPreferences(roomName);
 
-		logger.error('No room preferences found checking broadcasting preferences. Refusing access.');
-		return res.status(403).json({ message: 'Broadcasting is disabled in this room.' });
+		// if (preferences) {
+		// 	const { broadcastingPreferences } = preferences;
+
+		// 	if (!broadcastingPreferences.enabled) {
+		// 		return res.status(403).json({ message: 'Broadcasting is disabled in this room.' });
+		// 	}
+
+		// 	return next();
+		// }
+
+		// logger.error('No room preferences found checking broadcasting preferences. Refusing access.');
+		// return res.status(403).json({ message: 'Broadcasting is disabled in this room.' });
 	} catch (error) {
 		logger.error('Error checking broadcasting preferences:' + error);
 		return res.status(403).json({ message: 'Broadcasting is disabled in this room.' });

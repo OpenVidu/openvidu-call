@@ -12,7 +12,7 @@ roomRouter.use(bodyParser.json());
 // Room Routes
 roomRouter.post('/', /*withUserBasicAuth*/ validateRoomRequest, roomCtrl.createRoom);
 roomRouter.get('/', withUserBasicAuth, roomCtrl.getRooms);
-roomRouter.get('/:roomId', withUserBasicAuth, roomCtrl.getRoom);
-roomRouter.delete('/:roomId', withUserBasicAuth, roomCtrl.deleteRoom);
+roomRouter.get('/:roomName', withUserBasicAuth, roomCtrl.getRoom);
+roomRouter.delete('/:roomName', withUserBasicAuth, roomCtrl.deleteRoom);
 
 // Room preferences

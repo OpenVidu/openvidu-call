@@ -1,10 +1,13 @@
-import { GlobalPreferences } from '@typings-ce';
+import { GlobalPreferences, OpenViduRoom } from '@typings-ce';
 
 /**
  * Interface for managing global preferences storage.
  */
 
-export interface PreferencesStorage<T extends GlobalPreferences = GlobalPreferences> {
+export interface PreferencesStorage<
+	T extends GlobalPreferences = GlobalPreferences,
+	R extends OpenViduRoom = OpenViduRoom
+> {
 	/**
 	 * Initializes the storage with default preferences if they are not already set.
 	 *
@@ -14,11 +17,11 @@ export interface PreferencesStorage<T extends GlobalPreferences = GlobalPreferen
 	initialize(defaultPreferences: T): Promise<void>;
 
 	/**
-	 * Retrieves the current preferences.
+	 * Retrieves the global preferences of Openvidu Meet.
 	 *
-	 * @returns A promise that resolves to the current preferences, or null if not set.
+	 * @returns A promise that resolves to the global preferences, or null if not set.
 	 */
-	getPreferences(): Promise<T | null>;
+	getGlobalPreferences(): Promise<T | null>;
 
 	/**
 	 * Saves the given preferences.
@@ -26,5 +29,31 @@ export interface PreferencesStorage<T extends GlobalPreferences = GlobalPreferen
 	 * @param preferences - The preferences to save.
 	 * @returns A promise that resolves to the saved preferences.
 	 */
-	savePreferences(preferences: T): Promise<T>;
+	saveGlobalPreferences(preferences: T): Promise<T>;
+
+	getOpenViduRooms(): Promise<R[]>;
+
+	/**
+	 * Retrieves the {@link OpenViduRoom}.
+	 *
+	 * @param roomName - The name of the room to retrieve.
+	 * @returns A promise that resolves to the OpenVidu Room, or null if not found.
+	 **/
+	getOpenViduRoom(roomName: string): Promise<R | null>;
+
+	/**
+	 * Saves the OpenVidu Room.
+	 *
+	 * @param ovRoom - The OpenVidu Room to save.
+	 * @returns A promise that resolves to the saved
+	 **/
+	saveOpenViduRoom(ovRoom: R): Promise<R>;
+
+	/**
+	 * Deletes the OpenVidu Room for a given room name.
+	 *
+	 * @param roomName - The name of the room whose should be deleted.
+	 * @returns A promise that resolves when the room have been deleted.
+	 **/
+	deleteOpenViduRoom(roomName: string): Promise<void>;
 }

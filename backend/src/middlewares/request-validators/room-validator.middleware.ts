@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const RoomRequestOptionsSchema = z.object({
 	roomNamePrefix: z.string().optional(),
-	endDate: z.number().positive('End date must be a positive integer').min(Date.now(), 'End date must be in the future')
+	expirationDate: z.number().positive('End date must be a positive integer').min(Date.now(), 'End date must be in the future')
 });
 
 export const validateRoomRequest = (req: Request, res: Response, next: NextFunction) => {

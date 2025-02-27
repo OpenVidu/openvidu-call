@@ -12,5 +12,5 @@ broadcastingRouter.use(bodyParser.urlencoded({ extended: true }));
 broadcastingRouter.use(bodyParser.json());
 
 // Broadcasting Routes
-broadcastingRouter.post('/', withUserBasicAuth, withBroadcastingEnabled, broadcastCtrl.startBroadcasting);
-broadcastingRouter.put('/:broadcastId', withUserBasicAuth, withBroadcastingEnabled, broadcastCtrl.stopBroadcasting);
+broadcastingRouter.post('/', withUserBasicAuth, /*withBroadcastingEnabled,*/ broadcastCtrl.startBroadcasting);
+broadcastingRouter.put('/:broadcastId', withUserBasicAuth, /*withBroadcastingEnabled,*/ broadcastCtrl.stopBroadcasting);

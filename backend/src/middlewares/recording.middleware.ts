@@ -8,21 +8,26 @@ export const withRecordingEnabled = async (req: Request, res: Response, next: Ne
 	const logger = container.get(LoggerService);
 
 	try {
-		const preferenceService = container.get(GlobalPreferencesService);
-		const preferences: RoomPreferences | null = await preferenceService.getRoomPreferences();
+		return next();
 
-		if (preferences) {
-			const { recordingPreferences } = preferences;
+		// TODO: Think how get the roomName from the request
 
-			if (!recordingPreferences.enabled) {
-				return res.status(403).json({ message: 'Recording is disabled in this room.' });
-			}
+		// const roomName = req.body.roomName;
+		// const preferenceService = container.get(GlobalPreferencesService);
+		// const preferences: RoomPreferences | null = await preferenceService.getOpenViduRoomPreferences(roomName);
 
-			return next();
-		}
+		// if (preferences) {
+		// 	const { recordingPreferences } = preferences;
 
-		logger.error('No room preferences found checking recording preferences. Refusing access.');
-		return res.status(403).json({ message: 'Recording is disabled in this room.' });
+		// 	if (!recordingPreferences.enabled) {
+		// 		return res.status(403).json({ message: 'Recording is disabled in this room.' });
+		// 	}
+
+		// 	return next();
+		// }
+
+		// logger.error('No room preferences found checking recording preferences. Refusing access.');
+		// return res.status(403).json({ message: 'Recording is disabled in this room.' });
 	} catch (error) {
 		logger.error('Error checking recording preferences:' + error);
 		return res.status(403).json({ message: 'Recording is disabled in this room.' });

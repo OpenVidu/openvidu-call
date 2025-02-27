@@ -107,7 +107,7 @@ export class S3Service {
 	 */
 	async deleteObject(name: string, bucket: string = MEET_S3_BUCKET): Promise<DeleteObjectCommandOutput> {
 		try {
-			this.logger.info(`Deleting object in S3: ${name}`);
+			this.logger.verbose(`Deleting object in S3: ${name}`);
 			const command = new DeleteObjectCommand({ Bucket: bucket, Key: name });
 			return await this.run(command);
 		} catch (error) {
