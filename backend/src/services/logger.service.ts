@@ -37,7 +37,7 @@ export class LoggerService {
 	}
 
 	// Generic method to log messages with a specific level
-	public log(level: string, message: string, ...meta: unknown[]): void {
+	protected log(level: string, message: string, ...meta: unknown[]): void {
 		this.logger.log(level, message, ...meta);
 	}
 
