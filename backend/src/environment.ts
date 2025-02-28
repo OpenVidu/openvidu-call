@@ -1,66 +1,59 @@
 import dotenv from 'dotenv';
 import chalk from 'chalk';
 
-if (process.env.MEET_CONFIG_DIR) {
-	dotenv.config({ path: process.env.MEET_CONFIG_DIR });
-} else {
-	if (process.env.NODE_ENV === 'development') {
-		dotenv.config({ path: '.env.development' });
-	} else {
-		dotenv.config();
-	}
-}
+const envPath = process.env.MEET_CONFIG_DIR
+	? process.env.MEET_CONFIG_DIR
+	: process.env.NODE_ENV === 'development'
+		? '.env.development'
+		: undefined;
 
-// General server configuration
-export const SERVER_PORT = process.env.SERVER_PORT || 6080;
-export const SERVER_CORS_ORIGIN = process.env.SERVER_CORS_ORIGIN || '*';
-export const MEET_NAME_ID = process.env.MEET_NAME_ID || 'openviduMeet';
-export const MEET_PRIVATE_ACCESS = process.env.MEET_PRIVATE_ACCESS || 'false';
-export const MEET_USER = process.env.MEET_USER || 'user';
-export const MEET_SECRET = process.env.MEET_SECRET || 'user';
-export const MEET_ADMIN_USER = process.env.MEET_ADMIN_USER || 'admin';
-export const MEET_ADMIN_SECRET = process.env.MEET_ADMIN_SECRET || 'admin';
-export const MEET_PREFERENCES_STORAGE_MODE = process.env.MEET_PREFERENCES_STORAGE_MODE || 's3';
-export const MEET_WEBHOOK_ENABLED = process.env.MEET_WEBHOOK_ENABLED || 'false';
-export const MEET_WEBHOOK_URL = process.env.MEET_WEBHOOK_URL || 'http://localhost:8080/';
+dotenv.config(envPath ? { path: envPath } : {});
 
-/**
- * Log levels configuration: error, warn, info, verbose, debug, silly
- *
- * The default log level is set to 'verbose' if MEET_LOG_LEVEL environment variable is not defined.
- */
-export const MEET_LOG_LEVEL = process.env.MEET_LOG_LEVEL || 'verbose';
+export const {
+	SERVER_PORT = 6080,
+	SERVER_CORS_ORIGIN = '*',
+	MEET_NAME_ID = 'openviduMeet',
+	MEET_PRIVATE_ACCESS = 'false',
+	MEET_USER = 'user',
+	MEET_SECRET = 'user',
+	MEET_ADMIN_USER = 'admin',
+	MEET_ADMIN_SECRET = 'admin',
+	MEET_PREFERENCES_STORAGE_MODE = 's3',
+	MEET_WEBHOOK_ENABLED = 'false',
+	MEET_WEBHOOK_URL = 'http://localhost:8080/',
+	MEET_LOG_LEVEL = 'verbose',
 
-// Livekit configuration
-export const LIVEKIT_URL = process.env.LIVEKIT_URL || 'ws://localhost:7880';
-export const LIVEKIT_URL_PRIVATE = process.env.LIVEKIT_URL_PRIVATE || LIVEKIT_URL;
-export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
-export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
+	// LiveKit configuration
+	LIVEKIT_URL = 'ws://localhost:7880',
+	LIVEKIT_URL_PRIVATE = LIVEKIT_URL, // Uses LIVEKIT_URL if not explicitly set
+	LIVEKIT_API_KEY = 'devkey',
+	LIVEKIT_API_SECRET = 'secret',
 
-// S3 configuration
-export const MEET_S3_BUCKET = process.env.MEET_S3_BUCKET || 'openvidu';
-export const MEET_S3_SERVICE_ENDPOINT = process.env.MEET_S3_SERVICE_ENDPOINT || 'http://localhost:9000';
-export const MEET_S3_ACCESS_KEY = process.env.MEET_S3_ACCESS_KEY || 'minioadmin';
-export const MEET_S3_SECRET_KEY = process.env.MEET_S3_SECRET_KEY || 'minioadmin';
-export const MEET_AWS_REGION = process.env.MEET_AWS_REGION || 'us-east-1';
-export const MEET_S3_WITH_PATH_STYLE_ACCESS = process.env.MEET_S3_WITH_PATH_STYLE_ACCESS || 'true';
+	// S3 configuration
+	MEET_S3_BUCKET = 'openvidu',
+	MEET_S3_SERVICE_ENDPOINT = 'http://localhost:9000',
+	MEET_S3_ACCESS_KEY = 'minioadmin',
+	MEET_S3_SECRET_KEY = 'minioadmin',
+	MEET_AWS_REGION = 'us-east-1',
+	MEET_S3_WITH_PATH_STYLE_ACCESS = 'true',
 
-// Redis configuration
-export const REDIS_HOST = process.env.MEET_REDIS_HOST || 'localhost';
-export const REDIS_PORT = process.env.MEET_REDIS_PORT || 6379;
-export const REDIS_USERNAME = process.env.MEET_REDIS_USERNAME || '';
-export const REDIS_PASSWORD = process.env.MEET_REDIS_PASSWORD || 'redispassword';
-export const REDIS_DB = process.env.MEET_REDIS_DB || 0;
+	// Redis configuration
+	MEET_REDIS_HOST: REDIS_HOST = 'localhost',
+	MEET_REDIS_PORT: REDIS_PORT = 6379,
+	MEET_REDIS_USERNAME: REDIS_USERNAME = '',
+	MEET_REDIS_PASSWORD: REDIS_PASSWORD = 'redispassword',
+	MEET_REDIS_DB: REDIS_DB = '0',
 
-// Redis configuration Sentinel
-export const REDIS_SENTINEL_HOST_LIST = process.env.MEET_REDIS_SENTINEL_HOST_LIST || '';
-export const REDIS_SENTINEL_PASSWORD = process.env.MEET_REDIS_SENTINEL_PASSWORD || '';
-export const REDIS_SENTINEL_MASTER_NAME = process.env.MEET_REDIS_SENTINEL_MASTER_NAME || 'openvidu';
+	// Redis Sentinel configuration
+	MEET_REDIS_SENTINEL_HOST_LIST: REDIS_SENTINEL_HOST_LIST = '',
+	MEET_REDIS_SENTINEL_PASSWORD: REDIS_SENTINEL_PASSWORD = '',
+	MEET_REDIS_SENTINEL_MASTER_NAME: REDIS_SENTINEL_MASTER_NAME = 'openvidu',
 
-// Deployment related configuration
-export const MODULES_FILE = process.env.MODULES_FILE || undefined;
-export const MODULE_NAME = process.env.MODULE_NAME || 'openviduMeet';
-export const ENABLED_MODULES = process.env.ENABLED_MODULES || '';
+	// Deployment configuration
+	MODULES_FILE = undefined,
+	MODULE_NAME = 'openviduMeet',
+	ENABLED_MODULES = ''
+} = process.env;
 
 export function checkModuleEnabled() {
 	if (MODULES_FILE) {
