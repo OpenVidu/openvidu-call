@@ -15,6 +15,9 @@ import {
 	S3PreferenceStorage,
 	S3Service
 } from '../services/index.js';
+import { SystemEventService } from '../services/system-event.service.js';
+import { MutexService } from '../services/mutex.service.js';
+import { TaskSchedulerService } from '../services/task-scheduler.service.js';
 
 const container: Container = new Container();
 
@@ -28,6 +31,9 @@ const container: Container = new Container();
  */
 const registerDependencies = () => {
 	console.log('Registering CE dependencies');
+	container.bind(SystemEventService).toSelf().inSingletonScope();
+	container.bind(MutexService).toSelf().inSingletonScope();
+	container.bind(TaskSchedulerService).toSelf().inSingletonScope();
 	container.bind(LoggerService).toSelf().inSingletonScope();
 	container.bind(AuthService).toSelf().inSingletonScope();
 	container.bind(BroadcastingService).toSelf().inSingletonScope();

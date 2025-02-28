@@ -7,8 +7,9 @@ import { MEET_NAME_ID } from '../environment.js';
 import { LiveKitService } from './livekit.service.js';
 import { GlobalPreferencesService } from './preferences/global-preferences.service.js';
 import { ParticipantPermissions, OpenViduRoomDAO, OpenViduRoom, OpenViduRoomOptions } from '@typings-ce';
-import { CronJob } from 'cron';
 import { OpenViduRoomHelper } from '../helpers/room.helper.js';
+import { SystemEventService } from './system-event.service.js';
+import { TaskSchedulerService } from './task-scheduler.service.js';
 
 /**
  * Service for managing OpenVidu Meet rooms.
@@ -21,25 +22,24 @@ export class RoomService {
 	constructor(
 		@inject(LoggerService) protected logger: LoggerService,
 		@inject(GlobalPreferencesService) protected globalPrefService: GlobalPreferencesService,
-		@inject(LiveKitService) protected livekitService: LiveKitService
+		@inject(LiveKitService) protected livekitService: LiveKitService,
+		@inject(SystemEventService) protected systemEventService: SystemEventService,
+		@inject(TaskSchedulerService) protected taskSchedulerService: TaskSchedulerService
 	) {}
 
-	//
-	async startRoomGarbageCollector(): Promise<void> {
-		try {
-			await this.deleteExpiredRooms();
-			// Remove expired rooms every day at midnight
-			const job = new CronJob('0 0 * * *', async () => {
-				try {
-					await this.deleteExpiredRooms();
-				} catch (error) {
-					this.logger.error('Error deleting expired rooms:', error);
-				}
-			});
-			job.start();
-		} catch (error) {
-			this.logger.error('Error deleting expired rooms:', error);
-		}
+	/**
+	 * Initializes the room service.
+	 *
+	 * This method sets up the room garbage collector and event listeners.
+	 */
+	async initialize(): Promise<void> {
+		this.systemEventService.onRedisReady(async () => {
+			await this.deleteOpenViduExpiredRooms();
+			await Promise.all([
+				this.restoreMissingLivekitRooms(),
+				this.taskSchedulerService.startRoomGarbageCollector(this.deleteExpiredRooms.bind(this))
+			]);
+		});
 	}
 
 	/**
@@ -52,28 +52,10 @@ export class RoomService {
 	 * @throws {Error} If the room creation fails.
 	 *
 	 */
-	async createOpenViduRoom(baseUrl: string, roomOptions: OpenViduRoomOptions): Promise<OpenViduRoomDAO> {
-		const { roomNamePrefix, expirationDate } = roomOptions;
-		const creationDate = Date.now();
-		// Calculate the time until the room expires
-		const timeUntilExpiration = Math.max(0, Math.floor((expirationDate - creationDate) / 1000));
+	async createRoom(baseUrl: string, roomOptions: OpenViduRoomOptions): Promise<OpenViduRoomDAO> {
+		const livekitRoom: Room = await this.createLivekitRoom(roomOptions);
 
-		const livekitRoomOptions: CreateOptions = {
-			name: `${roomNamePrefix}${uid(15)}`,
-			metadata: JSON.stringify({
-				createdBy: MEET_NAME_ID,
-				baseUrl,
-				roomOptions
-			}),
-			// TODO: Add more options
-			emptyTimeout: timeUntilExpiration,
-			maxParticipants: roomOptions.maxParticipants,
-			departureTimeout: 31_536_000 // 1 year in seconds
-		};
-
-		const livekitRoom: Room = await this.livekitService.createRoom(livekitRoomOptions);
-
-		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(livekitRoom, roomOptions);
+		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(baseUrl, livekitRoom, roomOptions);
 
 		await this.globalPrefService.saveOpenViduRoom(openviduRoom);
 
@@ -102,15 +84,64 @@ export class RoomService {
 	}
 
 	/**
-	 * Deletes an OpenVidu room by its name.
+	 * Deletes OpenVidu and LiveKit rooms.
 	 *
-	 * @param roomName - The name of the room to delete.
+	 * This method deletes rooms from both LiveKit and OpenVidu services.
+	 *
+	 * @param roomNames - An array of room names to be deleted.
+	 * @returns A promise that resolves with an array of successfully deleted room names.
 	 */
-	async deleteOpenViduRoom(roomName: string): Promise<void> {
-		await Promise.all([
-			this.globalPrefService.deleteOpenViduRoom(roomName),
-			this.livekitService.deleteRoom(roomName)
+	async deleteRooms(roomNames: string[]): Promise<string[]> {
+		const [openViduResults, livekitResults] = await Promise.all([
+			this.deleteOpenViduRooms(roomNames),
+			Promise.allSettled(roomNames.map((roomName) => this.livekitService.deleteRoom(roomName)))
 		]);
+
+		// Log errors from LiveKit deletions
+		livekitResults.forEach((result, index) => {
+			if (result.status === 'rejected') {
+				this.logger.error(`Failed to delete LiveKit room "${roomNames[index]}": ${result.reason}`);
+			}
+		});
+
+		// Combine successful deletions
+		const successfullyDeleted = new Set(openViduResults);
+
+		livekitResults.forEach((result, index) => {
+			if (result.status === 'fulfilled') {
+				successfullyDeleted.add(roomNames[index]);
+			}
+		});
+
+		return Array.from(successfullyDeleted);
+	}
+
+	/**
+	 * Deletes OpenVidu rooms.
+	 *
+	 * @param roomNames - List of room names to delete.
+	 * @returns A promise that resolves with an array of successfully deleted room names.
+	 */
+	async deleteOpenViduRooms(roomNames: string[]): Promise<string[]> {
+		const results = await Promise.allSettled(
+			roomNames.map((roomName) => this.globalPrefService.deleteOpenViduRoom(roomName))
+		);
+
+		const successfulRooms: string[] = [];
+
+		results.forEach((result, index) => {
+			if (result.status === 'fulfilled') {
+				successfulRooms.push(roomNames[index]);
+			} else {
+				this.logger.error(`Failed to delete OpenVidu room "${roomNames[index]}": ${result.reason}`);
+			}
+		});
+
+		if (successfulRooms.length === roomNames.length) {
+			this.logger.verbose('All OpenVidu rooms have been deleted.');
+		}
+
+		return successfulRooms;
 	}
 
 	/**
@@ -131,6 +162,32 @@ export class RoomService {
 	}
 
 	/**
+	 * Creates a Livekit room with the specified options.
+	 *
+	 * @param roomOptions - The options for creating the room.
+	 * @returns A promise that resolves to the created room.
+	 */
+	protected async createLivekitRoom(roomOptions: OpenViduRoomOptions): Promise<Room> {
+		const { roomNamePrefix, expirationDate } = roomOptions;
+
+		const creationDate = Date.now();
+		// Calculate the time until the room expires
+		const timeUntilExpiration = Math.max(0, Math.floor((expirationDate - creationDate) / 1000));
+		const livekitRoomOptions: CreateOptions = {
+			name: `${roomNamePrefix}${uid(15)}`,
+			metadata: JSON.stringify({
+				createdBy: MEET_NAME_ID,
+				roomOptions
+			}),
+			// TODO: Add more options
+			emptyTimeout: timeUntilExpiration,
+			maxParticipants: roomOptions.maxParticipants,
+			departureTimeout: 31_536_000 // 1 year in seconds
+		};
+		return await this.livekitService.createRoom(livekitRoomOptions);
+	}
+
+	/**
 	 * Converts a LiveKit room to an OpenVidu room.
 	 *
 	 * @param livekitRoom - The LiveKit room object containing metadata, name, and creation time.
@@ -138,21 +195,19 @@ export class RoomService {
 	 * @returns The converted OpenVidu room object.
 	 * @throws Will throw an error if metadata is not found in the LiveKit room.
 	 */
-	protected toOpenViduRoom(livekitRoom: Room, roomOptions: OpenViduRoomOptions): OpenViduRoom {
-		const { metadata, name: roomName, creationTime, maxParticipants } = livekitRoom;
-		const { preferences, expirationDate } = roomOptions;
+	protected toOpenViduRoom(baseUrl: string, livekitRoom: Room, roomOptions: OpenViduRoomOptions): OpenViduRoom {
+		const { name: roomName, creationTime, maxParticipants } = livekitRoom;
+		const { preferences, expirationDate, roomNamePrefix } = roomOptions;
 
-		if (!metadata) throw new Error('Metadata not found');
-
-		const metadataJson = JSON.parse(metadata);
 		const openviduRoom: OpenViduRoom = {
 			roomName,
+			roomNamePrefix,
 			creationDate: Number(creationTime) * 1000,
 			maxParticipants: maxParticipants > 0 ? maxParticipants : undefined,
 			expirationDate,
-			moderatorRoomUrl: `${metadataJson.baseUrl}/${roomName}/?secret=${secureUid(10)}`,
-			publisherRoomUrl: `${metadataJson.baseUrl}/${roomName}?secret=${secureUid(10)}`,
-			viewerRoomUrl: `${metadataJson.baseUrl}/${roomName}/?secret=${secureUid(10)}`,
+			moderatorRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
+			publisherRoomUrl: `${baseUrl}/${roomName}?secret=${secureUid(10)}`,
+			viewerRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
 			preferences,
 			permissions: {
 				moderator: this.generateModeratorPermissions(roomName),
@@ -246,51 +301,106 @@ export class RoomService {
 	}
 
 	/**
-	 * Deletes rooms that have expired.
-	 */
-	// TODO: The Op          ion date, so we need to delete them when they expire.
-	// The problem is that when Livekit or Redis is down, the empty rooms disappear from the list.
-	// We need to check the rooms in Livekit and Redis to see if they are still there.
-	// If they are not, we need to check the OpenVidu Rooms and restore them if necessary.
-	// We also need to check the expiration date of the rooms and delete them if they have expired.
+	 * Deletes OpenVidu expired rooms and consequently LiveKit rooms.
+	 *
+	 * This method delete the rooms that have an expiration date earlier than the current time.
+	 *
+	 * @returns {Promise<void>} A promise that resolves when the deletion process is complete.
+	 **/
 	protected async deleteExpiredRooms(): Promise<void> {
 		try {
-			const now = Date.now();
-			this.logger.verbose(`Checking expired rooms at ${new Date(now).toISOString()}`);
+			const ovExpiredRooms = await this.deleteOpenViduExpiredRooms();
 
-			// Gett Livekit and OpenVidu rooms
-			const [lkRooms, ovRooms] = await Promise.all([this.livekitService.listRooms(), this.listOpenViduRooms()]);
-
-			// Filter out rooms that are not in Livekit
-			const roomsToDelete = ovRooms
-				.filter((ovRoom) => !lkRooms.some((room) => room.name === ovRoom.roomName))
-				.map((ovRoom) => ovRoom.roomName);
-
-			// Filter out expired rooms in OpenVidu
-			const expiredRooms = ovRooms
-				.filter((room) => room.expirationDate && room.expirationDate < now)
-				.map((room) => room.roomName);
-
-			const allRoomsToDelete = [...roomsToDelete, ...expiredRooms];
-
-			if (allRoomsToDelete.length === 0) {
-				this.logger.verbose('No expired or missing rooms to delete.');
+			if (ovExpiredRooms.length === 0) {
+				this.logger.verbose('No expired rooms found to delete.');
 				return;
 			}
 
-			this.logger.info(`Deleting ${allRoomsToDelete.length} rooms: ${allRoomsToDelete.join(', ')}`);
-
-			const deletionResults = await Promise.allSettled(
-				allRoomsToDelete.map((roomName) => this.deleteOpenViduRoom(roomName))
+			const livekitResults = await Promise.allSettled(
+				ovExpiredRooms.map((roomName) => this.livekitService.deleteRoom(roomName))
 			);
 
-			deletionResults.forEach((result, index) => {
-				if (result.status === 'rejected') {
-					this.logger.error(`Failed to delete room "${allRoomsToDelete[index]}": ${result.reason}`);
+			const successfulRooms: string[] = [];
+
+			livekitResults.forEach((result, index) => {
+				if (result.status === 'fulfilled') {
+					successfulRooms.push(ovExpiredRooms[index]);
+				} else {
+					this.logger.error(`Failed to delete OpenVidu room "${ovExpiredRooms[index]}": ${result.reason}`);
 				}
 			});
+
+			this.logger.verbose(
+				`Successfully deleted ${successfulRooms.length} expired rooms: ${successfulRooms.join(', ')}`
+			);
 		} catch (error) {
 			this.logger.error('Error deleting expired rooms:', error);
 		}
+	}
+
+	/**
+	 * Deletes expired OpenVidu rooms.
+	 *
+	 * This method checks for rooms that have an expiration date earlier than the current time
+	 * and attempts to delete them.
+	 *
+	 * @returns {Promise<void>} A promise that resolves when the operation is complete.
+	 */
+	protected async deleteOpenViduExpiredRooms(): Promise<string[]> {
+		const now = Date.now();
+		this.logger.verbose(`Checking OpenVidu expired rooms at ${new Date(now).toISOString()}`);
+		const rooms = await this.listOpenViduRooms();
+		const expiredRooms = rooms
+			.filter((room) => room.expirationDate && room.expirationDate < now)
+			.map((room) => room.roomName);
+
+		if (expiredRooms.length === 0) {
+			this.logger.verbose('No OpenVidu expired rooms to delete.');
+			return [];
+		}
+
+		this.logger.info(`Deleting ${expiredRooms.length} OpenVidu expired rooms: ${expiredRooms.join(', ')}`);
+
+		return await this.deleteOpenViduRooms(expiredRooms);
+	}
+
+	/**
+	 * Restores missing Livekit rooms by comparing the list of rooms from Livekit and OpenVidu.
+	 * If any rooms are missing in Livekit, they will be created.
+	 *
+	 * @returns {Promise<void>} A promise that resolves when the restoration process is complete.
+	 *
+	 * @protected
+	 */
+	protected async restoreMissingLivekitRooms(): Promise<void> {
+		this.logger.verbose(`Checking missing Livekit rooms ...`);
+
+		const [lkRooms, ovRooms] = await Promise.all([
+			this.livekitService.listRooms(),
+			await this.globalPrefService.getOpenViduRooms()
+		]);
+
+		const missingRooms: OpenViduRoom[] = ovRooms
+			.filter((ovRoom) => !lkRooms.some((room) => room.name === ovRoom.roomName))
+			.map((ovRoom) => ovRoom);
+
+		if (missingRooms.length === 0) {
+			this.logger.verbose('All OpenVidu rooms are present in Livekit. No missing rooms to restore. ');
+			return;
+		}
+
+		this.logger.info(
+			`Restoring ${missingRooms.length} missing rooms: ${missingRooms.map((room) => room.roomName).join(', ')}`
+		);
+
+		const creationResults = await Promise.allSettled(
+			missingRooms.map((room) => this.createLivekitRoom(OpenViduRoomHelper.toOpenViduOptions(room)))
+		);
+
+		creationResults.forEach((result, index) => {
+			if (result.status === 'rejected') {
+				this.logger.error(`Failed to restore room "${missingRooms[index].roomName}": ${result.reason}`);
+			}
+		});
 	}
 }

@@ -54,6 +54,7 @@
 		"inversify": "^6.2.1",
 		"ioredis": "^5.4.2",
 		"livekit-server-sdk": "2.6.2",
+		"redlock": "git+https://github.com/mike-marcacci/node-redlock.git",
 		"reflect-metadata": "^0.2.2",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-express": "^5.0.1",

@@ -14,7 +14,7 @@ export const createRoom = async (req: Request, res: Response) => {
 		logger.verbose(`Creating room with options '${JSON.stringify(options)}'`);
 		const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-		const room = await roomService.createOpenViduRoom(baseUrl, options);
+		const room = await roomService.createRoom(baseUrl, options);
 		return res.status(200).json(room);
 	} catch (error) {
 		logger.error(`Error creating room with options '${JSON.stringify(options)}'`);
@@ -30,7 +30,7 @@ export const getRooms = async (_req: Request, res: Response) => {
 
 		const roomService = container.get(RoomService);
 		const rooms = await roomService.listOpenViduRooms();
-		return res.status(200).json({count: rooms.length, rooms});
+		return res.status(200).json({ count: rooms.length, rooms });
 	} catch (error) {
 		logger.error('Error getting rooms');
 		handleError(res, error);
@@ -54,20 +54,28 @@ export const getRoom = async (req: Request, res: Response) => {
 	}
 };
 
-export const deleteRoom = async (req: Request, res: Response) => {
+export const deleteRooms = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
+	const roomService = container.get(RoomService);
 
 	const { roomName } = req.params;
+	const { roomNames } = req.body;
+
+	const roomsToDelete = roomName ? [roomName] : roomNames;
+
+	// TODO: Validate roomNames with ZOD
+	if (!Array.isArray(roomsToDelete) || roomsToDelete.length === 0) {
+		return res.status(400).json({ error: 'roomNames must be a non-empty array' });
+	}
 
 	try {
-		logger.verbose(`Deleting room with id '${roomName}'`);
+		logger.verbose(`Deleting rooms: ${roomsToDelete.join(', ')}`);
 
-		const roomService = container.get(RoomService);
-		await roomService.deleteOpenViduRoom(roomName);
-		logger.info(`Room with id '${roomName}' deleted`);
-		return res.status(200).json({ message: 'Room deleted' });
+		await roomService.deleteRooms(roomsToDelete);
+		logger.info(`Rooms deleted: ${roomsToDelete.join(', ')}`);
+		return res.status(200).json({ message: 'Rooms deleted', deletedRooms: roomsToDelete });
 	} catch (error) {
-		logger.error(`Error deleting room with id '${roomName}'`);
+		logger.error(`Error deleting rooms: ${roomsToDelete.join(', ')}`);
 		handleError(res, error);
 	}
 };

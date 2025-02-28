@@ -14,7 +14,7 @@ import {
 	recordingRouter,
 	roomRouter
 } from './routes/index.js';
-import { GlobalPreferencesService } from './services/index.js';
+import { GlobalPreferencesService, RoomService } from './services/index.js';
 import { participantsRouter } from './routes/participants.routes.js';
 
 const createApp = () => {
@@ -40,8 +40,8 @@ const createApp = () => {
 
 	// Internal routes
 	app.use('/meet/api/participants', participantsRouter);
-	app.use('/meet/health', (_req:Request, res: Response) => res.status(200).send('OK'));
-	//TODO: Que el endpoint empiece por meet
+	app.use('/meet/health', (_req: Request, res: Response) => res.status(200).send('OK'));
+
 	app.use('/livekit/webhook', livekitRouter);
 	app.use('/meet/livekit/webhook', livekitRouter);
 	app.get(/^(?!\/api).*$/, (_req: Request, res: Response) => res.sendFile(indexHtmlPath));
@@ -63,7 +63,7 @@ const startServer = (app: express.Application) => {
 		console.log('OpenVidu Meet is listening on port', chalk.cyanBright(SERVER_PORT));
 		console.log('REST API Docs: ', chalk.cyanBright(`http://localhost:${SERVER_PORT}/meet/api/v1/docs`));
 		logEnvVars();
-		await initializeGlobalPreferences();
+		await Promise.all([initializeGlobalPreferences(), container.get(RoomService).initialize()]);
 	});
 };
 
