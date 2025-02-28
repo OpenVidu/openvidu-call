@@ -46,7 +46,7 @@ export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences
 
 			if (!preferences) {
 				// Fallback to fetching from S3 if Redis doesn't have it
-				this.logger.verbose('Preferences not found in Redis. Fetching from S3...');
+				this.logger.debug('Preferences not found in Redis. Fetching from S3...');
 				preferences = await this.getFromS3<G>(`${this.PREFERENCES_PATH}/${this.GLOBAL_PREFERENCES_KEY}.json`);
 
 				if (preferences) {
@@ -158,7 +158,7 @@ export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences
 			const preferences: R | null = await this.getFromRedis<R>(roomName);
 
 			if (!preferences) {
-				this.logger.verbose(`Room preferences not found in Redis. Fetching from S3...`);
+				this.logger.debug(`Room preferences not found in Redis. Fetching from S3...`);
 				return await this.getFromS3<R>(`${this.PREFERENCES_PATH}/${roomName}/${roomName}.json`);
 			}
 
@@ -186,7 +186,7 @@ export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences
 		preferencesCache = await this.redisService.get(key);
 
 		if (preferencesCache) {
-			this.logger.verbose(`Object ${key} found in Redis`);
+			this.logger.debug(`Object ${key} found in Redis`);
 			return JSON.parse(preferencesCache) as U;
 		}
 
