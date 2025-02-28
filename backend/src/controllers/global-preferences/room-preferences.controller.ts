@@ -8,13 +8,13 @@ export const updateRoomPreferences = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
 	logger.verbose(`Updating room preferences: ${JSON.stringify(req.body)}`);
-	const roomPreferences = req.body;
+	const { roomName, roomPreferences } = req.body;
 
 	try {
 		const preferenceService = container.get(GlobalPreferencesService);
 		preferenceService.validateRoomPreferences(roomPreferences);
 
-		const savedPreferences = await preferenceService.updateRoomPreferences(roomPreferences);
+		const savedPreferences = await preferenceService.updateOpenViduRoomPreferences(roomName, roomPreferences);
 
 		return res
 			.status(200)
@@ -34,8 +34,9 @@ export const getRoomPreferences = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 
 	try {
+		const roomName = req.params.roomName;
 		const preferenceService = container.get(GlobalPreferencesService);
-		const preferences = await preferenceService.getRoomPreferences();
+		const preferences = await preferenceService.getOpenViduRoomPreferences(roomName);
 
 		if (!preferences) {
 			return res.status(404).json({ message: 'Room preferences not found' });
