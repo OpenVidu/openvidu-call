@@ -12,18 +12,56 @@ import {
 	REDIS_USERNAME
 } from '../environment.js';
 import { internalError } from '../models/error.model.js';
+import { LoggerService } from './logger.service.js';
+import { EventEmitter } from 'events';
+import Redlock from 'redlock';
 
 @injectable()
-export class RedisService {
+export class RedisService extends LoggerService {
 	protected readonly DEFAULT_TTL: number = 32 * 60 * 60 * 24; // 32 days
 	protected redis: Redis;
+	protected isConnected = false;
+	public events: EventEmitter;
 
 	constructor() {
+		super();
+		this.events = new EventEmitter();
 		const redisOptions = this.loadRedisConfig();
 		this.redis = new Redis(redisOptions);
 
-		this.redis.on('connect', () => console.log('Connected to Redis'));
-		this.redis.on('error', (e) => console.log('Error Redis', e.message));
+		this.redis.on('connect', () => {
+			if (!this.isConnected) {
+				this.logger.verbose('Connected to Redis');
+			} else {
+				this.logger.verbose('Reconnected to Redis');
+			}
+
+			this.isConnected = true;
+			this.events.emit('redisConnected');
+		});
+		this.redis.on('error', (e) => this.logger.error('Error Redis', e));
+
+		this.redis.on('end', () => {
+			this.isConnected = false;
+			this.logger.warn('Redis disconnected');
+		});
+	}
+
+	createRedlock(retryCount = -1, retryDelay = 200) {
+		return new Redlock([this.redis], {
+			driftFactor: 0.01,
+			retryCount,
+			retryDelay,
+			retryJitter: 200 // Random variation in the time between retries.
+		});
+	}
+
+	public onReady(callback: () => void) {
+		if (this.isConnected) {
+			callback();
+		}
+
+		this.events.on('redisConnected', callback);
 	}
 
 	/**
@@ -65,7 +103,7 @@ export class RedisService {
 				return this.redis.get(key);
 			}
 		} catch (error) {
-			console.error('Error getting value from Redis', error);
+			this.logger.error('Error getting value from Redis', error);
 			throw internalError(error);
 		}
 	}
@@ -74,7 +112,7 @@ export class RedisService {
 	// 	try {
 	// 		return this.redis.hgetall(key);
 	// 	} catch (error) {
-	// 		console.error('Error getting value from Redis', error);
+	// 		this.logger.error('Error getting value from Redis', error);
 	// 		throw internalError(error);
 	// 	}
 	// }
@@ -83,7 +121,7 @@ export class RedisService {
 	// 	try {
 	// 		return this.redis.getdel(key);
 	// 	} catch (error) {
-	// 		console.error('Error getting and deleting value from Redis', error);
+	// 		this.logger.error('Error getting and deleting value from Redis', error);
 	// 		throw internalError(error);
 	// 	}
 	// }
@@ -117,7 +155,7 @@ export class RedisService {
 
 			return 'OK';
 		} catch (error) {
-			console.error('Error setting value in Redis', error);
+			this.logger.error('Error setting value in Redis', error);
 			throw error;
 		}
 	}
@@ -170,7 +208,7 @@ export class RedisService {
 
 			if (!REDIS_SENTINEL_PASSWORD) throw new Error('The Redis Sentinel password is required');
 
-			console.log('Using Redis Sentinel');
+			this.logger.verbose('Using Redis Sentinel');
 			return {
 				sentinels,
 				sentinelPassword: REDIS_SENTINEL_PASSWORD,
@@ -180,7 +218,7 @@ export class RedisService {
 				db: Number(REDIS_DB)
 			};
 		} else {
-			console.log('Using Redis standalone');
+			this.logger.verbose('Using Redis standalone');
 			return {
 				port: Number(REDIS_PORT),
 				host: REDIS_HOST,
