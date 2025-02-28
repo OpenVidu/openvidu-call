@@ -1,5 +1,9 @@
-import { RoomPreferences } from './room-preferences.js';
+/**
+ * Represents global preferences for OpenVidu Meet.
+ */
 export interface GlobalPreferences {
 	projectId: string;
-	roomPreferences: RoomPreferences;
+	// roomFeaturesPreferences: RoomFeaturesPreferences;
+	// webhooksPreferences: WebhookPreferences;
+	// securityPreferences: SecurityPreferences;
 }

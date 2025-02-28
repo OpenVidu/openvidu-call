@@ -1,23 +1,27 @@
+import { RoomPermissions } from './permissions/room-roles.js';
+import { RoomPreferences } from './room-preferences.js';
+
 interface BaseRoomOptions {
-	endDate: number;
-	// locked?: boolean;
-	// allowRecording?: boolean;
-	// allowBroadcasting?: boolean;
+	expirationDate: number;
+	roomNamePrefix?: string;
+	preferences?: RoomPreferences;
+	maxParticipants?: number;
 }
 /**
  * Options for creating or configuring a room.
  */
-export interface OpenViduRoomOptions extends BaseRoomOptions {
-	roomNamePrefix?: string;
-}
+export type OpenViduRoomOptions = BaseRoomOptions;
 
 /**
  * Interface representing the response received when a room is created.
  */
 export interface OpenViduRoom extends BaseRoomOptions {
-	roomId: string;
-	startDate: number;
+	roomName: string;
+	creationDate: number;
 	moderatorRoomUrl: string;
 	publisherRoomUrl: string;
 	viewerRoomUrl: string;
+	permissions: RoomPermissions;
 }
+
+export type OpenViduRoomDAO = Omit<OpenViduRoom, 'permissions'>;
