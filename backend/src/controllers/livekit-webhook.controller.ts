@@ -22,7 +22,7 @@ export const lkWebhookHandler = async (req: Request, res: Response) => {
 		const belongsToOpenViduMeet = await lkWebhookService.webhookEventBelongsToOpenViduMeet(webhookEvent);
 
 		if (!belongsToOpenViduMeet) {
-			logger.verbose(`Skipping webhook, event is not related to OpenVidu Call: ${eventType}`);
+			logger.verbose(`Skipping webhook, event is not related to OpenVidu Meet: ${eventType}`);
 			return res.status(200).send();
 		}
 
