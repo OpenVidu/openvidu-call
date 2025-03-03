@@ -4,7 +4,13 @@ import chalk from 'chalk';
 import YAML from 'yamljs';
 import swaggerUi from 'swagger-ui-express';
 import { registerDependencies, container } from './config/dependency-injector.config.js';
-import { SERVER_PORT, SERVER_CORS_ORIGIN, logEnvVars } from './environment.js';
+import {
+	SERVER_PORT,
+	SERVER_CORS_ORIGIN,
+	logEnvVars,
+	MEET_API_BASE_PATH_V1,
+	MEET_API_BASE_PATH
+} from './environment.js';
 import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
 import {
 	authRouter,
@@ -16,6 +22,7 @@ import {
 } from './routes/index.js';
 import { GlobalPreferencesService, RoomService } from './services/index.js';
 import { participantsRouter } from './routes/participants.routes.js';
+import cookieParser from 'cookie-parser';
 
 const createApp = () => {
 	const app: Express = express();
@@ -23,23 +30,29 @@ const createApp = () => {
 
 	// Enable CORS support
 	if (SERVER_CORS_ORIGIN) {
-		app.use(cors({ origin: SERVER_CORS_ORIGIN }));
+		app.use(
+			cors({
+				origin: SERVER_CORS_ORIGIN,
+				credentials: true
+			})
+		);
 	}
 
 	app.use(express.static(publicFilesPath));
 	app.use(express.json());
+	app.use(cookieParser());
 
-	app.use('/meet/api/v1/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
-	app.use('/meet/api/v1/rooms', /*mediaTypeValidatorMiddleware,*/ roomRouter);
-	app.use('/meet/api/v1/recordings', /*mediaTypeValidatorMiddleware,*/ recordingRouter);
-	app.use('/meet/api/v1/broadcast', /*mediaTypeValidatorMiddleware,*/ broadcastingRouter);
-	app.use('/meet/api/v1/auth', /*mediaTypeValidatorMiddleware,*/ authRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/docs`, swaggerUi.serve, swaggerUi.setup(openapiSpec));
+	app.use(`${MEET_API_BASE_PATH_V1}/rooms`, /*mediaTypeValidatorMiddleware,*/ roomRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/recordings`, /*mediaTypeValidatorMiddleware,*/ recordingRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/broadcasts`, /*mediaTypeValidatorMiddleware,*/ broadcastingRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/auth`, /*mediaTypeValidatorMiddleware,*/ authRouter);
 
 	// TODO: This route should be part of the rooms router
-	app.use('/meet/api/v1/preferences', /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/preferences`, /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
 
 	// Internal routes
-	app.use('/meet/api/participants', participantsRouter);
+	app.use(`${MEET_API_BASE_PATH}/participants`, participantsRouter);
 	app.use('/meet/health', (_req: Request, res: Response) => res.status(200).send('OK'));
 
 	app.use('/livekit/webhook', livekitRouter);

@@ -18,6 +18,8 @@ export const {
 	MEET_SECRET = 'user',
 	MEET_ADMIN_USER = 'admin',
 	MEET_ADMIN_SECRET = 'admin',
+	MEET_ACCESS_TOKEN_EXPIRATION = '1h',
+	MEET_REFRESH_TOKEN_EXPIRATION = '1d',
 	MEET_PREFERENCES_STORAGE_MODE = 's3',
 	MEET_WEBHOOK_ENABLED = 'false',
 	MEET_WEBHOOK_URL = 'http://localhost:8080/',
@@ -55,6 +57,12 @@ export const {
 	ENABLED_MODULES = ''
 } = process.env;
 
+export const MEET_API_KEY = process.env.MEET_API_KEY || 'meet-api-key';
+export const MEET_API_BASE_PATH = '/meet/api';
+export const MEET_API_BASE_PATH_V1 = MEET_API_BASE_PATH + '/v1';
+export const ACCESS_TOKEN_COOKIE_NAME = "OvMeetAccessToken";
+export const REFRESH_TOKEN_COOKIE_NAME = "OvMeetRefreshToken";
+
 export function checkModuleEnabled() {
 	if (MODULES_FILE) {
 		const moduleName = MODULE_NAME;
@@ -80,6 +88,7 @@ export const logEnvVars = () => {
 	console.log('SERVICE NAME ID: ', text(MEET_NAME_ID));
 	console.log('CORS ORIGIN:', text(SERVER_CORS_ORIGIN));
 	console.log('MEET LOG LEVEL: ', text(MEET_LOG_LEVEL));
+	console.log('MEET API KEY: ', credential('****' + MEET_API_KEY.slice(-3)));
 	console.log(
 		'MEET PRIVATE ACCESS: ',
 		MEET_PRIVATE_ACCESS === 'true' ? enabled(MEET_PRIVATE_ACCESS) : disabled(MEET_PRIVATE_ACCESS)
@@ -92,6 +101,8 @@ export const logEnvVars = () => {
 
 	console.log('MEET ADMIN USER: ', credential('****' + MEET_ADMIN_USER.slice(-3)));
 	console.log('MEET ADMIN PASSWORD: ', credential('****' + MEET_ADMIN_SECRET.slice(-3)));
+	console.log('MEET ACCESS TOKEN EXPIRATION: ', text(MEET_ACCESS_TOKEN_EXPIRATION));
+	console.log('MEET REFRESH TOKEN EXPIRATION: ', text(MEET_REFRESH_TOKEN_EXPIRATION));
 	console.log('MEET PREFERENCES STORAGE:', text(MEET_PREFERENCES_STORAGE_MODE));
 
 	console.log('---------------------------------------------------------');
