@@ -16,3 +16,4 @@ roomRouter.get('/:roomName', withUserBasicAuth, roomCtrl.getRoom);
 roomRouter.delete('/:roomName', withUserBasicAuth, roomCtrl.deleteRooms);
 
 // Room preferences
+roomRouter.put('/', /*withAdminBasicAuth,*/ roomCtrl.updateRoomPreferences);

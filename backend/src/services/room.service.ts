@@ -6,7 +6,7 @@ import { LoggerService } from './logger.service.js';
 import { MEET_NAME_ID } from '../environment.js';
 import { LiveKitService } from './livekit.service.js';
 import { GlobalPreferencesService } from './preferences/global-preferences.service.js';
-import { ParticipantPermissions, OpenViduRoomDAO, OpenViduRoom, OpenViduRoomOptions } from '@typings-ce';
+import { ParticipantPermissions, OpenViduRoomDAO, OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@typings-ce';
 import { OpenViduRoomHelper } from '../helpers/room.helper.js';
 import { SystemEventService } from './system-event.service.js';
 import { TaskSchedulerService } from './task-scheduler.service.js';
@@ -46,41 +46,39 @@ export class RoomService {
 	 * Creates an OpenVidu room with the specified options.
 	 *
 	 * @param {string} baseUrl - The base URL for the room.
-	 * @param {OpenViduRoomOptions} options - The options for creating the OpenVidu room.
-	 * @returns {Promise<OpenViduRoom>} A promise that resolves to the created OpenVidu room.
+	 * @param {OpenViduMeetRoomOptions} options - The options for creating the OpenVidu room.
+	 * @returns {Promise<OpenViduMeetRoom>} A promise that resolves to the created OpenVidu room.
 	 *
 	 * @throws {Error} If the room creation fails.
 	 *
 	 */
-	async createRoom(baseUrl: string, roomOptions: OpenViduRoomOptions): Promise<OpenViduRoomDAO> {
+	async createRoom(baseUrl: string, roomOptions: OpenViduMeetRoomOptions): Promise<OpenViduMeetRoom> {
 		const livekitRoom: Room = await this.createLivekitRoom(roomOptions);
 
-		const openviduRoom: OpenViduRoom = this.toOpenViduRoom(baseUrl, livekitRoom, roomOptions);
+		const openviduRoom: OpenViduMeetRoom = this.generateOpenViduRoom(baseUrl, livekitRoom, roomOptions);
 
 		await this.globalPrefService.saveOpenViduRoom(openviduRoom);
 
-		return OpenViduRoomHelper.toOpenViduRoomDAO(openviduRoom);
+		return openviduRoom;
 	}
 
 	/**
 	 * Retrieves a list of rooms.
-	 * @returns A Promise that resolves to an array of {@link OpenViduRoom} objects.
+	 * @returns A Promise that resolves to an array of {@link OpenViduMeetRoom} objects.
 	 * @throws If there was an error retrieving the rooms.
 	 */
-	async listOpenViduRooms(): Promise<OpenViduRoomDAO[]> {
-		const rooms = await this.globalPrefService.getOpenViduRooms();
-		return rooms.map(OpenViduRoomHelper.toOpenViduRoomDAO);
+	async listOpenViduRooms(): Promise<OpenViduMeetRoom[]> {
+		return await this.globalPrefService.getOpenViduRooms();
 	}
 
 	/**
 	 * Retrieves an OpenVidu room by its name.
 	 *
 	 * @param roomName - The name of the room to retrieve.
-	 * @returns A promise that resolves to an {@link OpenViduRoom} object.
+	 * @returns A promise that resolves to an {@link OpenViduMeetRoom} object.
 	 */
-	async getOpenViduRoom(roomName: string): Promise<OpenViduRoomDAO> {
-		const room = await this.globalPrefService.getOpenViduRoom(roomName);
-		return OpenViduRoomHelper.toOpenViduRoomDAO(room);
+	async getOpenViduRoom(roomName: string): Promise<OpenViduMeetRoom> {
+		return await this.globalPrefService.getOpenViduRoom(roomName);
 	}
 
 	/**
@@ -145,6 +143,44 @@ export class RoomService {
 	}
 
 	/**
+	 * Converts an OpenVidu room or array of rooms to a DAO.
+	 *
+	 * @param roomOrRooms - The OpenVidu room or array of rooms to convert.
+	 * @returns The converted OpenVidu room DAO or array of room DAOs.
+	 */
+	convertToRoomDAO(roomOrRooms: OpenViduMeetRoom | OpenViduMeetRoom[]): OpenViduRoomDAO | OpenViduRoomDAO[] {
+		if (Array.isArray(roomOrRooms)) {
+			return roomOrRooms.map(OpenViduRoomHelper.convertToRoomDAO);
+		}
+
+		return OpenViduRoomHelper.convertToRoomDAO(roomOrRooms);
+	}
+
+	/**
+	 * Determines the role of a participant in a room based on the provided secret.
+	 *
+	 * @param room - The OpenVidu room object.
+	 * @param secret - The secret used to identify the participant's role.
+	 * @returns The role of the participant ('moderator', 'publisher', or 'viewer').
+	 * @throws Will throw an error if the secret is invalid.
+	 */
+	getParticipantRole(room: OpenViduMeetRoom, secret: string): 'moderator' | 'publisher' | 'viewer' {
+		if (room.moderatorRoomUrl.includes(secret)) {
+			return 'moderator';
+		}
+
+		if (room.publisherRoomUrl.includes(secret)) {
+			return 'publisher';
+		}
+
+		if (room.viewerRoomUrl.includes(secret)) {
+			return 'viewer';
+		}
+
+		throw new Error('Invalid secret');
+	}
+
+	/**
 	 * Sends a signal to participants in a specified room.
 	 *
 	 * @param roomName - The name of the room where the signal will be sent.
@@ -167,7 +203,7 @@ export class RoomService {
 	 * @param roomOptions - The options for creating the room.
 	 * @returns A promise that resolves to the created room.
 	 */
-	protected async createLivekitRoom(roomOptions: OpenViduRoomOptions): Promise<Room> {
+	protected async createLivekitRoom(roomOptions: OpenViduMeetRoomOptions): Promise<Room> {
 		const { roomNamePrefix, expirationDate } = roomOptions;
 
 		const creationDate = Date.now();
@@ -181,7 +217,7 @@ export class RoomService {
 			}),
 			// TODO: Add more options
 			emptyTimeout: timeUntilExpiration,
-			maxParticipants: roomOptions.maxParticipants,
+			maxParticipants: roomOptions?.maxParticipants || undefined,
 			departureTimeout: 31_536_000 // 1 year in seconds
 		};
 		return await this.livekitService.createRoom(livekitRoomOptions);
@@ -195,15 +231,19 @@ export class RoomService {
 	 * @returns The converted OpenVidu room object.
 	 * @throws Will throw an error if metadata is not found in the LiveKit room.
 	 */
-	protected toOpenViduRoom(baseUrl: string, livekitRoom: Room, roomOptions: OpenViduRoomOptions): OpenViduRoom {
-		const { name: roomName, creationTime, maxParticipants } = livekitRoom;
-		const { preferences, expirationDate, roomNamePrefix } = roomOptions;
+	protected generateOpenViduRoom(
+		baseUrl: string,
+		livekitRoom: Room,
+		roomOptions: OpenViduMeetRoomOptions
+	): OpenViduMeetRoom {
+		const { name: roomName, creationTime } = livekitRoom;
+		const { preferences, expirationDate, roomNamePrefix, maxParticipants } = roomOptions;
 
-		const openviduRoom: OpenViduRoom = {
+		const openviduRoom: OpenViduMeetRoom = {
 			roomName,
 			roomNamePrefix,
 			creationDate: Number(creationTime) * 1000,
-			maxParticipants: maxParticipants > 0 ? maxParticipants : undefined,
+			maxParticipants,
 			expirationDate,
 			moderatorRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
 			publisherRoomUrl: `${baseUrl}/${roomName}?secret=${secureUid(10)}`,
@@ -380,7 +420,7 @@ export class RoomService {
 			await this.globalPrefService.getOpenViduRooms()
 		]);
 
-		const missingRooms: OpenViduRoom[] = ovRooms
+		const missingRooms: OpenViduMeetRoom[] = ovRooms
 			.filter((ovRoom) => !lkRooms.some((room) => room.name === ovRoom.roomName))
 			.map((ovRoom) => ovRoom);
 

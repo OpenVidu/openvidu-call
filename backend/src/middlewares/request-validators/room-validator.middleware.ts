@@ -1,7 +1,7 @@
 import {
 	BroadcastingPreferences,
 	ChatPreferences,
-	OpenViduRoomOptions,
+	OpenViduMeetRoomOptions,
 	RecordingPreferences,
 	RoomPreferences,
 	VirtualBackgroundPreferences
@@ -32,26 +32,44 @@ const RoomPreferencesSchema: z.ZodType<RoomPreferences> = z.object({
 	virtualBackgroundPreferences: VirtualBackgroundPreferencesSchema
 });
 
-const RoomRequestOptionsSchema: z.ZodType<OpenViduRoomOptions> = z.object({
+const RoomRequestOptionsSchema: z.ZodType<OpenViduMeetRoomOptions> = z.object({
 	expirationDate: z
 		.number()
-		.positive('End date must be a positive integer')
-		.min(Date.now(), 'End date must be in the future'),
-	roomNamePrefix: z.string().optional(),
-	preferences: RoomPreferencesSchema.optional(),
-	maxParticipants: z.number().positive('Max participants must be a positive integer').optional()
+		.positive('Expiration date must be a positive integer')
+		.min(Date.now(), 'Expiration date must be in the future'),
+	roomNamePrefix: z.string().optional().default(''),
+	preferences: RoomPreferencesSchema.optional().default({
+		recordingPreferences: { enabled: true },
+		broadcastingPreferences: { enabled: true },
+		chatPreferences: { enabled: true },
+		virtualBackgroundPreferences: { enabled: true }
+	}),
+	maxParticipants: z
+		.number()
+		.positive('Max participants must be a positive integer')
+		.nullable()
+		.optional()
+		.default(null)
 });
 
 export const validateRoomRequest = (req: Request, res: Response, next: NextFunction) => {
-	const result = RoomRequestOptionsSchema.safeParse(req.body);
+	const { success, error, data } = RoomRequestOptionsSchema.safeParse(req.body);
 
-	if (!result.success) {
-		return res.status(400).json({
-			name: 'Request validation error',
-			message: result.error.errors.map((err) => err.message)[0]
+	if (!success) {
+		const errors = error.errors.map((error) => ({
+			field: error.path.join('.'),
+			message: error.message
+		}));
+
+		console.log(errors);
+
+		return res.status(422).json({
+			error: 'Unprocessable Entity',
+			message: 'Invalid request body',
+			details: errors
 		});
 	}
 
-	req.body = result.data;
+	req.body = data;
 	next();
 };

@@ -1,4 +1,4 @@
-import { OpenViduRoom, OpenViduRoomDAO, OpenViduRoomOptions } from '@typings-ce';
+import { OpenViduMeetRoom, OpenViduRoomDAO, OpenViduMeetRoomOptions } from '@typings-ce';
 
 type OmitProps<T, K extends keyof T> = Omit<T, K>;
 export class OpenViduRoomHelper {
@@ -12,17 +12,17 @@ export class OpenViduRoomHelper {
 		return DAO;
 	}
 
-	static toOpenViduRoomDAO(room: OpenViduRoom): OpenViduRoomDAO {
+	static convertToRoomDAO(room: OpenViduMeetRoom): OpenViduRoomDAO {
 		return OpenViduRoomHelper.toDAO(room, ['permissions']);
 	}
 
 	/**
-	 * Converts an OpenViduRoom object to an OpenViduRoomOptions object.
+	 * Converts an OpenViduMeetRoom object to an OpenViduMeetRoomOptions object.
 	 *
-	 * @param room - The OpenViduRoom object to convert.
-	 * @returns An OpenViduRoomOptions object containing the same properties as the input room.
+	 * @param room - The OpenViduMeetRoom object to convert.
+	 * @returns An OpenViduMeetRoomOptions object containing the same properties as the input room.
 	 */
-	static toOpenViduOptions(room: OpenViduRoom): OpenViduRoomOptions {
+	static toOpenViduOptions(room: OpenViduMeetRoom): OpenViduMeetRoomOptions {
 		return {
 			expirationDate: room.expirationDate,
 			maxParticipants: room.maxParticipants,

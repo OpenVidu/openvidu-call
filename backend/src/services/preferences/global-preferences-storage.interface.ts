@@ -1,4 +1,4 @@
-import { GlobalPreferences, OpenViduRoom } from '@typings-ce';
+import { GlobalPreferences, OpenViduMeetRoom } from '@typings-ce';
 
 /**
  * Interface for managing global preferences storage.
@@ -6,7 +6,7 @@ import { GlobalPreferences, OpenViduRoom } from '@typings-ce';
 
 export interface PreferencesStorage<
 	T extends GlobalPreferences = GlobalPreferences,
-	R extends OpenViduRoom = OpenViduRoom
+	R extends OpenViduMeetRoom = OpenViduMeetRoom
 > {
 	/**
 	 * Initializes the storage with default preferences if they are not already set.
@@ -34,7 +34,7 @@ export interface PreferencesStorage<
 	getOpenViduRooms(): Promise<R[]>;
 
 	/**
-	 * Retrieves the {@link OpenViduRoom}.
+	 * Retrieves the {@link OpenViduMeetRoom}.
 	 *
 	 * @param roomName - The name of the room to retrieve.
 	 * @returns A promise that resolves to the OpenVidu Room, or null if not found.

@@ -3,7 +3,7 @@
  * This is used when the application is configured to operate in "s3" mode.
  */
 
-import { GlobalPreferences, OpenViduRoom } from '@typings-ce';
+import { GlobalPreferences, OpenViduMeetRoom } from '@typings-ce';
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { S3Service } from '../s3.service.js';
 import { LoggerService } from '../logger.service.js';
@@ -12,7 +12,7 @@ import { OpenViduCallError } from '../../models/error.model.js';
 import { inject, injectable } from '../../config/dependency-injector.config.js';
 
 @injectable()
-export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences, R extends OpenViduRoom = OpenViduRoom>
+export class S3PreferenceStorage<G extends GlobalPreferences = GlobalPreferences, R extends OpenViduMeetRoom = OpenViduMeetRoom>
 	implements PreferencesStorage
 {
 	protected readonly PREFERENCES_PATH = '.openvidu-meet';
