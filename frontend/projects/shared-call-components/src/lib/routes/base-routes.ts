@@ -5,9 +5,9 @@ import {
 	embeddedModeGuard,
 	standaloneModeGuard,
 	ensureValidTokenOrRoomNameGuard,
-	redirectUrlGuard,
 	validateRoomAccessGuard,
-	applicationModeGuard
+	applicationModeGuard,
+	extractQueryParamsGuard
 } from '../guards';
 import {
 	AboutComponent,
@@ -96,7 +96,7 @@ export const baseRoutes: Routes = [
 	{
 		path: ':room-name',
 		component: VideoRoomComponent,
-		canActivate: [applicationModeGuard, redirectUrlGuard, validateRoomAccessGuard]
+		canActivate: [applicationModeGuard, extractQueryParamsGuard, validateRoomAccessGuard]
 	},
 
 	// Redirect all other routes to home

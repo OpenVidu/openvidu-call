@@ -15,15 +15,13 @@ export const validateRoomAccessGuard: CanActivateFn = async (
 
 	const { roomName, participantName, secret } = extractParams(route);
 
-	if (contextService.isEmbeddedMode() && !participantName) {
+	if (contextService.isEmbeddedMode() && !contextService.getParticipantName()) {
 		return redirectToUnauthorized(router, 'invalid-participant');
 	}
 
 	// Authenticate participant in the room
 	try {
-		contextService.setParticipantName(participantName);
 		const response = await httpService.generateParticipantToken({ roomName, participantName, secret });
-		contextService.setRoomName(roomName);
 		contextService.setToken(response.token);
 		return true;
 	} catch (error) {
