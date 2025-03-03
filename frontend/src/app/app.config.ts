@@ -5,6 +5,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { OpenViduComponentsModule, OpenViduComponentsConfig } from 'openvidu-components-angular';
 import { environment } from '@environment/environment';
 import { routes } from '@app/app.routes';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { httpInterceptor } from 'shared-call-components';
 
 const ovComponentsconfig: OpenViduComponentsConfig = {
 	production: environment.production
@@ -15,6 +17,7 @@ export const appConfig: ApplicationConfig = {
 		importProvidersFrom(OpenViduComponentsModule.forRoot(ovComponentsconfig)),
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes),
-		provideAnimationsAsync()
+		provideAnimationsAsync(),
+		provideHttpClient(withInterceptors([httpInterceptor]))
 	]
 };
