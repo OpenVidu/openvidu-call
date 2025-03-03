@@ -11,4 +11,9 @@ export interface TokenOptions {
 	 * The name of the participant.
 	 */
 	participantName: string;
+
+	/**
+	 * A secret key for room access.
+	 */
+	secret: string;
 }

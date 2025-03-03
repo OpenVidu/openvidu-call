@@ -1,7 +1,7 @@
 /**
  * Defines OpenVidu-specific permissions for a participant.
  */
-export interface OpenViduPermissions {
+export interface OpenViduMeetPermissions {
 	// Permissions for broadcasting
 	canBroadcast?: boolean; // Allow broadcasting to the room.
 	canPublishScreen?: boolean; // Can publish screen sharing.

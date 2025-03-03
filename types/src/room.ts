@@ -5,17 +5,17 @@ interface BaseRoomOptions {
 	expirationDate: number;
 	roomNamePrefix?: string;
 	preferences?: RoomPreferences;
-	maxParticipants?: number;
+	maxParticipants?: number | null;
 }
 /**
  * Options for creating or configuring a room.
  */
-export type OpenViduRoomOptions = BaseRoomOptions;
+export type OpenViduMeetRoomOptions = BaseRoomOptions;
 
 /**
  * Interface representing the response received when a room is created.
  */
-export interface OpenViduRoom extends BaseRoomOptions {
+export interface OpenViduMeetRoom extends BaseRoomOptions {
 	roomName: string;
 	creationDate: number;
 	moderatorRoomUrl: string;
@@ -24,4 +24,4 @@ export interface OpenViduRoom extends BaseRoomOptions {
 	permissions: RoomPermissions;
 }
 
-export type OpenViduRoomDAO = Omit<OpenViduRoom, 'permissions'>;
+export type OpenViduRoomDAO = Omit<OpenViduMeetRoom, 'permissions'>;

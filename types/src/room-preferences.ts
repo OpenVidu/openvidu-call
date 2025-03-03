@@ -2,9 +2,9 @@
  * Interface representing the preferences for a room.
  */
 export interface RoomPreferences {
-	recordingPreferences: RecordingPreferences;
 	broadcastingPreferences: BroadcastingPreferences;
 	chatPreferences: ChatPreferences;
+	recordingPreferences: RecordingPreferences;
 	virtualBackgroundPreferences: VirtualBackgroundPreferences;
 }
 /**

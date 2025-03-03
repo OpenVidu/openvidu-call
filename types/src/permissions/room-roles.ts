@@ -1,5 +1,5 @@
 import { LiveKitPermissions } from './livekit-permissions.js';
-import { OpenViduPermissions } from './openvidu-permissions.js';
+import { OpenViduMeetPermissions } from './openvidu-permissions.js';
 
 /**
  * Defines the roles in the room and their permissions.
@@ -15,5 +15,5 @@ export interface RoomPermissions {
  */
 export interface ParticipantPermissions {
 	livekit: LiveKitPermissions;
-	openvidu: OpenViduPermissions;
+	openvidu: OpenViduMeetPermissions;
 }
