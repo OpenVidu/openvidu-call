@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 import { UnauthorizedComponent } from '../components';
 import {
+	checkAdminAuthenticatedGuard,
+	checkAdminNotAuthenticatedGuard,
 	embeddedModeGuard,
 	standaloneModeGuard,
 	ensureValidTokenOrRoomNameGuard,
@@ -35,13 +37,15 @@ export const baseRoutes: Routes = [
 	// 	canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard]
 	// },
 	{ path: 'unauthorized', component: UnauthorizedComponent },
-	{ path: 'console/login', component: ConsoleLoginComponent },
+	{
+		path: 'console/login',
+		component: ConsoleLoginComponent,
+		canActivate: [checkAdminNotAuthenticatedGuard]
+	},
 	{
 		path: 'console',
 		component: ConsoleComponent,
-		canActivate: [
-			/*standaloneModeGuard  checkAdminTokenGuard */
-		],
+		canActivate: [/*standaloneModeGuard*/ checkAdminAuthenticatedGuard],
 		children: [
 			{
 				path: '',
@@ -50,45 +54,27 @@ export const baseRoutes: Routes = [
 			},
 			{
 				path: 'overview',
-				component: OverviewComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: OverviewComponent
 			},
 			{
 				path: 'access-permissions',
-				component: AccessPermissionsComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: AccessPermissionsComponent
 			},
 			{
 				path: 'appearance',
-				component: AppearanceComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: AppearanceComponent
 			},
 			{
 				path: 'room-preferences',
-				component: RoomPreferencesComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: RoomPreferencesComponent
 			},
 			{
 				path: 'security-preferences',
-				component: SecurityPreferencesComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: SecurityPreferencesComponent
 			},
 			{
 				path: 'about',
-				component: AboutComponent,
-				canActivate: [
-					/*checkAdminTokenGuard*/
-				]
+				component: AboutComponent
 			},
 			{ path: '**', redirectTo: 'overview' }
 		]
