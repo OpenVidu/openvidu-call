@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RoomPreferences } from '@typings-ce';
 import { LoggerService } from 'openvidu-components-angular';
 import { HttpService } from '../http/http.service';
-import { OpenViduRoom, OpenViduRoomOptions } from '@lib/typings/ce/room';
+import { OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@lib/typings/ce/room';
 
 @Injectable({
 	providedIn: 'root'
@@ -17,13 +17,18 @@ export class RoomService {
 		this.log = this.loggerService.get('OpenVidu Meet - RoomService');
 	}
 
-	async createRoom(): Promise<OpenViduRoom> {
-		const options: OpenViduRoomOptions = {
+	async createRoom(): Promise<OpenViduMeetRoom> {
+		// TODO: Improve expiration date
+		const options: OpenViduMeetRoomOptions = {
 			roomNamePrefix: 'TestRoom-',
-			endDate: Date.now() + 1000 * 60 * 60 // 1 hour from now
+			expirationDate: Date.now() + 1000 * 60 * 60 // 1 hour from now
 		};
 		this.log.d('Creating room', options);
 		return this.httpService.createRoom(options);
+	}
+
+	async deleteRoom(roomName: string) {
+		return this.httpService.deleteRoom(roomName);
 	}
 
 	async listRooms() {

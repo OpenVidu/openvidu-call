@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListItem, MatListModule } from '@angular/material/list';
-import { OpenViduRoom } from '@lib/typings/ce/room';
+import { OpenViduMeetRoom } from '@lib/typings/ce/room';
 
 @Component({
 	selector: 'ov-room-preferences',
@@ -26,7 +26,7 @@ import { OpenViduRoom } from '@lib/typings/ce/room';
 	styleUrl: './room-preferences.component.scss'
 })
 export class RoomPreferencesComponent implements OnInit {
-	createdRooms: OpenViduRoom[] = [];
+	createdRooms: OpenViduMeetRoom[] = [];
 	private roomPreferences!: RoomPreferences;
 	recordingEnabled = false;
 	broadcastingEnabled = false;
@@ -70,7 +70,19 @@ export class RoomPreferencesComponent implements OnInit {
 		window.open(`/${roomName}`, '_blank');
 	}
 
-	onRoomClicked(room: OpenViduRoom) {
+	deleteRoom(room: OpenViduMeetRoom) {
+		try {
+			this.roomService.deleteRoom(room.roomName);
+			this.createdRooms = this.createdRooms.filter((r) => r.roomName !== room.roomName);
+			this.notificationService.showSnackbar('Room deleted');
+
+		} catch (error) {
+			this.notificationService.showAlert('Error deleting room');
+			this.log.e('Error deleting room:', error);
+		}
+	}
+
+	onRoomClicked(room: OpenViduMeetRoom) {
 		console.log('Room clicked:', room);
 	}
 

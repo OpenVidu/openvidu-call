@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { OpenViduRoom, OpenViduRoomOptions } from '@lib/typings/ce/room';
-import { GlobalPreferences, RoomPreferences } from '@typings-ce';
+import { OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@lib/typings/ce/room';
+import { GlobalPreferences, RoomPreferences, TokenOptions } from '@typings-ce';
 import { RecordingInfo, Room } from 'openvidu-components-angular';
 import { lastValueFrom } from 'rxjs';
 
@@ -10,25 +10,36 @@ import { lastValueFrom } from 'rxjs';
 })
 export class HttpService {
 	// private baseHref: string;
-	protected pathPrefix = 'meet/api/v1';
+	protected pathPrefix = 'meet/api';
+	protected apiVersion = 'v1';
 
 	constructor(protected http: HttpClient) {
 		// this.baseHref = '/' + (!!window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] + '/' : '');
 	}
 
-	createRoom(options: OpenViduRoomOptions): Promise<OpenViduRoom> {
+	createRoom(options: OpenViduMeetRoomOptions): Promise<OpenViduMeetRoom> {
 		const headers = this.generateHeaders();
-		return this.postRequest(`${this.pathPrefix}/rooms`, options, headers);
+		return this.postRequest(`${this.pathPrefix}/${this.apiVersion}/rooms`, options, headers);
 	}
 
-	listRooms(): Promise<OpenViduRoom[]> {
+	deleteRoom(roomName: string): Promise<any> {
+		const headers = this.generateHeaders();
+		return this.deleteRequest(`${this.pathPrefix}/${this.apiVersion}/rooms/${roomName}`, headers);
+	}
+
+	listRooms(): Promise<OpenViduMeetRoom[]> {
 		//TODO: Add 'fields' query param for filtering rooms by fields
-		return this.getRequest(`${this.pathPrefix}/rooms`);
+		return this.getRequest(`${this.pathPrefix}/${this.apiVersion}/rooms`);
 	}
 
-	getRoom(roomName: string): Promise<OpenViduRoom> {
+	getRoom(roomName: string): Promise<OpenViduMeetRoom> {
 		const headers = this.generateHeaders();
-		return this.getRequest(`${this.pathPrefix}/rooms/${roomName}`, headers);
+		return this.getRequest(`${this.pathPrefix}/${this.apiVersion}/rooms/${roomName}`, headers);
+	}
+
+	generateParticipantToken(tokenOptions: TokenOptions): Promise<{ token: string }> {
+		const headers = this.generateHeaders();
+		return this.postRequest(`${this.pathPrefix}/participants/token`, tokenOptions, headers);
 	}
 
 	/**
@@ -64,12 +75,6 @@ export class HttpService {
 
 	async getConfig() {
 		return this.getRequest(`${this.pathPrefix}/config`);
-	}
-
-	getToken(roomName: string, participantName: string): Promise<{ token: string }> {
-		const headers = this.generateHeaders();
-
-		return this.postRequest(`${this.pathPrefix}/rooms`, { roomName, participantName }, headers);
 	}
 
 	adminLogin(body: { username: string; password: string }): Promise<{ message: string }> {

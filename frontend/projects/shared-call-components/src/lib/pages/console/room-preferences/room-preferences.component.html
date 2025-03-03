@@ -28,31 +28,47 @@
 		<p>No rooms created yet</p>
 	}
 </div> -->
-<h2>Rooms</h2>
+<h1>Rooms</h1>
 
 <ov-dynamic-grid [maxColumns]="2" [withHeader]="true" [gutter]="'10px'" [layoutMode]="'grid'">
 	<!-- Custom Header-->
-	<div header>
-		<button mat-flat-button color="primary" (click)="createRoom()">
-			<mat-icon class="icon-left">add</mat-icon>
-			Create Room
-		</button>
-	</div>
+	<div header></div>
 
 	<mat-list class="grid-item" [attr.data-span]="2">
+		<div mat-subheader class="item-subheader">
+			<h3>Active Rooms</h3>
+			<div class="subheader-button">
+				<button mat-flat-button color="primary" (click)="createRoom()">
+					<mat-icon class="icon-left">add</mat-icon>
+					Create Room
+				</button>
+			</div>
+		</div>
 		@for (item of createdRooms; track item) {
 			<mat-list-item (click)="onRoomClicked(item)" class="list-item">
-				<div class="item-content">
-					<h3 class="item-title">{{ item.roomId }}</h3>
-					<!-- <div class="item-details">
-						<mat-icon class="icon">people</mat-icon>
-						<span>{{ item.peopleCount }} people</span>
-						<mat-icon class="icon">timer</mat-icon>
-						<span>{{ item.lockedText }}</span>
-						<span class="expires">Expires {{ item.expiryDate | date: 'dd/MM/yyyy' }}</span>
-					</div> -->
+				<div matListItemIcon class="list-icon-container">
+					<mat-icon class="list-icon">video_camera_front</mat-icon>
+				</div>
+				<div matListItemTitle class="item-title">{{ item.roomName }}</div>
+				<div matListItemLine class="item-details">
+					<div>
+						<mat-icon class="icon">auto_delete</mat-icon>
+						<p>{{ item.expirationDate | date: 'dd/MM/yyyy' }}</p>
+					</div>
+				</div>
+
+				<div matListItemSecondaryAction class="button-container" (click)="$event.stopPropagation()">
+					<!-- <button mat-icon-button color="primary">
+						<mat-icon>edit</mat-icon>
+					</button> -->
+					<button mat-icon-button color="warn" class="delete-button" (click)="deleteRoom(item)">
+						<mat-icon>delete</mat-icon>
+					</button>
 				</div>
 			</mat-list-item>
+		}
+		@if (createdRooms.length === 0) {
+			<p class="empty-rooms-message">No rooms created yet</p>
 		}
 	</mat-list>
 

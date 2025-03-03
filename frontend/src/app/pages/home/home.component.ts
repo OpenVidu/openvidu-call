@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 
 // import { ConfigService } from '@app/services/config.service';
 import { StorageAppService } from '@app/services/storage.service';
-import { HttpService, OpenViduRoomOptions } from 'shared-call-components';
+import { HttpService, OpenViduMeetRoomOptions } from 'shared-call-components';
 
 import packageInfo from '../../../../package.json';
 
@@ -142,30 +142,40 @@ export class HomeComponent implements OnInit, OnDestroy {
 	}
 
 	async goToVideoRoom() {
-		if (this.roomForm.valid) {
-			const roomNamePrefix = this.roomForm.get('roomNamePrefix')?.value.replace(/ /g, '-');
-
-			try {
-				const options: OpenViduRoomOptions = {
-					roomNamePrefix,
-					endDate: Date.now() + 3600
-				}
-				const room = await this.httpService.createRoom(options);
-				console.warn('Room created ', room);
-				this.roomForm.get('roomNamePrefix')?.setValue(roomNamePrefix);
-				this.router.navigate(['/', roomNamePrefix]);
-			} catch (error) {
-				console.error('Error creating room ', error);
-			}
-		} else {
+		if (!this.roomForm.valid) {
 			console.error('Room name is not valid');
+			return;
+		}
+
+		const roomNamePrefix = this.roomForm.get('roomNamePrefix')?.value.replace(/ /g, '-');
+
+		try {
+			// TODO: Fix expiration date
+			const options: OpenViduMeetRoomOptions = {
+				roomNamePrefix,
+				expirationDate: Date.now() + 3600
+			};
+
+			const room = await this.httpService.createRoom(options);
+
+			this.roomForm.get('roomNamePrefix')?.setValue(roomNamePrefix);
+
+			const publisherUrl = new URL(room.publisherRoomUrl);
+			const queryParams = publisherUrl.searchParams;
+
+			const path = publisherUrl.pathname.slice(1);
+
+			// !FIXME here, the participantName is not set and the guard of VideoRoomComponent will need it.
+			// Possibly, when standalone mode, the room should be created in prejoin page instead of home page.
+			this.router.navigate(['/',path], { queryParams: { secret: queryParams.get('secret') } });
+		} catch (error) {
+			console.error('Error creating room ', error);
 		}
 	}
 
 	private subscribeToQueryParams(): void {
 		// this.queryParamSubscription = this.route.queryParams.subscribe((params) => {
 		// 	const roomName = params['roomName'];
-
 		// 	if (roomName) {
 		// 		this.loginError = true;
 		// 		this.roomForm.get('roomNamePrefix')?.setValue(roomName.replace(/[^\w-]/g, ''));

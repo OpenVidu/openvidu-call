@@ -72,8 +72,10 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.featureFlags.showPrejoin = false;
 			}
 
-			await this.loadRoomPreferences();
+			// TODO: Apply room preferences from saved room using context service
+			// await this.loadRoomPreferences();
 
+			// TODO: Extract permissions from token and apply them to the component
 			this.applyParticipantPermissions();
 		} catch (error: any) {
 			console.error('Error fetching room preferences', error);
@@ -127,7 +129,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 				this.ctxService.setParticipantName(participantName);
 			}
 
-			this.token = await this.ctxService.getToken();
+			this.token = this.ctxService.getToken();
 		} catch (error: any) {
 			console.error(error);
 			this.serverError = error.error;

@@ -1,7 +1,14 @@
 import { Routes } from '@angular/router';
 
 import { UnauthorizedComponent } from '../components';
-import { embeddedModeGuard, standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard, ensureValidRoomGuard, applicationModeGuard } from '../guards';
+import {
+	embeddedModeGuard,
+	standaloneModeGuard,
+	ensureValidTokenOrRoomNameGuard,
+	redirectUrlGuard,
+	validateRoomAccessGuard,
+	applicationModeGuard
+} from '../guards';
 import {
 	AboutComponent,
 	AccessPermissionsComponent,
@@ -87,9 +94,9 @@ export const baseRoutes: Routes = [
 		]
 	},
 	{
-		path: ':roomName',
+		path: ':room-name',
 		component: VideoRoomComponent,
-		canActivate: [applicationModeGuard, ensureValidRoomGuard, redirectUrlGuard]
+		canActivate: [applicationModeGuard, redirectUrlGuard, validateRoomAccessGuard]
 	},
 
 	// Redirect all other routes to home

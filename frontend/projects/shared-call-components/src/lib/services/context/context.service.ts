@@ -82,6 +82,10 @@ export class ContextService {
 		}
 	}
 
+	getToken(): string {
+		return this.context.token;
+	}
+
 	setRedirectUrl(redirectUrl: string): void {
 		this.context.redirectUrl = redirectUrl;
 	}
@@ -100,18 +104,18 @@ export class ContextService {
 	 *
 	 * @throws {Error} If the token parameters are invalid.
 	 */
-	async getToken(): Promise<string> {
-		const { roomName, participantName, token } = this.context;
+	// async getToken(): Promise<string> {
+	// 	const { roomName, participantName, token } = this.context;
 
-		this.validateTokenParameters(roomName, participantName);
+	// 	this.validateTokenParameters(roomName, participantName);
 
-		if (this.isEmbeddedMode()) {
-			return this.handleEmbeddedMode(token);
-		}
+	// 	if (this.isEmbeddedMode()) {
+	// 		return this.handleEmbeddedMode(token);
+	// 	}
 
-		// Standard mode
-		return this.handleStandardMode(token, roomName, participantName);
-	}
+	// 	// Standard mode
+	// 	return this.handleStandardMode(token, roomName, participantName);
+	// }
 
 	getRoomName(): string {
 		return this.context.roomName;
@@ -137,38 +141,38 @@ export class ContextService {
 		return this.context.decodedToken.metadata.permissions.canChat;
 	}
 
-	private validateTokenParameters(roomName: string, participantName: string): void {
-		if (!roomName) {
-			throw new Error('Error getting token, roomName is required');
-		}
-		if (!participantName) {
-			throw new Error('Error getting token, participantName is required');
-		}
-	}
+	// private validateTokenParameters(roomName: string, participantName: string): void {
+	// 	if (!roomName) {
+	// 		throw new Error('Error getting token, roomName is required');
+	// 	}
+	// 	if (!participantName) {
+	// 		throw new Error('Error getting token, participantName is required');
+	// 	}
+	// }
 
-	private handleEmbeddedMode(token: string | undefined): string {
-		this.log.d('Handling embedded mode');
-		if (!token) {
-			throw new Error('Token not found in embedded mode');
-		}
-		return token;
-	}
+	// private handleEmbeddedMode(token: string | undefined): string {
+	// 	this.log.d('Handling embedded mode');
+	// 	if (!token) {
+	// 		throw new Error('Token not found in embedded mode');
+	// 	}
+	// 	return token;
+	// }
 
-	private async handleStandardMode(
-		token: string | undefined,
-		roomName: string,
-		participantName: string
-	): Promise<string> {
-		this.log.d('Handling standard mode');
-		if (token) {
-			return token;
-		}
+	// private async handleStandardMode(
+	// 	token: string | undefined,
+	// 	roomName: string,
+	// 	participantName: string
+	// ): Promise<string> {
+	// 	this.log.d('Handling standard mode');
+	// 	if (token) {
+	// 		return token;
+	// 	}
 
-		this.log.d('Requesting token to the server');
-		const { token: newToken } = await this.httpService.getToken(roomName, participantName);
-		this.setToken(newToken);
-		return newToken;
-	}
+	// 	this.log.d('Requesting token to the server');
+	// 	const { token: newToken } = await this.httpService.getToken(roomName, participantName);
+	// 	this.setToken(newToken);
+	// 	return newToken;
+	// }
 
 	private getValidDecodedToken(token: string) {
 		this.checkIsJWTValid(token);
