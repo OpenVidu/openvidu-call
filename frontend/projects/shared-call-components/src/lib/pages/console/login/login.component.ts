@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, Validators, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { HttpService } from '../../../services';
+import { AuthService } from '../../../services';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'ov-login',
@@ -24,30 +25,31 @@ import { Router } from '@angular/router';
 	styleUrl: './login.component.scss'
 })
 export class ConsoleLoginComponent {
-	loginForm: FormGroup;
+	loginForm = new FormGroup({
+		username: new FormControl('', [Validators.required, Validators.minLength(4)]),
+		password: new FormControl('', [Validators.required, Validators.minLength(4)])
+	});
+	loginErrorMessage: string | undefined;
 
 	constructor(
-		private fb: FormBuilder,
-		private httpService: HttpService,
+		private authService: AuthService,
 		private router: Router
-	) {
-		this.loginForm = this.fb.group({
-			username: ['', [Validators.required, Validators.minLength(4)]],
-			password: ['', [Validators.required, Validators.minLength(4)]]
-		});
-	}
+	) {}
 
 	ngOnInit(): void {}
 
 	async onSubmit() {
-		if (this.loginForm.valid) {
-			console.log(this.loginForm.value);
-			// Lógica para manejar el inicio de sesión
-			try {
-				await this.httpService.adminLogin(this.loginForm.value);
-				this.router.navigate(['console']);
-			} catch (error) {
-				console.log(error);
+		this.loginErrorMessage = undefined;
+		const { username, password } = this.loginForm.value;
+
+		try {
+			await this.authService.adminLogin(username!, password!);
+			this.router.navigate(['console']);
+		} catch (error) {
+			if ((error as HttpErrorResponse).status === 429) {
+				this.loginErrorMessage = 'Too many login attempts. Please try again later';
+			} else {
+				this.loginErrorMessage = 'Invalid username or password';
 			}
 		}
 	}

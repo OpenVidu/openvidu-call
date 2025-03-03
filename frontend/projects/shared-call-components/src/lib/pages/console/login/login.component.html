@@ -17,10 +17,15 @@
 				</mat-form-field>
 
 				<div class="login-button">
-					<button mat-raised-button color="primary" type="submit">Login</button>
+					<button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+						Login
+					</button>
 				</div>
-				<!-- <p class="forgot-password"><a href="#">Forgot password?</a></p> -->
 			</form>
+
+			@if (loginErrorMessage) {
+				<mat-error class="login-error">{{ loginErrorMessage }}</mat-error>
+			}
 		</mat-card>
 		<div class="signup-section">
 			<div>

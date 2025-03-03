@@ -50,6 +50,15 @@ body {
 	background-color: #00777f;
 }
 
+.login-button button:disabled {
+	background-color: #a19f9f;
+}
+
+.login-error {
+	text-align: center;
+	margin-top: 10px;
+}
+
 .signup-section {
 	display: flex;
 	text-align: center;
@@ -74,13 +83,8 @@ body {
 	height: auto;
 }
 
-// .forgot-password {
-// 	margin-top: 10px;
-// 	text-align: center;
-// }
-
 a {
-	color: #6a5acd; /* Color del enlace */
+	color: #6a5acd;
 	text-decoration: none;
 }
 
@@ -89,7 +93,7 @@ a:hover {
 }
 
 @media (max-width: 991px) {
-	/* Ocultar .signup-section en pantallas de 991px o menos */
+	/* Hide .signup-section on medium screens */
 	.signup-section {
 		display: none;
 	}
@@ -120,7 +124,7 @@ a:hover {
 	}
 }
 
-/* Pantallas pequeñas adicionales (576px o menos) */
+/* Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
 	.login-card {
 		padding: 40px;
