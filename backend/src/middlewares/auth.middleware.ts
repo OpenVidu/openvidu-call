@@ -6,6 +6,7 @@ import {
 	ACCESS_TOKEN_COOKIE_NAME,
 	MEET_ADMIN_SECRET,
 	MEET_ADMIN_USER,
+	MEET_API_KEY,
 	MEET_PRIVATE_ACCESS,
 	MEET_SECRET,
 	MEET_USER
@@ -24,7 +25,26 @@ export const withAdminValidToken = async (req: Request, res: Response, next: Nex
 	const isTokenValid = authService.validateToken(token, MEET_ADMIN_USER);
 
 	if (!isTokenValid) {
+		return res.status(401).json({ message: 'Invalid token' });
+	}
+
+	next();
+};
+
+export const withValidApiKey = async (req: Request, res: Response, next: NextFunction) => {
+	const auth = req.headers.authorization;
+	console.log('auth', auth);
+
+	if (!auth) {
 		return res.status(401).json({ message: 'Unauthorized' });
+	}
+
+	const [authType, apiKey] = auth.split(' ');
+	console.log('authType', authType);
+	console.log('apiKey', apiKey);
+
+	if (authType !== 'Bearer' || !apiKey || apiKey !== MEET_API_KEY) {
+		return res.status(401).json({ message: 'Invalid API key' });
 	}
 
 	next();
