@@ -25,6 +25,9 @@ export const generateParticipantToken = async (req: Request, res: Response) => {
 
 		const token = await livekitService.generateToken(tokenOptions, permissions);
 
+		// TODO: Set the participant token in a cookie
+		// res.cookie('ovParticipantToken', token, { httpOnly: true, expires: tokenTtl });
+
 		logger.verbose(`Participant token generated for room ${roomName}`);
 		return res.status(200).json({ token });
 	} catch (error) {
