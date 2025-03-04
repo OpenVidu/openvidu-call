@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { HttpService } from '../http/http.service';
 import { ApplicationMode, ContextData, Edition } from '../../models/context.model';
 import { LoggerService } from 'openvidu-components-angular';
 
@@ -10,13 +9,18 @@ import { LoggerService } from 'openvidu-components-angular';
 /**
  * Service to manage the context of the application, including embedded mode and token management.
  */
-// TODO: Save context in local storage
 export class ContextService {
 	private context: ContextData = {
 		roomName: '',
 		participantName: '',
 		token: '',
-		decodedToken: {},
+		participantPermissions: {
+			canRecord: false,
+			canBroadcast: false,
+			canChat: false,
+			canChangeVirtualBackground: false,
+			canPublishScreen: false
+		},
 		mode: ApplicationMode.STANDALONE,
 		edition: Edition.CE,
 		redirectUrl: '',
@@ -28,10 +32,7 @@ export class ContextService {
 	/**
 	 * Initializes a new instance of the ContextService class.
 	 */
-	constructor(
-		private httpService: HttpService,
-		private loggerService: LoggerService
-	) {
+	constructor(private loggerService: LoggerService) {
 		this.log = this.loggerService.get('OpenVidu Meet - ContextService');
 	}
 
@@ -70,12 +71,9 @@ export class ContextService {
 	 */
 	setToken(token: string): void {
 		try {
-			this.context.decodedToken = this.getValidDecodedToken(token);
+			const decodedToken = this.getValidDecodedToken(token);
 			this.context.token = token;
-			this.setRoomName(this.context.decodedToken.video.room);
-			this.setParticipantName(this.context.decodedToken.name);
-			//TODO: do the same with permissions
-			console.log('DECODED TOKEN----', this.context.decodedToken);
+			this.context.participantPermissions = decodedToken.metadata.permissions;
 		} catch (error: any) {
 			this.log.e('Error setting token in context', error);
 			throw new Error('Error setting token', error);
@@ -94,29 +92,6 @@ export class ContextService {
 		return this.context.redirectUrl;
 	}
 
-	/**
-	 * Retrieves a token for the current context.
-	 *
-	 * This method validates the token parameters and determines the mode of operation
-	 * (embedded or standard) to handle the token accordingly.
-	 *
-	 * @returns {Promise<string>} A promise that resolves to the token string.
-	 *
-	 * @throws {Error} If the token parameters are invalid.
-	 */
-	// async getToken(): Promise<string> {
-	// 	const { roomName, participantName, token } = this.context;
-
-	// 	this.validateTokenParameters(roomName, participantName);
-
-	// 	if (this.isEmbeddedMode()) {
-	// 		return this.handleEmbeddedMode(token);
-	// 	}
-
-	// 	// Standard mode
-	// 	return this.handleStandardMode(token, roomName, participantName);
-	// }
-
 	getRoomName(): string {
 		return this.context.roomName;
 	}
@@ -134,45 +109,12 @@ export class ContextService {
 	}
 
 	canRecord(): boolean {
-		return this.context.decodedToken.metadata.permissions.canRecord;
+		return this.context.participantPermissions.canRecord;
 	}
 
 	canChat(): boolean {
-		return this.context.decodedToken.metadata.permissions.canChat;
+		return this.context.participantPermissions.canChat;
 	}
-
-	// private validateTokenParameters(roomName: string, participantName: string): void {
-	// 	if (!roomName) {
-	// 		throw new Error('Error getting token, roomName is required');
-	// 	}
-	// 	if (!participantName) {
-	// 		throw new Error('Error getting token, participantName is required');
-	// 	}
-	// }
-
-	// private handleEmbeddedMode(token: string | undefined): string {
-	// 	this.log.d('Handling embedded mode');
-	// 	if (!token) {
-	// 		throw new Error('Token not found in embedded mode');
-	// 	}
-	// 	return token;
-	// }
-
-	// private async handleStandardMode(
-	// 	token: string | undefined,
-	// 	roomName: string,
-	// 	participantName: string
-	// ): Promise<string> {
-	// 	this.log.d('Handling standard mode');
-	// 	if (token) {
-	// 		return token;
-	// 	}
-
-	// 	this.log.d('Requesting token to the server');
-	// 	const { token: newToken } = await this.httpService.getToken(roomName, participantName);
-	// 	this.setToken(newToken);
-	// 	return newToken;
-	// }
 
 	private getValidDecodedToken(token: string) {
 		this.checkIsJWTValid(token);

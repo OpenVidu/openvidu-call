@@ -1,8 +1,10 @@
+import { OpenViduMeetPermissions } from 'shared-call-components';
+
 export interface ContextData {
 	roomName: string;
 	participantName: string;
 	token: string;
-	decodedToken: any;
+	participantPermissions: OpenViduMeetPermissions;
 	mode: ApplicationMode;
 	edition: Edition;
 	redirectUrl: string;
