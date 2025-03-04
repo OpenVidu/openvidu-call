@@ -1,19 +1,22 @@
 import { OpenViduMeetRoom, OpenViduRoomDAO, OpenViduMeetRoomOptions } from '@typings-ce';
+import { CreateOptions } from 'livekit-server-sdk';
+import { MEET_NAME_ID } from '../environment.js';
+import { uid } from 'uid/single';
 
 type OmitProps<T, K extends keyof T> = Omit<T, K>;
 export class OpenViduRoomHelper {
-	private static toDAO<T, K extends keyof T>(room: T, propsToOmit: K[]): OmitProps<T, K> {
-		const DAO = { ...room };
+	private static toDTO<T, K extends keyof T>(room: T, propsToOmit: K[]): OmitProps<T, K> {
+		const DTO = { ...room };
 
 		for (const prop of propsToOmit) {
-			delete DAO[prop];
+			delete DTO[prop];
 		}
 
-		return DAO;
+		return DTO;
 	}
 
-	static convertToRoomDAO(room: OpenViduMeetRoom): OpenViduRoomDAO {
-		return OpenViduRoomHelper.toDAO(room, ['permissions']);
+	static convertToRoomDTO(room: OpenViduMeetRoom): OpenViduRoomDAO {
+		return OpenViduRoomHelper.toDTO(room, ['permissions']);
 	}
 
 	/**
@@ -29,5 +32,34 @@ export class OpenViduRoomHelper {
 			preferences: room.preferences,
 			roomNamePrefix: room.roomNamePrefix
 		};
+	}
+
+	static generateLivekitRoomOptions(roomInput: OpenViduMeetRoom | OpenViduMeetRoomOptions): CreateOptions {
+		const isOpenViduRoom = 'creationDate' in roomInput;
+		const {
+			roomName = `${roomInput.roomNamePrefix ?? ''}${uid(15)}`,
+			expirationDate,
+			maxParticipants,
+			creationDate = Date.now()
+		} = roomInput as OpenViduMeetRoom;
+
+		const timeUntilExpiration = this.calculateExpirationTime(expirationDate, creationDate);
+
+		return {
+			name: roomName,
+			metadata: JSON.stringify({
+				createdBy: MEET_NAME_ID,
+				roomOptions: isOpenViduRoom
+					? OpenViduRoomHelper.toOpenViduOptions(roomInput as OpenViduMeetRoom)
+					: roomInput
+			}),
+			emptyTimeout: timeUntilExpiration,
+			maxParticipants: maxParticipants || undefined,
+			departureTimeout: 31_536_000 // 1 year
+		};
+	}
+
+	private static calculateExpirationTime(expirationDate: number, creationDate: number): number {
+		return Math.max(0, Math.floor((expirationDate - creationDate) / 1000));
 	}
 }

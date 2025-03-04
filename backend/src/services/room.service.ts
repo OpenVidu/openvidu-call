@@ -150,10 +150,10 @@ export class RoomService {
 	 */
 	convertToRoomDAO(roomOrRooms: OpenViduMeetRoom | OpenViduMeetRoom[]): OpenViduRoomDAO | OpenViduRoomDAO[] {
 		if (Array.isArray(roomOrRooms)) {
-			return roomOrRooms.map(OpenViduRoomHelper.convertToRoomDAO);
+			return roomOrRooms.map(OpenViduRoomHelper.convertToRoomDTO);
 		}
 
-		return OpenViduRoomHelper.convertToRoomDAO(roomOrRooms);
+		return OpenViduRoomHelper.convertToRoomDTO(roomOrRooms);
 	}
 
 	/**
@@ -204,22 +204,8 @@ export class RoomService {
 	 * @returns A promise that resolves to the created room.
 	 */
 	protected async createLivekitRoom(roomOptions: OpenViduMeetRoomOptions): Promise<Room> {
-		const { roomNamePrefix, expirationDate } = roomOptions;
+		const livekitRoomOptions: CreateOptions = OpenViduRoomHelper.generateLivekitRoomOptions(roomOptions);
 
-		const creationDate = Date.now();
-		// Calculate the time until the room expires
-		const timeUntilExpiration = Math.max(0, Math.floor((expirationDate - creationDate) / 1000));
-		const livekitRoomOptions: CreateOptions = {
-			name: `${roomNamePrefix}${uid(15)}`,
-			metadata: JSON.stringify({
-				createdBy: MEET_NAME_ID,
-				roomOptions
-			}),
-			// TODO: Add more options
-			emptyTimeout: timeUntilExpiration,
-			maxParticipants: roomOptions?.maxParticipants || undefined,
-			departureTimeout: 31_536_000 // 1 year in seconds
-		};
 		return await this.livekitService.createRoom(livekitRoomOptions);
 	}
 
@@ -415,26 +401,42 @@ export class RoomService {
 	protected async restoreMissingLivekitRooms(): Promise<void> {
 		this.logger.verbose(`Checking missing Livekit rooms ...`);
 
-		const [lkRooms, ovRooms] = await Promise.all([
+		const [lkResult, ovResult] = await Promise.allSettled([
 			this.livekitService.listRooms(),
-			await this.globalPrefService.getOpenViduRooms()
+			this.listOpenViduRooms()
 		]);
 
-		const missingRooms: OpenViduMeetRoom[] = ovRooms
-			.filter((ovRoom) => !lkRooms.some((room) => room.name === ovRoom.roomName))
-			.map((ovRoom) => ovRoom);
+		let lkRooms: Room[] = [];
+		let ovRooms: OpenViduMeetRoom[] = [];
+
+		if (lkResult.status === 'fulfilled') {
+			lkRooms = lkResult.value;
+		} else {
+			this.logger.error('Failed to list Livekit rooms:', lkResult.reason);
+		}
+
+		if (ovResult.status === 'fulfilled') {
+			ovRooms = ovResult.value;
+		} else {
+			this.logger.error('Failed to list OpenVidu rooms:', ovResult.reason);
+		}
+
+		const missingRooms: OpenViduMeetRoom[] = ovRooms.filter(
+			(ovRoom) => !lkRooms.some((room) => room.name === ovRoom.roomName)
+		);
 
 		if (missingRooms.length === 0) {
 			this.logger.verbose('All OpenVidu rooms are present in Livekit. No missing rooms to restore. ');
 			return;
 		}
 
-		this.logger.info(
-			`Restoring ${missingRooms.length} missing rooms: ${missingRooms.map((room) => room.roomName).join(', ')}`
-		);
+		this.logger.info(`Restoring ${missingRooms.length} missing rooms`);
 
 		const creationResults = await Promise.allSettled(
-			missingRooms.map((room) => this.createLivekitRoom(OpenViduRoomHelper.toOpenViduOptions(room)))
+			missingRooms.map((ovRoom) => {
+				this.logger.verbose(`Restoring $room: ${ovRoom.roomName}`);
+				this.createLivekitRoom(ovRoom);
+			})
 		);
 
 		creationResults.forEach((result, index) => {
