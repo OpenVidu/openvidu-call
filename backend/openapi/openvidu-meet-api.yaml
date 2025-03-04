@@ -1,0 +1,533 @@
+openapi: 3.0.1
+info:
+    version: v1
+    title: OpenVidu Meet API
+    description: >
+        The OpenVidu Embedded API allows seamless integration of OpenVidu Meet rooms into your application.
+        This API provides endpoints to manage rooms, generate secure access URLs, and configure room preferences.
+    termsOfService: https://openvidu.io/conditions/terms-of-service/
+    contact:
+        name: OpenVidu
+        email: commercial@openvidu.io
+        url: https://openvidu.io/support/
+
+servers:
+    - url: http://localhost:6080/meet/api/v1
+      description: Development server
+
+tags:
+    - name: Room
+      description: Operations related to managing OpenVidu Meet rooms
+    - name: Participant
+      description: Operations related to managing participants in OpenVidu Meet rooms
+
+paths:
+    /rooms:
+        post:
+            operationId: createRoom
+            summary: Create a new OpenVidu Meet room
+            description: >
+                Creates a new OpenVidu Meet room with the specified expiration date.
+                The room will be available for participants to join using the generated URLs.
+            tags:
+                - Room
+            security:
+                - apiKeyInHeader: []
+            requestBody:
+                description: Room configuration options
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OpenViduMeetRoomOptions'
+                            examples:
+                                default:
+                                    value:
+                                        expirationDate: 1620000000000
+                                        roomNamePrefix: 'OpenVidu'
+                                        maxParticipants: 10
+                                        preferences:
+                                            broadcastingPreferences:
+                                                enabled: true
+                                            chatPreferences:
+                                                enabled: true
+                                            recordingPreferences:
+                                                enabled: true
+                                            virtualBackgroundPreferences:
+                                                enabled: true
+                                withNestedAttributes:
+                                    summary: Room creation with nested preferences
+                                    value:
+                                        expirationDate: 1620000000000
+                                        roomNamePrefix: 'OpenVidu'
+                                        maxParticipants: 15
+                                        preferences:
+                                            broadcastingPreferences:
+                                                enabled: false
+                                            chatPreferences:
+                                                enabled: true
+                                            recordingPreferences:
+                                                enabled: false
+                                            virtualBackgroundPreferences:
+                                                enabled: true
+            responses:
+                '200':
+                    description: Successfully generated the OpenVidu Meet room
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OpenViduMeetRoom'
+                '422':
+                    description: Unprocessable Entity — The request body is invalid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'Unprocessable Entity'
+                                    message:
+                                        type: string
+                                        example: 'Invalid request body'
+                                    details:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: 'expirationDate'
+                                                message:
+                                                    type: string
+                                                    example: 'Expected number, received string'
+                            example:
+                                error: 'Unprocessable Entity'
+                                message: 'Invalid request body'
+                                details:
+                                    - field: 'expirationDate'
+                                      message: 'Expected number, received string'
+                                    - field: 'roomNamePrefix'
+                                      message: 'Expected string, received number'
+                '415':
+                    description: 'Unsupported Media Type'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                message: 'Unsupported Media Type'
+                '500':
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                message: 'Internal server error'
+        get:
+            operationId: getRooms
+            summary: Get a list of OpenVidu Meet rooms
+            description: >
+                Retrieves a list of OpenVidu Meet rooms that are currently active.
+            tags:
+                - Room
+            security:
+                - apiKeyInHeader: []
+            responses:
+                '200':
+                    description: Successfully retrieved the list of OpenVidu Meet rooms
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/OpenViduMeetRoom'
+                '500':
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 500
+                                message: 'Internal server error'
+        put:
+            operationId: updateRoom
+            summary: Update an OpenVidu Meet room
+            description: >
+                Updates the preferences of an OpenVidu Meet room with the specified room name.
+            tags:
+                - Room
+            security:
+                - apiKeyInHeader: []
+            parameters:
+                - name: roomName
+                  in: path
+                  required: true
+                  description: The name of the room to update
+                  schema:
+                      type: string
+            requestBody:
+                description: Room preferences to update
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RoomPreferences'
+                            examples:
+                                default:
+                                    value:
+                                        preferences:
+                                            broadcastingPreferences:
+                                                enabled: true
+                                            chatPreferences:
+                                                enabled: true
+                                            recordingPreferences:
+                                                enabled: true
+                                            virtualBackgroundPreferences:
+                                                enabled: true
+            responses:
+                '200':
+                    description: Successfully updated the OpenVidu Meet room
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OpenViduMeetRoom'
+                '404':
+                    description: Room not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 404
+                                message: 'Room not found'
+                '422':
+                    description: Unprocessable Entity — The request body is invalid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'Unprocessable Entity'
+                                    message:
+                                        type: string
+                                        example: 'Invalid request body'
+                                    details:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                field:
+                                                    type: string
+                                                    example: 'broadcastingPreferences'
+                                                message:
+                                                    type: string
+                                                    example: 'Expected boolean, received string'
+    /rooms/{roomName}:
+        get:
+            operationId: getRoom
+            summary: Get details of an OpenVidu Meet room
+            description: >
+                Retrieves the details of an OpenVidu Meet room with the specified room name.
+            tags:
+                - Room
+            security:
+                - apiKeyInHeader: []
+            parameters:
+                - name: roomName
+                  in: path
+                  required: true
+                  description: The name of the room to retrieve
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Successfully retrieved the OpenVidu Meet room
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OpenViduMeetRoom'
+                '404':
+                    description: Room not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 404
+                                message: 'Room not found'
+                '500':
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 500
+                                message: 'Internal server error'
+        delete:
+            operationId: deleteRoom
+            summary: Delete an OpenVidu Meet room
+            description: >
+                Deletes an OpenVidu Meet room with the specified room name.
+            tags:
+                - Room
+            security:
+                - apiKeyInHeader: []
+            parameters:
+                - name: roomName
+                  in: path
+                  required: true
+                  description: The name of the room to delete
+                  schema:
+                      type: string
+            responses:
+                '204':
+                    description: Successfully deleted the OpenVidu Meet room
+                '404':
+                    description: Room not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 404
+                                message: 'Room not found'
+                '500':
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                code: 500
+                                message: 'Internal server error'
+
+    /participants/token:
+        post:
+            operationId: generateParticipantToken
+            summary: Generate a token for a participant
+            description: >
+                Generates a token for a participant to join an OpenVidu Meet room.
+            tags:
+                - Participant
+            security:
+                - apiKeyInHeader: []
+            requestBody:
+                description: Participant details
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - roomName
+                                - participantName
+                                - secret
+                            properties:
+                                roomName:
+                                    type: string
+                                    example: 'OpenVidu-123456'
+                                    description: >
+                                        The name of the room to join.
+                                participantName:
+                                    type: string
+                                    example: 'Alice'
+                                    description: >
+                                        The name of the participant.
+                                secret:
+                                    type: string
+                                    example: 'abc123456'
+                                    description: >
+                                        The secret token from the room Url
+            responses:
+                '200':
+                    description: Successfully generated the participant token
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    token:
+                                        type: string
+                                        example: 'token_123456'
+                                        description: >
+                                            The token to authenticate the participant.
+                '404':
+                    description: Room not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    name:
+                                        type: string
+                                        example: 'Room not found'
+                                    message:
+                                        type: string
+                                        example: 'The room does not exist'
+                '500':
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                            example:
+                                message: 'Internal server error'
+
+components:
+    securitySchemes:
+        apiKeyInHeader:
+            type: apiKey
+            name: X-apikey
+            in: header
+            description: >
+                The API key to authenticate the request. This key is required to access the OpenVidu Meet API.
+    schemas:
+        OpenViduMeetRoomOptions:
+            type: object
+            required:
+                - expirationDate
+            properties:
+                expirationDate:
+                    type: number
+                    example: 1620000000000
+                    description: >
+                        The expiration date of the room in milliseconds since the Unix epoch.
+                        After this date, the room will be closed and no new participants will be allowed to join.
+                roomNamePrefix:
+                    type: string
+                    example: 'OpenVidu'
+                    description: >
+                        A prefix to be used for the room name. The room name will be generated by appending a random
+                        alphanumeric string to this prefix.
+                maxParticipants:
+                    type: integer
+                    example: 10
+                    description: >
+                        The maximum number of participants allowed in the room. If the number of participants exceeds
+                        this limit, new participants will not be allowed to join.
+                preferences:
+                    $ref: '#/components/schemas/RoomPreferences'
+                    description: >
+                        The preferences for the room.
+        RoomPreferences:
+            type: object
+            properties:
+                broadcastingPreferences:
+                    $ref: '#/components/schemas/BroadcastingPreferences'
+                    description: >
+                        Preferences for broadcasting the room.
+
+                chatPreferences:
+                    $ref: '#/components/schemas/ChatPreferences'
+                    description: >
+                        Preferences for the chat feature in the room.
+
+                recordingPreferences:
+                    $ref: '#/components/schemas/RecordingPreferences'
+                    description: >
+                        Preferences for recording the room.
+
+                virtualBackgroundPreferences:
+                    $ref: '#/components/schemas/VirtualBackgroundPreferences'
+                    description: >
+                        Preferences for virtual background in the room.
+        BroadcastingPreferences:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: >
+                        If true, the room will be allowed to broadcast the video of the participants.
+        ChatPreferences:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: >
+                        If true, the room will be allowed to send and receive chat messages.
+        RecordingPreferences:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: >
+                        If true, the room will be allowed to record the video of the participants.
+        VirtualBackgroundPreferences:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    default: true
+                    example: true
+                    description: >
+                        If true, the room will be allowed to use virtual background.
+        OpenViduMeetRoom:
+            type: object
+            properties:
+                roomName:
+                    type: string
+                    example: 'OpenVidu-123456'
+                    description: >
+                        The name of the room. This name is generated by appending a random alphanumeric string to the
+                        room name prefix specified in the request.
+                creationDate:
+                    type: number
+                    example: 1620000000000
+                    description: >
+                        The creation date of the room in milliseconds since the Unix epoch.
+                expirationDate:
+                    type: number
+                    example: 1620000000000
+                    description: >
+                        The expiration date of the room in milliseconds since the Unix epoch.
+                        After this date, the room will be closed and no new participants will be allowed to join.
+                roomNamePrefix:
+                    type: string
+                    example: 'OpenVidu'
+                    description: >
+                        The prefix used for the room name. The room name is generated by appending a random alphanumeric
+                        string to this prefix.
+                preferences:
+                    $ref: '#/components/schemas/RoomPreferences'
+                    description: >
+                        The preferences for the room.
+                maxParticipants:
+                    type: integer
+                    example: 10
+                    description: >
+                        The maximum number of participants allowed in the room. If the number of participants exceeds
+                        this limit, new participants will not be allowed to join.
+                moderatorURL:
+                    type: string
+                    example: 'http://localhost:6080/meet/OpenVidu-123456/?secret=tok_123456'
+                    description: >
+                        The URL for the moderator to join the room. The moderator has special permissions to manage the
+                        room and participants.
+                publisherURL:
+                    type: string
+                    example: 'http://localhost:6080/meet/OpenVidu-123456/?secret=tok_123456'
+                    description: >
+                        The URL for the publisher to join the room. The publisher has permissions to publish audio and
+                        video streams to the room.
+                viewerURL:
+                    type: string
+                    example: 'http://localhost:6080/meet/OpenVidu-123456/?secret=tok_123456'
+                    description: >
+                        The URL for the viewer to join the room. The viewer has read-only permissions to watch the room
+                        and participants.
+        Error:
+            type: object
+            required:
+                - message
+            properties:
+                message:
+                    type: string

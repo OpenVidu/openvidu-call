@@ -12,8 +12,8 @@ const publicFilesPath = path.join(srcPath, '../public/browser');
 const indexHtmlPath = path.join(publicFilesPath, 'index.html');
 
 const getOpenApiSpecPath = () => {
-	const defaultPath = 'openapi/embedded-api.yaml';
-	const fallbackPath = path.resolve(__dirname, '../../../openapi/embedded-api.yaml');
+	const defaultPath = 'openapi/openvidu-meet-api.yaml';
+	const fallbackPath = path.resolve(__dirname, '../../../openapi/openvidu-meet-api.yaml');
 
 	if (fs.existsSync(defaultPath)) {
 		return defaultPath;
