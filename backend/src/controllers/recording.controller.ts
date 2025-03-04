@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { LoggerService } from '../services/logger.service.js';
-import { OpenViduCallError } from '../models/error.model.js';
+import { OpenViduMeetError } from '../models/error.model.js';
 import { RecordingService } from '../services/recording.service.js';
 import { container } from '../config/dependency-injector.config.js';
 
@@ -20,7 +20,7 @@ export const startRecording = async (req: Request, res: Response) => {
 		const recordingInfo = await recordingService.startRecording(roomName);
 		return res.status(200).json(recordingInfo);
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error starting recording: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}
@@ -46,7 +46,7 @@ export const stopRecording = async (req: Request, res: Response) => {
 		const recordingInfo = await recordingService.stopRecording(recordingId);
 		return res.status(200).json(recordingInfo);
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error stopping recording: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}
@@ -72,7 +72,7 @@ export const getAllRecordings = async (req: Request, res: Response) => {
 			.status(200)
 			.json({ recordings: response.recordingInfo, continuationToken: response.continuationToken });
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error getting all recordings: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}
@@ -124,7 +124,7 @@ export const streamRecording = async (req: Request, res: Response) => {
 			fileStream.pipe(res).on('finish', () => res.end());
 		}
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error streaming recording: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}
@@ -152,7 +152,7 @@ export const deleteRecording = async (req: Request, res: Response) => {
 
 		return res.status(204).json(recordingInfo);
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error deleting recording: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}

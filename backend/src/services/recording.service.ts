@@ -8,7 +8,7 @@ import {
 import { Readable } from 'stream';
 import { LiveKitService } from './livekit.service.js';
 import {
-	OpenViduCallError,
+	OpenViduMeetError,
 	errorRecordingAlreadyStarted,
 	errorRecordingNotFound,
 	errorRecordingNotStopped,
@@ -71,7 +71,7 @@ export class RecordingService {
 				topic: DataTopic.RECORDING_FAILED
 			};
 
-			if (error instanceof OpenViduCallError) {
+			if (error instanceof OpenViduMeetError) {
 				payload = { error: error.message, statusCode: error.statusCode };
 			}
 

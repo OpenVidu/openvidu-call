@@ -1,7 +1,7 @@
 import { container } from '../config/dependency-injector.config.js';
 import { Request, Response } from 'express';
 import { LoggerService } from '../services/logger.service.js';
-import { OpenViduCallError } from '../models/error.model.js';
+import { OpenViduMeetError } from '../models/error.model.js';
 import { BroadcastingService } from '../services/broadcasting.service.js';
 
 export const startBroadcasting = async (req: Request, res: Response) => {
@@ -24,7 +24,7 @@ export const startBroadcasting = async (req: Request, res: Response) => {
 		const broadcastingInfo = await broadcastingService.startBroadcasting(roomName, broadcastUrl);
 		return res.status(200).json(broadcastingInfo);
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error starting broadcasting: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}
@@ -49,7 +49,7 @@ export const stopBroadcasting = async (req: Request, res: Response) => {
 		const broadcastingInfo = await broadcastingService.stopBroadcasting(egressId);
 		return res.status(200).json(broadcastingInfo);
 	} catch (error) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			logger.error(`Error stopping broadcasting: ${error.message}`);
 			return res.status(error.statusCode).json({ name: error.name, message: error.message });
 		}

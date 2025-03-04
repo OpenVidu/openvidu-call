@@ -1,7 +1,7 @@
 import { container } from '../config/dependency-injector.config.js';
 import { Request, Response } from 'express';
 import { LoggerService } from '../services/logger.service.js';
-import { OpenViduCallError } from '../models/error.model.js';
+import { OpenViduMeetError } from '../models/error.model.js';
 import { RoomService } from '../services/room.service.js';
 import { OpenViduMeetRoomOptions } from '@typings-ce';
 
@@ -109,11 +109,11 @@ export const updateRoomPreferences = async (req: Request, res: Response) => {
 	// }
 };
 
-const handleError = (res: Response, error: OpenViduCallError | unknown) => {
+const handleError = (res: Response, error: OpenViduMeetError | unknown) => {
 	const logger = container.get(LoggerService);
 	logger.error(String(error));
 
-	if (error instanceof OpenViduCallError) {
+	if (error instanceof OpenViduMeetError) {
 		res.status(error.statusCode).json({ name: error.name, message: error.message });
 	} else {
 		res.status(500).json({ name: 'Room Error', message: 'Internal server error. Room operation failed' });

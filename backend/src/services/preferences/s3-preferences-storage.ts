@@ -8,7 +8,7 @@ import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { S3Service } from '../s3.service.js';
 import { LoggerService } from '../logger.service.js';
 import { RedisService } from '../redis.service.js';
-import { OpenViduCallError } from '../../models/error.model.js';
+import { OpenViduMeetError } from '../../models/error.model.js';
 import { inject, injectable } from '../../config/dependency-injector.config.js';
 
 @injectable()
@@ -203,7 +203,7 @@ export class S3PreferenceStorage<
 	}
 
 	protected handleError(error: any, message: string) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			this.logger.error(`${message}: ${error.message}`);
 		} else {
 			this.logger.error(`${message}: Unexpected error`);

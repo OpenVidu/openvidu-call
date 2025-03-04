@@ -4,17 +4,16 @@ import { LoggerService } from '../services/logger.service.js';
 import { TokenOptions } from '@typings-ce';
 import { LiveKitService } from '../services/livekit.service.js';
 import { RoomService } from '../services/room.service.js';
+import { OpenViduMeetError } from '../models/index.js';
 
 export const generateParticipantToken = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
+	const tokenOptions: TokenOptions = req.body;
+	const { roomName, secret } = tokenOptions;
 
 	try {
 		const livekitService = container.get(LiveKitService);
 		const roomService = container.get(RoomService);
-
-		//TODO use middleware for validation
-		const tokenOptions: TokenOptions = req.body;
-		const { roomName, secret } = tokenOptions;
 
 		logger.verbose(`Generating participant token for room ${roomName}`);
 		const room = await roomService.getOpenViduRoom(roomName);
@@ -31,7 +30,21 @@ export const generateParticipantToken = async (req: Request, res: Response) => {
 		logger.verbose(`Participant token generated for room ${roomName}`);
 		return res.status(200).json({ token });
 	} catch (error) {
-		logger.error(`Internal server error: ${error}`);
-		return res.status(500).json({ error: 'Internal server error' });
+		logger.error(`Error generating participant token for room: ${roomName}`);
+		return handleError(res, error);
+	}
+};
+
+const handleError = (res: Response, error: OpenViduMeetError | unknown) => {
+	const logger = container.get(LoggerService);
+	logger.error(String(error));
+
+	if (error instanceof OpenViduMeetError) {
+		res.status(error.statusCode).json({ name: error.name, message: error.message });
+	} else {
+		res.status(500).json({
+			name: 'Participant Error',
+			message: 'Internal server error. Participant operation failed'
+		});
 	}
 };

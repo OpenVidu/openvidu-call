@@ -7,7 +7,7 @@ import { GlobalPreferences, OpenViduMeetRoom, RoomPreferences } from '@typings-c
 import { LoggerService } from '../logger.service.js';
 import { PreferencesStorage } from './global-preferences-storage.interface.js';
 import { GlobalPreferencesStorageFactory } from './global-preferences.factory.js';
-import { OpenViduCallError } from '../../models/error.model.js';
+import { errorRoomNotFound, OpenViduMeetError } from '../../models/error.model.js';
 import { MEET_NAME_ID } from '../../environment.js';
 import { injectable, inject } from '../../config/dependency-injector.config.js';
 
@@ -72,8 +72,8 @@ export class GlobalPreferencesService<
 		const openviduRoom = await this.storage.getOpenViduRoom(roomName);
 
 		if (!openviduRoom) {
-			this.logger.error(`Room preferences not found for room ${roomName}`);
-			throw new Error('Room preferences not found');
+			this.logger.error(`Room not found for room ${roomName}`);
+			throw errorRoomNotFound(roomName);
 		}
 
 		return openviduRoom as R;
@@ -152,7 +152,7 @@ export class GlobalPreferencesService<
 	 * @param {string} message
 	 */
 	protected handleError(error: any, message: string) {
-		if (error instanceof OpenViduCallError) {
+		if (error instanceof OpenViduMeetError) {
 			this.logger.error(`${message}: ${error.message}`);
 		} else {
 			this.logger.error(`${message}: Unexpected error`);
