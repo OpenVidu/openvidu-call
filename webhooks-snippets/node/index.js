@@ -13,7 +13,7 @@ app.post("/webhook", (req, res) => {
     const headers = req.headers;
 
     if (!isWebhookEventValid(body, headers)) {
-        console.log("Invalid webhook signature");
+        console.error("Invalid webhook signature");
         return res.status(401).send("Invalid webhook signature");
     }
 
