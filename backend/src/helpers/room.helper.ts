@@ -1,23 +1,9 @@
-import { OpenViduMeetRoom, OpenViduRoomDAO, OpenViduMeetRoomOptions } from '@typings-ce';
+import { OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@typings-ce';
 import { CreateOptions } from 'livekit-server-sdk';
 import { MEET_NAME_ID } from '../environment.js';
 import { uid } from 'uid/single';
 
-type OmitProps<T, K extends keyof T> = Omit<T, K>;
 export class OpenViduRoomHelper {
-	private static toDTO<T, K extends keyof T>(room: T, propsToOmit: K[]): OmitProps<T, K> {
-		const DTO = { ...room };
-
-		for (const prop of propsToOmit) {
-			delete DTO[prop];
-		}
-
-		return DTO;
-	}
-
-	static convertToRoomDTO(room: OpenViduMeetRoom): OpenViduRoomDAO {
-		return OpenViduRoomHelper.toDTO(room, ['permissions']);
-	}
 
 	/**
 	 * Converts an OpenViduMeetRoom object to an OpenViduMeetRoomOptions object.

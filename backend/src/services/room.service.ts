@@ -4,7 +4,7 @@ import { CreateOptions, Room, SendDataOptions } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
 import { LiveKitService } from './livekit.service.js';
 import { GlobalPreferencesService } from './preferences/global-preferences.service.js';
-import { OpenViduRoomDAO, OpenViduMeetRoom, OpenViduMeetRoomOptions, ParticipantRole } from '@typings-ce';
+import { OpenViduMeetRoom, OpenViduMeetRoomOptions, ParticipantRole } from '@typings-ce';
 import { OpenViduRoomHelper } from '../helpers/room.helper.js';
 import { SystemEventService } from './system-event.service.js';
 import { TaskSchedulerService } from './task-scheduler.service.js';
@@ -143,20 +143,6 @@ export class RoomService {
 	}
 
 	/**
-	 * Converts an OpenVidu room or array of rooms to a DAO.
-	 *
-	 * @param roomOrRooms - The OpenVidu room or array of rooms to convert.
-	 * @returns The converted OpenVidu room DAO or array of room DAOs.
-	 */
-	convertToRoomDAO(roomOrRooms: OpenViduMeetRoom | OpenViduMeetRoom[]): OpenViduRoomDAO | OpenViduRoomDAO[] {
-		if (Array.isArray(roomOrRooms)) {
-			return roomOrRooms.map(OpenViduRoomHelper.convertToRoomDTO);
-		}
-
-		return OpenViduRoomHelper.convertToRoomDTO(roomOrRooms);
-	}
-
-	/**
 	 * Determines the role of a participant in a room based on the provided secret.
 	 *
 	 * @param room - The OpenVidu room object.
@@ -236,12 +222,7 @@ export class RoomService {
 			moderatorRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
 			publisherRoomUrl: `${baseUrl}/${roomName}?secret=${secureUid(10)}`,
 			viewerRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
-			preferences,
-			permissions: {
-				moderator: this.participantService.getParticipantPermissions(ParticipantRole.MODERATOR, roomName),
-				publisher: this.participantService.getParticipantPermissions(ParticipantRole.PUBLISHER, roomName),
-				viewer: this.participantService.getParticipantPermissions(ParticipantRole.VIEWER, roomName)
-			}
+			preferences
 		};
 		return openviduRoom;
 	}

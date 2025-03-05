@@ -15,8 +15,7 @@ export const createRoom = async (req: Request, res: Response) => {
 		const baseUrl = `${req.protocol}://${req.get('host')}`;
 
 		const room = await roomService.createRoom(baseUrl, options);
-		const filteredRoom = roomService.convertToRoomDAO(room);
-		return res.status(200).json(filteredRoom);
+		return res.status(200).json(room);
 	} catch (error) {
 		logger.error(`Error creating room with options '${JSON.stringify(options)}'`);
 		handleError(res, error);
@@ -31,8 +30,7 @@ export const getRooms = async (_req: Request, res: Response) => {
 
 		const roomService = container.get(RoomService);
 		const rooms = await roomService.listOpenViduRooms();
-		const filteredRooms = roomService.convertToRoomDAO(rooms);
-		return res.status(200).json(filteredRooms);
+		return res.status(200).json(rooms);
 	} catch (error) {
 		logger.error('Error getting rooms');
 		handleError(res, error);
@@ -49,8 +47,7 @@ export const getRoom = async (req: Request, res: Response) => {
 
 		const roomService = container.get(RoomService);
 		const room = await roomService.getOpenViduRoom(roomName);
-		const filteredRoom = roomService.convertToRoomDAO(room);
-		return res.status(200).json(filteredRoom);
+		return res.status(200).json(room);
 	} catch (error) {
 		logger.error(`Error getting room with id '${roomName}'`);
 		handleError(res, error);
