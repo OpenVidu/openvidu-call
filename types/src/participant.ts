@@ -12,7 +12,7 @@ export interface ParticipantPermissions {
 /**
  * Represents the role of a participant in a room.
  */
-export enum ParticipantRole {
+export const enum ParticipantRole {
 	MODERATOR = 'moderator',
 	PUBLISHER = 'publisher',
 	VIEWER = 'viewer',
