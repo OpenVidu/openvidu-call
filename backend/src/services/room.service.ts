@@ -34,9 +34,16 @@ export class RoomService {
 	 */
 	async initialize(): Promise<void> {
 		this.systemEventService.onRedisReady(async () => {
-			await this.deleteOpenViduExpiredRooms();
+			try {
+				await this.deleteOpenViduExpiredRooms();
+			} catch (error) {
+				this.logger.error('Error deleting OpenVidu expired rooms:', error);
+			}
+
 			await Promise.all([
-				this.restoreMissingLivekitRooms(),
+				this.restoreMissingLivekitRooms().catch((error) =>
+					this.logger.error('Error restoring missing rooms:', error)
+				),
 				this.taskSchedulerService.startRoomGarbageCollector(this.deleteExpiredRooms.bind(this))
 			]);
 		});
@@ -335,7 +342,7 @@ export class RoomService {
 
 		const creationResults = await Promise.allSettled(
 			missingRooms.map((ovRoom) => {
-				this.logger.verbose(`Restoring $room: ${ovRoom.roomName}`);
+				this.logger.verbose(`Restoring room: ${ovRoom.roomName}`);
 				this.createLivekitRoom(ovRoom);
 			})
 		);
