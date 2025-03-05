@@ -4,9 +4,6 @@ import { UnauthorizedComponent } from '../components';
 import {
 	checkAdminAuthenticatedGuard,
 	checkAdminNotAuthenticatedGuard,
-	embeddedModeGuard,
-	standaloneModeGuard,
-	ensureValidTokenOrRoomNameGuard,
 	validateRoomAccessGuard,
 	applicationModeGuard,
 	extractQueryParamsGuard
@@ -24,18 +21,8 @@ import {
 } from '../pages';
 
 export const baseRoutes: Routes = [
-	// Embedded mode
-	// {
-	// 	path: 'embedded',
-	// 	component: VideoRoomComponent,
-	// 	canActivate: [embeddedModeGuard, redirectUrlGuard]
-	// },
-	// { path: 'embedded/unauthorized', component: UnauthorizedComponent },
-	// {
-	// 	path: '',
-	// 	component: VideoRoomComponent,
-	// 	canActivate: [standaloneModeGuard, ensureValidTokenOrRoomNameGuard, redirectUrlGuard]
-	// },
+	// TODO: Create a DisconnectedComponent
+	// { path: 'disconnected', component: DisconnectedComponent },
 	{ path: 'unauthorized', component: UnauthorizedComponent },
 	{
 		path: 'console/login',
