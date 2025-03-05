@@ -1,4 +1,3 @@
-import { RoomPermissions } from './permissions/room-roles.js';
 import { RoomPreferences } from './room-preferences.js';
 
 interface BaseRoomOptions {
@@ -21,7 +20,4 @@ export interface OpenViduMeetRoom extends BaseRoomOptions {
 	moderatorRoomUrl: string;
 	publisherRoomUrl: string;
 	viewerRoomUrl: string;
-	permissions: RoomPermissions;
 }
-
-export type OpenViduRoomDAO = Omit<OpenViduMeetRoom, 'permissions'>;
