@@ -22,7 +22,7 @@ import {
 	errorRoomNotFound,
 	internalError
 } from '../models/error.model.js';
-import { ParticipantPermissions, TokenOptions } from '@typings-ce';
+import { ParticipantPermissions, ParticipantRole, TokenOptions } from '@typings-ce';
 
 @injectable()
 export class LiveKitService {
@@ -100,7 +100,11 @@ export class LiveKitService {
 		}
 	}
 
-	async generateToken(options: TokenOptions, permissions: ParticipantPermissions): Promise<string> {
+	async generateToken(
+		options: TokenOptions,
+		permissions: ParticipantPermissions,
+		role: ParticipantRole
+	): Promise<string> {
 		const { roomName, participantName } = options;
 
 		try {
@@ -121,6 +125,7 @@ export class LiveKitService {
 			ttl: '24h',
 			metadata: JSON.stringify({
 				livekitUrl: LIVEKIT_URL,
+				role,
 				permissions: permissions.openvidu
 			})
 		});

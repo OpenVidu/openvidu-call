@@ -1,15 +1,14 @@
-import { uid } from 'uid/single';
 import { uid as secureUid } from 'uid/secure';
 import { inject, injectable } from '../config/dependency-injector.config.js';
 import { CreateOptions, Room, SendDataOptions } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { MEET_NAME_ID } from '../environment.js';
 import { LiveKitService } from './livekit.service.js';
 import { GlobalPreferencesService } from './preferences/global-preferences.service.js';
-import { ParticipantPermissions, OpenViduRoomDAO, OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@typings-ce';
+import { OpenViduRoomDAO, OpenViduMeetRoom, OpenViduMeetRoomOptions, ParticipantRole } from '@typings-ce';
 import { OpenViduRoomHelper } from '../helpers/room.helper.js';
 import { SystemEventService } from './system-event.service.js';
 import { TaskSchedulerService } from './task-scheduler.service.js';
+import { ParticipantService } from './participant.service.js';
 
 /**
  * Service for managing OpenVidu Meet rooms.
@@ -23,6 +22,7 @@ export class RoomService {
 		@inject(LoggerService) protected logger: LoggerService,
 		@inject(GlobalPreferencesService) protected globalPrefService: GlobalPreferencesService,
 		@inject(LiveKitService) protected livekitService: LiveKitService,
+		@inject(ParticipantService) protected participantService: ParticipantService,
 		@inject(SystemEventService) protected systemEventService: SystemEventService,
 		@inject(TaskSchedulerService) protected taskSchedulerService: TaskSchedulerService
 	) {}
@@ -161,20 +161,22 @@ export class RoomService {
 	 *
 	 * @param room - The OpenVidu room object.
 	 * @param secret - The secret used to identify the participant's role.
-	 * @returns The role of the participant ('moderator', 'publisher', or 'viewer').
+	 * @returns The role of the participant {@link ParticipantRole}.
 	 * @throws Will throw an error if the secret is invalid.
 	 */
-	getParticipantRole(room: OpenViduMeetRoom, secret: string): 'moderator' | 'publisher' | 'viewer' {
+	async getRoomSecretRole(roomName: string, secret: string): Promise<ParticipantRole> {
+		const room = await this.getOpenViduRoom(roomName);
+
 		if (room.moderatorRoomUrl.includes(secret)) {
-			return 'moderator';
+			return ParticipantRole.MODERATOR;
 		}
 
 		if (room.publisherRoomUrl.includes(secret)) {
-			return 'publisher';
+			return ParticipantRole.PUBLISHER;
 		}
 
 		if (room.viewerRoomUrl.includes(secret)) {
-			return 'viewer';
+			return ParticipantRole.VIEWER;
 		}
 
 		throw new Error('Invalid secret');
@@ -236,94 +238,12 @@ export class RoomService {
 			viewerRoomUrl: `${baseUrl}/${roomName}/?secret=${secureUid(10)}`,
 			preferences,
 			permissions: {
-				moderator: this.generateModeratorPermissions(roomName),
-				publisher: this.generatePublisherPermissions(roomName),
-				viewer: this.generateViewerPermissions(roomName)
+				moderator: this.participantService.getParticipantPermissions(ParticipantRole.MODERATOR, roomName),
+				publisher: this.participantService.getParticipantPermissions(ParticipantRole.PUBLISHER, roomName),
+				viewer: this.participantService.getParticipantPermissions(ParticipantRole.VIEWER, roomName)
 			}
 		};
 		return openviduRoom;
-	}
-
-	protected generateModeratorPermissions(roomName: string): ParticipantPermissions {
-		return {
-			livekit: {
-				roomCreate: true,
-				roomJoin: true,
-				roomList: true,
-				roomRecord: true,
-				roomAdmin: true,
-				room: roomName,
-				ingressAdmin: true,
-				canPublish: true,
-				canSubscribe: true,
-				canPublishData: true,
-				canUpdateOwnMetadata: true,
-				hidden: false,
-				recorder: true,
-				agent: false
-			},
-			openvidu: {
-				canBroadcast: true,
-				canPublishScreen: true,
-				canRecord: true,
-				canChat: true,
-				canChangeVirtualBackground: true
-			}
-		};
-	}
-
-	protected generatePublisherPermissions(roomName: string): ParticipantPermissions {
-		return {
-			livekit: {
-				roomJoin: true,
-				roomList: true,
-				roomRecord: false,
-				roomAdmin: false,
-				room: roomName,
-				ingressAdmin: false,
-				canPublish: true,
-				canSubscribe: true,
-				canPublishData: true,
-				canUpdateOwnMetadata: true,
-				hidden: false,
-				recorder: false,
-				agent: false
-			},
-			openvidu: {
-				canBroadcast: false,
-				canPublishScreen: true,
-				canRecord: false,
-				canChat: true,
-				canChangeVirtualBackground: true
-			}
-		};
-	}
-
-	protected generateViewerPermissions(roomName: string): ParticipantPermissions {
-		return {
-			livekit: {
-				roomJoin: true,
-				roomList: false,
-				roomRecord: false,
-				roomAdmin: false,
-				room: roomName,
-				ingressAdmin: false,
-				canPublish: false,
-				canSubscribe: true,
-				canPublishData: false,
-				canUpdateOwnMetadata: false,
-				hidden: false,
-				recorder: false,
-				agent: false
-			},
-			openvidu: {
-				canBroadcast: false,
-				canPublishScreen: false,
-				canRecord: false,
-				canChat: false,
-				canChangeVirtualBackground: false
-			}
-		};
 	}
 
 	/**

@@ -2,9 +2,9 @@ import { container } from '../config/dependency-injector.config.js';
 import { Request, Response } from 'express';
 import { LoggerService } from '../services/logger.service.js';
 import { TokenOptions } from '@typings-ce';
-import { LiveKitService } from '../services/livekit.service.js';
-import { RoomService } from '../services/room.service.js';
 import { OpenViduMeetError } from '../models/index.js';
+import { ParticipantService } from '../services/participant.service.js';
+import { RoomService } from '../services/room.service.js';
 
 export const generateParticipantToken = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
@@ -12,17 +12,13 @@ export const generateParticipantToken = async (req: Request, res: Response) => {
 	const { roomName, secret } = tokenOptions;
 
 	try {
-		const livekitService = container.get(LiveKitService);
 		const roomService = container.get(RoomService);
+		const participantService = container.get(ParticipantService);
 
 		logger.verbose(`Generating participant token for room ${roomName}`);
-		const room = await roomService.getOpenViduRoom(roomName);
 
-		const participantRole = roomService.getParticipantRole(room, secret);
-
-		const permissions = room.permissions[participantRole];
-
-		const token = await livekitService.generateToken(tokenOptions, permissions);
+		const secretRole = await roomService.getRoomSecretRole(roomName, secret);
+		const token = await participantService.generateParticipantToken(secretRole, tokenOptions);
 
 		// TODO: Set the participant token in a cookie
 		// res.cookie('ovParticipantToken', token, { httpOnly: true, expires: tokenTtl });

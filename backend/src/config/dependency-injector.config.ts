@@ -8,16 +8,17 @@ import {
 	LiveKitService,
 	LivekitWebhookService,
 	LoggerService,
+	MutexService,
 	OpenViduWebhookService,
+	ParticipantService,
 	RecordingService,
 	RedisService,
 	RoomService,
 	S3PreferenceStorage,
-	S3Service
+	S3Service,
+	SystemEventService,
+	TaskSchedulerService
 } from '../services/index.js';
-import { SystemEventService } from '../services/system-event.service.js';
-import { MutexService } from '../services/mutex.service.js';
-import { TaskSchedulerService } from '../services/task-scheduler.service.js';
 
 const container: Container = new Container();
 
@@ -45,6 +46,7 @@ const registerDependencies = () => {
 	container.bind(RecordingService).toSelf().inSingletonScope();
 	container.bind(LivekitWebhookService).toSelf().inSingletonScope();
 	container.bind(GlobalPreferencesService).toSelf().inSingletonScope();
+	container.bind(ParticipantService).toSelf().inSingletonScope();
 
 	container.bind(S3PreferenceStorage).toSelf().inSingletonScope();
 	container.bind(GlobalPreferencesStorageFactory).toSelf().inSingletonScope();
