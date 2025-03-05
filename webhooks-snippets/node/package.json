@@ -1,0 +1,11 @@
+{
+    "name": "openvidu-meet-webhooks-node",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "express": "5.0.1"
+    }
+}
