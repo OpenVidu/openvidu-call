@@ -37,7 +37,7 @@ const RoomRequestOptionsSchema: z.ZodType<OpenViduMeetRoomOptions> = z.object({
 		.number()
 		.positive('Expiration date must be a positive integer')
 		.min(Date.now(), 'Expiration date must be in the future'),
-	roomNamePrefix: z.string().optional().default(''),
+	roomNamePrefix: z.string().transform((val) => val.replace(/\s+/g, '-')).optional().default(''),
 	preferences: RoomPreferencesSchema.optional().default({
 		recordingPreferences: { enabled: true },
 		broadcastingPreferences: { enabled: true },
