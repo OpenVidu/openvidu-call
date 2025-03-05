@@ -32,18 +32,13 @@ export const withAdminValidToken = async (req: Request, res: Response, next: Nex
 };
 
 export const withValidApiKey = async (req: Request, res: Response, next: NextFunction) => {
-	const auth = req.headers.authorization;
-	console.log('auth', auth);
+	const apiKey = req.headers['x-api-key'];
 
-	if (!auth) {
+	if (!apiKey) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 
-	const [authType, apiKey] = auth.split(' ');
-	console.log('authType', authType);
-	console.log('apiKey', apiKey);
-
-	if (authType !== 'Bearer' || !apiKey || apiKey !== MEET_API_KEY) {
+	if (apiKey !== MEET_API_KEY) {
 		return res.status(401).json({ message: 'Invalid API key' });
 	}
 
