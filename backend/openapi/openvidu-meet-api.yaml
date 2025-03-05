@@ -413,7 +413,50 @@ paths:
                                 $ref: '#/components/schemas/Error'
                             example:
                                 message: 'Internal server error'
-
+    /participants/{participantName}:
+      delete:
+        operationId: disconnectParticipant
+        summary: Delete a participant from a room
+        description: >
+            Deletes a participant from an OpenVidu Meet room.
+        tags:
+            - Participant
+        security:
+            - apiKeyInHeader: []
+        parameters:
+            - name: participantName
+              in: path
+              required: true
+              description: The name of the participant to delete
+              schema:
+                  type: string
+            - name: roomName
+              in: query
+              required: true
+              description: The name of the room from which to delete the participant
+              schema:
+                  type: string
+        responses:
+            '204':
+                description: Successfully disconnect the participant
+            '404':
+                description: Participant not found
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Error'
+                        example:
+                            code: 404
+                            message: 'Participant not found'
+            '500':
+                description: Internal server error
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Error'
+                        example:
+                            code: 500
+                            message: 'Internal server error'
 components:
     securitySchemes:
         apiKeyInHeader:
