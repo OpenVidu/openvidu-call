@@ -13,6 +13,7 @@ export const {
 	SERVER_PORT = 6080,
 	SERVER_CORS_ORIGIN = '*',
 	MEET_NAME_ID = 'openviduMeet',
+	MEET_API_KEY = 'meet-api-key',
 	MEET_PRIVATE_ACCESS = 'false',
 	MEET_USER = 'user',
 	MEET_SECRET = 'user',
@@ -57,11 +58,10 @@ export const {
 	ENABLED_MODULES = ''
 } = process.env;
 
-export const MEET_API_KEY = process.env.MEET_API_KEY || 'meet-api-key';
 export const MEET_API_BASE_PATH = '/meet/api';
 export const MEET_API_BASE_PATH_V1 = MEET_API_BASE_PATH + '/v1';
-export const ACCESS_TOKEN_COOKIE_NAME = "OvMeetAccessToken";
-export const REFRESH_TOKEN_COOKIE_NAME = "OvMeetRefreshToken";
+export const ACCESS_TOKEN_COOKIE_NAME = 'OvMeetAccessToken';
+export const REFRESH_TOKEN_COOKIE_NAME = 'OvMeetRefreshToken';
 
 export function checkModuleEnabled() {
 	if (MODULES_FILE) {
