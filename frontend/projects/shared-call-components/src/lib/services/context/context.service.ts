@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { ApplicationMode, ContextData, Edition } from '../../models/context.model';
 import { LoggerService } from 'openvidu-components-angular';
+import { ParticipantRole } from 'shared-call-components';
 
 @Injectable({
 	providedIn: 'root'
@@ -14,6 +15,7 @@ export class ContextService {
 		roomName: '',
 		participantName: '',
 		token: '',
+		participantRole: ParticipantRole.VIEWER,
 		participantPermissions: {
 			canRecord: false,
 			canBroadcast: false,
@@ -74,6 +76,7 @@ export class ContextService {
 			const decodedToken = this.getValidDecodedToken(token);
 			this.context.token = token;
 			this.context.participantPermissions = decodedToken.metadata.permissions;
+			this.context.participantRole = decodedToken.metadata.role;
 		} catch (error: any) {
 			this.log.e('Error setting token in context', error);
 			throw new Error('Error setting token', error);
@@ -102,6 +105,14 @@ export class ContextService {
 
 	getParticipantName(): string {
 		return this.context.participantName;
+	}
+
+	getParticipantRole(): ParticipantRole {
+		return this.context.participantRole;
+	}
+
+	isParticipantViewer(): boolean {
+		return this.context.participantRole === ParticipantRole.VIEWER;
 	}
 
 	setParticipantName(participantName: string): void {

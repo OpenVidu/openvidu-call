@@ -46,6 +46,8 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	virtualBackgroundPreferences: VirtualBackgroundPreferences = { enabled: true };
 
 	featureFlags = {
+		videoEnabled: true,
+		audioEnabled: true,
 		showActivityPanel: true,
 		showPrejoin: true,
 		showChat: true,
@@ -77,6 +79,13 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			// TODO: Extract permissions from token and apply them to the component
 			this.applyParticipantPermissions();
+			if (this.ctxService.isParticipantViewer()) {
+				this.featureFlags.videoEnabled = false;
+				this.featureFlags.audioEnabled = false;
+				// TODO: Add this directives to openvidu-components-angular
+				// this.featureFlags.showMicrophone = false;
+				// this.featureFlags.showCamera = false;
+			}
 		} catch (error: any) {
 			console.error('Error fetching room preferences', error);
 			this.serverError = error.error.message || error.message || error.error;
@@ -235,15 +244,14 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	 * Configures the feature flags based on the token permissions.
 	 *
 	 * This method checks the token permissions and sets the feature flags accordingly.
-	 * @private
 	 */
 	private applyParticipantPermissions() {
-		// if (this.featureFlags.showChat) {
-		// 	this.featureFlags.showChat = this.ctxService.canChat();
-		// }
-		// if (this.featureFlags.showRecording) {
-		// 	this.featureFlags.showRecording = this.ctxService.canRecord();
-		// }
+		if (this.featureFlags.showChat) {
+			this.featureFlags.showChat = this.ctxService.canChat();
+		}
+		if (this.featureFlags.showRecording) {
+			this.featureFlags.showRecording = this.ctxService.canRecord();
+		}
 	}
 
 	private redirectTo(url: string, isExternal: boolean) {

@@ -1,9 +1,10 @@
-import { OpenViduMeetPermissions } from 'shared-call-components';
+import { OpenViduMeetPermissions, ParticipantRole } from 'shared-call-components';
 
 export interface ContextData {
 	roomName: string;
 	participantName: string;
 	token: string;
+	participantRole: ParticipantRole;
 	participantPermissions: OpenViduMeetPermissions;
 	mode: ApplicationMode;
 	edition: Edition;
@@ -13,7 +14,7 @@ export interface ContextData {
 
 export enum ApplicationMode {
 	EMBEDDED = 'embedded',
-	STANDALONE = 'standalone',
+	STANDALONE = 'standalone'
 }
 
 export enum Edition {
