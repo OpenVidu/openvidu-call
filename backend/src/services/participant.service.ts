@@ -16,6 +16,12 @@ export class ParticipantService {
 		return this.livekitService.generateToken(options, permissions, role);
 	}
 
+	async deleteParticipant(participantName: string, roomName: string): Promise<void> {
+		this.logger.verbose(`Deleting participant ${participantName} from room ${roomName}`);
+
+		return this.livekitService.deleteParticipant(participantName, roomName);
+	}
+
 	getParticipantPermissions(role: ParticipantRole, roomName: string): ParticipantPermissions {
 		switch (role) {
 			case ParticipantRole.MODERATOR:

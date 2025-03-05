@@ -19,6 +19,7 @@ import { LoggerService } from './logger.service.js';
 import {
 	errorLivekitIsNotAvailable,
 	errorParticipantAlreadyExists,
+	errorParticipantNotFound,
 	errorRoomNotFound,
 	internalError
 } from '../models/error.model.js';
@@ -84,6 +85,16 @@ export class LiveKitService {
 			this.logger.error(`Error deleting LiveKit room ${error}`);
 			throw internalError(`Error deleting room: ${error}`);
 		}
+	}
+
+	async deleteParticipant(participantName: string, roomName: string): Promise<void> {
+		const participantExists = await this.participantAlreadyExists(roomName, participantName);
+
+		if (!participantExists) {
+			throw errorParticipantNotFound(participantName, roomName);
+		}
+
+		await this.roomClient.removeParticipant(roomName, participantName);
 	}
 
 	async sendData(roomName: string, rawData: Record<string, any>, options: SendDataOptions): Promise<void> {

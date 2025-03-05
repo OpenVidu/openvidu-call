@@ -21,7 +21,7 @@ import {
 	roomRouter
 } from './routes/index.js';
 import { GlobalPreferencesService, RoomService } from './services/index.js';
-import { participantsRouter } from './routes/participants.routes.js';
+import { participantsInternalRouter, participantsRouter } from './routes/participants.routes.js';
 import cookieParser from 'cookie-parser';
 
 const createApp = () => {
@@ -47,12 +47,13 @@ const createApp = () => {
 	app.use(`${MEET_API_BASE_PATH_V1}/recordings`, /*mediaTypeValidatorMiddleware,*/ recordingRouter);
 	app.use(`${MEET_API_BASE_PATH_V1}/broadcasts`, /*mediaTypeValidatorMiddleware,*/ broadcastingRouter);
 	app.use(`${MEET_API_BASE_PATH_V1}/auth`, /*mediaTypeValidatorMiddleware,*/ authRouter);
+	app.use(`${MEET_API_BASE_PATH_V1}/participants`, participantsRouter);
 
 	// TODO: This route should be part of the rooms router
 	app.use(`${MEET_API_BASE_PATH_V1}/preferences`, /*mediaTypeValidatorMiddleware,*/ preferencesRouter);
 
 	// Internal routes
-	app.use(`${MEET_API_BASE_PATH}/participants`, participantsRouter);
+	app.use(`${MEET_API_BASE_PATH}/participants`, participantsInternalRouter);
 	app.use('/meet/health', (_req: Request, res: Response) => res.status(200).send('OK'));
 
 	app.use('/livekit/webhook', livekitRouter);

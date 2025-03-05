@@ -31,6 +31,21 @@ export const generateParticipantToken = async (req: Request, res: Response) => {
 	}
 };
 
+export const deleteParticipant = async (req: Request, res: Response) => {
+	const logger = container.get(LoggerService);
+	const participantService = container.get(ParticipantService);
+	const { participantName } = req.params;
+	const roomName: string = req.query.roomName as string;
+
+	try {
+		await participantService.deleteParticipant(participantName, roomName);
+		res.status(200).json({ message: 'Participant deleted' });
+	} catch (error) {
+		logger.error(`Error deleting participant from room: ${roomName}`);
+		return handleError(res, error);
+	}
+};
+
 const handleError = (res: Response, error: OpenViduMeetError | unknown) => {
 	const logger = container.get(LoggerService);
 	logger.error(String(error));

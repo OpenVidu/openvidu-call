@@ -73,6 +73,16 @@ export const errorRoomNotFound = (roomName: string): OpenViduMeetError => {
 	return new OpenViduMeetError('Room Error', `The room '${roomName}' does not exist`, 404);
 };
 
+// Participant errors
+
+export const errorParticipantNotFound = (participantName: string, roomName: string): OpenViduMeetError => {
+	return new OpenViduMeetError(
+		'Participant Error',
+		`'${participantName}' not found in room '${roomName}'`,
+		404
+	);
+};
+
 export const errorParticipantAlreadyExists = (participantName: string, roomName: string): OpenViduMeetError => {
 	return new OpenViduMeetError(
 		'Room Error',
