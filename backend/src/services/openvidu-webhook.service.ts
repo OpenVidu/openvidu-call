@@ -1,35 +1,55 @@
+import crypto from 'crypto';
 import { inject, injectable } from '../config/dependency-injector.config.js';
 import { Room } from 'livekit-server-sdk';
 import { LoggerService } from './logger.service.js';
-import { MEET_WEBHOOK_ENABLED, MEET_WEBHOOK_URL } from '../environment.js';
+import { MEET_API_KEY, MEET_WEBHOOK_ENABLED, MEET_WEBHOOK_URL } from '../environment.js';
 import { OpenViduWebhookEvent } from '../models/webhook.model.js';
 
 @injectable()
 export class OpenViduWebhookService {
 	constructor(@inject(LoggerService) protected logger: LoggerService) {}
 
-	async sendRoomFinishedWebhook(room: Room): Promise<void> {
+	async sendRoomFinishedWebhook(room: Room) {
+		await this.sendWebhookEvent(OpenViduWebhookEvent.ROOM_FINISHED, {
+			room: {
+				name: room.name
+			}
+		});
+	}
+
+	private async sendWebhookEvent(eventType: OpenViduWebhookEvent, data: object) {
 		if (!this.isWebhookEnabled()) return;
 
-		this.logger.verbose(`Sending room finished webhook for room ${room.name}`);
+		const payload = {
+			event: eventType,
+			...data
+		};
+		const timestamp = Date.now();
+		const signature = this.generateWebhookSignature(timestamp, payload);
+
+		this.logger.verbose(`Sending webhook event ${eventType}`);
 
 		try {
 			await this.fetchWithRetry(MEET_WEBHOOK_URL, {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'X-Timestamp': timestamp.toString(),
+					'X-Signature': signature
 				},
-				body: JSON.stringify({
-					event: OpenViduWebhookEvent.ROOM_FINISHED,
-					room: {
-						name: room.name
-					}
-				})
+				body: JSON.stringify(payload)
 			});
 		} catch (error) {
-			this.logger.error(`Error sending room finished webhook: ${error}`);
+			this.logger.error(`Error sending webhook event ${eventType}: ${error}`);
 			throw error;
 		}
+	}
+
+	private generateWebhookSignature(timestamp: number, payload: object): string {
+		return crypto
+			.createHmac('sha256', MEET_API_KEY)
+			.update(`${timestamp}.${JSON.stringify(payload)}`)
+			.digest('hex');
 	}
 
 	private async fetchWithRetry(url: string, options: RequestInit, retries = 5, delay = 300): Promise<void> {

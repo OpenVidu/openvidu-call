@@ -23,7 +23,7 @@ export const {
 	MEET_REFRESH_TOKEN_EXPIRATION = '1d',
 	MEET_PREFERENCES_STORAGE_MODE = 's3',
 	MEET_WEBHOOK_ENABLED = 'false',
-	MEET_WEBHOOK_URL = 'http://localhost:8080/',
+	MEET_WEBHOOK_URL = 'http://localhost:5080/webhook',
 	MEET_LOG_LEVEL = 'verbose',
 
 	// LiveKit configuration
