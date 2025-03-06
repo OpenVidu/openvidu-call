@@ -8,7 +8,7 @@ export interface ContextData {
 	participantPermissions: OpenViduMeetPermissions;
 	mode: ApplicationMode;
 	edition: Edition;
-	redirectUrl: string;
+	leaveRedirectUrl: string;
 	parentDomain: string;
 }
 

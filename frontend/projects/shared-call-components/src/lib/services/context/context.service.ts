@@ -25,7 +25,7 @@ export class ContextService {
 		},
 		mode: ApplicationMode.STANDALONE,
 		edition: Edition.CE,
-		redirectUrl: '',
+		leaveRedirectUrl: '',
 		parentDomain: ''
 	};
 
@@ -87,12 +87,12 @@ export class ContextService {
 		return this.context.token;
 	}
 
-	setRedirectUrl(redirectUrl: string): void {
-		this.context.redirectUrl = redirectUrl;
+	setLeaveRedirectUrl(leaveRedirectUrl: string): void {
+		this.context.leaveRedirectUrl = leaveRedirectUrl;
 	}
 
-	getRedirectURL(): string {
-		return this.context.redirectUrl;
+	getLeaveRedirectURL(): string {
+		return this.context.leaveRedirectUrl;
 	}
 
 	getRoomName(): string {

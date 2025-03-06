@@ -161,7 +161,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 	onParticipantLeft(event: ParticipantLeftEvent) {
 		console.warn('Participant left the room. Redirecting to:');
-		const redirectURL = this.ctxService.getRedirectURL() || '/disconnected';
+		const redirectURL = this.ctxService.getLeaveRedirectURL() || '/disconnected';
 		const isExternalURL = /^https?:\/\//.test(redirectURL);
 
 		//if (this.contextService.isEmbeddedMode()) this.sendMessageToParent(event);
