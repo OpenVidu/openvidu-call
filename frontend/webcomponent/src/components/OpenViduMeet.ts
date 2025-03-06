@@ -26,7 +26,6 @@ export class OpenViduMeet extends HTMLElement {
 	private iframe: HTMLIFrameElement;
 	private commandsManager: CommandsManager;
 	private eventsManager: EventsManager;
-
 	private allowedOrigin: string = '*';
 
 	constructor() {
@@ -55,6 +54,11 @@ export class OpenViduMeet extends HTMLElement {
 	private render() {
 		const style = document.createElement('style');
 		style.textContent = `
+		:host {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
 		  iframe {
 			width: 100%;
 			height: 100%;
@@ -74,7 +78,7 @@ export class OpenViduMeet extends HTMLElement {
 	}
 
 	private updateIframeSrc() {
-		const baseUrl = this.getAttribute('room-url') ||'';
+		const baseUrl = this.getAttribute('room-url') || '';
 		if (!baseUrl) {
 			console.error('The "room-url" attribute is required.');
 			return;
