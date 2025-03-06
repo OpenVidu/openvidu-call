@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"start:dev": "npx ng serve --configuration development --port=5080 --host=0.0.0.0",
-		"build:dev": "npx ng build --configuration development --watch --output-path ../backend/public/",
+		"build:dev": "npx ng build --configuration development --watch --output-path ../backend/public/browser",
 		"build:prod": "func() { ./node_modules/@angular/cli/bin/ng.js build --configuration production --base-href=\"${1:-/}\"; }; func",
 		"sync:backend": "npx ng build --configuration production --output-path ../backend/dist/public/",
 		"e2e:run-all": "npx mocha --recursive --timeout 30000 ./tests/e2e/**/*.test.ts",

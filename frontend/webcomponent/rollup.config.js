@@ -21,8 +21,12 @@ export default {
     {
       name: 'copy-bundle',
       writeBundle () {
-        fs.copyFileSync('./dist/openvidu-meet.bundle.min.js', './tests/app/openvidu-meet.bundle.min.js')
-        console.log('✅ Bundle copied to tests/app/openvidu-meet.bundle.min.js')
+        const dir = '../../backend/public/webcomponent'
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true })
+        }
+        fs.copyFileSync('./dist/openvidu-meet.bundle.min.js', `${dir}/openvidu-meet.bundle.min.js`)
+        console.log(`✅ Bundle copied to ${dir}/openvidu-meet.bundle.min.js`)
       }
     }
   ]
