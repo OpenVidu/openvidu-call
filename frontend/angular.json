@@ -34,7 +34,11 @@
 							"outputHashing": "all",
 							"sourceMap": true,
 							"extractLicenses": false,
-							"deleteOutputPath": true,
+							"outputPath": {
+								"base": "../backend/public",
+								"browser": ""
+							},
+							"deleteOutputPath": false,
 							"clearScreen": true
 						},
 						"production": {
