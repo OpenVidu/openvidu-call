@@ -99,6 +99,12 @@ export class OpenViduMeet extends HTMLElement {
 	}
 
 	// Public methods
+
+	public endMeeting() {
+		const message: ParentMessage = { action: WebComponentActionType.END_MEETING };
+		this.commandsManager.sendMessage(message);
+	}
+
 	public leaveRoom() {
 		const message: ParentMessage = { action: WebComponentActionType.LEAVE_ROOM };
 		this.commandsManager.sendMessage(message);

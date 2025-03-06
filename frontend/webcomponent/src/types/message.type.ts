@@ -18,6 +18,7 @@ export interface OpenViduMeetMessage {
 
 export enum WebComponentActionType {
 	INITIALIZE = 'initialize',
+	END_MEETING = 'endMeeting',
 	LEAVE_ROOM = 'leaveRoom',
 	TOGGLE_CHAT = 'toggleChat'
 }
