@@ -11,7 +11,7 @@ import {
 	MEET_API_BASE_PATH_V1,
 	MEET_API_BASE_PATH
 } from './environment.js';
-import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath } from './utils/path-utils.js';
+import { getOpenApiSpecPath, indexHtmlPath, publicFilesPath, webcomponentBundlePath } from './utils/path-utils.js';
 import {
 	authRouter,
 	broadcastingRouter,
@@ -38,6 +38,7 @@ const createApp = () => {
 		);
 	}
 
+	// Serve static files
 	app.use(express.static(publicFilesPath));
 	app.use(express.json());
 	app.use(cookieParser());
@@ -58,7 +59,11 @@ const createApp = () => {
 
 	app.use('/livekit/webhook', livekitRouter);
 	app.use('/meet/livekit/webhook', livekitRouter);
+	// Serve OpenVidu Meet webcomponent bundle file
+	app.get('/meet/v1/openvidu-meet.js', (_req: Request, res: Response) => res.sendFile(webcomponentBundlePath));
+	// Serve OpenVidu Meet index.html file for all non-API routes
 	app.get(/^(?!\/api).*$/, (_req: Request, res: Response) => res.sendFile(indexHtmlPath));
+	// Catch all other routes and return 404
 	app.use((_req: Request, res: Response) => res.status(404).json({ error: 'Not found' }));
 
 	return app;
