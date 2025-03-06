@@ -1,0 +1,29 @@
+.disconnected-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: var(--ov-background-color);
+}
+
+.disconnected-card {
+	width: 400px;
+	padding: 20px;
+	text-align: center;
+	background-color: var(--ov-surface-color);
+	border-radius: var(--ov-surface-radius);
+}
+
+mat-card-title {
+	font-size: 1.5em;
+	margin-bottom: 10px;
+}
+
+mat-card-content p {
+	font-size: 1em;
+	color: #555;
+}
+
+mat-card-actions {
+	margin-top: 20px;
+}

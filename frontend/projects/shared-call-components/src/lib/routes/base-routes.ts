@@ -14,6 +14,7 @@ import {
 	AppearanceComponent,
 	ConsoleComponent,
 	ConsoleLoginComponent,
+	DisconnectedComponent,
 	OverviewComponent,
 	RoomPreferencesComponent,
 	SecurityPreferencesComponent,
@@ -22,7 +23,7 @@ import {
 
 export const baseRoutes: Routes = [
 	// TODO: Create a DisconnectedComponent
-	// { path: 'disconnected', component: DisconnectedComponent },
+	{ path: 'disconnected', component: DisconnectedComponent },
 	{ path: 'unauthorized', component: UnauthorizedComponent },
 	{
 		path: 'console/login',
