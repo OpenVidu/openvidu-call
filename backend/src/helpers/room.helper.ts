@@ -2,9 +2,9 @@ import { OpenViduMeetRoom, OpenViduMeetRoomOptions } from '@typings-ce';
 import { CreateOptions } from 'livekit-server-sdk';
 import { MEET_NAME_ID } from '../environment.js';
 import { uid } from 'uid/single';
+import ms from 'ms';
 
 export class OpenViduRoomHelper {
-
 	/**
 	 * Converts an OpenViduMeetRoom object to an OpenViduMeetRoomOptions object.
 	 *
@@ -41,7 +41,7 @@ export class OpenViduRoomHelper {
 			}),
 			emptyTimeout: timeUntilExpiration,
 			maxParticipants: maxParticipants || undefined,
-			departureTimeout: 31_536_000 // 1 year
+			departureTimeout: ms('1y')
 		};
 	}
 
