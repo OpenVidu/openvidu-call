@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import basicAuth from 'express-basic-auth';
-
-import { AuthService } from '../services/auth.service.js';
+import { TokenService } from '../services/token.service.js';
 import {
 	ACCESS_TOKEN_COOKIE_NAME,
 	MEET_ADMIN_SECRET,
@@ -21,10 +20,15 @@ export const withAdminValidToken = async (req: Request, res: Response, next: Nex
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 
-	const authService = container.get(AuthService);
-	const isTokenValid = authService.validateToken(token, MEET_ADMIN_USER);
+	const tokenService = container.get(TokenService);
 
-	if (!isTokenValid) {
+	try {
+		const payload = await tokenService.verifyToken(token);
+
+		if (payload.sub !== MEET_ADMIN_USER) {
+			return res.status(403).json({ message: 'Invalid token subject' });
+		}
+	} catch (error) {
 		return res.status(401).json({ message: 'Invalid token' });
 	}
 

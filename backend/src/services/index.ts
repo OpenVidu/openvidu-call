@@ -15,4 +15,5 @@ export * from './preferences/index.js';
 export * from './redis.service.js';
 export * from './s3.service.js';
 export * from './preferences/s3-preferences-storage.js';
+export * from './token.service.js';
 

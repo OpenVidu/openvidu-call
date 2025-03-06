@@ -17,7 +17,8 @@ import {
 	S3PreferenceStorage,
 	S3Service,
 	SystemEventService,
-	TaskSchedulerService
+	TaskSchedulerService,
+	TokenService
 } from '../services/index.js';
 
 const container: Container = new Container();
@@ -37,6 +38,7 @@ const registerDependencies = () => {
 	container.bind(TaskSchedulerService).toSelf().inSingletonScope();
 	container.bind(LoggerService).toSelf().inSingletonScope();
 	container.bind(AuthService).toSelf().inSingletonScope();
+	container.bind(TokenService).toSelf().inSingletonScope();
 	container.bind(BroadcastingService).toSelf().inSingletonScope();
 	container.bind(LiveKitService).toSelf().inSingletonScope();
 	container.bind(RoomService).toSelf().inSingletonScope();

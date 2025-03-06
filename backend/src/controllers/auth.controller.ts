@@ -1,6 +1,7 @@
 import { container } from '../config/dependency-injector.config.js';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service.js';
+import { TokenService } from '../services/token.service.js';
 import { LoggerService } from '../services/logger.service.js';
 import {
 	ACCESS_TOKEN_COOKIE_NAME,
@@ -8,6 +9,7 @@ import {
 	MEET_API_BASE_PATH_V1,
 	REFRESH_TOKEN_COOKIE_NAME
 } from '../environment.js';
+import { ClaimGrants } from 'livekit-server-sdk';
 
 export const login = (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
@@ -48,10 +50,11 @@ export const adminLogin = async (req: Request, res: Response) => {
 	}
 
 	try {
-		const accessToken = authService.generateAccessToken(username);
-		const refreshToken = authService.generateRefreshToken(username);
-		res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, authService.getAccessTokenCookieOptions());
-		res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, authService.getRefreshTokenCookieOptions());
+		const tokenService = container.get(TokenService);
+		const accessToken = await tokenService.generateAccessToken(username);
+		const refreshToken = await tokenService.generateRefreshToken(username);
+		res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, tokenService.getAccessTokenCookieOptions());
+		res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, tokenService.getRefreshTokenCookieOptions());
 		logger.info(`Admin login succeeded for username: ${username}`);
 		return res.status(200).json({ message: 'Admin login succeeded' });
 	} catch (error) {
@@ -78,16 +81,28 @@ export const adminRefresh = async (req: Request, res: Response) => {
 		return res.status(400).json({ message: 'No refresh token provided' });
 	}
 
-	const authService = container.get(AuthService);
-	const isTokenValid = authService.validateToken(refreshToken, MEET_ADMIN_USER);
+	const tokenService = container.get(TokenService);
+	let payload: ClaimGrants;
 
-	if (!isTokenValid) {
-		logger.error('Error validating refresh token');
-		return res.status(403).json({ message: 'Invalid refresh token' });
+	try {
+		payload = await tokenService.verifyToken(refreshToken);
+	} catch (error) {
+		logger.error('Error verifying refresh token' + error);
+		return res.status(400).json({ message: 'Invalid refresh token' });
 	}
 
-	const accessToken = authService.generateAccessToken(MEET_ADMIN_USER);
-	res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, authService.getAccessTokenCookieOptions());
-	logger.info(`Admin refresh succeeded for username: ${MEET_ADMIN_USER}`);
-	return res.status(200).json({ message: 'Admin refresh succeeded' });
+	if (payload.sub !== MEET_ADMIN_USER) {
+		logger.warn('Invalid refresh token subject');
+		return res.status(403).json({ message: 'Invalid refresh token subject' });
+	}
+
+	try {
+		const accessToken = await tokenService.generateAccessToken(MEET_ADMIN_USER);
+		res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, tokenService.getAccessTokenCookieOptions());
+		logger.info(`Admin refresh succeeded for username: ${MEET_ADMIN_USER}`);
+		return res.status(200).json({ message: 'Admin refresh succeeded' });
+	} catch (error) {
+		logger.error('Error refreshing admin token' + error);
+		return res.status(500).json({ message: 'Internal server error' });
+	}
 };
