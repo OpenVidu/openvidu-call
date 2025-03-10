@@ -9,7 +9,7 @@ const ParticipantTokenRequestSchema: z.ZodType<TokenOptions> = z.object({
 });
 
 const DeleteParticipantSchema = z.object({
-	roomName: z.string().trim().min(1, 'roomName es requerido')
+	roomName: z.string().trim().min(1, 'roomName is required')
 });
 
 export const validateParticipantTokenRequest = (req: Request, res: Response, next: NextFunction) => {
