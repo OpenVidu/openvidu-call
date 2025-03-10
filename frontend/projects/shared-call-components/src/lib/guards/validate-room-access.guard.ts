@@ -16,17 +16,26 @@ export const validateRoomAccessGuard: CanActivateFn = async (
 	const { roomName, participantName, secret } = extractParams(route);
 
 	if (contextService.isEmbeddedMode() && !contextService.getParticipantName()) {
-		return redirectToUnauthorized(router, 'invalid-participant');
+		await redirectToUnauthorized(router, 'invalid-participant');
+		return false;
 	}
 
-	// Authenticate participant in the room
 	try {
+		// Generate a participant token
 		const response = await httpService.generateParticipantToken({ roomName, participantName, secret });
 		contextService.setToken(response.token);
 		return true;
-	} catch (error) {
-		console.error('Error generating participant token', error);
-		return redirectToUnauthorized(router, 'invalid-room');
+	} catch (error: any) {
+		if (error.status === 409) {
+			// Participant already exists
+			// Redirect to a page where the user can input their participant name
+			await router.navigate([`${roomName}/participant-name`], {
+				queryParams: { originUrl: _state.url, accessError: 'participant-exists', t: Date.now() },
+				skipLocationChange: true
+			});
+			return false;
+		}
+		return await redirectToUnauthorized(router, 'invalid-room');
 	}
 };
 
@@ -36,7 +45,7 @@ const extractParams = (route: ActivatedRouteSnapshot) => ({
 	secret: route.queryParams['secret']
 });
 
-const redirectToUnauthorized = (router: Router, reason: string): boolean => {
-	router.navigate(['unauthorized'], { queryParams: { reason } });
+const redirectToUnauthorized = async (router: Router, reason: string): Promise<boolean> => {
+	await router.navigate(['unauthorized'], { queryParams: { reason } });
 	return false;
 };

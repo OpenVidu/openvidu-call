@@ -1,0 +1,25 @@
+<div class="form-container">
+	<mat-card class="form-card">
+		<h2 class="form-title">What is your name?</h2>
+		<form [formGroup]="participantForm" (ngSubmit)="onSubmit()">
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Name</mat-label>
+				<input matInput placeholder="Enter your name" formControlName="name" required />
+				@if (name?.hasError('minlength')) {
+					<mat-error> The name must be at least <strong>4 characters</strong> </mat-error>
+				}
+				@if (name?.hasError('required')) {
+					<mat-error> The name is <strong>required</strong> </mat-error>
+				}
+
+				@if (name?.hasError('participantExists')) {
+					<mat-error> The name is already taken. <strong> Please choose another name </strong> </mat-error>
+				}
+			</mat-form-field>
+
+			<button mat-raised-button color="primary" class="full-width" [disabled]="participantForm.invalid">
+				Continue
+			</button>
+		</form>
+	</mat-card>
+</div>

@@ -1,0 +1,36 @@
+.form-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: var(--ov-background-color);
+}
+
+.form-card {
+	width: 400px;
+	padding: 20px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	border-radius: var(--ov-surface-radius);
+	background-color: var(--ov-surface-color);
+}
+
+.form-title {
+	text-align: center;
+	margin-bottom: 20px;
+	color: var(--ov-text-surface-color);
+}
+
+.full-width {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+button {
+	height: 56px;
+	border-radius: var(--ov-surface-radius);
+}
+
+button:not([disabled]) {
+	background-color: var(--ov-accent-action-color);
+	color: var(--ov-text-primary-color);
+}

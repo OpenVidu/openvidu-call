@@ -12,7 +12,8 @@ export const checkParticipantNameGuard: CanActivateFn = async (route, state) => 
 	if (!contextService.getParticipantName()) {
 		// Redirect to a page where the user can input their participant name
 		return router.navigate([`${roomName}/participant-name`], {
-			queryParams: { originUrl: state.url }
+			queryParams: { originUrl: state.url, t: Date.now() },
+			skipLocationChange: true
 		});
 	}
 

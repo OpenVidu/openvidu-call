@@ -6,7 +6,8 @@ import {
 	checkAdminNotAuthenticatedGuard,
 	validateRoomAccessGuard,
 	applicationModeGuard,
-	extractQueryParamsGuard
+	extractQueryParamsGuard,
+	checkParticipantNameGuard
 } from '../guards';
 import {
 	AboutComponent,
@@ -16,13 +17,13 @@ import {
 	ConsoleLoginComponent,
 	DisconnectedComponent,
 	OverviewComponent,
+	ParticipantNameFormComponent,
 	RoomPreferencesComponent,
 	SecurityPreferencesComponent,
 	VideoRoomComponent
 } from '../pages';
 
 export const baseRoutes: Routes = [
-	// TODO: Create a DisconnectedComponent
 	{ path: 'disconnected', component: DisconnectedComponent },
 	{ path: 'unauthorized', component: UnauthorizedComponent },
 	{
@@ -70,7 +71,11 @@ export const baseRoutes: Routes = [
 	{
 		path: ':room-name',
 		component: VideoRoomComponent,
-		canActivate: [applicationModeGuard, extractQueryParamsGuard, validateRoomAccessGuard]
+		canActivate: [applicationModeGuard, extractQueryParamsGuard, checkParticipantNameGuard, validateRoomAccessGuard],
+	},
+	{
+		path: ':room-name/participant-name',
+		component: ParticipantNameFormComponent,
 	},
 
 	// Redirect all other routes to home
