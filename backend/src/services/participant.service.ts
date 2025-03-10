@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { LiveKitService } from './livekit.service.js';
 import { LoggerService } from './logger.service.js';
 import { ParticipantPermissions, ParticipantRole, TokenOptions } from '@typings-ce';
+import { ParticipantInfo } from 'livekit-server-sdk';
 
 @injectable()
 export class ParticipantService {
@@ -14,6 +15,22 @@ export class ParticipantService {
 		const permissions = this.getParticipantPermissions(role, options.roomName);
 
 		return this.livekitService.generateToken(options, permissions, role);
+	}
+
+	async getParticipant(roomName: string, participantName: string): Promise<ParticipantInfo | null> {
+		this.logger.verbose(`Fetching participant ${participantName}`);
+		return this.livekitService.getParticipant(roomName, participantName);
+	}
+
+	async participantExists(roomName: string, participantName: string): Promise<boolean> {
+		this.logger.verbose(`Checking if participant ${participantName} exists in room ${roomName}`);
+
+		try {
+			const participant = await this.getParticipant(roomName, participantName);
+			return participant !== null;
+		} catch (error) {
+			return false;
+		}
 	}
 
 	async deleteParticipant(participantName: string, roomName: string): Promise<void> {

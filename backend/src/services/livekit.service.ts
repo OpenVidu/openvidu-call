@@ -40,7 +40,7 @@ export class LiveKitService {
 		try {
 			return await this.roomClient.createRoom(options);
 		} catch (error) {
-			this.logger.error(`Error creating LiveKit room ${error}`);
+			this.logger.error('Error creating LiveKit room:', error);
 			throw internalError(`Error creating room: ${error}`);
 		}
 	}
@@ -87,8 +87,17 @@ export class LiveKitService {
 		}
 	}
 
+	async getParticipant(roomName: string, participantName: string): Promise<ParticipantInfo> {
+		try {
+			return await this.roomClient.getParticipant(roomName, participantName);
+		} catch (error) {
+			this.logger.error(`Error getting participant ${error}`);
+			throw internalError(`Error getting participant: ${error}`);
+		}
+	}
+
 	async deleteParticipant(participantName: string, roomName: string): Promise<void> {
-		const participantExists = await this.participantAlreadyExists(roomName, participantName);
+		const participantExists = await this.participantExists(roomName, participantName);
 
 		if (!participantExists) {
 			throw errorParticipantNotFound(participantName, roomName);
@@ -119,7 +128,7 @@ export class LiveKitService {
 		const { roomName, participantName } = options;
 
 		try {
-			if (await this.participantAlreadyExists(roomName, participantName)) {
+			if (await this.participantExists(roomName, participantName)) {
 				this.logger.error(`Participant ${participantName} already exists in room ${roomName}`);
 				throw errorParticipantAlreadyExists(participantName, roomName);
 			}
@@ -142,21 +151,6 @@ export class LiveKitService {
 		});
 		at.addGrant(permissions.livekit);
 		return at.toJwt();
-	}
-
-	private async participantAlreadyExists(roomName: string, participantName: string): Promise<boolean> {
-		try {
-			const participants: ParticipantInfo[] = await this.roomClient.listParticipants(roomName);
-			return participants.some((participant) => participant.identity === participantName);
-		} catch (error: any) {
-			this.logger.error(error);
-
-			if (error?.cause?.code === 'ECONNREFUSED') {
-				throw errorLivekitIsNotAvailable();
-			}
-
-			return false;
-		}
 	}
 
 	async startRoomComposite(
@@ -193,5 +187,20 @@ export class LiveKitService {
 
 	isEgressParticipant(participant: ParticipantInfo): boolean {
 		return participant.identity.startsWith('EG_') && participant.permission?.recorder === true;
+	}
+
+	private async participantExists(roomName: string, participantName: string): Promise<boolean> {
+		try {
+			const participants: ParticipantInfo[] = await this.roomClient.listParticipants(roomName);
+			return participants.some((participant) => participant.identity === participantName);
+		} catch (error: any) {
+			this.logger.error(error);
+
+			if (error?.cause?.code === 'ECONNREFUSED') {
+				throw errorLivekitIsNotAvailable();
+			}
+
+			return false;
+		}
 	}
 }

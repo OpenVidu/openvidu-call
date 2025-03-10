@@ -9,11 +9,19 @@ import { RoomService } from '../services/room.service.js';
 export const generateParticipantToken = async (req: Request, res: Response) => {
 	const logger = container.get(LoggerService);
 	const tokenOptions: TokenOptions = req.body;
-	const { roomName, secret } = tokenOptions;
+	const { roomName, secret, participantName } = tokenOptions;
 
 	try {
 		const roomService = container.get(RoomService);
 		const participantService = container.get(ParticipantService);
+
+		// Check if participant with same participantName exists in the room
+		const participantExists = await participantService.participantExists(roomName, participantName);
+
+		if (participantExists) {
+			logger.verbose(`Participant ${participantName} already exists in room ${roomName}`);
+			return res.status(409).json({ message: 'Participant already exists' });
+		}
 
 		logger.verbose(`Generating participant token for room ${roomName}`);
 
