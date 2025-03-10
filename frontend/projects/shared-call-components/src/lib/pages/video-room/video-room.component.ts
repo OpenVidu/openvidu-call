@@ -7,10 +7,11 @@ import {
 	RecordingDeleteRequestedEvent,
 	RecordingStartRequestedEvent,
 	RecordingStopRequestedEvent,
-	OpenViduComponentsModule,
 	ApiDirectiveModule,
 	ParticipantLeftEvent,
-	Room
+	Room,
+	ParticipantModel,
+	OpenViduComponentsUiModule
 } from 'openvidu-components-angular';
 
 import {
@@ -19,20 +20,16 @@ import {
 	RecordingPreferences,
 	VirtualBackgroundPreferences
 } from '@typings-ce';
-import { HttpService, ContextService, RoomService } from '../../services';
-import {
-	OpenViduMeetMessage,
-	ParentMessage,
-	WebComponentActionType,
-	WebComponentEventType
-} from 'webcomponent/src/types/message.type';
+
+import { HttpService, WebComponentManagerService, ContextService, RoomService } from '../../services';
+import { OpenViduMeetMessage, WebComponentEventType } from 'webcomponent/src/types/message.type';
 
 @Component({
 	selector: 'app-video-room',
 	templateUrl: './video-room.component.html',
 	styleUrls: ['./video-room.component.scss'],
 	standalone: true,
-	imports: [OpenViduComponentsModule, ApiDirectiveModule, MatIcon]
+	imports: [OpenViduComponentsUiModule, ApiDirectiveModule, MatIcon]
 })
 export class VideoRoomComponent implements OnInit, OnDestroy {
 	roomName = '';
@@ -48,6 +45,9 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	featureFlags = {
 		videoEnabled: true,
 		audioEnabled: true,
+		showMicrophone: true,
+		showCamera: true,
+		showScreenShare: true,
 		showActivityPanel: true,
 		showPrejoin: true,
 		showChat: true,
@@ -61,6 +61,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		protected router: Router,
 		protected ctxService: ContextService,
 		protected roomService: RoomService,
+		protected wcManagerService: WebComponentManagerService,
 		protected cdr: ChangeDetectorRef
 	) {}
 
@@ -70,7 +71,6 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			this.participantName = this.ctxService.getParticipantName();
 
 			if (this.ctxService.isEmbeddedMode()) {
-				this.listenWebcomponentCommands();
 				this.featureFlags.showPrejoin = false;
 			}
 
@@ -79,12 +79,12 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 
 			// TODO: Extract permissions from token and apply them to the component
 			this.applyParticipantPermissions();
-			if (this.ctxService.isParticipantViewer()) {
+			if (this.ctxService.isViewerParticipant()) {
 				this.featureFlags.videoEnabled = false;
 				this.featureFlags.audioEnabled = false;
-				// TODO: Add this directives to openvidu-components-angular
-				// this.featureFlags.showMicrophone = false;
-				// this.featureFlags.showCamera = false;
+				this.featureFlags.showMicrophone = false;
+				this.featureFlags.showCamera = false;
+				this.featureFlags.showScreenShare = false;
 			}
 		} catch (error: any) {
 			console.error('Error fetching room preferences', error);
@@ -96,38 +96,7 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		// Clean up the context service
 		// this.contextService.clearContext();
-		if (this.ctxService.isEmbeddedMode()) window.removeEventListener('message', this.listenWebcomponentCommands);
-	}
-
-	private listenWebcomponentCommands() {
-		// Listen for messages from the iframe
-		window.addEventListener('message', (event) => {
-			const message: ParentMessage = event.data;
-			const parentDomain = this.ctxService.getParentDomain();
-
-			if (!parentDomain) {
-				if (message.action === WebComponentActionType.INITIALIZE) {
-					const { payload } = message;
-					if (!payload || !('domain' in payload)) {
-						console.error('Parent domain not provided in message payload');
-						return;
-					}
-					this.ctxService.setParentDomain(payload['domain']);
-					console.log(`✅ Parent domain set: ${event.origin}`);
-				}
-				return;
-			}
-
-			if (event.origin !== parentDomain) {
-				// console.warn(`⚠️ Untrusted origin: ${event.origin}`);
-				return;
-			}
-
-			console.log('📩 Message received from parent:', event.data);
-			// if (event.data.action === 'hello') {
-			//   console.log('Received action:', event.data.payload);
-			// }
-		});
+		this.wcManagerService.stopCommandsListener();
 	}
 
 	async onTokenRequested(participantName: string) {
@@ -148,21 +117,30 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 		this.cdr.detectChanges();
 	}
 
-	onRoomCreated(room: Room) {
-		console.debug('Room created:', room);
+	onParticipantConnected(event: ParticipantModel) {
 		const message: OpenViduMeetMessage = {
-			eventType: WebComponentEventType.ROOM_CREATED,
+			eventType: WebComponentEventType.LOCAL_PARTICIPANT_CONNECTED,
 			payload: {
-				roomName: room.name //!FIXME: name is undefined
+				roomName: event.getProperties().room?.name,
+				participantName: event.name
 			}
 		};
-		if (this.ctxService.isEmbeddedMode()) this.sendMessageToParent(message);
+		this.wcManagerService.sendMessageToParent(message);
 	}
 
 	onParticipantLeft(event: ParticipantLeftEvent) {
 		console.warn('Participant left the room. Redirecting to:');
 		const redirectURL = this.ctxService.getLeaveRedirectURL() || '/disconnected';
 		const isExternalURL = /^https?:\/\//.test(redirectURL);
+
+		const message: OpenViduMeetMessage = {
+			eventType: WebComponentEventType.LOCAL_PARTICIPANT_LEFT,
+			payload: {
+				roomName: event.roomName,
+				participantName: event.participantName
+			}
+		};
+		this.wcManagerService.sendMessageToParent(message);
 
 		//if (this.contextService.isEmbeddedMode()) this.sendMessageToParent(event);
 		this.redirectTo(redirectURL, isExternalURL);
@@ -262,13 +240,5 @@ export class VideoRoomComponent implements OnInit, OnDestroy {
 			console.log('Redirecting to internal route:', url);
 			this.router.navigate([url], { replaceUrl: true });
 		}
-	}
-
-	private sendMessageToParent(event: OpenViduMeetMessage /*| RoomDisconnectedEvent*/) {
-		// const parentUrl = window.parent.location.href;
-		// const parentOrigin = new URL(parentUrl).origin;
-		console.warn('Sending message to parent :', event);
-		const origin = this.ctxService.getParentDomain();
-		window.parent.postMessage(event, origin);
 	}
 }

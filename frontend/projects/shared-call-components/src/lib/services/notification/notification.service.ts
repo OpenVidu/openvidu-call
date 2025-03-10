@@ -11,7 +11,7 @@ import { DialogOptions } from '../../models';
 	providedIn: 'root'
 })
 export class NotificationService {
-	private spinnerRef: any; // Referencia al spinner
+	private spinnerRef: any;
 
 	constructor(
 		private snackBar: MatSnackBar,
@@ -36,17 +36,15 @@ export class NotificationService {
 		}
 	}
 
-	// Método para mostrar un snackbar
 	showSnackbar(message: string, duration: number = 3000): void {
 		this.snackBar.open(message, 'Cerrar', {
 			duration,
 			verticalPosition: 'top',
 			horizontalPosition: 'right',
-			panelClass: 'custom-snackbar' // Añade tus estilos para el snackbar
+			panelClass: 'custom-snackbar'
 		});
 	}
 
-	// Método para mostrar un diálogo
 	showDialog(options: DialogOptions): void {
 		this.dialog.open(DialogComponent, {
 			data: options,
@@ -55,7 +53,6 @@ export class NotificationService {
 		});
 	}
 
-	// Método para mostrar una alerta
 	showAlert(message: string): void {
 		// this.dialog.open(AlertDialogComponent, {
 		// 	data: {

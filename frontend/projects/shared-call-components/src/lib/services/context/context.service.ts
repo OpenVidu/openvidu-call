@@ -111,7 +111,11 @@ export class ContextService {
 		return this.context.participantRole;
 	}
 
-	isParticipantViewer(): boolean {
+	isModeratorParticipant(): boolean {
+		return this.context.participantRole === ParticipantRole.MODERATOR;
+	}
+
+	isViewerParticipant(): boolean {
 		return this.context.participantRole === ParticipantRole.VIEWER;
 	}
 

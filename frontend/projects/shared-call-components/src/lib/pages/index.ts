@@ -7,4 +7,5 @@ export * from './console/about/about.component';
 export * from './console/overview/overview.component';
 export * from './console/login/login.component';
 export * from './video-room/video-room.component';
+export * from './participant-name-form/participant-name-form.component';
 export * from './disconnected/disconnected.component';
