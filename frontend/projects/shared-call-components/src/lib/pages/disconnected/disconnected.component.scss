@@ -14,9 +14,13 @@
 	border-radius: var(--ov-surface-radius);
 }
 
+mat-card-header {
+	justify-content: center;
+	align-items: center;
+}
+
 mat-card-title {
 	font-size: 1.5em;
-	margin-bottom: 10px;
 }
 
 mat-card-content p {
