@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import { ContextService, HttpService, PanelService, PanelType, OpenViduService } from 'shared-call-components';
+import {
+	ContextService,
+	HttpService,
+	PanelService,
+	PanelType,
+	OpenViduService,
+	LoggerService
+} from 'shared-call-components';
 import {
 	OpenViduMeetMessage,
 	ParentMessage,
@@ -18,13 +25,17 @@ import {
 })
 export class WebComponentManagerService {
 	protected isListenerStarted = false;
+	protected log;
 
 	constructor(
+		protected loggerService: LoggerService,
 		protected contextService: ContextService,
 		protected panelService: PanelService,
 		protected openviduService: OpenViduService,
 		protected httpService: HttpService
-	) {}
+	) {
+		this.log = this.loggerService.get('OpenVidu Meet - WebComponentManagerService');
+	}
 
 	startCommandsListener(): void {
 		if (this.isListenerStarted) return;
@@ -42,7 +53,7 @@ export class WebComponentManagerService {
 						console.error('Parent domain not provided in message payload');
 						return;
 					}
-					console.debug(`Parent domain set: ${event.origin}`);
+					this.log.d(`Parent domain set: ${event.origin}`);
 					this.contextService.setParentDomain(payload['domain']);
 				}
 				return;
@@ -85,7 +96,7 @@ export class WebComponentManagerService {
 
 	sendMessageToParent(event: OpenViduMeetMessage /*| RoomDisconnectedEvent*/) {
 		if (!this.contextService.isEmbeddedMode()) return;
-		console.warn('Sending message to parent :', event);
+		this.log.d('Sending message to parent :', event);
 		const origin = this.contextService.getParentDomain();
 		window.parent.postMessage(event, origin);
 	}
