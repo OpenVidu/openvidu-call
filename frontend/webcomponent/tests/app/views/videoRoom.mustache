@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>OpenVidu Meet Tutorial</title>
+		<!-- Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="css/videoRoom.css" />
+		<script src="http://localhost:6080/meet/v1/openvidu-meet.js"></script>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<!-- Left Sidebar Panel -->
+			<div id="control-panel" class="d-flex flex-column">
+				<h3>{{ participantRole }}</h3>
+				<hr />
+				<!-- Commands -->
+				<div class="section">
+					<h5>Commands</h5>
+					{{#isModerator}}
+					<button id="end-meeting-btn" class="btn btn-danger">End Meeting</button>
+					{{/isModerator}}
+					<button id="leave-room-btn" class="btn btn-warning">Leave Room</button>
+					<button id="toggle-chat-btn" class="btn btn-success">
+						Toggle Chat
+					</button>
+				</div>
+
+				<hr />
+				<!-- Events -->
+				<div class="section">
+					<h5>Events</h5>
+					<ul id="events-list" class="log-list">
+						<!-- Events will be added dynamically here -->
+					</ul>
+				</div>
+
+				<hr />
+				<!-- Webhooks Log -->
+				<div class="section">
+					<h5>Webhooks</h5>
+					<ul id="webhook-log-list" class="log-list">
+						<!-- Webhooks will be added dynamically here -->
+					</ul>
+				</div>
+			</div>
+
+			<!-- Main Content Section -->
+			<div id="main-content" class="d-flex flex-column">
+				<!-- Web Component Section -->
+				<div id="meeting-container">
+					<openvidu-meet
+						room-url="{{ roomUrl }}"
+						participant-name="{{ participantName }}"
+						nleave-redirect-url="https://openvidu.io"
+					></openvidu-meet>
+				</div>
+			</div>
+		</div>
+
+		<script src="/socket.io/socket.io.js"></script>
+
+		<script src="js/videoRoom.js"></script>
+		<!-- Bootstrap JS -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

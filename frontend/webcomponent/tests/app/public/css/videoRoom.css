@@ -1,0 +1,90 @@
+:root {
+	--primary-color: #4a90e2;
+	--secondary-color: #f4f4f4;
+}
+
+body,
+html {
+	height: 100vh;
+	margin: 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f9fa;
+}
+.container-fluid {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+}
+
+/* Left Sidebar Panel */
+#control-panel {
+	width: 300px;
+	background: white;
+	padding: 10px 15px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.section {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding-bottom: 10px;
+}
+
+/* Scrollable log areas inside sections */
+.log-list {
+	flex: 1;
+	overflow-y: auto;
+	background-color: #2c2c2c;
+	padding: 10px;
+	border-radius: 8px;
+	color: white;
+	list-style: none;
+}
+
+#control-panel h3 {
+	margin-top: 0;
+}
+
+#control-panel .section {
+	margin-bottom: 10px 15px;
+}
+
+#control-panel .btn {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#control-panel .log-list li {
+	margin-bottom: 5px;
+	padding: 5px;
+	background-color: #3a3a3a;
+	border-radius: 4px;
+}
+
+/* Main Content Section (Web Component) */
+#main-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	overflow: hidden;
+}
+
+#meeting-container {
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	background-color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

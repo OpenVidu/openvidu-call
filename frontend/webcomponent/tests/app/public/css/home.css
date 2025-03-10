@@ -1,0 +1,76 @@
+:root {
+	--primary-color: #4a90e2;
+	--secondary-color: #f4f4f4;
+}
+
+body,
+html {
+	height: 100vh;
+	margin: 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f9fa;
+}
+
+.container {
+	width: 100%;
+	max-width: 1000px;
+	display: flex;
+	gap: 25px;
+	max-height: 450px;
+}
+
+.rooms-container {
+	flex: 2;
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+}
+
+.rooms-header {
+	position: sticky;
+	top: 0;
+	background: white;
+	z-index: 10;
+	padding-bottom: 10px;
+	border-bottom: 2px solid var(--primary-color);
+}
+
+.rooms-list {
+	overflow-y: auto;
+	height: 100%;
+	max-height: 100%;
+	padding-right: 10px;
+}
+
+.create-room {
+	flex: 1;
+	background: var(--secondary-color);
+	padding: 25px;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+	background-color: #357abd;
+}
+
+.dropdown-menu {
+	min-width: 100%;
+	text-align: center;
+}
+
+.dropdown-item {
+	cursor: pointer;
+}
+

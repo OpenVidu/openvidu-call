@@ -24,6 +24,6 @@ export enum WebComponentActionType {
 }
 
 export enum WebComponentEventType {
-	ROOM_CREATED = 'room-created',
-	PARTICIPANT_LEFT = 'participant-left'
+	LOCAL_PARTICIPANT_CONNECTED = 'join',
+	LOCAL_PARTICIPANT_LEFT = 'left'
 }

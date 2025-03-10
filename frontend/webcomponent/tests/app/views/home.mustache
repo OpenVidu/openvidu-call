@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>OpenVidu Meet Tutorial</title>
+		<!-- Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="css/home.css" />
+	</head>
+	<body>
+		<div class="container">
+			<!-- Rooms List Section -->
+			<div class="rooms-container">
+				<div class="rooms-header">
+					<h2 class="text-center text-primary">Join a Room</h2>
+					<p class="text-muted text-center">Join to an existing room</p>
+				</div>
+
+				<div class="rooms-list">
+					{{#rooms.length}}
+					<ul class="list-group">
+						{{#rooms}}
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center"
+						>
+							<span>{{ roomName }}</span>
+							<div class="dropdown">
+								<button
+									class="btn btn-primary btn-sm dropdown-toggle"
+									type="button"
+									data-bs-toggle="dropdown"
+								>
+									Join as
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<form action="/join-room" method="post">
+											<input
+												type="hidden"
+												name="roomUrl"
+												value="{{ moderatorRoomUrl }}"
+											/>
+											<input
+												type="hidden"
+												name="participantRole"
+												value="moderator"
+											/>
+
+											<button type="submit" class="dropdown-item">
+												Moderator
+											</button>
+										</form>
+									</li>
+									<li>
+										<form action="/join-room" method="post">
+											<input
+												type="hidden"
+												name="roomUrl"
+												value="{{ publisherRoomUrl }}"
+											/>
+											<input
+												type="hidden"
+												name="participantRole"
+												value="publisher"
+											/>
+
+											<button type="submit" class="dropdown-item">
+												Publisher
+											</button>
+										</form>
+									</li>
+									<li>
+										<form action="/join-room" method="post">
+											<input
+												type="hidden"
+												name="roomUrl"
+												value="{{ viewerRoomUrl }}"
+											/>
+											<input
+												type="hidden"
+												name="participantRole"
+												value="viewer"
+											/>
+
+											<button type="submit" class="dropdown-item">
+												Viewer
+											</button>
+										</form>
+									</li>
+								</ul>
+							</div>
+						</li>
+						{{/rooms}}
+					</ul>
+					{{/rooms.length}}
+					{{^rooms.length}}
+					<p class="text-muted text-center">No rooms available.</p>
+					{{/rooms.length}}
+				</div>
+			</div>
+
+			<!-- Create Room Section -->
+			<div class="create-room">
+				<h2 class="text-center text-primary">Create a new Room</h2>
+				<p class="text-muted text-center">Generate a room from scratch</p>
+
+				<form action="/room" method="post">
+					<div class="mb-3">
+						<label for="room-name-prefix" class="form-label">Room Prefix</label>
+						<input
+							type="text"
+							name="roomNamePrefix"
+							id="room-name-prefix"
+							class="form-control"
+							placeholder="e.g. Team meeting"
+							required
+						/>
+					</div>
+
+					<div class="mb-3">
+						<label for="expiration-date" class="form-label"
+							>Expiration Date</label
+						>
+						<input
+							type="date"
+							name="expirationDate"
+							id="expiration-date"
+							class="form-control"
+							required
+						/>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-100">
+						Create Room
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Bootstrap JS -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>
