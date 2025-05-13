@@ -87,7 +87,7 @@ describe('Testing recordings', () => {
 		expect(await utils.getNumberOfElements('video')).equals(2);
 	});
 
-	it.only('should be able to download a recording', async () => {
+	it('should be able to download a recording', async () => {
 		const roomName = 'Room-DownloadTest' + Math.floor(Math.random() * 1000);
 		await connectStartAndStopRecording(roomName);
 
