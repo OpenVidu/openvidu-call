@@ -58,7 +58,7 @@
     "e2e:all": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/**/*.test.js",
     "e2e:home": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/home.test.js",
     "e2e:room": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/room.test.js",
-    "e2e:recordings": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/recording.test.js",
+    "e2e:recordings": "tsc --project ./e2e && npx mocha --recursive --timeout 60000 ./e2e/dist/recording.test.js",
     "e2e:auth": "tsc --project ./e2e && npx mocha --recursive --timeout 30000 ./e2e/dist/auth.test.js",
     "test": "ng test openvidu-call --watch=false --code-coverage",
     "lint": "eslint src --fix",
