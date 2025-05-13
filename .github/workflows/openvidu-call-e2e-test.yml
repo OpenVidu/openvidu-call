@@ -218,6 +218,8 @@ jobs:
           done
       - name: Serve openvidu-call
         run: npm run start --prefix backend &
+      - name: Create downloads folder
+        run: mkdir -p /tmp/openvidu-call
       - name: Run tests
         env:
           LAUNCH_MODE: CI
