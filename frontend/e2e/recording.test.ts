@@ -32,7 +32,7 @@ describe('Testing recordings', () => {
 		await utils.checkRecordingIsStarting();
 		await utils.checkRecordingIsStarted();
 
-		await browser.sleep(2000);
+		await browser.sleep(5000);
 
 		await utils.stopRecordingFromPanel();
 		await utils.checkRecordingIsStopped();
@@ -50,7 +50,7 @@ describe('Testing recordings', () => {
 	async function expectRecordingToBePlayed(): Promise<void> {
 		await utils.playRecording();
 
-		await browser.sleep(1000);
+		await browser.sleep(2000);
 		await utils.waitForElement('app-recording-dialog');
 
 		await browser.sleep(1000);
