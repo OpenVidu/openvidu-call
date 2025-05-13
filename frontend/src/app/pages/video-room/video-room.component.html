@@ -1,7 +1,6 @@
 <ov-videoconference
   [token]="token"
   [tokenError]="serverError"
-  [recordingStreamBaseUrl]="'call/api/recordings'"
   (onTokenRequested)="onTokenRequested($event)"
   (onRoomDisconnected)="onRoomDisconnected()"
   (onRecordingStartRequested)="onRecordingStartRequested($event)"

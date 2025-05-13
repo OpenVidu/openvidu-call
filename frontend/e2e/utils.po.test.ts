@@ -160,6 +160,12 @@ export class OpenViduCallPO {
 		await this.clickOn('#play-recording-btn');
 	}
 
+	async downloadRecording() {
+		await this.waitForElement('.recording-item');
+		await this.waitForElement('#download-recording-btn');
+		await this.clickOn('#download-recording-btn');
+	}
+
 	async checkRecordingIsStopped(): Promise<void> {
 		await this.waitForElement('#recording-status.stopped');
 	}

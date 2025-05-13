@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { Builder, WebDriver } from 'selenium-webdriver';
 import { OpenViduCallConfig } from './selenium.conf';
 import { OpenViduCallPO } from './utils.po.test';
+import fs from 'fs';
 
 const url = OpenViduCallConfig.appUrl;
 
@@ -19,8 +20,8 @@ describe('Testing recordings', () => {
 			.build();
 	}
 
-	async function connectStartAndStopRecording() {
-		await browser.get(`${url}${randomRoomName}`);
+	async function connectStartAndStopRecording(roomName: string = randomRoomName): Promise<void> {
+		await browser.get(`${url}${roomName}`);
 
 		await utils.checkPrejoinIsPresent();
 		await utils.joinSession();
@@ -54,37 +55,66 @@ describe('Testing recordings', () => {
 		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 	});
 
-	// it('should be able to delete a recording', async () => {
-	// 	await connectStartAndStopRecording();
+	it('should be able to delete a recording', async () => {
+		await connectStartAndStopRecording();
 
-	// 	await utils.waitForElement('.recording-item');
-	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
-	// 	await browser.sleep(2000);
+		await browser.sleep(2000);
 
-	// 	await utils.deleteRecording();
+		await utils.deleteRecording();
 
-	// 	await browser.sleep(500);
-	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(0);
-	// });
+		await browser.sleep(500);
+		expect(await utils.getNumberOfElements('.recording-item')).equals(0);
+	});
 
-	// it('should be able to play a recording', async () => {
-	// 	await connectStartAndStopRecording();
+	it('should be able to play a recording', async () => {
+		await connectStartAndStopRecording();
 
-	// 	await utils.waitForElement('.recording-item');
-	// 	expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
 
-	// 	await browser.sleep(2000);
+		await browser.sleep(2000);
 
-	// 	await utils.playRecording();
+		await utils.playRecording();
 
-	// 	await browser.sleep(1000);
-	// 	await utils.waitForElement('app-recording-dialog');
+		await browser.sleep(1000);
+		await utils.waitForElement('app-recording-dialog');
 
-	// 	await browser.sleep(1000);
+		await browser.sleep(1000);
 
-	// 	expect(await utils.getNumberOfElements('video')).equals(2);
-	// });
+		expect(await utils.getNumberOfElements('video')).equals(2);
+	});
 
-	// it('should be able to download a recording', async () => {});
+	it.only('should be able to download a recording', async () => {
+		const roomName = 'Room-DownloadTest' + Math.floor(Math.random() * 1000);
+		await connectStartAndStopRecording(roomName);
+
+		await utils.waitForElement('.recording-item');
+		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+
+		await browser.sleep(2000);
+
+		await utils.downloadRecording();
+
+		await browser.sleep(1000);
+		expect(await utils.getNumberOfElements('app-recording-dialog')).equals(0);
+
+		// Check if the file is downloaded
+		const downloadsDir = OpenViduCallConfig.downloadsDir;
+		const files = fs.readdirSync(downloadsDir);
+		const downloadedFile = files.find((file) => file.includes(roomName) && file.endsWith('.mp4'));
+		expect(downloadedFile).to.exist;
+
+		// check if the recording can be played
+		const filePath = `${downloadsDir}/${downloadedFile}`;
+
+		const stats = fs.statSync(filePath);
+		expect(stats.isFile()).to.be.true;
+		expect(stats.size).to.be.greaterThan(0);
+
+		// Clean up the downloaded file
+		fs.unlinkSync(filePath);
+	});
 });
