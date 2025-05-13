@@ -96,14 +96,20 @@ describe('Testing recordings', () => {
 	});
 
 	it('should be able to start, stop, play, download and delete a recording', async () => {
-		await connectStartAndStopRecording();
+		try {
+			await connectStartAndStopRecording();
 
-		await expectRecordingToBePresent();
+			await expectRecordingToBePresent();
 
-		await expectRecordingToBePlayed();
+			await expectRecordingToBePlayed();
 
-		await expectRecordingToBeDownloaded();
+			await expectRecordingToBeDownloaded();
 
-		await expectRecordingToBeDeleted();
+			await expectRecordingToBeDeleted();
+		} catch (error) {
+			const screenshot = await browser.takeScreenshot();
+			console.log(`data:image/png;base64,${screenshot}`);
+			throw error;
+		}
 	});
 });
