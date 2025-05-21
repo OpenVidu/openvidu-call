@@ -35,7 +35,7 @@ const chromeArgumentsCI = [
 const chromeOptions: chrome.Options = new chrome.Options();
 chromeOptions.addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments));
 chromeOptions.setUserPreferences({
-	'download.default_directory': DOWNLOADS_DIR,
+	'download.default_directory': LAUNCH_MODE === 'CI' ? '/home/seluser/Downloads' : DOWNLOADS_DIR,
 	'download.prompt_for_download': false,
 	'download.directory_upgrade': true,
 	'safebrowsing.enabled': true,

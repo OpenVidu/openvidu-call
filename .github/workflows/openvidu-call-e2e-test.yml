@@ -58,7 +58,7 @@ jobs:
       # - name: Run Browserless Chrome
       #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
       - name: Run Chrome
-        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
+        run: docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
@@ -102,7 +102,7 @@ jobs:
       # - name: Run Browserless Chrome
       #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
       - name: Run Chrome
-        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
+        run: docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
@@ -145,7 +145,7 @@ jobs:
       # - name: Run Browserless Chrome
       #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
       - name: Run Chrome
-        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
+        run: docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
@@ -187,8 +187,10 @@ jobs:
           name: artifacts
       # - name: Run Browserless Chrome
       #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
+      - name: Create downloads folder
+        run: mkdir -p /tmp/openvidu-call-downloads
       - name: Run Chrome
-        run:  docker run --network=host -d -p 4444:4444 selenium/standalone-chrome:127.0
+        run: docker run --network=host -d -v /tmp/openvidu-call-downloads:/home/seluser/Downloads selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
@@ -212,10 +214,10 @@ jobs:
         run: npm run start --prefix backend &
         env:
           NODE_ENV: development # needed for setting S3 environment variables
-      - name: Create downloads folder
-        run: mkdir -p /tmp/openvidu-call
+
       - name: Run tests
         env:
           LAUNCH_MODE: CI
+          DOWNLOADS_DIR: /tmp/openvidu-call-downloads
           CALL_PRIVATE_ACCESS: false
         run: npm run e2e:recordings --prefix frontend
