@@ -44,7 +44,17 @@ describe('Testing recordings', () => {
 	}
 
 	async function expectRecordingToBeDeleted(): Promise<void> {
+		// Get a fresh reference to the recording item
 		await utils.waitForElement('.recording-item');
+
+		// Delete the recording
+		await utils.deleteRecording();
+
+		// Wait for the deletion to take effect (using a negative wait)
+		await browser.sleep(2000);
+
+		// Verify the recording is no longer present
+		expect(await utils.getNumberOfElements('.recording-item')).equals(0);
 	}
 
 	async function expectRecordingToBePlayed(): Promise<void> {
