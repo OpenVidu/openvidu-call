@@ -219,6 +219,5 @@ jobs:
       - name: Run tests
         env:
           LAUNCH_MODE: CI
-          DOWNLOADS_DIR: /tmp/openvidu-call-downloads
           CALL_PRIVATE_ACCESS: false
         run: npm run e2e:recordings --prefix frontend
