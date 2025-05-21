@@ -8,7 +8,8 @@ import {
 	RecordingStartRequestedEvent,
 	RecordingStopRequestedEvent,
 	OpenViduComponentsModule,
-	ApiDirectiveModule
+	ApiDirectiveModule,
+	ParticipantLeftEvent
 } from 'openvidu-components-angular';
 
 import { HttpService } from '@services/http.service';
@@ -50,9 +51,9 @@ export class VideoRoomComponent implements OnInit {
 		}
 	}
 
-	onRoomDisconnected() {
+	onParticipantLeft(event: ParticipantLeftEvent) {
+		console.log('Participant left:', event);
 		this.isSessionAlive = false;
-		console.log('onLeaveButtonClicked');
 		this.router.navigate([`/`]);
 	}
 

@@ -2,7 +2,7 @@
   [token]="token"
   [tokenError]="serverError"
   (onTokenRequested)="onTokenRequested($event)"
-  (onRoomDisconnected)="onRoomDisconnected()"
+  (onParticipantLeft)="onParticipantLeft($event)"
   (onRecordingStartRequested)="onRecordingStartRequested($event)"
   (onRecordingStopRequested)="onRecordingStopRequested($event)"
   (onRecordingDeleteRequested)="onRecordingDeleteRequested($event)"
