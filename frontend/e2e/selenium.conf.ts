@@ -28,17 +28,18 @@ const chromeArgumentsCI = [
 	'--disable-background-networking',
 	'--disable-default-apps',
 	'--use-fake-ui-for-media-stream',
-	'--use-fake-device-for-media-stream',
-
+	'--use-fake-device-for-media-stream'
 ];
 
 const chromeOptions: chrome.Options = new chrome.Options();
 chromeOptions.addArguments(...(LAUNCH_MODE === 'CI' ? chromeArgumentsCI : chromeArguments));
 chromeOptions.setUserPreferences({
-	'download.default_directory': LAUNCH_MODE === 'CI' ? '/home/seluser/Downloads' : DOWNLOADS_DIR,
+	'download.default_directory': DOWNLOADS_DIR,
 	'download.prompt_for_download': false,
 	'download.directory_upgrade': true,
-	'safebrowsing.enabled': true,
+	'safebrowsing.enabled': false,
+	'profile.default_content_settings.popups': 0,
+	'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
 });
 export const OpenViduCallConfig: BrowserConfig = {
 	appUrl: LAUNCH_MODE === 'CI' ? 'http://localhost:6080/' : 'http://localhost:5080/',

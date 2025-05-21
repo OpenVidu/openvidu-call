@@ -64,7 +64,6 @@ describe('Testing recordings', () => {
 
 	async function expectRecordingToBeDownloaded(): Promise<void> {
 		await utils.downloadRecording();
-
 		await browser.sleep(1000);
 		expect(await utils.getNumberOfElements('app-recording-dialog')).equals(0);
 
@@ -72,6 +71,11 @@ describe('Testing recordings', () => {
 		const downloadsDir = OpenViduCallConfig.downloadsDir;
 		const files = fs.readdirSync(downloadsDir);
 		const downloadedFile = files.find((file) => file.includes('Room-') && file.endsWith('.mp4'));
+
+		if (!downloadedFile) {
+			throw new Error('Recording file not found in downloads directory ' + downloadsDir);
+		}
+
 		expect(downloadedFile).to.exist;
 
 		// check if the recording can be played
@@ -92,6 +96,12 @@ describe('Testing recordings', () => {
 	});
 
 	afterEach(async () => {
+		try {
+			await utils.leaveRoom();
+		} catch (error) {
+			// Ignore errors when leaving the room
+		}
+
 		await browser.quit();
 	});
 

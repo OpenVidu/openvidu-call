@@ -42,6 +42,7 @@ jobs:
           name: artifacts
           path: ${{ github.workspace }}/**.tgz
           if-no-files-found: error
+          retention-days: 1
 
   auth_e2e_test:
     needs: prepare_openvidu_components_angular
@@ -188,7 +189,7 @@ jobs:
       # - name: Run Browserless Chrome
       #   run: docker run -d -p 3000:3000 --network host browserless/chrome:1.53-chrome-stable
       - name: Create downloads folder
-        run: mkdir -p /tmp/openvidu-call-downloads
+        run: mkdir -p /tmp/openvidu-call-downloads && chmod 777 /tmp/openvidu-call-downloads
       - name: Run Chrome
         run: docker run --network=host -d -v /tmp/openvidu-call-downloads:/home/seluser/Downloads selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
