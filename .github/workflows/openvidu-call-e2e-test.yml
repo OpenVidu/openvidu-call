@@ -71,9 +71,7 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
           npm run build --prefix backend && \
-          npm run build --prefix frontend && \
-          mv frontend/dist/openvidu-call/ backend/dist/public/
-
+          npm run build-prod --prefix frontend
       - name: Wait for openvidu-local-deployment
         run: |
           until curl -s -f -o /dev/null http://localhost:7880; do
@@ -117,9 +115,7 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
           npm run build --prefix backend && \
-          npm run build --prefix frontend && \
-          mv frontend/dist/openvidu-call/ backend/dist/public/
-
+          npm run build-prod --prefix frontend
       - name: Wait for openvidu-local-deployment
         run: |
           until curl -s -f -o /dev/null http://localhost:7880; do
@@ -162,9 +158,7 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
           npm run build --prefix backend && \
-          npm run build --prefix frontend && \
-          mv frontend/dist/openvidu-call/ backend/dist/public/
-
+          npm run build-prod --prefix frontend
       - name: Wait for openvidu-local-deployment
         run: |
           until curl -s -f -o /dev/null http://localhost:7880; do
@@ -207,9 +201,7 @@ jobs:
           npm install openvidu-components-angular-*.tgz --prefix frontend && \
           npm install --prefix backend && \
           npm run build --prefix backend && \
-          npm run build --prefix frontend && \
-          mv frontend/dist/openvidu-call/ backend/dist/public/
-
+          npm run build-prod --prefix frontend
       - name: Wait for openvidu-local-deployment
         run: |
           until curl -s -f -o /dev/null http://localhost:7880; do
