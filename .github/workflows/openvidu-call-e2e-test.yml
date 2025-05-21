@@ -218,6 +218,8 @@ jobs:
           done
       - name: Serve openvidu-call
         run: npm run start --prefix backend &
+        env:
+          NODE_ENV: development # needed for setting S3 environment variables
       - name: Create downloads folder
         run: mkdir -p /tmp/openvidu-call
       - name: Run tests

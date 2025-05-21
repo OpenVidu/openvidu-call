@@ -56,6 +56,11 @@
 									"with": "src/environments/environment.prod.ts"
 								}
 							],
+							"outputPath": {
+								"base": "../backend/dist/public",
+								"browser": "browser"
+							},
+							"deleteOutputPath": true,
 							"optimization": true,
 							"outputHashing": "all",
 							"sourceMap": false,
