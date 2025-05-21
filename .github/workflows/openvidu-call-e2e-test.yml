@@ -191,7 +191,7 @@ jobs:
       - name: Create downloads folder
         run: mkdir -p /tmp/openvidu-call-downloads && chmod 777 /tmp/openvidu-call-downloads
       - name: Run Chrome
-        run: docker run --network=host -d -v /tmp/openvidu-call-downloads:/home/seluser/Downloads selenium/standalone-chrome:127.0
+        run: docker run --network=host -d -v /tmp/openvidu-call-downloads:/tmp/openvidu-call-downloads selenium/standalone-chrome:127.0
       - name: Run openvidu-local-deployment
         run: |
           git clone --depth 1 https://github.com/OpenVidu/openvidu-local-deployment
