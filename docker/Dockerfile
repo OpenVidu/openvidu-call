@@ -9,8 +9,14 @@ ARG BASE_HREF=/
 
 COPY --chown=node:node frontend/ ./
 
+# Build the frontend application with the specified base href
 RUN npm install && \
     npm run build ${BASE_HREF}
+
+# Move the built files to the correct location
+RUN mkdir -p /app/frontend/dist/openvidu-call && \
+	mv ../backend/dist/public/* /app/frontend/dist/openvidu-call/ && \
+	chown -R node:node /app/frontend/dist/openvidu-call
 
 ### Stage 2: Build the backend
 FROM node:20 as build-backend
