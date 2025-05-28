@@ -25,8 +25,9 @@ import {
 import { errorS3NotAvailable, internalError } from '../models/error.model.js';
 import { Readable } from 'stream';
 import { LoggerService } from './logger.service.js';
+import { IStorageService } from './IStorage.service.js';
 
-export class S3Service {
+export class S3Service implements IStorageService {
 	private s3: S3Client;
 	private logger = LoggerService.getInstance();
 	protected static instance: S3Service;

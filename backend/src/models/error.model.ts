@@ -19,6 +19,10 @@ export const errorS3NotAvailable = (error: any): OpenViduCallError => {
 	return new OpenViduCallError('S3 Error', `S3 is not available ${error}`, 503);
 }
 
+export const errorAzureBlobNotAvailable = (error: any): OpenViduCallError => {
+	return new OpenViduCallError('Azure Blob Error', `Azure Blob is not available ${error}`, 503);
+};
+
 export const internalError = (error: any): OpenViduCallError => {
 	return new OpenViduCallError('Unexpected error', `Something went wrong ${error}`, 500);
 };
