@@ -33,7 +33,7 @@ export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 export const CALL_STORAGE_PROVIDER = process.env.CALL_STORAGE_PROVIDER || 's3';
 
 /* S3 configuration */
-export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
+export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu-appdata';
 // Parent directory inside the bucket
 export const CALL_S3_PARENT_DIRECTORY = process.env.CALL_S3_PARENT_DIRECTORY || 'openvidu-call';
 // Recording directory inside the parent directory
@@ -45,7 +45,7 @@ export const CALL_AWS_REGION = process.env.CALL_AWS_REGION || undefined;
 export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYLE_ACCESS || 'true';
 
 /* Azure Blob storage configuration*/
-export const CALL_AZURE_CONTAINER_NAME = process.env.CALL_AZURE_CONTAINER_NAME || 'openvidu';
+export const CALL_AZURE_CONTAINER_NAME = process.env.CALL_AZURE_CONTAINER_NAME || 'openvidu-appdata';
 export const CALL_AZURE_ACCOUNT_NAME = process.env.CALL_AZURE_ACCOUNT_NAME || undefined;
 export const CALL_AZURE_ACCOUNT_KEY = process.env.CALL_AZURE_ACCOUNT_KEY || undefined;
 
