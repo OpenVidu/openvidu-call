@@ -15,12 +15,8 @@ export class AzureBlobWrapper implements IStorageService {
 	protected static instance: AzureBlobWrapper;
 	private logger = LoggerService.getInstance();
 
-	private constructor() {
-		// Private constructor to enforce singleton pattern
-		if (AzureBlobWrapper.instance) {
-			throw new Error('Use AzureBlobWrapper.getInstance() to get the instance.');
-		}
-	}
+	private azureService: AzureBlobService = AzureBlobService.getInstance();
+	private constructor() {}
 
 	static getInstance() {
 		if (!AzureBlobWrapper.instance) {
@@ -33,7 +29,7 @@ export class AzureBlobWrapper implements IStorageService {
 	/** Upload JSON as blob */
 	async uploadObject(name: string, body: any, bucket: string): Promise<PutObjectCommandOutput> {
 		try {
-			const uploadBlobResponse = await AzureBlobService.getInstance().uploadObject(name, body);
+			const uploadBlobResponse = await this.azureService.uploadObject(name, body);
 			return {
 				$metadata: {
 					httpStatusCode: uploadBlobResponse._response?.status || 200,
@@ -48,7 +44,7 @@ export class AzureBlobWrapper implements IStorageService {
 
 	async deleteObject(name: string, bucket: string): Promise<DeleteObjectCommandOutput> {
 		try {
-			const metadata = await AzureBlobService.getInstance().deleteObject(name);
+			const metadata = await this.azureService.deleteObject(name);
 			return { $metadata: { httpStatusCode: 204 } } as DeleteObjectCommandOutput;
 		} catch (err: any) {
 			throw new Error(`Error deleting blob: ${err.message}`);
@@ -62,7 +58,7 @@ export class AzureBlobWrapper implements IStorageService {
 		maxObjects: number
 	): Promise<ListObjectsV2CommandOutput> {
 		try {
-			const blobs = await AzureBlobService.getInstance().listObjects(directory, searchPattern);
+			const blobs = await this.azureService.listObjects(directory, searchPattern);
 			const contents = blobs.map((blob) => ({
 				Key: blob.name,
 				LastModified: blob.properties.lastModified,
@@ -85,7 +81,7 @@ export class AzureBlobWrapper implements IStorageService {
 
 	async getObjectAsJson(name: string, bucket: string): Promise<Object | undefined> {
 		try {
-			return AzureBlobService.getInstance().getObjectAsJson(name);
+			return this.azureService.getObjectAsJson(name);
 		} catch (err: any) {
 			throw new Error(`Error getting blob as JSON: ${err.message}`);
 		}
@@ -93,7 +89,7 @@ export class AzureBlobWrapper implements IStorageService {
 
 	async getObjectAsStream(name: string, bucket: string, range?: { start: number; end: number }): Promise<Readable> {
 		try {
-			return AzureBlobService.getInstance().getObjectAsStream(name, range);
+			return this.azureService.getObjectAsStream(name, range);
 		} catch (err: any) {
 			throw new Error(`Error getting blob as stream: ${err.message}`);
 		}
@@ -101,7 +97,7 @@ export class AzureBlobWrapper implements IStorageService {
 
 	async getHeaderObject(name: string, bucket: string): Promise<HeadObjectCommandOutput> {
 		try {
-			const data = await AzureBlobService.getInstance().getHeaderObject(name);
+			const data = await this.azureService.getHeaderObject(name);
 			return {
 				ContentType: data.contentType,
 				ContentLength: data.contentLength,

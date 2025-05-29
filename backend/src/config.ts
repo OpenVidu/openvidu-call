@@ -47,7 +47,7 @@ export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYL
 /* Azure Blob storage configuration*/
 export const CALL_AZURE_ACCOUNT_NAME = process.env.CALL_AZURE_ACCOUNT_NAME || undefined;
 export const CALL_AZURE_ACCOUNT_KEY = process.env.CALL_AZURE_ACCOUNT_KEY || undefined;
-export const CALL_AZURE_CONTAINER_NAME = process.env.CALL_AZURE_CONTAINER_NAME || 'openvidu-appdata';
+export const CALL_AZURE_CONTAINER_NAME = process.env.CALL_AZURE_CONTAINER_NAME || 'openvidu';
 
 // Deployment related configuration
 export const MODULES_FILE = process.env.MODULES_FILE || undefined;
