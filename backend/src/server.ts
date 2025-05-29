@@ -28,10 +28,10 @@ import {
 	MODULES_FILE,
 	ENABLED_MODULES,
 	MODULE_NAME,
-	AZURE_ACCOUNT_KEY,
-	AZURE_ACCOUNT_NAME,
-	AZURE_CONTAINER_NAME,
-	STORAGE_PROVIDER
+	CALL_AZURE_ACCOUNT_KEY,
+	CALL_AZURE_ACCOUNT_NAME,
+	CALL_AZURE_CONTAINER_NAME,
+	CALL_STORAGE_PROVIDER
 } from './config.js';
 
 const createApp = () => {
@@ -91,7 +91,11 @@ const logEnvVars = () => {
 	console.log('LIVEKIT API SECRET: ', credential('****' + LIVEKIT_API_SECRET.slice(-3)));
 	console.log('LIVEKIT API KEY: ', credential('****' + LIVEKIT_API_KEY.slice(-3)));
 	console.log('---------------------------------------------------------');
-	if (STORAGE_PROVIDER === 's3') {
+
+	console.log('Storage Provider:', text(CALL_STORAGE_PROVIDER.toUpperCase()));
+	console.log('---------------------------------------------------------');
+
+	if (CALL_STORAGE_PROVIDER === 's3') {
 		console.log('S3 Configuration');
 		console.log('---------------------------------------------------------');
 		console.log('CALL S3 BUCKET:', text(CALL_S3_BUCKET));
@@ -114,14 +118,14 @@ const logEnvVars = () => {
 		if (CALL_AWS_REGION) {
 			console.log('CALL AWS REGION:', text(CALL_AWS_REGION));
 		}
-	} else if (STORAGE_PROVIDER === 'azure') {
+	} else if (CALL_STORAGE_PROVIDER === 'azure') {
 		console.log('Azure Blob Storage Configuration');
 		console.log('---------------------------------------------------------');
-		console.log('AZURE ACCOUNT NAME:', text(AZURE_ACCOUNT_NAME));
-		console.log('AZURE CONTAINER NAME:', text(AZURE_CONTAINER_NAME));
+		console.log('AZURE ACCOUNT NAME:', text(CALL_AZURE_ACCOUNT_NAME));
+		console.log('AZURE CONTAINER NAME:', text(CALL_AZURE_CONTAINER_NAME));
 
-		if (AZURE_ACCOUNT_KEY) {
-			console.log('AZURE ACCOUNT KEY:', credential('****' + AZURE_ACCOUNT_KEY.slice(-3)));
+		if (CALL_AZURE_ACCOUNT_KEY) {
+			console.log('AZURE ACCOUNT KEY:', credential('****' + CALL_AZURE_ACCOUNT_KEY.slice(-3)));
 		}
 	}
 
@@ -166,7 +170,7 @@ const checkModuleIsEnabled = () => {
 			process.exit(0);
 		}
 	}
-}
+};
 
 if (isMainModule()) {
 	checkModuleIsEnabled();
