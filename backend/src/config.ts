@@ -1,9 +1,5 @@
 import dotenv from 'dotenv';
 
-if (process.env.NODE_ENV === 'development') {
-	dotenv.config({ path: 'development.env' });
-}
-
 if (process.env.CALL_CONFIG_DIR) {
 	dotenv.config({ path: process.env.CALL_CONFIG_DIR });
 } else {
@@ -33,6 +29,9 @@ export const LIVEKIT_URL_PRIVATE = process.env.LIVEKIT_URL_PRIVATE || LIVEKIT_UR
 export const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
 export const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 
+// Storage provider: 's3' or 'azure'
+export const CALL_STORAGE_PROVIDER = process.env.CALL_STORAGE_PROVIDER || 's3';
+
 /* S3 configuration */
 export const CALL_S3_BUCKET = process.env.CALL_S3_BUCKET || 'openvidu';
 // Parent directory inside the bucket
@@ -44,6 +43,11 @@ export const CALL_S3_ACCESS_KEY = process.env.CALL_S3_ACCESS_KEY || undefined;
 export const CALL_S3_SECRET_KEY = process.env.CALL_S3_SECRET_KEY || undefined;
 export const CALL_AWS_REGION = process.env.CALL_AWS_REGION || undefined;
 export const CALL_S3_WITH_PATH_STYLE_ACCESS = process.env.CALL_S3_WITH_PATH_STYLE_ACCESS || 'true';
+
+/* Azure Blob storage configuration*/
+export const CALL_AZURE_CONTAINER_NAME = process.env.CALL_AZURE_CONTAINER_NAME || 'openvidu';
+export const CALL_AZURE_ACCOUNT_NAME = process.env.CALL_AZURE_ACCOUNT_NAME || undefined;
+export const CALL_AZURE_ACCOUNT_KEY = process.env.CALL_AZURE_ACCOUNT_KEY || undefined;
 
 // Deployment related configuration
 export const MODULES_FILE = process.env.MODULES_FILE || undefined;

@@ -8,7 +8,7 @@ import { RecordingInfo, RecordingStatus } from '../models/recording.model.js';
 import { CALL_S3_PARENT_DIRECTORY, CALL_S3_RECORDING_DIRECTORY, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } from '../config.js';
 import { LoggerService } from './logger.service.js';
 import { RoomService } from './room.service.js';
-import { S3Service } from './s3.service.js';
+import { StorageServiceFactory } from './storage.service.js';
 import { RoomStatusData } from '../models/room.model.js';
 import { BroadcastingService } from './broadcasting.service.js';
 import { RecordingService } from './recording.service.js';
@@ -16,7 +16,7 @@ import { RecordingService } from './recording.service.js';
 export class WebhookService {
 	private static instance: WebhookService;
 	private livekitService = LiveKitService.getInstance();
-	private s3Service = S3Service.getInstance();
+	private storageService = StorageServiceFactory.getInstance();
 	private roomService = RoomService.getInstance();
 	private recordingService = RecordingService.getInstance();
 	private broadcastingService = BroadcastingService.getInstance();
@@ -66,7 +66,7 @@ export class WebhookService {
 				// Add recording metadata
 				const metadataPath = this.generateMetadataPath(payload);
 				await Promise.all([
-					this.s3Service.uploadObject(metadataPath, payload),
+					this.storageService.uploadObject(metadataPath, payload),
 					this.roomService.sendSignal(roomName, payload, { topic })
 				]);
 
@@ -118,7 +118,7 @@ export class WebhookService {
 				// Update recording metadata
 				const metadataPath = this.generateMetadataPath(payload);
 				await Promise.all([
-					this.s3Service.uploadObject(metadataPath, payload),
+					this.storageService.uploadObject(metadataPath, payload),
 					this.roomService.sendSignal(roomName, payload, { topic })
 				]);
 			} else {

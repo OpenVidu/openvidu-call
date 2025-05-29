@@ -28,6 +28,10 @@ import {
 	MODULES_FILE,
 	ENABLED_MODULES,
 	MODULE_NAME,
+	CALL_AZURE_ACCOUNT_KEY,
+	CALL_AZURE_ACCOUNT_NAME,
+	CALL_AZURE_CONTAINER_NAME,
+	CALL_STORAGE_PROVIDER
 } from './config.js';
 
 const createApp = () => {
@@ -87,27 +91,42 @@ const logEnvVars = () => {
 	console.log('LIVEKIT API SECRET: ', credential('****' + LIVEKIT_API_SECRET.slice(-3)));
 	console.log('LIVEKIT API KEY: ', credential('****' + LIVEKIT_API_KEY.slice(-3)));
 	console.log('---------------------------------------------------------');
-	console.log('S3 Configuration');
+
+	console.log('Storage Provider:', text(CALL_STORAGE_PROVIDER.toUpperCase()));
 	console.log('---------------------------------------------------------');
-	console.log('CALL S3 BUCKET:', text(CALL_S3_BUCKET));
-	console.log('CALL S3 DIRECTORY:', text(CALL_S3_PARENT_DIRECTORY));
-	console.log('CALL S3 RECORDING DIRECTORY:', text(`${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}`));
 
-	// S3 configuration
-	if (CALL_S3_SERVICE_ENDPOINT) {
-		console.log('CALL S3 SERVICE ENDPOINT:', text(CALL_S3_SERVICE_ENDPOINT));
-	}
+	if (CALL_STORAGE_PROVIDER === 's3') {
+		console.log('S3 Configuration');
+		console.log('---------------------------------------------------------');
+		console.log('CALL S3 BUCKET:', text(CALL_S3_BUCKET));
+		console.log('CALL S3 DIRECTORY:', text(CALL_S3_PARENT_DIRECTORY));
+		console.log('CALL S3 RECORDING DIRECTORY:', text(`${CALL_S3_PARENT_DIRECTORY}/${CALL_S3_RECORDING_DIRECTORY}`));
 
-	if (CALL_S3_ACCESS_KEY) {
-		console.log('CALL S3 ACCESS KEY:', credential('****' + CALL_S3_ACCESS_KEY.slice(-3)));
-	}
+		// S3 configuration
+		if (CALL_S3_SERVICE_ENDPOINT) {
+			console.log('CALL S3 SERVICE ENDPOINT:', text(CALL_S3_SERVICE_ENDPOINT));
+		}
 
-	if (CALL_S3_SECRET_KEY) {
-		console.log('CALL S3 SECRET KEY:', credential('****' + CALL_S3_SECRET_KEY.slice(-3)));
-	}
+		if (CALL_S3_ACCESS_KEY) {
+			console.log('CALL S3 ACCESS KEY:', credential('****' + CALL_S3_ACCESS_KEY.slice(-3)));
+		}
 
-	if (CALL_AWS_REGION) {
-		console.log('CALL AWS REGION:', text(CALL_AWS_REGION));
+		if (CALL_S3_SECRET_KEY) {
+			console.log('CALL S3 SECRET KEY:', credential('****' + CALL_S3_SECRET_KEY.slice(-3)));
+		}
+
+		if (CALL_AWS_REGION) {
+			console.log('CALL AWS REGION:', text(CALL_AWS_REGION));
+		}
+	} else if (CALL_STORAGE_PROVIDER === 'azure') {
+		console.log('Azure Blob Storage Configuration');
+		console.log('---------------------------------------------------------');
+		console.log('AZURE ACCOUNT NAME:', text(CALL_AZURE_ACCOUNT_NAME));
+		console.log('AZURE CONTAINER NAME:', text(CALL_AZURE_CONTAINER_NAME));
+
+		if (CALL_AZURE_ACCOUNT_KEY) {
+			console.log('AZURE ACCOUNT KEY:', credential('****' + CALL_AZURE_ACCOUNT_KEY.slice(-3)));
+		}
 	}
 
 	console.log('---------------------------------------------------------');
@@ -151,7 +170,7 @@ const checkModuleIsEnabled = () => {
 			process.exit(0);
 		}
 	}
-}
+};
 
 if (isMainModule()) {
 	checkModuleIsEnabled();
