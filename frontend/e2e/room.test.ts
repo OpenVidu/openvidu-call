@@ -128,7 +128,6 @@ describe('Testing Room', () => {
 	});
 
 	it('should be able to leave the session', async () => {
-
 		await browser.get(`${url}${randomRoomName}`);
 
 		await utils.checkPrejoinIsPresent();
@@ -141,6 +140,34 @@ describe('Testing Room', () => {
 
 		await utils.waitForElement('#room-name-input');
 		expect(await utils.isPresent('#room-name-input')).to.be.true;
+	});
+
+	it('should show the participants panel', async () => {
+		await browser.get(`${url}${randomRoomName}`);
+
+		await utils.checkPrejoinIsPresent();
+		await utils.joinSession();
+
+		await utils.checkToolbarIsPresent();
+
+		await utils.waitForElement('#participants-panel-btn');
+		await utils.clickOn('#participants-panel-btn');
+
+		await utils.waitForElement('ov-participants-panel');
+		expect(await utils.isPresent('ov-participants-panel')).to.be.true;
+	});
+
+	it('should show the settings panel', async () => {
+		await browser.get(`${url}${randomRoomName}`);
+		await utils.checkPrejoinIsPresent();
+		await utils.joinSession();
+		await utils.checkToolbarIsPresent();
+
+		await utils.clickOn('#more-options-btn');
+
+		await browser.sleep(500); // Wait for the menu to open
+		await utils.clickOn('#toolbar-settings-btn');
+		expect(await utils.isPresent('ov-settings-panel')).to.be.true;
 	});
 
 	it('should show the chat and send a message', async () => {
