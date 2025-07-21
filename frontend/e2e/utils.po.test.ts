@@ -145,7 +145,7 @@ export class OpenViduCallPO {
 	}
 
 	async deleteRecording(): Promise<void> {
-		await this.waitForElement('.recording-item');
+		await this.waitForElement('.recording-card');
 		await this.waitForElement('#delete-recording-btn');
 		await this.clickOn('#delete-recording-btn');
 
@@ -155,7 +155,7 @@ export class OpenViduCallPO {
 	}
 
 	async playRecording() {
-		await this.waitForElement('.recording-item');
+		await this.waitForElement('.recording-card');
 		await this.waitForElement('#play-recording-btn');
 		await this.clickOn('#play-recording-btn');
 	}

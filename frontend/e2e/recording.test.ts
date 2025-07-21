@@ -39,13 +39,13 @@ describe('Testing recordings', () => {
 	}
 
 	async function expectRecordingToBePresent(): Promise<void> {
-		await utils.waitForElement('.recording-item');
-		expect(await utils.getNumberOfElements('.recording-item')).equals(1);
+		await utils.waitForElement('.recording-card');
+		expect(await utils.getNumberOfElements('.recording-card')).equals(1);
 	}
 
 	async function expectRecordingToBeDeleted(): Promise<void> {
 		// Get a fresh reference to the recording item
-		await utils.waitForElement('.recording-item');
+		await utils.waitForElement('.recording-card');
 
 		// Delete the recording
 		await utils.deleteRecording();
@@ -54,7 +54,7 @@ describe('Testing recordings', () => {
 		await browser.sleep(2000);
 
 		// Verify the recording is no longer present
-		expect(await utils.getNumberOfElements('.recording-item')).equals(0);
+		expect(await utils.getNumberOfElements('.recording-card')).equals(0);
 	}
 
 	async function expectRecordingToBePlayed(): Promise<void> {
