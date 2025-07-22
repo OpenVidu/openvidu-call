@@ -161,7 +161,7 @@ export class OpenViduCallPO {
 	}
 
 	async downloadRecording() {
-		await this.waitForElement('.recording-item');
+		await this.waitForElement('.recording-card');
 		await this.waitForElement('#download-recording-btn');
 		await this.clickOn('#download-recording-btn');
 	}
