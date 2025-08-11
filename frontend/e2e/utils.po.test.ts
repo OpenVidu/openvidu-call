@@ -103,6 +103,11 @@ export class OpenViduCallPO {
 		await element.sendKeys(keys);
 	}
 
+	async clearInput(selector: string): Promise<void> {
+		const element = await this.waitForElement(selector);
+		await element.clear();
+	}
+
 	async applyVirtualBackground(bgId: string): Promise<void> {
 		await this.waitForElement('#more-options-btn');
 		await this.clickOn('#more-options-btn');

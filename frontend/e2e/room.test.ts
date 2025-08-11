@@ -51,6 +51,9 @@ describe('Testing Room', () => {
 		await browser.get(fixedUrl);
 
 		await utils.checkPrejoinIsPresent();
+		await utils.clearInput('#name-input');
+		await utils.sendKeys('#name-input', 'user');
+
 		await utils.joinSession();
 
 		await utils.checkToolbarIsPresent();
@@ -59,6 +62,9 @@ describe('Testing Room', () => {
 		await browser.switchTo().window(tabs[1]);
 
 		await utils.checkPrejoinIsPresent();
+		await utils.clearInput('#name-input');
+		await utils.sendKeys('#name-input', 'user');
+
 		await utils.joinSession();
 
 		await utils.waitForElement('.error');
