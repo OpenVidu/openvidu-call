@@ -1,6 +1,6 @@
 {
 	"name": "openvidu-call-server",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"description": "OpenVidu Call Server",
 	"author": "OpenVidu",
 	"license": "Apache-2.0",
