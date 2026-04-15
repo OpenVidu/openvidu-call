@@ -9,6 +9,16 @@ ARG BASE_HREF=/
 
 COPY --chown=node:node frontend/ ./
 
+# --- Install safe-chain for security checks during build
+RUN curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
+
+ENV PATH=/home/node/.safe-chain/shims:/home/node/.safe-chain/bin:$PATH
+# Only check for ongoing malicious packages to avoid issues in CI
+ENV SAFE_CHAIN_MINIMUM_PACKAGE_AGE_HOURS=0
+
+RUN npm safe-chain-verify
+# ---------------------
+
 # Build the frontend application with the specified base href
 RUN npm install && \
     npm run build ${BASE_HREF}
@@ -26,6 +36,16 @@ USER node
 WORKDIR /app/backend
 
 COPY --chown=node:node backend/package*.json ./
+
+# --- Install safe-chain for security checks during build
+RUN curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
+
+ENV PATH=/home/node/.safe-chain/shims:/home/node/.safe-chain/bin:$PATH
+# Only check for ongoing malicious packages to avoid issues in CI
+ENV SAFE_CHAIN_MINIMUM_PACKAGE_AGE_HOURS=0
+
+RUN npm safe-chain-verify
+# ---------------------
 
 RUN npm install
 
